@@ -157,18 +157,18 @@ type StickyData = {
 
 const defaultSticky: StickyData = {
   id: 'sticky',
-  color: 'lemon',
+  color: 'purple',
   text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
-  rotation: 3,
+  rotation: -9,
   author: 'fes',
   createdAt: '09:42',
 };
 
 const defaultSecondSticky: StickyData = {
   id: 'sticky-1',
-  color: 'orange',
+  color: 'lemon',
   text: '',
-  rotation: -2,
+  rotation: 7,
   author: 'user',
   createdAt: 'saved',
 };
@@ -195,7 +195,7 @@ type SavedDesktopState = {
   dockPosition: DockPosition;
 };
 
-const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v3';
+const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
 const DESKTOP_GRID_SIZE = 4;
 let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {
@@ -820,7 +820,7 @@ function Home() {
   const [storageRestored, setStorageRestored] = useState(false);
   const [storageHelpOpen, setStorageHelpOpen] = useState(false);
   const [windows, setWindows] = useState<WindowState>(initialWindows);
-  const [activeWindow, setActiveWindow] = useState<WindowId>('work');
+  const [activeWindow, setActiveWindow] = useState<WindowId>('about');
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [stickyVisible, setStickyVisible] = useState(true);
@@ -1532,7 +1532,7 @@ function Home() {
     const usesLightText = selectedColor.foreground === 'light';
     return {
       ...(managedLayout ? {} : itemStyle(sticky.id)),
-      zIndex: stickyOnTop && activeStickyId === sticky.id ? 11 : 3,
+      zIndex: stickyOnTop && activeStickyId === sticky.id ? 11 : 1,
       '--sticky-bg': selectedColor.background,
       '--sticky-text': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-muted': usesLightText ? '#edf1f5' : '#37414d',
@@ -1687,7 +1687,7 @@ function Home() {
     setStickies(defaultDesktopState.stickies);
     setDockPosition(defaultDesktopState.dockPosition);
     setWindows(initialWindows);
-    setActiveWindow('work');
+    setActiveWindow('about');
     setMaximizedWindows({});
     setStickyVisible(true);
     setStickyOnTop(false);

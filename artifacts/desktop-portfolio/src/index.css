@@ -168,8 +168,8 @@ button { cursor: pointer; }
 .window-resize-sw { bottom: 0; left: 0; width: 14px; height: 14px; cursor: nesw-resize; }
 .window-resize-w { top: 14px; bottom: 14px; left: 0; width: 8px; cursor: ew-resize; }
 .window-resize-nw { top: 0; left: 0; width: 14px; height: 14px; cursor: nwse-resize; }
-.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; height: 138px; color: var(--sticky-text, #1d2430); background: transparent; border: 0; border-radius: 9px; transform: rotate(var(--sticky-rotation, 3deg)); transform-origin: center; cursor: grab; touch-action: none; }
-.desktop-note[data-testid="sticky-sticky-1"] { right: 13%; top: 43%; }
+.desktop-note { position: absolute; left: 6%; bottom: 290px; width: 214px; height: 160px; color: var(--sticky-text, #1d2430); background: transparent; border: 0; border-radius: 9px; transform: rotate(var(--sticky-rotation, 3deg)); transform-origin: center; cursor: grab; touch-action: none; }
+.desktop-note[data-testid="sticky-sticky-1"] { left: 77%; top: 8%; width: 220px; height: 156px; }
 .desktop-note:active { cursor: grabbing; }
 .desktop-note::before { content: ''; position: absolute; top: -9px; left: 50%; z-index: 2; width: 64px; height: 18px; background: rgba(245,232,193,.68); border: 1px solid rgba(122,105,69,.16); box-shadow: 0 1px 2px rgba(54,45,27,.12), inset 0 1px rgba(255,255,255,.42); transform: translateX(-50%) rotate(-3deg); pointer-events: none; }
 .desktop-note-surface { position: relative; width: 100%; height: 100%; min-height: inherit; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 7px; box-sizing: border-box; padding: 15px; overflow: hidden; color: var(--sticky-text, #1d2430); background: var(--sticky-bg, rgba(255,216,77,.9)); border: 1px solid var(--sticky-border, rgba(29,36,48,.25)); border-radius: inherit; box-shadow: 12px 16px 40px rgba(0,0,0,.17); }
@@ -208,8 +208,8 @@ button { cursor: pointer; }
 }
 .window.is-active { z-index: 10; border-color: rgba(228,255,91,.43); }
 .window.is-maximized { border-radius: 9px; }
-.window.work { top: 74px; right: 8%; container-type: inline-size; container-name: work-window; }
-.window.about { top: 17%; right: 17%; }
+.window.work { top: 38%; left: 43%; width: min(688px, calc(100vw - 80px)); height: min(476px, calc(100dvh - 180px)); container-type: inline-size; container-name: work-window; }
+.window.about { top: 11%; left: 26%; width: min(620px, calc(100vw - 80px)); height: min(432px, calc(100dvh - 180px)); }
 .window.contact { top: 22%; left: 22%; width: min(560px, calc(100vw - 80px)); height: auto; }
 .window.terminal { bottom: 116px; right: 10%; width: min(610px, calc(100vw - 80px)); height: min(354px, calc(100% - 116px)); min-height: min(310px, calc(100% - 116px)); }
 .window-header { height: 44px; padding: 0 6px 0 12px; display: grid; grid-template-columns: 102px minmax(0, 1fr) 102px; align-items: center; gap: 8px; background: rgba(39, 42, 61, .92); border-bottom: 1px solid rgba(214,221,255,.1); cursor: grab; touch-action: none; }

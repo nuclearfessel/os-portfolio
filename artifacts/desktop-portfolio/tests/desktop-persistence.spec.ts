@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'fes-os.desktop.v3';
+const storageKey = 'fes-os.desktop.v4';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -554,7 +554,7 @@ test('resets a sticky rotation in both themes and keeps it upright after reload'
   const rotationHandle = page.getByTestId('button-rotate-sticky-top-right');
   const readRotation = () => sticky.evaluate((element) => element.style.getPropertyValue('--sticky-rotation'));
 
-  await expect.poll(readRotation).toBe('3deg');
+  await expect.poll(readRotation).toBe('-9deg');
   await openStickyMenu(page);
   await page.getByTestId('button-reset-sticky-rotation').click();
   await expect.poll(readRotation).toBe('0deg');
@@ -751,7 +751,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
   await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
   await expect(page.getByTestId('window-work')).toBeVisible();
-  await expect(page.getByTestId('window-work')).toHaveClass(/is-active/);
+  await expect(page.getByTestId('window-about')).toHaveClass(/is-active/);
   await expect(page.getByTestId('window-terminal')).toHaveCount(0);
   await expect(page.getByTestId('window-about')).toBeVisible();
   await expect(page.getByTestId('window-contact')).toHaveCount(0);
@@ -783,16 +783,16 @@ test('Reset desktop restores every default after confirmation', async ({ page })
     showDesktopIcons: true,
     stickies: [{
       id: 'sticky',
-      color: 'lemon',
+      color: 'purple',
       text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
-      rotation: 3,
+      rotation: -9,
       author: 'fes',
       createdAt: '09:42',
     }, {
       id: 'sticky-1',
-      color: 'orange',
+      color: 'lemon',
       text: '',
-      rotation: -2,
+      rotation: 7,
       author: 'user',
       createdAt: 'saved',
     }],

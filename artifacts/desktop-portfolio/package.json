@@ -9,6 +9,7 @@
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "test:e2e": "playwright test",
     "test:e2e:persistence": "playwright test tests/desktop-persistence.spec.ts --project=chromium",
+    "test:e2e:webkit-recovery": "playwright test --project=webkit-storage-recovery",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {

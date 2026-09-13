@@ -1117,6 +1117,7 @@ function Home() {
     setItemSizes(defaultDesktopState.itemSizes);
     setIconSize(defaultDesktopState.iconSize);
     setSnapToGrid(defaultDesktopState.snapToGrid);
+    setTheme(defaultDesktopState.theme);
     setShowDesktopIcons(defaultDesktopState.showDesktopIcons);
     setStickies(defaultDesktopState.stickies);
     setDockPosition(defaultDesktopState.dockPosition);
@@ -1426,7 +1427,7 @@ function Home() {
           >
             <span className="reset-dialog-eyebrow">desktop settings</span>
             <h2 id="reset-dialog-title">Reset desktop?</h2>
-            <p id="reset-dialog-description">Icon positions, window layouts, stickies, and desktop preferences will return to their original settings. Your current theme will stay selected.</p>
+            <p id="reset-dialog-description">Icon positions, window layouts, stickies, and desktop preferences will return to their original settings.</p>
             <div className="reset-dialog-actions">
               <button type="button" autoFocus onClick={() => setResetDialogOpen(false)} data-testid="button-cancel-reset">Cancel</button>
               <button type="button" className="reset-dialog-confirm" onClick={resetDesktop} data-testid="button-confirm-reset">Reset desktop</button>

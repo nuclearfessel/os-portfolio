@@ -111,19 +111,22 @@ button { cursor: pointer; }
 .quick-button:hover, .project-link:hover, .contact-button:hover { transform: translateY(-2px); border-color: rgba(228,255,91,.7); color: #e4ff5b; background: rgba(55, 61, 87, .8); }
 .quick-button.primary { color: #111326; background: #e4ff5b; border-color: #e4ff5b; font-weight: 600; }
 .desktop-folders { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-.desktop-folder { position: absolute; width: 104px; display: grid; justify-items: center; gap: 4px; padding: 10px 7px 8px; color: #aeb2cb; border: 1px solid transparent; border-radius: 8px; background: transparent; text-align: center; cursor: pointer; pointer-events: auto; transition: background .2s, border-color .2s, color .2s, transform .2s; }
+.desktop-folder { position: absolute; width: 88px; display: grid; justify-items: center; gap: 7px; padding: 5px 4px; color: #e8eaf4; border: 0; background: transparent; text-align: center; cursor: pointer; pointer-events: auto; transition: color .18s, transform .18s; }
 .desktop-folder:nth-child(1) { left: 46px; bottom: 150px; }
-.desktop-folder:nth-child(2) { left: 164px; bottom: 150px; }
-.desktop-folder:nth-child(3) { left: 282px; bottom: 150px; }
-.desktop-folder:hover, .desktop-folder:focus-visible { color: #f1f0e8; background: rgba(228,255,91,.08); border-color: rgba(228,255,91,.28); transform: translateY(-2px); outline: none; }
-.desktop-folder.is-open { color: #e4ff5b; background: rgba(228,255,91,.1); border-color: rgba(228,255,91,.35); }
-.desktop-folder-icon { display: grid; place-items: center; width: 54px; height: 45px; color: #e4ff5b; }
-.desktop-folder-label { font: 12px var(--app-font-mono); letter-spacing: .02em; }
-.desktop-folder-meta { color: #707691; font: 9px var(--app-font-mono); white-space: nowrap; }
-.desktop-folder.is-open .desktop-folder-meta { color: #aab675; }
+.desktop-folder:nth-child(2) { left: 142px; bottom: 150px; }
+.desktop-folder:nth-child(3) { left: 238px; bottom: 150px; }
+.desktop-folder:hover, .desktop-folder:focus-visible { color: #fff; transform: translateY(-2px); outline: none; }
+.desktop-folder-icon { position: relative; display: block; width: 58px; height: 43px; border-radius: 5px 7px 7px 7px; background: linear-gradient(180deg, #81c7f4 0%, #4c9ee3 52%, #347fca 100%); box-shadow: 0 6px 12px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.42); transition: filter .18s, transform .18s; }
+.desktop-folder-icon::before { content: ''; position: absolute; left: 4px; top: -6px; width: 25px; height: 10px; border-radius: 5px 5px 0 0; background: #68b4ea; box-shadow: inset 0 1px 0 rgba(255,255,255,.28); }
+.desktop-folder-icon::after { content: ''; position: absolute; inset: 5px 4px auto; height: 1px; background: rgba(255,255,255,.32); }
+.desktop-folder:hover .desktop-folder-icon { filter: brightness(1.08); transform: scale(1.025); }
+.desktop-folder.is-open .desktop-folder-icon { filter: brightness(1.1) saturate(1.08); }
+.desktop-folder-label { max-width: 84px; overflow: hidden; padding: 2px 5px; border-radius: 4px; font: 11px var(--app-font-sans); line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+.desktop-folder.is-open .desktop-folder-label { color: #fff; background: #3568a8; }
+.desktop-folder:focus-visible .desktop-folder-label { outline: 1px solid rgba(134,217,238,.9); outline-offset: 2px; }
 .desktop-resize-handle { position: absolute; right: 3px; bottom: 3px; width: 13px; height: 13px; cursor: nwse-resize; opacity: .35; background: linear-gradient(135deg, transparent 0 38%, #e4ff5b 39% 46%, transparent 47% 57%, #e4ff5b 58% 65%, transparent 66% 76%, #e4ff5b 77% 84%, transparent 85%); touch-action: none; }
 .desktop-resize-handle:hover, .desktop-resize-handle:focus-visible { opacity: 1; outline: none; }
-.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; padding: 15px; color: #c9c6bb; background: rgba(39, 40, 61, .6); border: 1px solid rgba(211,205,160,.2); transform: rotate(3deg); box-shadow: 12px 16px 40px rgba(0,0,0,.17); cursor: grab; touch-action: none; }
+.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; padding: 15px; overflow: hidden; color: #c9c6bb; background: rgba(39, 40, 61, .6); border: 1px solid rgba(211,205,160,.2); transform: rotate(3deg); box-shadow: 12px 16px 40px rgba(0,0,0,.17); cursor: grab; touch-action: none; }
 .desktop-note:active { cursor: grabbing; }
 .desktop-note::before { content: ''; position: absolute; top: -5px; left: 45%; width: 32px; height: 9px; background: rgba(228,255,91,.4); transform: rotate(-4deg); }
 .note-label { color: #e4ff5b; font: 10px var(--app-font-mono); text-transform: uppercase; }
@@ -143,7 +146,7 @@ button { cursor: pointer; }
   animation: window-in .35s cubic-bezier(.2,.8,.2,1) both;
 }
 .window.is-active { z-index: 10; border-color: rgba(228,255,91,.43); }
-.window.work { top: 74px; right: 8%; }
+.window.work { top: 74px; right: 8%; container-type: inline-size; container-name: work-window; }
 .window.about { top: 17%; right: 17%; }
 .window.notes { top: 12%; left: 13%; }
 .window.contact { top: 22%; left: 22%; width: min(560px, calc(100vw - 80px)); height: auto; }
@@ -167,10 +170,24 @@ button { cursor: pointer; }
 .fact-list { border-left: 1px solid #3c405c; padding-left: 18px; margin-top: 4px; }
 .fact { margin-bottom: 18px; }.fact label { display: block; color: #707691; font: 10px var(--app-font-mono); text-transform: uppercase; margin-bottom: 5px; }.fact span { color: #e4e5ec; font-size: 13px; }
 .project-list { display: grid; gap: 11px; }
-.project-card { display: grid; grid-template-columns: 70px 1fr auto; gap: 14px; align-items: center; padding: 14px 13px; border: 1px solid rgba(214,221,255,.12); background: rgba(46, 48, 74, .4); border-radius: 7px; transition: border-color .2s, transform .2s; }
+.project-card { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; grid-template-areas: "index copy tag action"; gap: 14px; align-items: center; padding: 14px 13px; border: 1px solid rgba(214,221,255,.12); background: rgba(46, 48, 74, .4); border-radius: 7px; transition: border-color .2s, transform .2s; }
 .project-card:hover { border-color: rgba(228,255,91,.5); transform: translateX(3px); }
-.project-index { color: #e4ff5b; font: 12px var(--app-font-mono); }.project-card p { margin: 4px 0 0; font-size: 11px; line-height: 1.4; }.project-tag { color: #9aa0bc; font: 10px var(--app-font-mono); white-space: nowrap; }
-.project-link { color: #111326; background: #e4ff5b; padding: 7px 9px; border-radius: 5px; font: 10px var(--app-font-mono); white-space: nowrap; }
+.project-index { grid-area: index; color: #e4ff5b; font: 12px var(--app-font-mono); }
+.project-copy { grid-area: copy; min-width: 0; }
+.project-card p { margin: 4px 0 0; font-size: 11px; line-height: 1.4; }
+.project-tag { grid-area: tag; color: #9aa0bc; font: 10px var(--app-font-mono); white-space: nowrap; }
+.project-link { grid-area: action; justify-self: end; color: #111326; background: #e4ff5b; padding: 7px 9px; border-radius: 5px; font: 10px var(--app-font-mono); white-space: nowrap; }
+@container work-window (max-width: 620px) {
+  .project-card { grid-template-columns: 38px minmax(0, 1fr) auto; grid-template-areas: "index copy tag" ". action action"; }
+  .project-link { justify-self: start; margin-top: 2px; }
+}
+@container work-window (max-width: 460px) {
+  .window-body { padding: 17px; }
+  .window-body h2 { font-size: 27px; }
+  .project-card { grid-template-columns: 28px minmax(0, 1fr); grid-template-areas: "index copy" ". action"; gap: 10px; padding: 12px 10px; }
+  .project-tag { display: none; }
+  .project-card h3 { font-size: 15px; }
+}
 .stack-layout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 24px; }.stack-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }.stack-chip { color: #d5d8e7; border: 1px solid #3e435f; padding: 7px 9px; border-radius: 5px; font: 11px var(--app-font-mono); background: rgba(42,45,69,.5); }
 .availability { padding: 14px; background: rgba(228,255,91,.08); border: 1px solid rgba(228,255,91,.3); border-radius: 7px; }.availability strong { display: block; color: #e4ff5b; font-size: 13px; margin-bottom: 7px; }.availability p { margin: 0; font-size: 12px; }
 .contact-copy { max-width: 400px; }.contact-copy h2 { font-size: 42px; }.contact-button { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 11px 14px; background: #e4ff5b; color: #111326; border-color: #e4ff5b; border-radius: 6px; font-size: 12px; font-weight: 600; margin-top: 12px; }
@@ -190,5 +207,5 @@ button { cursor: pointer; }
   .desktop-folder, .desktop-folder:nth-child(1), .desktop-folder:nth-child(2), .desktop-folder:nth-child(3) { position: relative; inset: auto; width: 94px; padding-inline: 4px; }
   .desktop-resize-handle { display: none; }
   .window, .window.work, .window.about, .window.notes, .window.contact, .window.terminal { position: fixed; inset: 55px 12px 96px; width: auto; height: auto; min-height: 0; }.window.contact { bottom: auto; height: auto; }.window.terminal { inset: auto 12px 91px; height: 360px; }
-  .about-grid, .stack-layout { grid-template-columns: 1fr; gap: 10px; }.window-body { padding: 18px; }.window-body h2 { font-size: 29px; }.fact-list { margin-top: 12px; }.project-card { grid-template-columns: 38px 1fr; }.project-link { grid-column: 2; justify-self: start; }.project-tag { display: none; }.dock { bottom: 14px; max-width: calc(100vw - 24px); }.dock-item { width: 41px; height: 41px; }
+  .about-grid, .stack-layout { grid-template-columns: 1fr; gap: 10px; }.window-body { padding: 18px; }.window-body h2 { font-size: 29px; }.fact-list { margin-top: 12px; }.dock { bottom: 14px; max-width: calc(100vw - 24px); }.dock-item { width: 41px; height: 41px; }
 }

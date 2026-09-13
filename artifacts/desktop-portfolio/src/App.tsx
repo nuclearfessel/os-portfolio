@@ -755,6 +755,7 @@ function DesktopFolder({
 function Home() {
   const [savedDesktopState] = useState(loadDesktopState);
   const [storageUnavailable, setStorageUnavailable] = useState(storageUnavailableDuringLoad);
+  const [storageRestored, setStorageRestored] = useState(false);
   const [storageHelpOpen, setStorageHelpOpen] = useState(false);
   const [windows, setWindows] = useState<WindowState>(initialWindows);
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
@@ -805,9 +806,11 @@ function Home() {
     try {
       window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(getCurrentDesktopState()));
       setStorageUnavailable(false);
+      setStorageRestored(true);
       setStorageHelpOpen(false);
     } catch {
       setStorageUnavailable(true);
+      setStorageRestored(false);
     }
   };
 
@@ -936,8 +939,15 @@ function Home() {
       window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(getCurrentDesktopState()));
     } catch {
       setStorageUnavailable(true);
+      setStorageRestored(false);
     }
   }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode]);
+
+  useEffect(() => {
+    if (!storageRestored) return;
+    const timeout = window.setTimeout(() => setStorageRestored(false), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [storageRestored]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -1582,6 +1592,11 @@ function Home() {
             </div>
           )}
         </aside>
+      )}
+      {storageRestored && (
+        <div className="storage-restored" role="status" aria-live="polite" data-testid="notice-storage-restored">
+          Saving restored. Current desktop changes are saved.
+        </div>
       )}
 
       <div

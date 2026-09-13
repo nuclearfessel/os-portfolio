@@ -363,9 +363,9 @@ function WindowFrame({
         <span className="window-header-spacer" aria-hidden="true" />
         <div className="window-title"><strong>~/fes/</strong>{title.toLowerCase()}</div>
         <div className="traffic-lights" onPointerDown={(event) => event.stopPropagation()}>
-          <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} title="Minimize" data-testid={`button-minimize-${id}`}><Minus size={10} strokeWidth={2.6} /><span className="window-control-tooltip">Minimize</span></button>
-          <button className="maximize" onClick={onMaximize} aria-label={`${maximized ? 'Restore' : 'Maximize'} ${title}`} title={maximized ? 'Restore' : 'Maximize'} data-testid={`button-maximize-${id}`}><Maximize2 size={9} strokeWidth={2.4} /><span className="window-control-tooltip">{maximized ? 'Restore' : 'Maximize'}</span></button>
-          <button className="close" onClick={onClose} aria-label={`Close ${title}`} title="Close" data-testid={`button-close-${id}`}><X size={9} strokeWidth={2.6} /><span className="window-control-tooltip">Close</span></button>
+          <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} data-testid={`button-minimize-${id}`}><Minus size={10} strokeWidth={2.6} /><span className="window-control-tooltip">Minimize</span></button>
+          <button className="maximize" onClick={onMaximize} aria-label={`${maximized ? 'Restore' : 'Maximize'} ${title}`} data-testid={`button-maximize-${id}`}><Maximize2 size={9} strokeWidth={2.4} /><span className="window-control-tooltip">{maximized ? 'Restore' : 'Maximize'}</span></button>
+          <button className="close" onClick={onClose} aria-label={`Close ${title}`} data-testid={`button-close-${id}`}><X size={9} strokeWidth={2.6} /><span className="window-control-tooltip">Close</span></button>
         </div>
       </header>
       {children}
@@ -801,7 +801,6 @@ function DesktopFolder({
       style={style}
       aria-pressed={open}
       aria-label={`${action} ${appIcon ? 'application' : 'folder'}`}
-      title={action}
       data-draggable-item
       data-testid={`button-folder-${id}`}
     >

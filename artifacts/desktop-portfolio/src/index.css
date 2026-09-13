@@ -149,7 +149,7 @@ button { cursor: pointer; }
 .desktop-folder.is-open .desktop-folder-label { color: #fff; background: #3568a8; }
 .desktop-launcher-work.is-open .desktop-folder-label { background: #913047; }
 .desktop-folder:focus-visible .desktop-folder-label { outline: 1px solid rgba(134,217,238,.9); outline-offset: 2px; }
-.desktop-icon-tooltip { position: absolute; left: 50%; bottom: calc(100% + 4px); z-index: 20; max-width: 180px; padding: 5px 7px; color: #e4e5ec; background: #252943; border: 1px solid #444967; border-radius: 4px; box-shadow: 0 5px 16px rgba(0,0,0,.24); opacity: 0; pointer-events: none; transform: translate(-50%, 3px); white-space: nowrap; font: 10px/1.2 var(--app-font-mono); transition: opacity .1s, transform .1s; }
+.desktop-icon-tooltip { position: absolute; left: 50%; bottom: calc(100% + 4px); z-index: 20; max-width: 180px; padding: 5px calc(var(--spacing) * 3); color: #e4e5ec; background: #252943; border: 1px solid #444967; border-radius: 4px; box-shadow: 0 5px 16px rgba(0,0,0,.24); opacity: 0; pointer-events: none; transform: translate(-50%, 3px); white-space: nowrap; font: 10px/1.2 var(--app-font-mono); transition: opacity .1s, transform .1s; }
 .desktop-folder:hover .desktop-icon-tooltip, .desktop-folder:focus-visible .desktop-icon-tooltip { opacity: 1; transform: translate(-50%, 0); }
 .icons-small .desktop-folder { width: 70px; gap: 5px; }
 .icons-small .desktop-folder-icon { width: 43px; height: 32px; border-radius: 4px 5px 5px 5px; }
@@ -220,7 +220,7 @@ button { cursor: pointer; }
 .traffic-lights button svg { width: 15px; height: 15px; opacity: 1; }
 .traffic-lights button:hover, .traffic-lights button:focus-visible { color: #f4f5f8; background: rgba(255,255,255,.11); outline: none; }
 .traffic-lights .close:hover, .traffic-lights .close:focus-visible { color: #fff; background: #c84b55; }
-.window-control-tooltip { position: absolute; top: 35px; right: 0; z-index: 30; padding: 5px 7px; color: #e4e5ec; background: #252943; border: 1px solid #444967; border-radius: 4px; box-shadow: 0 5px 16px rgba(0,0,0,.24); opacity: 0; pointer-events: none; white-space: nowrap; font: 10px/1.2 var(--app-font-mono); transform: translateY(-2px); transition: opacity .1s, transform .1s; }
+.window-control-tooltip { position: absolute; top: 35px; right: 0; z-index: 30; padding: 5px calc(var(--spacing) * 3); color: #e4e5ec; background: #252943; border: 1px solid #444967; border-radius: 4px; box-shadow: 0 5px 16px rgba(0,0,0,.24); opacity: 0; pointer-events: none; white-space: nowrap; font: 10px/1.2 var(--app-font-mono); transform: translateY(-2px); transition: opacity .1s, transform .1s; }
 .traffic-lights button:hover .window-control-tooltip, .traffic-lights button:focus-visible .window-control-tooltip { opacity: 1; transform: translateY(0); }
 .window-title { min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--app-font-mono); color: #aeb2cb; }
 .window-title strong { color: #e4ff5b; font-weight: 400; }
@@ -314,7 +314,7 @@ button { cursor: pointer; }
 .dock.dock-top .dock-item.active::after { top: -5px; left: 50%; transform: translateX(-50%); }
 .dock.dock-left .dock-item.active::after { left: -5px; top: 50%; transform: translateY(-50%); }
 .dock.dock-right .dock-item.active::after { right: -5px; top: 50%; transform: translateY(-50%); }
-.dock-item span { position: absolute; opacity: 0; white-space: nowrap; pointer-events: none; color: #e4e5ec; background: #252943; border: 1px solid #444967; border-radius: 4px; padding: 5px 7px; font: 10px var(--app-font-mono); line-height: 1.2; transition: opacity .1s; z-index: 10; }
+.dock-item span { position: absolute; opacity: 0; white-space: nowrap; pointer-events: none; color: #e4e5ec; background: #252943; border: 1px solid #444967; border-radius: 4px; padding: 5px calc(var(--spacing) * 3); font: 10px var(--app-font-mono); line-height: 1.2; transition: opacity .1s; z-index: 10; }
 .dock.dock-bottom .dock-item span { bottom: 53px; left: 50%; transform: translateX(-50%); }
 .dock.dock-top .dock-item span { top: 53px; left: 50%; transform: translateX(-50%); }
 .dock.dock-left .dock-item span { left: 53px; top: 50%; transform: translateY(-50%); }

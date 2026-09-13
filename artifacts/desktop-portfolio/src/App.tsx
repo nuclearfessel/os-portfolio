@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent, type PointerEvent as React
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Apple, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
-  Command, Folder, FolderGit2, FolderOpen, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
+  Command, FolderGit2, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
   UserRound, Wifi, X,
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -126,7 +126,7 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
           {projects.map((project) => (
             <article className="project-card" key={project.id} data-testid={`card-project-${project.id}`}>
               <span className="project-index" style={{ color: project.color }}>{project.id}</span>
-              <div><h3>{project.name}</h3><p>{project.desc}</p></div>
+              <div className="project-copy"><h3>{project.name}</h3><p>{project.desc}</p></div>
               <span className="project-tag">{project.tag}</span>
               <button className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => window.alert(`${project.name} case study coming soon.`)}>view case study <ArrowUpRight size={11} /></button>
             </article>
@@ -222,17 +222,13 @@ function TerminalWindow({
 
 function DesktopFolder({
   label,
-  meta,
   open,
   onToggle,
 }: {
   label: string;
-  meta: string;
   open: boolean;
   onToggle: () => void;
 }) {
-  const Icon = open ? FolderOpen : Folder;
-
   return (
     <button
       className={`desktop-folder ${open ? 'is-open' : ''}`}
@@ -241,9 +237,8 @@ function DesktopFolder({
       aria-label={`${open ? 'Close' : 'Open'} ${label} folder`}
       data-testid={`button-folder-${label.toLowerCase()}`}
     >
-      <span className="desktop-folder-icon"><Icon size={29} strokeWidth={1.5} /></span>
+      <span className="desktop-folder-icon" aria-hidden="true" />
       <span className="desktop-folder-label">{label}</span>
-      <span className="desktop-folder-meta">{open ? 'open · click to close' : meta}</span>
     </button>
   );
 }
@@ -356,8 +351,8 @@ function Home() {
   const moveResize = (event: ReactPointerEvent<HTMLSpanElement>) => {
     const resize = resizeRef.current;
     if (!resize) return;
-    const minWidth = resize.id === 'sticky' ? 160 : 320;
-    const minHeight = resize.id === 'sticky' ? 110 : 240;
+    const minWidth = resize.id === 'sticky' ? 92 : 320;
+    const minHeight = resize.id === 'sticky' ? 54 : 240;
     const width = Math.max(minWidth, resize.startWidth + event.clientX - resize.startX);
     const height = Math.max(minHeight, resize.startHeight + event.clientY - resize.startY);
     setItemSizes((current) => ({ ...current, [resize.id]: { width, height } }));
@@ -429,9 +424,9 @@ function Home() {
         </div>
 
         <div className="desktop-folders" aria-label="Portfolio folders">
-          <DesktopFolder label="about" meta="readme.md" open={windows.about} onToggle={() => handleFolderClick('about')} />
-          <DesktopFolder label="work" meta="03 projects" open={windows.work} onToggle={() => handleFolderClick('work')} />
-          <DesktopFolder label="notes" meta="toolkit + thoughts" open={windows.notes} onToggle={() => handleFolderClick('notes')} />
+          <DesktopFolder label="about" open={windows.about} onToggle={() => handleFolderClick('about')} />
+          <DesktopFolder label="work" open={windows.work} onToggle={() => handleFolderClick('work')} />
+          <DesktopFolder label="notes" open={windows.notes} onToggle={() => handleFolderClick('notes')} />
         </div>
 
         <aside

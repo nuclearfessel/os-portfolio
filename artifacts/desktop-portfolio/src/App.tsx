@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMo
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
-  Check, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
+  Check, FileText as StickyNote, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
   Cursor as MousePointer2, Terminal, CircleUser as UserRound, Wifi, X,
 } from '@keyline-icons/react';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -588,6 +588,8 @@ function Home() {
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [stickyVisible, setStickyVisible] = useState(true);
+  const [stickyOnTop, setStickyOnTop] = useState(false);
   const [dragPositions, setDragPositions] = useState<ItemPositions>(savedDesktopState.itemPositions);
   const [itemSizes, setItemSizes] = useState<ItemSizes>(savedDesktopState.itemSizes);
   const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
@@ -643,10 +645,21 @@ function Home() {
   const openWindow = (id: WindowId) => {
     setWindows((current) => ({ ...current, [id]: true }));
     setActiveWindow(id);
+    setStickyOnTop(false);
     setMobileOpen(false);
   };
   const closeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
   const minimizeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
+  const handleStickyDock = () => {
+    if (stickyVisible && stickyOnTop) {
+      setStickyVisible(false);
+      setStickyOnTop(false);
+      return;
+    }
+    setStickyVisible(true);
+    setStickyOnTop(true);
+    setMobileOpen(false);
+  };
   const startDrag = (id: DesktopItemId, event: ReactPointerEvent<HTMLElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
     const area = desktopAreaRef.current;
@@ -885,30 +898,32 @@ function Home() {
           </div>
         )}
 
-        <aside
-          className="desktop-note"
-          data-draggable-item
-          style={itemStyle('sticky')}
-          onPointerDown={(event) => startDrag('sticky', event)}
-          onPointerMove={moveDrag}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          aria-label="Draggable field note"
-        >
-          <span className="note-label">field note / 004</span>
-          <p>The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.</p>
-          <span className="note-signoff">— alex, 09:42</span>
-          <span
-            className="desktop-resize-handle"
-            onPointerDown={(event) => { event.stopPropagation(); startResize('sticky', event); }}
-            onPointerMove={moveResize}
-            onPointerUp={endResize}
-            onPointerCancel={endResize}
-            role="separator"
-            aria-label="Resize field note"
-            tabIndex={0}
-          />
-        </aside>
+        {stickyVisible && (
+          <aside
+            className="desktop-note"
+            data-draggable-item
+            style={{ ...itemStyle('sticky'), zIndex: stickyOnTop ? 30 : 3 }}
+            onPointerDown={(event) => { setStickyOnTop(true); startDrag('sticky', event); }}
+            onPointerMove={moveDrag}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            aria-label="Draggable field note"
+          >
+            <span className="note-label">field note / 004</span>
+            <p>The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.</p>
+            <span className="note-signoff">— alex, 09:42</span>
+            <span
+              className="desktop-resize-handle"
+              onPointerDown={(event) => { event.stopPropagation(); startResize('sticky', event); }}
+              onPointerMove={moveResize}
+              onPointerUp={endResize}
+              onPointerCancel={endResize}
+              role="separator"
+              aria-label="Resize field note"
+              tabIndex={0}
+            />
+          </aside>
+        )}
 
         {windows.work && <WorkWindow {...windowProps('work')} />}
         {windows.about && <AboutWindow {...windowProps('about')} />}
@@ -957,6 +972,7 @@ function Home() {
         <button className={`dock-item ${windows.notes ? 'active' : ''}`} onClick={() => openWindow('notes')} aria-label="Open notes and stack" data-testid="button-dock-notes"><BookOpen size={20} /><span>Notes · 3</span></button>
         <button className={`dock-item ${windows.terminal ? 'active' : ''}`} onClick={() => openWindow('terminal')} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></button>
         <button className={`dock-item ${windows.contact ? 'active' : ''}`} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact · 4</span></button>
+        <button className={`dock-item ${stickyVisible ? 'active' : ''}`} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><span>Stickies</span></button>
         <button className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><span>Shortcuts</span></button>
       </nav>
 

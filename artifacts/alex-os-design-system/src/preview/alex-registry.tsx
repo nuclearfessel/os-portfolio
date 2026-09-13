@@ -16,6 +16,9 @@ const AlexOsDemo = lazyPage(() =>
 const GuidelinesDemo = lazyPage(() =>
   import('./demos/guidelines').then(({ GuidelinesDemo }) => GuidelinesDemo),
 );
+const AccessibilityPage = lazyPage(() =>
+  import('./accessibility').then(({ AccessibilityPage }) => AccessibilityPage),
+);
 
 export type PreviewEntry = {
   id: string;
@@ -69,6 +72,12 @@ export const NAV_GROUPS: NavGroup[] = [
         name: 'Iconography & motion',
         description: 'Keyline icon rules, transition timing, and interaction feedback.',
         Page: GuidelinesDemo,
+      },
+      {
+        id: 'accessibility',
+        name: 'Accessibility',
+        description: 'WCAG AA targets and the accessibility rules followed by the portfolio.',
+        Page: AccessibilityPage,
       },
     ],
   },

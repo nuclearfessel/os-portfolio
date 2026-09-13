@@ -38,3 +38,15 @@ Light and dark are equal system themes. Both expose the same semantic roles for 
 - Tablet and mobile geometry is managed and temporary.
 - Responsive reflow must never overwrite desktop geometry.
 - Mobile navigation remains fixed at the bottom with visible labels.
+
+## Accessibility
+
+- Target WCAG 2.2 Level AA; this is an implementation target, not a certification claim.
+- Normal text targets 4.5:1 contrast and large text targets 3:1 in both themes.
+- Use native interactive elements and preserve a visible keyboard focus treatment.
+- Icon-only controls require accessible names; decorative icons are hidden from assistive technology.
+- Express toggle and selection state through semantic ARIA attributes, never color alone.
+- Use live status regions for important asynchronous recovery messages.
+- Require confirmation for destructive actions that remove persisted user data.
+- Honor reduced-motion preferences for nonessential animation.
+- Provide managed-layout or keyboard alternatives to pointer-only desktop manipulation.

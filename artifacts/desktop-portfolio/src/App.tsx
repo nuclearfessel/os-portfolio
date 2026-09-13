@@ -817,6 +817,10 @@ function Home() {
   const [viewportProfile, setViewportProfile] = useState<ViewportProfile>(readViewportProfile);
   const [coarsePointer, setCoarsePointer] = useState(() => window.matchMedia('(pointer: coarse)').matches);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
+  const deleteDialogRef = useRef<HTMLElement>(null);
+  const resetDialogRef = useRef<HTMLElement>(null);
+  const deleteDialogOpenerRef = useRef<HTMLElement | null>(null);
+  const resetDialogOpenerRef = useRef<HTMLElement | null>(null);
   const dockDragRef = useRef<{ active: boolean; startX: number; startY: number; moved: boolean } | null>(null);
   const desktopGeometryRef = useRef({
     dragPositions: savedDesktopState.itemPositions,
@@ -895,6 +899,45 @@ function Home() {
   } | null>(null);
   const rotateRef = useRef<{ id: StickyItemId; centerX: number; centerY: number; pointerAngle: number; rotation: number } | null>(null);
   const lastDesktopDragRef = useRef<{ id: DesktopLauncherDragId; endedAt: number } | null>(null);
+
+  const restoreDialogFocus = (opener: HTMLElement | null, fallback?: HTMLElement | null) => {
+    window.requestAnimationFrame(() => {
+      const target = opener?.isConnected ? opener : fallback;
+      target?.focus();
+    });
+  };
+  const closeDeleteDialog = () => {
+    const pendingId = stickyPendingDelete;
+    setStickyPendingDelete(null);
+    restoreDialogFocus(
+      deleteDialogOpenerRef.current,
+      pendingId ? document.querySelector<HTMLElement>(`[data-testid="button-delete-${pendingId}"]`) : desktopAreaRef.current,
+    );
+  };
+  const closeResetDialog = () => {
+    setResetDialogOpen(false);
+    restoreDialogFocus(resetDialogOpenerRef.current, desktopAreaRef.current);
+  };
+  const trapDialogFocus = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )).filter((element) => !element.hidden);
+    if (!focusable.length) {
+      event.preventDefault();
+      event.currentTarget.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
 
   useEffect(() => {
     const updateClock = () => setClock(new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date()));
@@ -1003,7 +1046,8 @@ function Home() {
         setMobileOpen(false);
         setContextMenu(null);
         setStickyMenu(null);
-        setStickyPendingDelete(null);
+        if (stickyPendingDelete) closeDeleteDialog();
+        if (resetDialogOpen) closeResetDialog();
       }
       if (event.metaKey || event.ctrlKey) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '`': 'terminal' };
@@ -1659,6 +1703,7 @@ function Home() {
       <div
         className={`desktop-area dock-space-${dockPosition}`}
         ref={desktopAreaRef}
+        tabIndex={-1}
         onContextMenu={openDesktopContextMenu}
       >
         <div className="desktop-intro">
@@ -1728,6 +1773,7 @@ function Home() {
                   onClick={(event) => {
                     event.stopPropagation();
                     setStickyMenu(null);
+                    deleteDialogOpenerRef.current = event.currentTarget;
                     setStickyPendingDelete(sticky.id);
                   }}
                 >
@@ -1832,6 +1878,7 @@ function Home() {
             className="context-menu-button context-menu-danger"
             role="menuitem"
             onClick={() => {
+              resetDialogOpenerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
               setContextMenu(null);
               setResetDialogOpen(true);
             }}
@@ -1921,7 +1968,8 @@ function Home() {
                 type="button"
                 className="context-menu-button context-menu-danger"
                 role="menuitem"
-                onClick={() => {
+                onClick={(event) => {
+                  deleteDialogOpenerRef.current = event.currentTarget;
                   setStickyPendingDelete(stickyMenu.id);
                   setStickyMenu(null);
                 }}
@@ -1938,22 +1986,28 @@ function Home() {
       {stickyPendingDelete && (
         <div className="reset-dialog-backdrop">
           <section
+            ref={deleteDialogRef}
             className="reset-dialog"
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="delete-sticky-dialog-title"
             aria-describedby="delete-sticky-dialog-description"
             data-testid="dialog-delete-sticky"
+            tabIndex={-1}
+            onKeyDown={trapDialogFocus}
           >
             <span className="reset-dialog-eyebrow">sticky note</span>
             <h2 id="delete-sticky-dialog-title">Delete this sticky?</h2>
             <p id="delete-sticky-dialog-description">Its text, color, size, position, and rotation will be permanently removed from this desktop.</p>
             <div className="reset-dialog-actions">
-              <button type="button" className="quick-button" onClick={() => setStickyPendingDelete(null)} autoFocus>Cancel</button>
+              <button type="button" className="quick-button" onClick={closeDeleteDialog} autoFocus>Cancel</button>
               <button
                 type="button"
                 className="quick-button reset-confirm-button"
-                onClick={() => deleteSticky(stickyPendingDelete)}
+                onClick={() => {
+                  deleteSticky(stickyPendingDelete);
+                  restoreDialogFocus(null, document.querySelector<HTMLElement>('[data-testid="button-add-sticky"]') ?? desktopAreaRef.current);
+                }}
                 data-testid="button-confirm-delete-sticky"
               >
                 Delete sticky
@@ -1966,19 +2020,32 @@ function Home() {
       {resetDialogOpen && (
         <div className="reset-dialog-backdrop">
           <section
+            ref={resetDialogRef}
             className="reset-dialog"
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="reset-dialog-title"
             aria-describedby="reset-dialog-description"
             data-testid="dialog-reset-desktop"
+            tabIndex={-1}
+            onKeyDown={trapDialogFocus}
           >
             <span className="reset-dialog-eyebrow">desktop settings</span>
             <h2 id="reset-dialog-title">Reset desktop?</h2>
             <p id="reset-dialog-description">Icon positions, window layouts, stickies, and desktop preferences will return to their original settings.</p>
             <div className="reset-dialog-actions">
-              <button type="button" autoFocus onClick={() => setResetDialogOpen(false)} data-testid="button-cancel-reset">Cancel</button>
-              <button type="button" className="reset-dialog-confirm" onClick={resetDesktop} data-testid="button-confirm-reset">Reset desktop</button>
+              <button type="button" autoFocus onClick={closeResetDialog} data-testid="button-cancel-reset">Cancel</button>
+              <button
+                type="button"
+                className="reset-dialog-confirm"
+                onClick={() => {
+                  resetDesktop();
+                  restoreDialogFocus(resetDialogOpenerRef.current, desktopAreaRef.current);
+                }}
+                data-testid="button-confirm-reset"
+              >
+                Reset desktop
+              </button>
             </div>
           </section>
         </div>

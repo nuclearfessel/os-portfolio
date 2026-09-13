@@ -7,7 +7,7 @@ import {
 } from '@keyline-icons/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@workspace/fes-os-design-system/components/ui/tooltip';
 import {
   ActionButton,
   ContextMenuSurface,
@@ -2055,7 +2055,6 @@ function Home() {
                 role="menuitemradio"
                 aria-checked={stickies.find((sticky) => sticky.id === stickyMenu.id)?.color === color.id}
                 aria-label={color.label}
-                title={color.label}
                 onClick={() => {
                   setStickies((current) => current.map((sticky) => sticky.id === stickyMenu.id ? { ...sticky, color: color.id } : sticky));
                   setStickyMenu(null);
@@ -2173,7 +2172,6 @@ function Home() {
         className={`dock dock-${effectiveDockPosition} ${workspaceMode !== 'desktop' ? 'dock-fixed' : ''} ${deviceMode === 'mobile' ? 'dock-mobile-menu' : ''} ${deviceMode === 'tablet' ? 'dock-tablet-menu' : ''}`}
         tabIndex={-1}
         aria-label={workspaceMode === 'desktop' ? 'Application dock. Drag to a screen edge or right-click to choose its position.' : 'Application menu'}
-        title={workspaceMode === 'desktop' ? "Drag to reposition dock" : undefined}
         onPointerDown={(event) => {
           if (workspaceMode !== 'desktop') return;
           if ((event.target as HTMLElement).closest('button')) return;

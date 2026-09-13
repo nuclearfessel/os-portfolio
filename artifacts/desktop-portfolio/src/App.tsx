@@ -27,16 +27,16 @@ type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }
 type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
 
 const stickyPalette = [
-  { id: 'lemon', label: 'Lemon', background: 'rgba(255, 216, 77, .9)', foreground: 'dark' },
-  { id: 'orange', label: 'Orange', background: 'rgba(255, 184, 77, .9)', foreground: 'dark' },
-  { id: 'coral', label: 'Coral', background: 'rgba(255, 170, 163, .9)', foreground: 'dark' },
-  { id: 'cream', label: 'Cream', background: 'rgba(255, 240, 210, .9)', foreground: 'dark' },
-  { id: 'teal', label: 'Teal', background: 'rgba(0, 100, 86, .9)', foreground: 'light' },
-  { id: 'blue', label: 'Blue', background: 'rgba(13, 86, 179, .9)', foreground: 'light' },
-  { id: 'purple', label: 'Purple', background: 'rgba(102, 72, 184, .9)', foreground: 'light' },
-  { id: 'berry', label: 'Berry', background: 'rgba(169, 53, 112, .9)', foreground: 'light' },
-  { id: 'forest', label: 'Forest', background: 'rgba(30, 96, 61, .9)', foreground: 'light' },
-  { id: 'charcoal', label: 'Charcoal', background: 'rgba(52, 59, 79, .9)', foreground: 'light' },
+  { id: 'lemon', label: 'Lemon', background: 'rgba(255, 216, 77, .9)', foreground: 'dark', handle: '#8f6900' },
+  { id: 'orange', label: 'Orange', background: 'rgba(255, 184, 77, .9)', foreground: 'dark', handle: '#9f5700' },
+  { id: 'coral', label: 'Coral', background: 'rgba(255, 170, 163, .9)', foreground: 'dark', handle: '#9d4648' },
+  { id: 'cream', label: 'Cream', background: 'rgba(255, 240, 210, .9)', foreground: 'dark', handle: '#a88655' },
+  { id: 'teal', label: 'Teal', background: 'rgba(0, 100, 86, .9)', foreground: 'light', handle: '#76dccb' },
+  { id: 'blue', label: 'Blue', background: 'rgba(13, 86, 179, .9)', foreground: 'light', handle: '#8ac4ff' },
+  { id: 'purple', label: 'Purple', background: 'rgba(102, 72, 184, .9)', foreground: 'light', handle: '#c8b3ff' },
+  { id: 'berry', label: 'Berry', background: 'rgba(169, 53, 112, .9)', foreground: 'light', handle: '#ffb2d5' },
+  { id: 'forest', label: 'Forest', background: 'rgba(30, 96, 61, .9)', foreground: 'light', handle: '#91d6aa' },
+  { id: 'charcoal', label: 'Charcoal', background: 'rgba(52, 59, 79, .9)', foreground: 'light', handle: '#b8c2dd' },
 ] as const;
 type StickyColorId = typeof stickyPalette[number]['id'];
 type StickyData = {
@@ -85,7 +85,7 @@ const defaultDesktopState: SavedDesktopState = {
   itemSizes: {},
   iconSize: 'large',
   snapToGrid: false,
-  theme: 'dark',
+  theme: 'light',
   showDesktopIcons: true,
   stickies: [defaultSticky],
 };
@@ -138,7 +138,7 @@ function loadDesktopState(): SavedDesktopState {
       itemSizes,
       iconSize: parsed.iconSize === 'small' ? 'small' : defaultDesktopState.iconSize,
       snapToGrid: typeof parsed.snapToGrid === 'boolean' ? parsed.snapToGrid : defaultDesktopState.snapToGrid,
-      theme: parsed.theme === 'light' ? 'light' : defaultDesktopState.theme,
+      theme: parsed.theme === 'light' || parsed.theme === 'dark' ? parsed.theme : defaultDesktopState.theme,
       showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
       stickies: Array.isArray(parsed.stickies) ? stickies : [defaultSticky],
     };
@@ -976,6 +976,7 @@ function Home() {
       '--sticky-muted': usesLightText ? '#edf1f5' : '#37414d',
       '--sticky-accent': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-border': usesLightText ? 'rgba(255, 255, 255, .28)' : 'rgba(29, 36, 48, .25)',
+      '--sticky-handle': selectedColor.handle,
       '--sticky-rotation': `${sticky.rotation}deg`,
     } as React.CSSProperties;
   };

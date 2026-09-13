@@ -111,11 +111,10 @@ button { cursor: pointer; }
 .quick-button:hover, .project-link:hover, .contact-button:hover { transform: translateY(-2px); border-color: rgba(228,255,91,.7); color: #e4ff5b; background: rgba(55, 61, 87, .8); }
 .quick-button.primary { color: #111326; background: #e4ff5b; border-color: #e4ff5b; font-weight: 600; }
 .desktop-folders { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-.desktop-folder { position: absolute; width: 104px; display: grid; justify-items: center; gap: 4px; padding: 10px 7px 8px; color: #aeb2cb; border: 1px solid transparent; border-radius: 8px; background: transparent; text-align: center; cursor: grab; pointer-events: auto; transition: background .2s, border-color .2s, color .2s, transform .2s; touch-action: none; }
+.desktop-folder { position: absolute; width: 104px; display: grid; justify-items: center; gap: 4px; padding: 10px 7px 8px; color: #aeb2cb; border: 1px solid transparent; border-radius: 8px; background: transparent; text-align: center; cursor: pointer; pointer-events: auto; transition: background .2s, border-color .2s, color .2s, transform .2s; }
 .desktop-folder:nth-child(1) { left: 46px; bottom: 150px; }
 .desktop-folder:nth-child(2) { left: 164px; bottom: 150px; }
 .desktop-folder:nth-child(3) { left: 282px; bottom: 150px; }
-.desktop-folder:active { cursor: grabbing; }
 .desktop-folder:hover, .desktop-folder:focus-visible { color: #f1f0e8; background: rgba(228,255,91,.08); border-color: rgba(228,255,91,.28); transform: translateY(-2px); outline: none; }
 .desktop-folder.is-open { color: #e4ff5b; background: rgba(228,255,91,.1); border-color: rgba(228,255,91,.35); }
 .desktop-folder-icon { display: grid; place-items: center; width: 54px; height: 45px; color: #e4ff5b; }
@@ -149,7 +148,8 @@ button { cursor: pointer; }
 .window.notes { top: 12%; left: 13%; }
 .window.contact { top: 22%; left: 22%; width: min(560px, calc(100vw - 80px)); height: auto; }
 .window.terminal { bottom: 116px; right: 10%; width: min(610px, calc(100vw - 80px)); height: 354px; }
-.window-header { height: 38px; padding: 0 12px; display: flex; align-items: center; gap: 12px; background: rgba(45, 47, 70, .72); border-bottom: 1px solid rgba(214,221,255,.1); }
+.window-header { height: 38px; padding: 0 12px; display: flex; align-items: center; gap: 12px; background: rgba(45, 47, 70, .72); border-bottom: 1px solid rgba(214,221,255,.1); cursor: grab; touch-action: none; }
+.window-header:active { cursor: grabbing; }
 .traffic-lights { display: flex; gap: 6px; }
 .traffic-lights button { width: 11px; height: 11px; padding: 0; border: 0; border-radius: 50%; }
 .traffic-lights .close { background: #f27770; }.traffic-lights .minimize { background: #e3c56a; }.traffic-lights .maximize { background: #94ca79; }

@@ -695,15 +695,6 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    if (!resetDialogOpen) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setResetDialogOpen(false);
-    };
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [resetDialogOpen]);
-
-  useEffect(() => {
     const desktopState: SavedDesktopState = {
       folderPositions,
       itemPositions: dragPositions,
@@ -1280,12 +1271,7 @@ function Home() {
       )}
 
       {resetDialogOpen && (
-        <div
-          className="reset-dialog-backdrop"
-          onPointerDown={(event) => {
-            if (event.target === event.currentTarget) setResetDialogOpen(false);
-          }}
-        >
+        <div className="reset-dialog-backdrop">
           <section
             className="reset-dialog"
             role="alertdialog"

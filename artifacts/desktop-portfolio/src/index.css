@@ -144,7 +144,7 @@ button { cursor: pointer; }
 .icons-small .desktop-app-icon { width: 42px; height: 42px; border-radius: 9px; }
 .icons-small .desktop-app-icon svg { width: 24px; height: 24px; }
 .icons-small .desktop-folder-label { max-width: 66px; font-size: 10px; }
-.desktop-resize-handle { position: absolute; right: 3px; bottom: 3px; width: 17px; height: 17px; cursor: nwse-resize; opacity: .42; background: linear-gradient(135deg, transparent 0 38%, #e4ff5b 39% 46%, transparent 47% 57%, #e4ff5b 58% 65%, transparent 66% 76%, #e4ff5b 77% 84%, transparent 85%); touch-action: none; }
+.desktop-resize-handle { position: absolute; right: 4px; bottom: 4px; width: 14px; height: 14px; cursor: nwse-resize; opacity: .48; background: linear-gradient(135deg, transparent 0 38%, var(--sticky-handle, #8f6900) 39% 46%, transparent 47% 57%, var(--sticky-handle, #8f6900) 58% 65%, transparent 66% 76%, var(--sticky-handle, #8f6900) 77% 84%, transparent 85%); touch-action: none; }
 .desktop-resize-handle:hover, .desktop-resize-handle:focus-visible { opacity: 1; outline: none; }
 .window-resize-handle { position: absolute; z-index: 12; display: block; background: transparent; touch-action: none; }
 .window-resize-n { top: 0; left: 14px; right: 14px; height: 8px; cursor: ns-resize; }
@@ -155,7 +155,7 @@ button { cursor: pointer; }
 .window-resize-sw { bottom: 0; left: 0; width: 14px; height: 14px; cursor: nesw-resize; }
 .window-resize-w { top: 14px; bottom: 14px; left: 0; width: 8px; cursor: ew-resize; }
 .window-resize-nw { top: 0; left: 0; width: 14px; height: 14px; cursor: nwse-resize; }
-.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; height: 138px; color: var(--sticky-text, #1d2430); background: transparent; border: 0; transform: rotate(var(--sticky-rotation, 3deg)); transform-origin: center; cursor: grab; touch-action: none; }
+.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; height: 138px; color: var(--sticky-text, #1d2430); background: transparent; border: 0; border-radius: 9px; transform: rotate(var(--sticky-rotation, 3deg)); transform-origin: center; cursor: grab; touch-action: none; }
 .desktop-note:active { cursor: grabbing; }
 .desktop-note::before { content: ''; position: absolute; top: -9px; left: 50%; z-index: 2; width: 64px; height: 18px; background: rgba(245,232,193,.68); border: 1px solid rgba(122,105,69,.16); box-shadow: 0 1px 2px rgba(54,45,27,.12), inset 0 1px rgba(255,255,255,.42); transform: translateX(-50%) rotate(-3deg); pointer-events: none; }
 .desktop-note-surface { position: relative; width: 100%; height: 100%; min-height: inherit; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 7px; box-sizing: border-box; padding: 15px; overflow: hidden; color: var(--sticky-text, #1d2430); background: var(--sticky-bg, rgba(255,216,77,.9)); border: 1px solid var(--sticky-border, rgba(29,36,48,.25)); border-radius: inherit; box-shadow: 12px 16px 40px rgba(0,0,0,.17); }

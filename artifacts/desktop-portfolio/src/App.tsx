@@ -833,6 +833,8 @@ function Home() {
   const [viewportProfile, setViewportProfile] = useState<ViewportProfile>(readViewportProfile);
   const [coarsePointer, setCoarsePointer] = useState(() => window.matchMedia('(pointer: coarse)').matches);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
+  const contextMenuOpenerRef = useRef<HTMLElement | null>(null);
+  const previousMenuOpenRef = useRef(false);
   const deleteDialogRef = useRef<HTMLElement>(null);
   const resetDialogRef = useRef<HTMLElement>(null);
   const deleteDialogOpenerRef = useRef<HTMLElement | null>(null);
@@ -955,12 +957,50 @@ function Home() {
     }
   };
 
+  const handleContextMenuKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape'].includes(event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.key === 'Escape') {
+      setContextMenu(null);
+      setStickyMenu(null);
+      return;
+    }
+    const menuItems = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+      '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]',
+    )).filter((item) => item.closest('[role="menu"]') === event.currentTarget && !item.hasAttribute('disabled'));
+    if (!menuItems.length) return;
+    const currentIndex = menuItems.indexOf(document.activeElement as HTMLElement);
+    const nextIndex = event.key === 'Home'
+      ? 0
+      : event.key === 'End'
+        ? menuItems.length - 1
+        : event.key === 'ArrowDown'
+          ? (currentIndex + 1 + menuItems.length) % menuItems.length
+          : (currentIndex - 1 + menuItems.length) % menuItems.length;
+    menuItems[nextIndex].focus();
+  };
+
   useEffect(() => {
     const updateClock = () => setClock(new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date()));
     updateClock();
     const timer = window.setInterval(updateClock, 30000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const menuOpen = Boolean(contextMenu || stickyMenu);
+    if (menuOpen) {
+      window.requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>('[data-active-context-menu]')?.querySelector<HTMLElement>(
+          '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]',
+        )?.focus();
+      });
+    } else if (previousMenuOpenRef.current && !resetDialogOpen && !stickyPendingDelete) {
+      restoreDialogFocus(contextMenuOpenerRef.current, desktopAreaRef.current);
+    }
+    previousMenuOpenRef.current = menuOpen;
+  }, [contextMenu, resetDialogOpen, stickyMenu, stickyPendingDelete]);
 
   useEffect(() => {
     const pointerQuery = window.matchMedia('(pointer: coarse)');
@@ -1553,6 +1593,7 @@ function Home() {
     const target = event.target as HTMLElement;
     if (target.closest('.window, .desktop-note, .desktop-folder')) return;
     event.preventDefault();
+    contextMenuOpenerRef.current = event.currentTarget;
     setStickyMenu(null);
     setContextMenu({
       x: Math.max(8, Math.min(event.clientX, window.innerWidth - 430)),
@@ -1761,6 +1802,9 @@ function Home() {
               event.stopPropagation();
               setActiveStickyId(sticky.id);
               setStickyOnTop(true);
+              contextMenuOpenerRef.current = document.activeElement instanceof HTMLElement && event.currentTarget.contains(document.activeElement)
+                ? document.activeElement
+                : event.currentTarget.querySelector<HTMLElement>('textarea, button') ?? event.currentTarget;
               setContextMenu(null);
               setStickyMenu({
                 id: sticky.id,
@@ -1860,8 +1904,10 @@ function Home() {
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onPointerDown={(event) => event.stopPropagation()}
           onContextMenu={(event) => event.preventDefault()}
+          onKeyDown={handleContextMenuKeyDown}
           role="menu"
           aria-label="Desktop options"
+          data-active-context-menu
           data-testid="menu-desktop-context"
         >
           {workspaceMode === 'desktop' && (
@@ -1914,8 +1960,10 @@ function Home() {
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onPointerDown={(event) => event.stopPropagation()}
           onContextMenu={(event) => event.preventDefault()}
+          onKeyDown={handleContextMenuKeyDown}
           role="menu"
           aria-label="Dock options"
+          data-active-context-menu
           data-testid="menu-dock-context"
         >
           <div className="sticky-color-menu-title dock-menu-title">Dock position</div>
@@ -1941,8 +1989,10 @@ function Home() {
           style={{ left: stickyMenu.x, top: stickyMenu.y }}
           onPointerDown={(event) => event.stopPropagation()}
           onContextMenu={(event) => event.preventDefault()}
+          onKeyDown={handleContextMenuKeyDown}
           role="menu"
           aria-label="Sticky options"
+          data-active-context-menu
           data-testid="menu-sticky-colors"
         >
           <div className="sticky-color-menu-title">Sticky color</div>
@@ -2072,6 +2122,7 @@ function Home() {
 
       <nav
         className={`dock dock-${effectiveDockPosition} ${workspaceMode !== 'desktop' ? 'dock-fixed' : ''} ${deviceMode === 'mobile' ? 'dock-mobile-menu' : ''} ${deviceMode === 'tablet' ? 'dock-tablet-menu' : ''}`}
+        tabIndex={-1}
         aria-label={workspaceMode === 'desktop' ? 'Application dock. Drag to a screen edge or right-click to choose its position.' : 'Application menu'}
         title={workspaceMode === 'desktop' ? "Drag to reposition dock" : undefined}
         onPointerDown={(event) => {
@@ -2092,6 +2143,7 @@ function Home() {
           event.preventDefault();
           event.stopPropagation();
           if (workspaceMode !== 'desktop') return;
+          contextMenuOpenerRef.current = event.currentTarget;
           setContextMenu({
             x: Math.max(8, Math.min(event.clientX, window.innerWidth - 220)),
             y: Math.max(8, Math.min(event.clientY, window.innerHeight - 250)),

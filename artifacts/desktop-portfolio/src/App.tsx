@@ -733,6 +733,14 @@ function Home() {
   };
   const minimizeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
   const handleStickyDock = () => {
+    if (!stickies.length) {
+      setStickies([{ ...defaultSticky, text: '' }]);
+      setActiveStickyId('sticky');
+      setStickyVisible(true);
+      setStickyOnTop(true);
+      setMobileOpen(false);
+      return;
+    }
     if (stickyVisible && stickyOnTop) {
       setStickyVisible(false);
       setStickyOnTop(false);
@@ -743,6 +751,10 @@ function Home() {
     setMobileOpen(false);
   };
   const openStickies = () => {
+    if (!stickies.length) {
+      setStickies([{ ...defaultSticky, text: '' }]);
+      setActiveStickyId('sticky');
+    }
     setStickyVisible(true);
     setStickyOnTop(true);
     setMobileOpen(false);
@@ -973,6 +985,26 @@ function Home() {
       document.querySelector<HTMLTextAreaElement>(`[data-testid="sticky-${id}"] .sticky-text`)?.focus();
     });
   };
+  const deleteSticky = (id: StickyItemId) => {
+    const remaining = stickies.filter((sticky) => sticky.id !== id);
+    setStickies(remaining);
+    setActiveStickyId((activeId) => activeId === id ? (remaining[0]?.id ?? 'sticky') : activeId);
+    if (!remaining.length) {
+      setStickyVisible(false);
+      setStickyOnTop(false);
+    }
+    setDragPositions((current) => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
+    setItemSizes((current) => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
+    setStickyMenu(null);
+  };
   const openDesktopContextMenu = (event: ReactMouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
     if (target.closest('.window, .desktop-note, .desktop-folder')) return;
@@ -1101,7 +1133,7 @@ function Home() {
               setStickyMenu({
                 id: sticky.id,
                 x: Math.max(8, Math.min(event.clientX, window.innerWidth - 224)),
-                y: Math.max(8, Math.min(event.clientY, window.innerHeight - 216)),
+                y: Math.max(8, Math.min(event.clientY, window.innerHeight - 268)),
               });
             }}
             aria-label={`Draggable sticky note ${index + 1}`}
@@ -1214,7 +1246,7 @@ function Home() {
           onPointerDown={(event) => event.stopPropagation()}
           onContextMenu={(event) => event.preventDefault()}
           role="menu"
-          aria-label="Sticky background color"
+          aria-label="Sticky options"
           data-testid="menu-sticky-colors"
         >
           <div className="sticky-color-menu-title">Sticky color</div>
@@ -1241,6 +1273,17 @@ function Home() {
           <div className="sticky-color-name">
             {stickyPalette.find((color) => color.id === stickies.find((sticky) => sticky.id === stickyMenu.id)?.color)?.label ?? 'Lemon'}
           </div>
+          <div className="context-menu-separator" />
+          <button
+            type="button"
+            className="context-menu-button context-menu-danger"
+            role="menuitem"
+            onClick={() => deleteSticky(stickyMenu.id)}
+            data-testid="button-delete-sticky"
+          >
+            <X size={14} aria-hidden="true" />
+            <span>Delete this sticky</span>
+          </button>
         </div>
       )}
 

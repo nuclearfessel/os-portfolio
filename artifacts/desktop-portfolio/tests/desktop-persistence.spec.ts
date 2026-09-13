@@ -175,6 +175,51 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   ).__storageFailureAttempts.removeItem)).toBeGreaterThan(0);
 });
 
+test('keeps storage recovery help visible and keyboard-operable on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 480 });
+  await page.addInitScript(() => {
+    Object.defineProperty(Storage.prototype, 'getItem', {
+      configurable: true,
+      value: () => {
+        throw new Error('localStorage getItem blocked');
+      },
+    });
+  });
+  await page.reload();
+
+  const storageNotice = page.getByTestId('notice-storage-unavailable');
+  const storageHelp = page.getByRole('button', { name: 'How to restore saving' });
+  await expect(storageNotice).toHaveCount(1);
+  await expect(storageNotice).toBeVisible();
+  await expect(storageHelp).toBeVisible();
+
+  await storageHelp.focus();
+  await expect(storageHelp).toBeFocused();
+  expect(await storageHelp.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe('none');
+  await page.keyboard.press('Enter');
+
+  const guidance = page.getByText('Leave private browsing, or allow this site to store site data in your browser settings, then reload this page.');
+  const hideHelp = page.getByRole('button', { name: 'Hide help' });
+  await expect(guidance).toBeVisible();
+  await expect(hideHelp).toBeFocused();
+  await expect(hideHelp).toHaveAttribute('aria-expanded', 'true');
+  await expect(storageNotice).toHaveCount(1);
+
+  for (const locator of [storageNotice, hideHelp, guidance]) {
+    const bounds = await locator.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.x).toBeGreaterThanOrEqual(0);
+    expect(bounds!.y).toBeGreaterThanOrEqual(0);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(320);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(480);
+  }
+
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'How to restore saving' })).toHaveAttribute('aria-expanded', 'false');
+  await expect(guidance).toBeHidden();
+  await expect(storageNotice).toHaveCount(1);
+});
+
 test('resets a sticky rotation in both themes and keeps it upright after reload', async ({ page }) => {
   const sticky = page.getByTestId('sticky-sticky');
   const rotationHandle = page.getByTestId('button-rotate-sticky-top-right');

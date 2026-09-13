@@ -454,6 +454,9 @@ button { cursor: pointer; }
 }
 @media (max-width: 760px) {
   .system-bar { padding: 0 13px; }.system-left .system-separator, .system-left .system-location { display: none; }.system-right .system-network { display: none; }
+  .storage-notice { top: 48px; width: calc(100vw - 16px); max-height: calc(100dvh - 56px); padding: 10px 12px; overflow-y: auto; overscroll-behavior: contain; }
+  .storage-notice-summary { align-items: center; }
+  .storage-help-toggle { min-height: 32px; padding: 5px 2px; }
   .desktop-area, .desktop-area.dock-space-top, .desktop-area.dock-space-right, .desktop-area.dock-space-bottom, .desktop-area.dock-space-left { padding: 30px 18px 110px; }.desktop-intro { max-width: 100%; }.desktop-intro h1 { font-size: 43px; }
   .desktop-folders { position: relative; inset: auto; display: flex; flex-wrap: wrap; margin-top: 28px; gap: 5px; pointer-events: auto; }
   .desktop-folder, .desktop-folder:nth-child(1), .desktop-folder:nth-child(2), .desktop-folder:nth-child(3), .desktop-folder:nth-child(4), .desktop-folder:nth-child(5) { position: relative; inset: auto; width: 94px; padding-inline: 4px; }

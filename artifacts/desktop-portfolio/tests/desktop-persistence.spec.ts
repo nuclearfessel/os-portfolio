@@ -20,6 +20,19 @@ async function chooseSubmenuOption(page: Page, submenu: string, option: string) 
   await page.getByRole('menuitemradio', { name: option }).click();
 }
 
+async function openStickyMenu(page: Page, stickyId = 'sticky') {
+  await page.getByTestId(`sticky-${stickyId}`).evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    element.dispatchEvent(new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: bounds.left + bounds.width / 2,
+      clientY: bounds.top + bounds.height / 2,
+    }));
+  });
+  await expect(page.getByRole('menu', { name: 'Sticky options' })).toBeVisible();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await page.evaluate((key) => localStorage.removeItem(key), storageKey);
@@ -148,6 +161,39 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   expect(await page.evaluate(() => (
     window as typeof window & { __storageFailureAttempts: { removeItem: number } }
   ).__storageFailureAttempts.removeItem)).toBeGreaterThan(0);
+});
+
+test('resets a sticky rotation in both themes and keeps it upright after reload', async ({ page }) => {
+  const sticky = page.getByTestId('sticky-sticky');
+  const rotationHandle = page.getByTestId('button-rotate-sticky-top-right');
+  const readRotation = () => sticky.evaluate((element) => element.style.getPropertyValue('--sticky-rotation'));
+
+  await expect.poll(readRotation).toBe('3deg');
+  await openStickyMenu(page);
+  await page.getByTestId('button-reset-sticky-rotation').click();
+  await expect.poll(readRotation).toBe('0deg');
+
+  await rotationHandle.focus();
+  await rotationHandle.press('ArrowRight');
+  await expect.poll(readRotation).toBe('1deg');
+  await rotationHandle.press('Home');
+  await expect.poll(readRotation).toBe('0deg');
+
+  await openDesktopMenu(page);
+  await chooseSubmenuOption(page, 'Theme', 'Dark');
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+
+  await openStickyMenu(page);
+  await expect(page.getByTestId('button-reset-sticky-rotation')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect.poll(async () => page.evaluate((key) => {
+    const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
+    return saved.stickies?.find((item: { id: string }) => item.id === 'sticky')?.rotation;
+  }, storageKey)).toBe(0);
+
+  await page.reload();
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect.poll(readRotation).toBe('0deg');
 });
 
 test('Reset desktop restores every default after confirmation', async ({ page }) => {

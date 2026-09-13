@@ -110,15 +110,22 @@ button { cursor: pointer; }
 .quick-button { border-radius: 7px; padding: 9px 12px; font-size: 12px; }
 .quick-button:hover, .project-link:hover, .contact-button:hover { transform: translateY(-2px); border-color: rgba(228,255,91,.7); color: #e4ff5b; background: rgba(55, 61, 87, .8); }
 .quick-button.primary { color: #111326; background: #e4ff5b; border-color: #e4ff5b; font-weight: 600; }
-.desktop-folders { position: absolute; left: 46px; bottom: 150px; z-index: 3; display: flex; gap: 14px; }
-.desktop-folder { width: 104px; display: grid; justify-items: center; gap: 4px; padding: 10px 7px 8px; color: #aeb2cb; border: 1px solid transparent; border-radius: 8px; background: transparent; text-align: center; cursor: pointer; transition: background .2s, border-color .2s, color .2s, transform .2s; }
+.desktop-folders { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.desktop-folder { position: absolute; width: 104px; display: grid; justify-items: center; gap: 4px; padding: 10px 7px 8px; color: #aeb2cb; border: 1px solid transparent; border-radius: 8px; background: transparent; text-align: center; cursor: grab; pointer-events: auto; transition: background .2s, border-color .2s, color .2s, transform .2s; touch-action: none; }
+.desktop-folder:nth-child(1) { left: 46px; bottom: 150px; }
+.desktop-folder:nth-child(2) { left: 164px; bottom: 150px; }
+.desktop-folder:nth-child(3) { left: 282px; bottom: 150px; }
+.desktop-folder:active { cursor: grabbing; }
 .desktop-folder:hover, .desktop-folder:focus-visible { color: #f1f0e8; background: rgba(228,255,91,.08); border-color: rgba(228,255,91,.28); transform: translateY(-2px); outline: none; }
 .desktop-folder.is-open { color: #e4ff5b; background: rgba(228,255,91,.1); border-color: rgba(228,255,91,.35); }
 .desktop-folder-icon { display: grid; place-items: center; width: 54px; height: 45px; color: #e4ff5b; }
 .desktop-folder-label { font: 12px var(--app-font-mono); letter-spacing: .02em; }
 .desktop-folder-meta { color: #707691; font: 9px var(--app-font-mono); white-space: nowrap; }
 .desktop-folder.is-open .desktop-folder-meta { color: #aab675; }
-.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; padding: 15px; color: #c9c6bb; background: rgba(39, 40, 61, .6); border: 1px solid rgba(211,205,160,.2); transform: rotate(3deg); box-shadow: 12px 16px 40px rgba(0,0,0,.17); }
+.desktop-resize-handle { position: absolute; right: 3px; bottom: 3px; width: 13px; height: 13px; cursor: nwse-resize; opacity: .35; background: linear-gradient(135deg, transparent 0 38%, #e4ff5b 39% 46%, transparent 47% 57%, #e4ff5b 58% 65%, transparent 66% 76%, #e4ff5b 77% 84%, transparent 85%); touch-action: none; }
+.desktop-resize-handle:hover, .desktop-resize-handle:focus-visible { opacity: 1; outline: none; }
+.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; padding: 15px; color: #c9c6bb; background: rgba(39, 40, 61, .6); border: 1px solid rgba(211,205,160,.2); transform: rotate(3deg); box-shadow: 12px 16px 40px rgba(0,0,0,.17); cursor: grab; touch-action: none; }
+.desktop-note:active { cursor: grabbing; }
 .desktop-note::before { content: ''; position: absolute; top: -5px; left: 45%; width: 32px; height: 9px; background: rgba(228,255,91,.4); transform: rotate(-4deg); }
 .note-label { color: #e4ff5b; font: 10px var(--app-font-mono); text-transform: uppercase; }
 .desktop-note p { font-size: 12px; line-height: 1.55; margin: 11px 0 0; }
@@ -179,8 +186,9 @@ button { cursor: pointer; }
 @media (max-width: 760px) {
   .system-bar { padding: 0 13px; }.system-left .system-separator, .system-left .system-location { display: none; }.system-right .system-network { display: none; }
   .desktop-area { padding: 30px 18px 110px; }.desktop-note { display: none; }.desktop-intro { max-width: 100%; }.desktop-intro h1 { font-size: 43px; }
-  .desktop-folders { position: relative; left: auto; bottom: auto; margin-top: 28px; gap: 5px; }
-  .desktop-folder { width: 94px; padding-inline: 4px; }
+  .desktop-folders { position: relative; inset: auto; display: flex; margin-top: 28px; gap: 5px; pointer-events: auto; }
+  .desktop-folder, .desktop-folder:nth-child(1), .desktop-folder:nth-child(2), .desktop-folder:nth-child(3) { position: relative; inset: auto; width: 94px; padding-inline: 4px; }
+  .desktop-resize-handle { display: none; }
   .window, .window.work, .window.about, .window.notes, .window.contact, .window.terminal { position: fixed; inset: 55px 12px 96px; width: auto; height: auto; min-height: 0; }.window.contact { bottom: auto; height: auto; }.window.terminal { inset: auto 12px 91px; height: 360px; }
   .about-grid, .stack-layout { grid-template-columns: 1fr; gap: 10px; }.window-body { padding: 18px; }.window-body h2 { font-size: 29px; }.fact-list { margin-top: 12px; }.project-card { grid-template-columns: 38px 1fr; }.project-link { grid-column: 2; justify-self: start; }.project-tag { display: none; }.dock { bottom: 14px; max-width: calc(100vw - 24px); }.dock-item { width: 41px; height: 41px; }
 }

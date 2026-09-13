@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Apple, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
@@ -199,11 +199,25 @@ function DesktopFolder({
   meta,
   open,
   onToggle,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onResizeStart,
+  onResizeMove,
+  onResizeEnd,
+  style,
 }: {
   label: string;
   meta: string;
   open: boolean;
   onToggle: () => void;
+  onPointerDown: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  onPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  onPointerUp: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>) => void;
+  onResizeMove: (event: ReactPointerEvent<HTMLSpanElement>) => void;
+  onResizeEnd: (event: ReactPointerEvent<HTMLSpanElement>) => void;
+  style?: React.CSSProperties;
 }) {
   const Icon = open ? FolderOpen : Folder;
 
@@ -211,6 +225,11 @@ function DesktopFolder({
     <button
       className={`desktop-folder ${open ? 'is-open' : ''}`}
       onClick={onToggle}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      style={style}
       aria-pressed={open}
       aria-label={`${open ? 'Close' : 'Open'} ${label} folder`}
       data-testid={`button-folder-${label.toLowerCase()}`}
@@ -218,6 +237,16 @@ function DesktopFolder({
       <span className="desktop-folder-icon"><Icon size={29} strokeWidth={1.5} /></span>
       <span className="desktop-folder-label">{label}</span>
       <span className="desktop-folder-meta">{open ? 'open · click to close' : meta}</span>
+      <span
+        className="desktop-resize-handle"
+        onPointerDown={(event) => { event.stopPropagation(); onResizeStart(event); }}
+        onPointerMove={onResizeMove}
+        onPointerUp={onResizeEnd}
+        onPointerCancel={onResizeEnd}
+        role="separator"
+        aria-label={`Resize ${label} folder`}
+        tabIndex={0}
+      />
     </button>
   );
 }
@@ -227,6 +256,11 @@ function Home() {
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dragPositions, setDragPositions] = useState<Partial<Record<WindowId | 'sticky', { left: number; top: number }>>>({});
+  const [itemSizes, setItemSizes] = useState<Partial<Record<WindowId | 'sticky', { width: number; height: number }>>>({});
+  const desktopAreaRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ id: WindowId | 'sticky'; offsetX: number; offsetY: number; moved: boolean } | null>(null);
+  const resizeRef = useRef<{ id: WindowId | 'sticky'; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
 
   useEffect(() => {
     const updateClock = () => setClock(new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date()));
@@ -261,6 +295,91 @@ function Home() {
       openWindow(id);
     }
   };
+  const startDrag = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLElement>) => {
+    if (window.matchMedia('(max-width: 760px)').matches) return;
+    const area = desktopAreaRef.current;
+    if (!area) return;
+    const target = event.currentTarget.getBoundingClientRect();
+    const areaRect = area.getBoundingClientRect();
+    const currentPosition = dragPositions[id] ?? {
+      left: target.left - areaRect.left,
+      top: target.top - areaRect.top,
+    };
+
+    setDragPositions((current) => ({ ...current, [id]: currentPosition }));
+    dragRef.current = {
+      id,
+      offsetX: event.clientX - target.left,
+      offsetY: event.clientY - target.top,
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const moveDrag = (event: ReactPointerEvent<HTMLElement>) => {
+    const drag = dragRef.current;
+    const area = desktopAreaRef.current;
+    if (!drag || !area) return;
+    const areaRect = area.getBoundingClientRect();
+    const target = event.currentTarget.getBoundingClientRect();
+    const maxLeft = Math.max(0, areaRect.width - target.width);
+    const maxTop = Math.max(0, areaRect.height - target.height);
+    const left = Math.max(0, Math.min(maxLeft, event.clientX - areaRect.left - drag.offsetX));
+    const top = Math.max(0, Math.min(maxTop, event.clientY - areaRect.top - drag.offsetY));
+    if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
+      drag.moved = true;
+    }
+    setDragPositions((current) => ({ ...current, [drag.id]: { left, top } }));
+  };
+  const endDrag = (event: ReactPointerEvent<HTMLElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+  const startResize = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLSpanElement>) => {
+    if (window.matchMedia('(max-width: 760px)').matches) return;
+    const target = event.currentTarget.parentElement;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    resizeRef.current = {
+      id,
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: rect.width,
+      startHeight: rect.height,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const moveResize = (event: ReactPointerEvent<HTMLSpanElement>) => {
+    const resize = resizeRef.current;
+    if (!resize) return;
+    const minWidth = resize.id === 'sticky' ? 160 : 78;
+    const minHeight = resize.id === 'sticky' ? 110 : 72;
+    const width = Math.max(minWidth, resize.startWidth + event.clientX - resize.startX);
+    const height = Math.max(minHeight, resize.startHeight + event.clientY - resize.startY);
+    setItemSizes((current) => ({ ...current, [resize.id]: { width, height } }));
+  };
+  const endResize = (event: ReactPointerEvent<HTMLSpanElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    resizeRef.current = null;
+  };
+  const handleFolderClick = (id: WindowId) => {
+    if (dragRef.current?.id === id && dragRef.current.moved) {
+      dragRef.current = null;
+      return;
+    }
+    dragRef.current = null;
+    toggleFolder(id);
+  };
+  const positionStyle = (id: WindowId | 'sticky'): React.CSSProperties | undefined => {
+    const position = dragPositions[id];
+    return position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined;
+  };
+  const itemStyle = (id: WindowId | 'sticky'): React.CSSProperties => ({
+    ...positionStyle(id),
+    ...(itemSizes[id] ? { width: itemSizes[id]?.width, height: itemSizes[id]?.height } : {}),
+  });
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
     onFocus: () => setActiveWindow(id),
@@ -289,7 +408,7 @@ function Home() {
         </div>
       </header>
 
-      <div className="desktop-area">
+      <div className="desktop-area" ref={desktopAreaRef}>
         <div className="desktop-intro">
           <span className="eyebrow">personal workspace / v1.0</span>
           <h1>Thoughtful interfaces.<br /><em>Fast systems.</em></h1>
@@ -301,15 +420,33 @@ function Home() {
         </div>
 
         <div className="desktop-folders" aria-label="Portfolio folders">
-          <DesktopFolder label="about" meta="readme.md" open={windows.about} onToggle={() => toggleFolder('about')} />
-          <DesktopFolder label="work" meta="03 projects" open={windows.work} onToggle={() => toggleFolder('work')} />
-          <DesktopFolder label="notes" meta="toolkit + thoughts" open={windows.notes} onToggle={() => toggleFolder('notes')} />
+          <DesktopFolder label="about" meta="readme.md" open={windows.about} onToggle={() => handleFolderClick('about')} onPointerDown={(event) => startDrag('about', event)} onPointerMove={moveDrag} onPointerUp={endDrag} onResizeStart={(event) => startResize('about', event)} onResizeMove={moveResize} onResizeEnd={endResize} style={itemStyle('about')} />
+          <DesktopFolder label="work" meta="03 projects" open={windows.work} onToggle={() => handleFolderClick('work')} onPointerDown={(event) => startDrag('work', event)} onPointerMove={moveDrag} onPointerUp={endDrag} onResizeStart={(event) => startResize('work', event)} onResizeMove={moveResize} onResizeEnd={endResize} style={itemStyle('work')} />
+          <DesktopFolder label="notes" meta="toolkit + thoughts" open={windows.notes} onToggle={() => handleFolderClick('notes')} onPointerDown={(event) => startDrag('notes', event)} onPointerMove={moveDrag} onPointerUp={endDrag} onResizeStart={(event) => startResize('notes', event)} onResizeMove={moveResize} onResizeEnd={endResize} style={itemStyle('notes')} />
         </div>
 
-        <aside className="desktop-note">
+        <aside
+          className="desktop-note"
+          style={positionStyle('sticky')}
+          onPointerDown={(event) => startDrag('sticky', event)}
+          onPointerMove={moveDrag}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          aria-label="Draggable field note"
+        >
           <span className="note-label">field note / 004</span>
           <p>The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.</p>
           <span style={{ color: '#707691', font: '10px var(--app-font-mono)' }}>— alex, 09:42</span>
+          <span
+            className="desktop-resize-handle"
+            onPointerDown={(event) => { event.stopPropagation(); startResize('sticky', event); }}
+            onPointerMove={moveResize}
+            onPointerUp={endResize}
+            onPointerCancel={endResize}
+            role="separator"
+            aria-label="Resize field note"
+            tabIndex={0}
+          />
         </aside>
 
         {windows.work && <WorkWindow {...windowProps('work')} />}

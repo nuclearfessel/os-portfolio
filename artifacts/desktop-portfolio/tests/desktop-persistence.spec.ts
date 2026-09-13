@@ -710,6 +710,12 @@ test('Reset desktop restores every default after confirmation', async ({ page })
     },
   ]);
   await page.reload();
+  await page.getByTestId('button-close-work').click();
+  await page.getByTestId('button-close-terminal').click();
+  await page.getByTestId('button-dock-about').click();
+  await page.getByTestId('button-dock-contact').click();
+  await page.getByTestId('button-dock-stickies').click();
+  await page.getByTestId('button-dock-stickies').click();
 
   await openDesktopMenu(page);
   await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
@@ -741,6 +747,12 @@ test('Reset desktop restores every default after confirmation', async ({ page })
   await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
   await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
+  await expect(page.getByTestId('window-work')).toBeVisible();
+  await expect(page.getByTestId('window-work')).toHaveClass(/is-active/);
+  await expect(page.getByTestId('window-terminal')).toBeVisible();
+  await expect(page.getByTestId('window-about')).toHaveCount(0);
+  await expect(page.getByTestId('window-contact')).toHaveCount(0);
+  await expect(page.getByTestId('sticky-sticky')).toBeVisible();
   const resetLauncherStyle = await page.getByTestId('button-folder-about').evaluate((element) => ({
     left: element.style.left,
     top: element.style.top,

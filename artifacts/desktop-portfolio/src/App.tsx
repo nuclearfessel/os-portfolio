@@ -1677,6 +1677,12 @@ function Home() {
     setShowDesktopIcons(defaultDesktopState.showDesktopIcons);
     setStickies(defaultDesktopState.stickies);
     setDockPosition(defaultDesktopState.dockPosition);
+    setWindows(initialWindows);
+    setActiveWindow('work');
+    setMaximizedWindows({});
+    setStickyVisible(true);
+    setStickyOnTop(false);
+    setMobileOpen(false);
     setActiveStickyId('sticky');
     setContextMenu(null);
     setStickyMenu(null);

@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-const storageKey = 'alex-os.desktop.v1';
+const storageKey = 'fes-os.desktop.v1';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -175,7 +175,7 @@ test('light theme About, Contact, and case study windows meet WCAG AA contrast',
   const contactRepresentatives = [
     { name: 'Contact heading', locator: page.locator('.window.contact .window-body h2') },
     { name: 'Contact body copy', locator: page.locator('.window.contact .window-body p').first() },
-    { name: 'Contact email button', locator: page.getByTestId('link-email-alex') },
+    { name: 'Contact email button', locator: page.getByTestId('link-email-fes') },
     { name: 'Contact email address', locator: page.locator('.window.contact .window-body p').last() },
   ];
 

@@ -19,7 +19,7 @@ import {
   StickyNoteSurface,
   Surface,
   WindowSurface,
-} from '@workspace/alex-os-design-system/components/ui/alex-os';
+} from '@workspace/fes-os-design-system/components/ui/fes-os';
 
 const queryClient = new QueryClient();
 
@@ -149,7 +149,7 @@ type StickyData = {
   color: StickyColorId;
   text: string;
   rotation: number;
-  author: 'alex' | 'user';
+  author: 'fes' | 'user';
   createdAt: string;
 };
 
@@ -158,7 +158,7 @@ const defaultSticky: StickyData = {
   color: 'lemon',
   text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
   rotation: 3,
-  author: 'alex',
+  author: 'fes',
   createdAt: '09:42',
 };
 
@@ -184,7 +184,7 @@ type SavedDesktopState = {
   dockPosition: DockPosition;
 };
 
-const DESKTOP_STORAGE_KEY = 'alex-os.desktop.v1';
+const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v1';
 let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {
   folderPositions: {},
@@ -241,7 +241,7 @@ function loadDesktopState(): SavedDesktopState {
           ? [{
             ...sticky,
             rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
-            author: sticky.author === 'user' || sticky.author === 'alex' ? sticky.author : sticky.id === 'sticky' ? 'alex' : 'user',
+            author: sticky.author === 'user' ? 'user' as const : sticky.id === 'sticky' ? 'fes' as const : 'user' as const,
             createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt ? sticky.createdAt : sticky.id === 'sticky' ? '09:42' : 'saved',
           }]
           : []
@@ -335,7 +335,7 @@ function WindowFrame({
     >
       <header className="window-header" onDoubleClick={onHeaderDoubleClick} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
         <span className="window-header-spacer" aria-hidden="true" />
-        <div className="window-title"><strong>~/alex/</strong>{title.toLowerCase()}</div>
+        <div className="window-title"><strong>~/fes/</strong>{title.toLowerCase()}</div>
         <div className="traffic-lights" onPointerDown={(event) => event.stopPropagation()}>
           <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} title="Minimize" data-testid={`button-minimize-${id}`}><Minus size={10} strokeWidth={2.6} /><span className="window-control-tooltip">Minimize</span></button>
           <button className="maximize" onClick={onMaximize} aria-label={`${maximized ? 'Restore' : 'Maximize'} ${title}`} title={maximized ? 'Restore' : 'Maximize'} data-testid={`button-maximize-${id}`}><Maximize2 size={9} strokeWidth={2.4} /><span className="window-control-tooltip">{maximized ? 'Restore' : 'Maximize'}</span></button>
@@ -367,9 +367,9 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
         <h2>Interfaces with a pulse.</h2>
         <div className="about-grid">
           <div>
-            <p>I’m Alex Rivera, a product-minded frontend engineer based in Brooklyn. I build the connective tissue between a good idea and a product people want to keep using.</p>
+            <p>I’m Fes Naqvi, a product-minded frontend engineer based in Seattle. I build the connective tissue between a good idea and a product people want to keep using.</p>
             <p>My favorite work lives where interaction design, resilient systems, and a sharp point of view overlap. I care about the small delays, the useful defaults, and the moment software gets out of your way.</p>
-            <div className="signature">alex_rivera<span className="blink">_</span></div>
+            <div className="signature">fes_naqvi<span className="blink">_</span></div>
           </div>
           <div className="fact-list">
             <div className="fact"><label>currently</label><span>Independent / open to select teams</span></div>
@@ -452,8 +452,8 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
         <SectionLabel className="section-kicker">contact.txt</SectionLabel>
         <h2>Have a hard problem?</h2>
         <p>Tell me what you’re making, where it’s stuck, and what “better” would feel like. I’ll get back to you with a considered reply, usually within a couple of days.</p>
-        <a className="contact-button" href="mailto:hello@alexrivera.dev" data-testid="link-email-alex">email alex <Mail size={16} /></a>
-        <p style={{ fontFamily: 'var(--app-font-mono)', fontSize: 10, marginTop: 18 }}>hello@alexrivera.dev</p>
+        <a className="contact-button" href="mailto:hello@fesnaqvi.dev" data-testid="link-email-fes">email Fes <Mail size={16} /></a>
+        <p style={{ fontFamily: 'var(--app-font-mono)', fontSize: 10, marginTop: 18 }}>hello@fesnaqvi.dev</p>
       </div>
     </WindowFrame>
   );
@@ -465,25 +465,25 @@ type ShellEntry = { id: number; cwd: string; command: string; output?: string; e
 const shellFiles: Record<string, ShellNode> = {
   '/': { type: 'directory' },
   '/home': { type: 'directory' },
-  '/home/alex': { type: 'directory' },
-  '/home/alex/README.md': { type: 'file', content: 'Alex Rivera\nProduct-minded frontend engineer building thoughtful interfaces and fast systems.\n\nTry: ls, cd work, cat README.md, open work' },
-  '/home/alex/about': { type: 'directory' },
-  '/home/alex/about/bio.txt': { type: 'file', content: 'Frontend engineer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
-  '/home/alex/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
-  '/home/alex/work': { type: 'directory' },
-  '/home/alex/work/orbit-crm.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
-  '/home/alex/work/orbit-crm-02.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
-  '/home/alex/work/orbit-crm-03.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
-  '/home/alex/work/orbit-crm-04.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
-  '/home/alex/contact': { type: 'directory' },
-  '/home/alex/contact/contact.txt': { type: 'file', content: 'Email: hello@alexrivera.dev\nStatus: Open to thoughtful product partnerships.' },
+  '/home/fes': { type: 'directory' },
+  '/home/fes/README.md': { type: 'file', content: 'Fes Naqvi\nProduct-minded frontend engineer building thoughtful interfaces and fast systems.\n\nTry: ls, cd work, cat README.md, open work' },
+  '/home/fes/about': { type: 'directory' },
+  '/home/fes/about/bio.txt': { type: 'file', content: 'Frontend engineer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
+  '/home/fes/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
+  '/home/fes/work': { type: 'directory' },
+  '/home/fes/work/orbit-crm.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
+  '/home/fes/work/orbit-crm-02.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
+  '/home/fes/work/orbit-crm-03.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
+  '/home/fes/work/orbit-crm-04.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
+  '/home/fes/contact': { type: 'directory' },
+  '/home/fes/contact/contact.txt': { type: 'file', content: 'Email: hello@fesnaqvi.dev\nStatus: Open to thoughtful product partnerships.' },
 };
 
 const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
 const shellExamples = ['ls', 'cd work', 'cat orbit-crm.md', 'open work', 'theme light', 'history', 'clear'];
 
 function normalizeShellPath(cwd: string, target = '~') {
-  const home = '/home/alex';
+  const home = '/home/fes';
   const expanded = target.startsWith('~') ? `${home}${target.slice(1)}` : target;
   const source = expanded.startsWith('/') ? expanded : `${cwd}/${expanded}`;
   const parts: string[] = [];
@@ -496,8 +496,8 @@ function normalizeShellPath(cwd: string, target = '~') {
 }
 
 function displayShellPath(path: string) {
-  if (path === '/home/alex') return '~';
-  if (path.startsWith('/home/alex/')) return `~${path.slice('/home/alex'.length)}`;
+  if (path === '/home/fes') return '~';
+  if (path.startsWith('/home/fes/')) return `~${path.slice('/home/fes'.length)}`;
   return path;
 }
 
@@ -528,8 +528,8 @@ function TerminalWindow({
   const [entries, setEntries] = useState<ShellEntry[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
-  const [cwd, setCwd] = useState('/home/alex');
-  const [previousCwd, setPreviousCwd] = useState('/home/alex');
+  const [cwd, setCwd] = useState('/home/fes');
+  const [previousCwd, setPreviousCwd] = useState('/home/fes');
   const inputRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const nextEntryId = useRef(1);
@@ -670,7 +670,7 @@ function TerminalWindow({
       return;
     }
     if (verb === 'whoami') {
-      appendEntry(raw, 'alex');
+      appendEntry(raw, 'fes');
       return;
     }
     if (verb === 'date') {
@@ -713,12 +713,12 @@ function TerminalWindow({
   return (
     <WindowFrame {...props} id="terminal" title="Terminal">
       <div ref={bodyRef} className="window-body terminal-body" onClick={() => inputRef.current?.focus()}>
-        <div className="terminal-line"><span className="terminal-prompt">alex@studio:~$</span><span className="terminal-command">whoami</span></div>
-        <div className="terminal-output">alex rivera / product-minded frontend engineer{'\n'}building thoughtful interfaces and fast systems.</div>
+        <div className="terminal-line"><span className="terminal-prompt">fes@studio:~$</span><span className="terminal-command">whoami</span></div>
+        <div className="terminal-output">fes naqvi / product-minded frontend engineer{'\n'}building thoughtful interfaces and fast systems.</div>
         <div className="terminal-output terminal-hint">type “help” to explore. use ↑/↓ for history and Tab to complete.</div>
         {entries.map((entry) => (
           <div className="terminal-entry" key={entry.id}>
-            <div className="terminal-line"><span className="terminal-prompt">alex@studio:{displayShellPath(entry.cwd)}$</span><span className="terminal-command">{entry.command}</span></div>
+            <div className="terminal-line"><span className="terminal-prompt">fes@studio:{displayShellPath(entry.cwd)}$</span><span className="terminal-command">{entry.command}</span></div>
             {entry.output && <div className={`terminal-output ${entry.error ? 'terminal-error' : ''}`} onPointerDown={(event) => event.stopPropagation()}>{entry.output}</div>}
             {entry.command.toLowerCase() === 'help' && (
               <div className="terminal-examples" aria-label="Example terminal commands">
@@ -729,7 +729,7 @@ function TerminalWindow({
           </div>
         ))}
         <form className="terminal-form" onSubmit={submitCommand}>
-          <span className="terminal-prompt">alex@studio:{displayShellPath(cwd)}$</span>
+          <span className="terminal-prompt">fes@studio:{displayShellPath(cwd)}$</span>
           <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => { setCommand(event.target.value); setHistoryIndex(null); }} onKeyDown={handleInputKeyDown} aria-label="Terminal command" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" spellCheck={false} />
         </form>
       </div>
@@ -1609,9 +1609,9 @@ function Home() {
       <header className="system-bar">
         <div className="system-left">
           <Apple className="system-logo" size={14} strokeWidth={1.8} aria-hidden="true" />
-          <span className="system-mark">ALEX.OS</span>
+          <span className="system-mark">FES.OS</span>
           <span className="system-separator">/</span>
-          <span className="system-location">Brooklyn, NY</span>
+          <span className="system-location">Seattle, WA</span>
           <span className="system-separator">/</span>
           <span className="system-location">workspace</span>
         </div>
@@ -1664,7 +1664,7 @@ function Home() {
         <div className="desktop-intro">
           <SectionLabel className="eyebrow">personal workspace / v1.0</SectionLabel>
           <h1>Thoughtful interfaces.<br /><em>Fast systems.</em></h1>
-          <p>Alex Rivera is a product-minded frontend engineer making software feel clear, capable, and a little more human.</p>
+          <p>Fes Naqvi is a product-minded frontend engineer making software feel clear, capable, and a little more human.</p>
           <div className="quick-actions">
             <ActionButton className="quick-button primary" variant="primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></ActionButton>
             <ActionButton className="quick-button" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></ActionButton>

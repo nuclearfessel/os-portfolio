@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'alex-os.desktop.v1';
+const storageKey = 'fes-os.desktop.v1';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -588,7 +588,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
       color: 'lemon',
       text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
       rotation: 3,
-      author: 'alex',
+      author: 'fes',
       createdAt: '09:42',
     }],
     dockPosition: 'bottom',

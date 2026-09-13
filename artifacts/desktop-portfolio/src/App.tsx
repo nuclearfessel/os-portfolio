@@ -322,10 +322,12 @@ function Home() {
     const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     const target = draggableTarget?.getBoundingClientRect();
     if (!target) return;
+    const nextLeft = event.clientX - areaRect.left - drag.offsetX;
+    const nextTop = event.clientY - areaRect.top - drag.offsetY;
     const maxLeft = Math.max(0, areaRect.width - target.width);
     const maxTop = Math.max(0, areaRect.height - target.height);
-    const left = Math.max(0, Math.min(maxLeft, event.clientX - areaRect.left - drag.offsetX));
-    const top = Math.max(0, Math.min(maxTop, event.clientY - areaRect.top - drag.offsetY));
+    const left = drag.id === 'sticky' ? Math.max(0, Math.min(maxLeft, nextLeft)) : nextLeft;
+    const top = drag.id === 'sticky' ? Math.max(0, Math.min(maxTop, nextTop)) : nextTop;
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
       drag.moved = true;
     }

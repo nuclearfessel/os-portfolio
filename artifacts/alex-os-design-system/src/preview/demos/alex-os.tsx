@@ -1,9 +1,14 @@
 import {
   ActionButton,
+  ContextMenuSurface,
+  DesktopLauncher,
+  DockItem,
   ProjectCard,
   SectionLabel,
   StatusIndicator,
+  StickyNoteSurface,
   Surface,
+  WindowSurface,
 } from '../../components/ui/alex-os';
 
 export function AlexOsDemo() {
@@ -45,6 +50,26 @@ export function AlexOsDemo() {
         <p className="text-sm text-muted-foreground">
           Use one accent, compact mono labels, and restrained surfaces. Motion should confirm state rather than compete for attention.
         </p>
+      </Surface>
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        <WindowSurface className="overflow-hidden">
+          <div className="border-b border-border px-4 py-3 font-mono text-xs">~/alex/about</div>
+          <div className="space-y-2 p-5"><SectionLabel>component / window frame</SectionLabel><p className="text-sm text-muted-foreground">Owns the window surface while the product supplies movement, resizing, and controls.</p></div>
+        </WindowSurface>
+        <StickyNoteSurface className="rotate-[-1deg] bg-accent p-5 text-accent-foreground">
+          <SectionLabel>field note / 004</SectionLabel>
+          <p className="mt-3 text-sm">Direct manipulation stays in the product; the note surface stays shared.</p>
+        </StickyNoteSurface>
+      </div>
+
+      <Surface className="flex flex-wrap items-end gap-5 p-5">
+        <DesktopLauncher className="rounded-md border border-border p-3 text-sm" open>About launcher</DesktopLauncher>
+        <DockItem className="size-14 bg-secondary" active aria-label="Active Dock item">01</DockItem>
+        <ContextMenuSurface className="w-48 p-2 text-sm">
+          <div className="rounded px-2 py-1.5 hover:bg-secondary">Theme</div>
+          <div className="rounded px-2 py-1.5 hover:bg-secondary">Reset desktop…</div>
+        </ContextMenuSurface>
       </Surface>
     </div>
   );

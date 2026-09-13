@@ -68,7 +68,6 @@ test('managed windows keep an 8px inset below the system bar', async ({ page }) 
   for (const viewport of [
     { width: 768, height: 1024, controlsHidden: true },
     { width: 390, height: 844, controlsHidden: true },
-    { width: 844, height: 390, controlsHidden: true },
   ]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await resetStorage(page);

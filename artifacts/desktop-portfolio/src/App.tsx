@@ -259,8 +259,9 @@ function loadDesktopState(): SavedDesktopState {
 
 const projects = [
   { id: '01', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
-  { id: '02', name: 'Field Notes', desc: 'Offline-first field research software for teams who work beyond the signal.', tag: 'SYSTEMS / 2023', color: '#ff8d79' },
-  { id: '03', name: 'Signal Kit', desc: 'A living component library that turns product intent into shipped interface.', tag: 'DESIGN ENG / 2023', color: '#86d9ee' },
+  { id: '02', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
+  { id: '03', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
+  { id: '04', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
 ];
 
 const initialWindows: WindowState = {
@@ -416,15 +417,11 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
                 <span className="project-index" style={{ color: project.color }}>{project.id}</span>
                 <div className="project-copy"><h3>{project.name}</h3><p>{project.desc}</p></div>
                 <span className="project-tag">{project.tag}</span>
-                {project.id === '01' ? (
-                  <button className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => setCaseStudyOpen(true)}>view case study <ArrowUpRight size={13} /></button>
-                ) : (
-                  <button className="project-link" disabled data-testid={`button-open-project-${project.id}`}>coming soon</button>
-                )}
+                <button className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => setCaseStudyOpen(true)}>view case study <ArrowUpRight size={13} /></button>
               </article>
             ))}
           </div>
-          <p style={{ marginTop: 18, fontFamily: 'var(--app-font-mono)', fontSize: 10 }}>03 projects · 8 shipped systems · 0 design handoffs left behind</p>
+          <p style={{ marginTop: 18, fontFamily: 'var(--app-font-mono)', fontSize: 10 }}>04 case studies · 4 shipped systems · 0 design handoffs left behind</p>
         </div>
       )}
     </WindowFrame>
@@ -458,8 +455,9 @@ const shellFiles: Record<string, ShellNode> = {
   '/home/alex/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
   '/home/alex/work': { type: 'directory' },
   '/home/alex/work/orbit-crm.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
-  '/home/alex/work/field-notes.md': { type: 'file', content: 'Field Notes\nOffline-first field research software for teams who work beyond the signal.\nSystems · 2023' },
-  '/home/alex/work/signal-kit.md': { type: 'file', content: 'Signal Kit\nA living component library that turns product intent into shipped interface.\nDesign engineering · 2023' },
+  '/home/alex/work/orbit-crm-02.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
+  '/home/alex/work/orbit-crm-03.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
+  '/home/alex/work/orbit-crm-04.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
   '/home/alex/contact': { type: 'directory' },
   '/home/alex/contact/contact.txt': { type: 'file', content: 'Email: hello@alexrivera.dev\nStatus: Open to thoughtful product partnerships.' },
 };

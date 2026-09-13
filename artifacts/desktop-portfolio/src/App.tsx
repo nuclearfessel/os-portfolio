@@ -918,6 +918,23 @@ function Home() {
   const rotateRef = useRef<{ id: StickyItemId; centerX: number; centerY: number; pointerAngle: number; rotation: number } | null>(null);
   const lastDesktopDragRef = useRef<{ id: DesktopLauncherDragId; endedAt: number } | null>(null);
 
+  useEffect(() => {
+    const clearPointerOperations = () => {
+      dragRef.current = null;
+      resizeRef.current = null;
+      rotateRef.current = null;
+      dockDragRef.current = null;
+    };
+    window.addEventListener('pointerup', clearPointerOperations);
+    window.addEventListener('pointercancel', clearPointerOperations);
+    window.addEventListener('mouseup', clearPointerOperations);
+    return () => {
+      window.removeEventListener('pointerup', clearPointerOperations);
+      window.removeEventListener('pointercancel', clearPointerOperations);
+      window.removeEventListener('mouseup', clearPointerOperations);
+    };
+  }, []);
+
   const restoreDialogFocus = (opener: HTMLElement | null, fallback?: HTMLElement | null) => {
     window.requestAnimationFrame(() => {
       const target = opener?.isConnected ? opener : fallback;
@@ -1288,6 +1305,13 @@ function Home() {
     const drag = dragRef.current;
     const area = desktopAreaRef.current;
     if (!drag || !area) return;
+    if (drag.id.startsWith('desktop-') && (event.buttons & 1) !== 1) {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+      dragRef.current = null;
+      return;
+    }
     const areaRect = area.getBoundingClientRect();
     const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     const target = draggableTarget?.getBoundingClientRect();

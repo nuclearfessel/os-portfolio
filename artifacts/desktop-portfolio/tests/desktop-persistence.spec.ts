@@ -169,6 +169,23 @@ test('snaps desktop launchers to a 4px grid', async ({ page }) => {
   expect(position.top % 4).toBeCloseTo(0, 5);
 });
 
+test('keeps long desktop icon tooltips evenly padded without overflow', async ({ page }) => {
+  const terminalTooltip = page.getByTestId('button-folder-terminal').locator('.desktop-icon-tooltip');
+  const metrics = await terminalTooltip.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return {
+      paddingLeft: style.paddingLeft,
+      paddingRight: style.paddingRight,
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+    };
+  });
+
+  expect(metrics.paddingLeft).toBe('12px');
+  expect(metrics.paddingRight).toBe('12px');
+  expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth);
+});
+
 test('reopens a closed window at the same position and size', async ({ page }) => {
   await page.getByTestId('button-dock-contact').click();
   const contactWindow = page.getByTestId('window-contact');

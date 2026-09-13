@@ -169,6 +169,51 @@ test('snaps desktop launchers to a 4px grid', async ({ page }) => {
   expect(position.top % 4).toBeCloseTo(0, 5);
 });
 
+test('reopens a closed window at the same position and size', async ({ page }) => {
+  await page.getByTestId('button-dock-contact').click();
+  const contactWindow = page.getByTestId('window-contact');
+  await expect(contactWindow).toBeVisible();
+
+  const initialBox = await contactWindow.boundingBox();
+  expect(initialBox).not.toBeNull();
+  const contactHeader = contactWindow.locator('.window-header');
+  await contactHeader.hover();
+  await page.mouse.down();
+  await page.mouse.move(initialBox!.x + 110, initialBox!.y + 85, { steps: 6 });
+  await page.mouse.up();
+
+  const movedBox = await contactWindow.boundingBox();
+  expect(movedBox).not.toBeNull();
+  const resizeHandle = contactWindow.locator('.window-resize-se');
+  const resizeHandleBox = await resizeHandle.boundingBox();
+  expect(resizeHandleBox).not.toBeNull();
+  await page.mouse.move(
+    resizeHandleBox!.x + resizeHandleBox!.width / 2,
+    resizeHandleBox!.y + resizeHandleBox!.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    movedBox!.x + movedBox!.width + 72,
+    movedBox!.y + movedBox!.height + 48,
+    { steps: 6 },
+  );
+  await page.mouse.up();
+
+  const beforeClose = await contactWindow.boundingBox();
+  expect(beforeClose).not.toBeNull();
+  await page.getByTestId('button-close-contact').click();
+  await expect(contactWindow).toHaveCount(0);
+  await page.getByTestId('button-dock-contact').click();
+  await expect(contactWindow).toBeVisible();
+
+  const afterReopen = await contactWindow.boundingBox();
+  expect(afterReopen).not.toBeNull();
+  expect(afterReopen!.x).toBeCloseTo(beforeClose!.x, 0);
+  expect(afterReopen!.y).toBeCloseTo(beforeClose!.y, 0);
+  expect(afterReopen!.width).toBeCloseTo(beforeClose!.width, 0);
+  expect(afterReopen!.height).toBeCloseTo(beforeClose!.height, 0);
+});
+
 test('falls back to safe defaults when saved data is corrupted', async ({ page }) => {
   await page.evaluate(([key, value]) => localStorage.setItem(key, value), [storageKey, '{not-json']);
   await page.reload();

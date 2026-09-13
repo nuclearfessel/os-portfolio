@@ -1149,23 +1149,34 @@ function Home() {
     setStickyOnTop(false);
     setMobileOpen(false);
   };
-  const closeWindow = (id: WindowId) => {
+  const rememberWindowGeometry = (id: WindowId) => {
     const area = desktopAreaRef.current;
     const windowElement = area?.querySelector<HTMLElement>(`[data-testid="window-${id}"]`);
     if (area && windowElement && workspaceMode === 'desktop') {
-      const areaRect = area.getBoundingClientRect();
-      const windowRect = windowElement.getBoundingClientRect();
       setDragPositions((current) => ({
         ...current,
         [id]: {
-          left: Math.round((areaRect.width - windowRect.width) / 2),
-          top: Math.round((areaRect.height - windowRect.height) / 2),
+          left: windowElement.offsetLeft,
+          top: windowElement.offsetTop,
+        },
+      }));
+      setItemSizes((current) => ({
+        ...current,
+        [id]: {
+          width: windowElement.offsetWidth,
+          height: windowElement.offsetHeight,
         },
       }));
     }
+  };
+  const closeWindow = (id: WindowId) => {
+    rememberWindowGeometry(id);
     setWindows((current) => ({ ...current, [id]: false }));
   };
-  const minimizeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
+  const minimizeWindow = (id: WindowId) => {
+    rememberWindowGeometry(id);
+    setWindows((current) => ({ ...current, [id]: false }));
+  };
   const handleStickyDock = () => {
     if (!stickies.length) {
       setStickies([createUserSticky('sticky')]);

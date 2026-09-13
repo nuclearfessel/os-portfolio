@@ -562,10 +562,18 @@ test('deletes only user-created stickies after confirmation and clears their sav
 
   await deleteButton.click();
   const deleteDialog = page.getByRole('alertdialog', { name: 'Delete this sticky?' });
+  const cancelDelete = deleteDialog.getByRole('button', { name: 'Cancel' });
+  const confirmDelete = page.getByTestId('button-confirm-delete-sticky');
   await expect(deleteDialog).toBeVisible();
-  await deleteDialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(cancelDelete).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(confirmDelete).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(cancelDelete).toBeFocused();
+  await cancelDelete.click();
   await expect(createdSticky).toBeVisible();
   await expect(createdText).toHaveValue('Delete this saved note.');
+  await expect(deleteButton).toBeFocused();
 
   await deleteButton.focus();
   await page.keyboard.press('Enter');
@@ -573,15 +581,16 @@ test('deletes only user-created stickies after confirmation and clears their sav
   await page.keyboard.press('Escape');
   await expect(deleteDialog).toHaveCount(0);
   await expect(createdSticky).toBeVisible();
+  await expect(deleteButton).toBeFocused();
 
   await openStickyMenu(page, 'sticky-1');
   await page.getByRole('menuitem', { name: 'Delete this sticky…' }).click();
   await expect(deleteDialog).toBeVisible();
-  const confirmDelete = page.getByTestId('button-confirm-delete-sticky');
   await confirmDelete.focus();
   await page.keyboard.press('Enter');
 
   await expect(createdSticky).toHaveCount(0);
+  await expect(page.getByTestId('button-add-sticky')).toBeFocused();
   await expect.poll(async () => page.evaluate((key) => {
     const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
     return {
@@ -648,8 +657,30 @@ test('Reset desktop restores every default after confirmation', async ({ page })
 
   await openDesktopMenu(page);
   await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
-  await expect(page.getByRole('alertdialog', { name: 'Reset desktop?' })).toBeVisible();
+  const resetDialog = page.getByRole('alertdialog', { name: 'Reset desktop?' });
+  const cancelReset = page.getByTestId('button-cancel-reset');
+  const confirmReset = page.getByTestId('button-confirm-reset');
+  const desktop = page.locator('.desktop-area');
+  await expect(resetDialog).toBeVisible();
+  await expect(cancelReset).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(confirmReset).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(cancelReset).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(resetDialog).toHaveCount(0);
+  await expect(desktop).toBeFocused();
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
+  await cancelReset.click();
+  await expect(resetDialog).toHaveCount(0);
+  await expect(desktop).toBeFocused();
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
   await page.getByTestId('button-confirm-reset').click();
+  await expect(desktop).toBeFocused();
 
   await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
   await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);

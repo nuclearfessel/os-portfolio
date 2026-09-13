@@ -2,3 +2,4 @@
 - [Playwright validation environment](playwright-validation-environment.md) — desktop E2E dependencies and browsers may need restoring from the workspace cache.
 - [Responsive desktop geometry](responsive-desktop-geometry.md) — responsive reflow is temporary; preserve and restore the user’s desktop layout.
 - [Fes OS component ownership](fes-os-component-ownership.md) — shared visual primitives belong to the design-system package; product behavior stays in the portfolio.
+- [Firefox sticky initialization](firefox-sticky-initialization.md) — never persist first-render sticky geometry measured before CSS is ready.

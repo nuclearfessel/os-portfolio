@@ -359,7 +359,6 @@ button { cursor: pointer; }
 .mobile-menu { display: none; }
 .mobile-shortcut-menu { position: fixed; z-index: 50; inset: 50px 14px auto; padding: 16px; color: #edf0f8; background: #1d2038; border: 1px solid rgba(228,255,91,.35); border-radius: 8px; box-shadow: 0 18px 50px rgba(0,0,0,.4); }
 .shortcut-number { margin-right: 8px; color: #e4ff5b; font-family: var(--app-font-mono); }
-.desktop-hint { position: fixed; bottom: 8px; left: 18px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; color: #686e88; font: 10px var(--app-font-mono); }
 .storage-notice { position: fixed; z-index: 150; top: 50px; left: 50%; width: min(540px, calc(100vw - 24px)); min-width: 0; transform: translateX(-50%); padding: 8px 12px; overflow-wrap: anywhere; color: #f3f5fb; background: rgba(35, 39, 63, .96); border: 1px solid rgba(228, 255, 91, .34); border-radius: 7px; box-shadow: 0 10px 30px rgba(0, 0, 0, .3); font: 11px var(--app-font-sans); line-height: 1.35; text-align: center; }
 .storage-notice-summary { display: flex; align-items: baseline; justify-content: center; gap: 7px; flex-wrap: wrap; }
 .storage-notice-summary > * { min-width: 0; max-width: 100%; }
@@ -449,7 +448,6 @@ button { cursor: pointer; }
 .theme-light .dock-item span { color: #f4f8f6; background: #24424a; border-color: #49666d; }
 .theme-light .mobile-shortcut-menu { color: #1f3440; background: rgba(247,250,248,.98); border-color: rgba(26,83,91,.28); box-shadow: 0 18px 50px rgba(48,68,71,.24); }
 .theme-light .shortcut-number { color: #0b665d; }
-.theme-light .desktop-hint { color: #4f6070; }
 .theme-light .storage-notice { color: #173847; background: rgba(247,250,248,.97); border-color: rgba(11,102,93,.32); box-shadow: 0 10px 30px rgba(48,68,71,.22); }
 .theme-light .storage-notice strong { color: #0b665d; }
 .theme-light .storage-notice span { color: #435965; }
@@ -515,7 +513,7 @@ button { cursor: pointer; }
 .workspace-managed .desktop-folders { position: relative; inset: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); gap: 8px; margin-top: 24px; pointer-events: auto; }
 .workspace-managed .desktop-folder,
 .workspace-managed .desktop-folder:nth-child(n) { position: relative; inset: auto; width: 100%; min-height: 82px; cursor: pointer; }
-.workspace-managed .desktop-icon-tooltip, .workspace-managed .desktop-hint, .workspace-managed .window-control-tooltip { display: none; }
+.workspace-managed .desktop-icon-tooltip, .workspace-managed .window-control-tooltip { display: none; }
 .workspace-managed .desktop-app-icon { width: 48px; height: 48px; }
 .workspace-managed .window,
 .workspace-managed .window.work,

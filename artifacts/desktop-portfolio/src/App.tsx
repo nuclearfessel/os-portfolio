@@ -221,21 +221,36 @@ function TerminalWindow({
 }
 
 function DesktopFolder({
+  id,
   label,
   open,
   onToggle,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  style,
 }: {
+  id: WindowId;
   label: string;
   open: boolean;
   onToggle: () => void;
+  onPointerDown: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  onPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  onPointerUp: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  style?: React.CSSProperties;
 }) {
   return (
     <button
       className={`desktop-folder ${open ? 'is-open' : ''}`}
       onClick={onToggle}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      style={style}
       aria-pressed={open}
-      aria-label={`${open ? 'Close' : 'Open'} ${label} folder`}
-      data-testid={`button-folder-${label.toLowerCase()}`}
+      aria-label={`${open ? 'Focus' : 'Open'} ${label} folder`}
+      data-testid={`button-folder-${id}`}
     >
       <span className="desktop-folder-icon" aria-hidden="true" />
       <span className="desktop-folder-label">{label}</span>
@@ -250,9 +265,11 @@ function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dragPositions, setDragPositions] = useState<Partial<Record<WindowId | 'sticky', { left: number; top: number }>>>({});
   const [itemSizes, setItemSizes] = useState<Partial<Record<WindowId | 'sticky', { width: number; height: number }>>>({});
+  const [folderPositions, setFolderPositions] = useState<Partial<Record<WindowId, { left: number; top: number }>>>({});
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: WindowId | 'sticky'; offsetX: number; offsetY: number; moved: boolean } | null>(null);
   const resizeRef = useRef<{ id: WindowId | 'sticky'; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
+  const folderDragRef = useRef<{ id: WindowId; offsetX: number; offsetY: number; moved: boolean; startLeft: number; startTop: number } | null>(null);
 
   useEffect(() => {
     const updateClock = () => setClock(new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date()));
@@ -280,13 +297,6 @@ function Home() {
   };
   const closeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
   const minimizeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
-  const toggleFolder = (id: WindowId) => {
-    if (windows[id]) {
-      closeWindow(id);
-    } else {
-      openWindow(id);
-    }
-  };
   const startDrag = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
     const area = desktopAreaRef.current;
@@ -363,7 +373,49 @@ function Home() {
     }
     resizeRef.current = null;
   };
+  const startFolderDrag = (id: WindowId, event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (window.matchMedia('(max-width: 760px)').matches) return;
+    const area = desktopAreaRef.current;
+    if (!area) return;
+    const areaRect = area.getBoundingClientRect();
+    const target = event.currentTarget.getBoundingClientRect();
+    const left = target.left - areaRect.left;
+    const top = target.top - areaRect.top;
+    folderDragRef.current = {
+      id,
+      offsetX: event.clientX - target.left,
+      offsetY: event.clientY - target.top,
+      moved: false,
+      startLeft: left,
+      startTop: top,
+    };
+    setFolderPositions((current) => ({ ...current, [id]: current[id] ?? { left, top } }));
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const moveFolderDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = folderDragRef.current;
+    const area = desktopAreaRef.current;
+    if (!drag || !area) return;
+    const areaRect = area.getBoundingClientRect();
+    const target = event.currentTarget.getBoundingClientRect();
+    const left = Math.max(0, Math.min(areaRect.width - target.width, event.clientX - areaRect.left - drag.offsetX));
+    const top = Math.max(0, Math.min(areaRect.height - target.height, event.clientY - areaRect.top - drag.offsetY));
+    if (Math.abs(left - drag.startLeft) > 3 || Math.abs(top - drag.startTop) > 3) {
+      drag.moved = true;
+    }
+    setFolderPositions((current) => ({ ...current, [drag.id]: { left, top } }));
+  };
+  const endFolderDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
   const handleFolderClick = (id: WindowId) => {
+    if (folderDragRef.current?.id === id && folderDragRef.current.moved) {
+      folderDragRef.current = null;
+      return;
+    }
+    folderDragRef.current = null;
     if (windows[id]) {
       setActiveWindow(id);
       return;
@@ -428,9 +480,9 @@ function Home() {
         </div>
 
         <div className="desktop-folders" aria-label="Portfolio folders">
-          <DesktopFolder label="about" open={windows.about} onToggle={() => handleFolderClick('about')} />
-          <DesktopFolder label="work" open={windows.work} onToggle={() => handleFolderClick('work')} />
-          <DesktopFolder label="notes" open={windows.notes} onToggle={() => handleFolderClick('notes')} />
+          <DesktopFolder id="about" label="about" open={windows.about} onToggle={() => handleFolderClick('about')} onPointerDown={(event) => startFolderDrag('about', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.about ? { left: folderPositions.about.left, top: folderPositions.about.top, bottom: 'auto' } : undefined} />
+          <DesktopFolder id="work" label="work" open={windows.work} onToggle={() => handleFolderClick('work')} onPointerDown={(event) => startFolderDrag('work', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.work ? { left: folderPositions.work.left, top: folderPositions.work.top, bottom: 'auto' } : undefined} />
+          <DesktopFolder id="notes" label="notes" open={windows.notes} onToggle={() => handleFolderClick('notes')} onPointerDown={(event) => startFolderDrag('notes', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.notes ? { left: folderPositions.notes.left, top: folderPositions.notes.top, bottom: 'auto' } : undefined} />
         </div>
 
         <aside

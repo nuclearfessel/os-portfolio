@@ -1664,7 +1664,7 @@ function Home() {
         <div className="desktop-intro">
           <SectionLabel className="eyebrow">personal workspace / v1.0</SectionLabel>
           <h1>Thoughtful interfaces.<br /><em>Fast systems.</em></h1>
-          <p>Fes Naqvi is a product-minded frontend engineer making software feel clear, capable, and a little more human.</p>
+          <p>Fes Naqvi is a product-minded designer making things feel clear, capable, and a little more human.</p>
           <div className="quick-actions">
             <ActionButton className="quick-button primary" variant="primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></ActionButton>
             <ActionButton className="quick-button" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></ActionButton>

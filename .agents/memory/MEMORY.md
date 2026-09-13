@@ -1,0 +1,1 @@
+- [Desktop drag state isolation](desktop-drag-state-isolation.md) — launchers and their corresponding windows must use separate position identities.

@@ -43,6 +43,7 @@ export function GuidelinesDemo() {
           <li>Desktop preserves user-arranged window, launcher, sticky, and Dock geometry.</li>
           <li>Tablet and mobile use temporary managed geometry without overwriting desktop state.</li>
           <li>Mobile navigation stays fixed, labeled, and reachable at the bottom edge.</li>
+           <li>Desktop Dock labels use tooltip surfaces; mobile and tablet Dock labels are plain inline text with no tooltip shadow, border, background, or padding.</li>
           <li>Every surface and interaction must remain legible in both light and dark themes.</li>
         </ul>
       </Surface>

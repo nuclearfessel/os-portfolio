@@ -6,13 +6,14 @@ import {
   Moon, Plus, Sun, Terminal, CircleUser as UserRound, Wifi, X,
 } from '@keyline-icons/react';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@workspace/fes-os-design-system/components/ui/toaster';
 import { TooltipProvider } from '@workspace/fes-os-design-system/components/ui/tooltip';
 import {
   ActionButton,
   ContextMenuSurface,
   DesktopLauncher,
   DockItem,
+  DockItemLabel,
   ProjectCard,
   SectionLabel,
   StatusIndicator,
@@ -2222,9 +2223,9 @@ function Home() {
           });
         }}
       >
-        <DockItem className="dock-item" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><span>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</span></DockItem>
-        <DockItem className="dock-item" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About{workspaceMode === 'desktop' ? ' · 1' : ''}</span></DockItem>
-        <DockItem className="dock-item" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</span></DockItem>
+        <DockItem className="dock-item" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
         {workspaceMode !== 'desktop' && (
             <DockItem
               className={`dock-item dock-mode-toggle mode-${theme}`}
@@ -2241,9 +2242,9 @@ function Home() {
         )}
         {workspaceMode === 'desktop' && (
           <>
-            <DockItem className="dock-item" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></DockItem>
-            <DockItem className="dock-item" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><span>Stickies</span></DockItem>
-            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><span>Shortcuts</span></DockItem>
+            <DockItem className="dock-item" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · `</DockItemLabel></DockItem>
+            <DockItem className="dock-item" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies</DockItemLabel></DockItem>
+            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts</DockItemLabel></DockItem>
           </>
         )}
       </nav>

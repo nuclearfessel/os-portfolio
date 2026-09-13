@@ -981,6 +981,14 @@ function Home() {
     rotateRef.current = null;
   };
   const rotateWithKeyboard = (id: StickyItemId, event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'Home' || event.key === '0') {
+      event.preventDefault();
+      event.stopPropagation();
+      setActiveStickyId(id);
+      setStickyOnTop(true);
+      setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation: 0 } : sticky));
+      return;
+    }
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
     event.preventDefault();
     event.stopPropagation();
@@ -1075,6 +1083,12 @@ function Home() {
       delete next[id];
       return next;
     });
+    setStickyMenu(null);
+  };
+  const resetStickyRotation = (id: StickyItemId) => {
+    setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation: 0 } : sticky));
+    setActiveStickyId(id);
+    setStickyOnTop(true);
     setStickyMenu(null);
   };
   const openDesktopContextMenu = (event: ReactMouseEvent<HTMLDivElement>) => {
@@ -1234,7 +1248,7 @@ function Home() {
               setStickyMenu({
                 id: sticky.id,
                 x: Math.max(8, Math.min(event.clientX, window.innerWidth - 224)),
-                y: Math.max(8, Math.min(event.clientY, window.innerHeight - 268)),
+                y: Math.max(8, Math.min(event.clientY, window.innerHeight - 304)),
               });
             }}
             aria-label={`Draggable sticky note ${index + 1}`}
@@ -1266,7 +1280,8 @@ function Home() {
                 type="button"
                 key={corner}
                 className={`sticky-rotate-handle sticky-rotate-${corner}`}
-                aria-label={`Rotate sticky note ${index + 1} from ${corner.replace('-', ' ')}, currently ${Math.round(sticky.rotation)} degrees`}
+                aria-label={`Rotate sticky note ${index + 1} from ${corner.replace('-', ' ')}, currently ${Math.round(sticky.rotation)} degrees. Press Home or 0 to reset`}
+                aria-keyshortcuts="Home 0"
                 data-testid={`button-rotate-${sticky.id}-${corner}`}
                 tabIndex={cornerIndex === 1 ? 0 : -1}
                 onPointerDown={(event) => startRotate(sticky.id, sticky.rotation, event)}
@@ -1401,6 +1416,17 @@ function Home() {
           <div className="sticky-color-name">
             {stickyPalette.find((color) => color.id === stickies.find((sticky) => sticky.id === stickyMenu.id)?.color)?.label ?? 'Lemon'}
           </div>
+          <div className="context-menu-separator" />
+          <button
+            type="button"
+            className="context-menu-button"
+            role="menuitem"
+            onClick={() => resetStickyRotation(stickyMenu.id)}
+            data-testid="button-reset-sticky-rotation"
+          >
+            <span className="context-check" aria-hidden="true">0°</span>
+            <span>Reset rotation</span>
+          </button>
           <div className="context-menu-separator" />
           <button
             type="button"

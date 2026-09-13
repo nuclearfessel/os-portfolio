@@ -135,7 +135,16 @@ button { cursor: pointer; }
 .icons-small .desktop-folder-label { max-width: 66px; font-size: 10px; }
 .desktop-resize-handle { position: absolute; right: 3px; bottom: 3px; width: 17px; height: 17px; cursor: nwse-resize; opacity: .42; background: linear-gradient(135deg, transparent 0 38%, #e4ff5b 39% 46%, transparent 47% 57%, #e4ff5b 58% 65%, transparent 66% 76%, #e4ff5b 77% 84%, transparent 85%); touch-action: none; }
 .desktop-resize-handle:hover, .desktop-resize-handle:focus-visible { opacity: 1; outline: none; }
-.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; height: 138px; color: var(--sticky-text, #1d2430); background: transparent; border: 0; transform: rotate(3deg); cursor: grab; touch-action: none; }
+.window-resize-handle { position: absolute; z-index: 12; display: block; background: transparent; touch-action: none; }
+.window-resize-n { top: 0; left: 14px; right: 14px; height: 8px; cursor: ns-resize; }
+.window-resize-ne { top: 0; right: 0; width: 14px; height: 14px; cursor: nesw-resize; }
+.window-resize-e { top: 14px; right: 0; bottom: 14px; width: 8px; cursor: ew-resize; }
+.window-resize-se { right: 0; bottom: 0; width: 14px; height: 14px; cursor: nwse-resize; }
+.window-resize-s { right: 14px; bottom: 0; left: 14px; height: 8px; cursor: ns-resize; }
+.window-resize-sw { bottom: 0; left: 0; width: 14px; height: 14px; cursor: nesw-resize; }
+.window-resize-w { top: 14px; bottom: 14px; left: 0; width: 8px; cursor: ew-resize; }
+.window-resize-nw { top: 0; left: 0; width: 14px; height: 14px; cursor: nwse-resize; }
+.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; height: 138px; color: var(--sticky-text, #1d2430); background: transparent; border: 0; transform: rotate(var(--sticky-rotation, 3deg)); transform-origin: center; cursor: grab; touch-action: none; }
 .desktop-note:active { cursor: grabbing; }
 .desktop-note::before { content: ''; position: absolute; top: -9px; left: 50%; z-index: 2; width: 64px; height: 18px; background: rgba(245,232,193,.68); border: 1px solid rgba(122,105,69,.16); box-shadow: 0 1px 2px rgba(54,45,27,.12), inset 0 1px rgba(255,255,255,.42); transform: translateX(-50%) rotate(-3deg); pointer-events: none; }
 .desktop-note-surface { position: relative; width: 100%; height: 100%; min-height: inherit; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 7px; box-sizing: border-box; padding: 15px; overflow: hidden; color: var(--sticky-text, #1d2430); background: var(--sticky-bg, rgba(255,216,77,.9)); border: 1px solid var(--sticky-border, rgba(29,36,48,.25)); border-radius: inherit; box-shadow: 12px 16px 40px rgba(0,0,0,.17); }
@@ -143,6 +152,13 @@ button { cursor: pointer; }
 .sticky-add-button { position: absolute; top: 4px; right: 4px; z-index: 2; width: 32px; height: 32px; display: grid; place-items: center; padding: 0; color: var(--sticky-text, #1d2430); background: transparent; border: 0; border-radius: 6px; cursor: pointer; }
 .sticky-add-button:hover, .sticky-add-button:active { color: var(--sticky-text, #1d2430); background: transparent; transform: none; }
 .sticky-add-button:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+.sticky-rotate-handle { position: absolute; z-index: 3; width: 32px; height: 32px; padding: 0; color: transparent; background: transparent; border: 0; border-radius: 0; cursor: grab; touch-action: none; }
+.sticky-rotate-top-left { top: -24px; left: -24px; }
+.sticky-rotate-top-right { top: -24px; right: -24px; }
+.sticky-rotate-bottom-left { bottom: -24px; left: -24px; }
+.sticky-rotate-handle:hover { color: transparent; background: transparent; transform: none; }
+.sticky-rotate-handle:active { cursor: grabbing; }
+.sticky-rotate-handle:focus-visible { outline: 2px solid var(--sticky-text, #1d2430); outline-offset: -3px; }
 .sticky-text { display: block; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0 28px 0 0; box-sizing: border-box; resize: none; overflow: hidden; scrollbar-width: none; color: var(--sticky-text, #1d2430); background: transparent; border: 0; outline: 0; font: 12px/1.55 var(--app-font-sans); }
 .sticky-text::-webkit-scrollbar { display: none; }
 .sticky-text::placeholder { color: var(--sticky-muted, #37414d); opacity: .85; }
@@ -170,7 +186,7 @@ button { cursor: pointer; }
 .window-header { height: 44px; padding: 0 6px 0 12px; display: grid; grid-template-columns: 102px minmax(0, 1fr) 102px; align-items: center; gap: 8px; background: rgba(39, 42, 61, .94); border-bottom: 1px solid rgba(214,221,255,.1); cursor: grab; touch-action: none; }
 .window-header:active { cursor: grabbing; }
 .window-header-spacer { width: 102px; }
-.traffic-lights { justify-self: end; display: flex; align-items: center; gap: 2px; }
+.traffic-lights { position: relative; z-index: 15; justify-self: end; display: flex; align-items: center; gap: 2px; }
 .traffic-lights button { width: 32px; height: 32px; display: grid; place-items: center; align-content: center; justify-content: center; flex: 0 0 32px; padding: 0; color: #b9bfd0; background: transparent; border: 0; border-radius: 6px; line-height: 0; transition: color .1s ease, background .1s ease; }
 .traffic-lights button svg { width: 15px; height: 15px; opacity: 1; }
 .traffic-lights button:hover, .traffic-lights button:focus-visible { color: #f4f5f8; background: rgba(255,255,255,.11); outline: none; }

@@ -42,12 +42,13 @@ const DOCK_SAFE_INSET = 70;
 function readViewportProfile(): ViewportProfile {
   const width = window.innerWidth;
   const height = window.innerHeight;
-  const orientation = height >= width ? 'portrait' : 'landscape';
-  const deviceMode: DeviceMode = width <= 760 || (width <= 900 && height <= 600)
+  const viewportOrientation: ViewportProfile['orientation'] = height >= width ? 'portrait' : 'landscape';
+  const deviceMode: DeviceMode = width <= 760 || (Math.min(width, height) <= 600 && Math.max(width, height) <= 950)
     ? 'mobile'
     : width <= 1180
       ? 'tablet'
       : 'desktop';
+  const orientation: ViewportProfile['orientation'] = deviceMode === 'mobile' ? 'portrait' : viewportOrientation;
   const workspaceMode: WorkspaceMode = deviceMode === 'desktop'
     ? 'desktop'
     : deviceMode === 'tablet' && orientation === 'landscape'

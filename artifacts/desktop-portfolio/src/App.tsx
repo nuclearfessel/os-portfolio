@@ -25,18 +25,19 @@ type DesktopItemId = WindowId | StickyItemId | DesktopLauncherDragId;
 type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
+type DockPosition = 'top' | 'right' | 'bottom' | 'left';
 
 const stickyPalette = [
-  { id: 'lemon', label: 'Lemon', background: 'rgba(255, 216, 77, .9)', foreground: 'dark', handle: '#8f6900' },
-  { id: 'orange', label: 'Orange', background: 'rgba(255, 184, 77, .9)', foreground: 'dark', handle: '#9f5700' },
-  { id: 'coral', label: 'Coral', background: 'rgba(255, 170, 163, .9)', foreground: 'dark', handle: '#9d4648' },
-  { id: 'cream', label: 'Cream', background: 'rgba(255, 240, 210, .9)', foreground: 'dark', handle: '#a88655' },
-  { id: 'teal', label: 'Teal', background: 'rgba(0, 100, 86, .9)', foreground: 'light', handle: '#76dccb' },
-  { id: 'blue', label: 'Blue', background: 'rgba(13, 86, 179, .9)', foreground: 'light', handle: '#8ac4ff' },
-  { id: 'purple', label: 'Purple', background: 'rgba(102, 72, 184, .9)', foreground: 'light', handle: '#c8b3ff' },
-  { id: 'berry', label: 'Berry', background: 'rgba(169, 53, 112, .9)', foreground: 'light', handle: '#ffb2d5' },
-  { id: 'forest', label: 'Forest', background: 'rgba(30, 96, 61, .9)', foreground: 'light', handle: '#91d6aa' },
-  { id: 'charcoal', label: 'Charcoal', background: 'rgba(52, 59, 79, .9)', foreground: 'light', handle: '#b8c2dd' },
+  { id: 'lemon', label: 'Lemon', background: 'rgba(255, 216, 77, .82)', foreground: 'dark', handle: '#8f6900' },
+  { id: 'orange', label: 'Orange', background: 'rgba(255, 184, 77, .82)', foreground: 'dark', handle: '#9f5700' },
+  { id: 'coral', label: 'Coral', background: 'rgba(255, 170, 163, .82)', foreground: 'dark', handle: '#9d4648' },
+  { id: 'cream', label: 'Cream', background: 'rgba(255, 240, 210, .82)', foreground: 'dark', handle: '#a88655' },
+  { id: 'teal', label: 'Teal', background: 'rgba(0, 100, 86, .82)', foreground: 'light', handle: '#76dccb' },
+  { id: 'blue', label: 'Blue', background: 'rgba(13, 86, 179, .82)', foreground: 'light', handle: '#8ac4ff' },
+  { id: 'purple', label: 'Purple', background: 'rgba(102, 72, 184, .82)', foreground: 'light', handle: '#c8b3ff' },
+  { id: 'berry', label: 'Berry', background: 'rgba(169, 53, 112, .82)', foreground: 'light', handle: '#ffb2d5' },
+  { id: 'forest', label: 'Forest', background: 'rgba(30, 96, 61, .82)', foreground: 'light', handle: '#91d6aa' },
+  { id: 'charcoal', label: 'Charcoal', background: 'rgba(52, 59, 79, .82)', foreground: 'light', handle: '#b8c2dd' },
 ] as const;
 type StickyColorId = typeof stickyPalette[number]['id'];
 type StickyData = {
@@ -76,6 +77,7 @@ type SavedDesktopState = {
   theme: Theme;
   showDesktopIcons: boolean;
   stickies: StickyData[];
+  dockPosition: DockPosition;
 };
 
 const DESKTOP_STORAGE_KEY = 'alex-os.desktop.v1';
@@ -88,6 +90,7 @@ const defaultDesktopState: SavedDesktopState = {
   theme: 'light',
   showDesktopIcons: true,
   stickies: [defaultSticky],
+  dockPosition: 'bottom',
 };
 
 function loadDesktopState(): SavedDesktopState {
@@ -141,6 +144,7 @@ function loadDesktopState(): SavedDesktopState {
       theme: parsed.theme === 'light' || parsed.theme === 'dark' ? parsed.theme : defaultDesktopState.theme,
       showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
       stickies: Array.isArray(parsed.stickies) ? stickies : [defaultSticky],
+      dockPosition: ['bottom', 'top', 'left', 'right'].includes(parsed.dockPosition as string) ? (parsed.dockPosition as DockPosition) : defaultDesktopState.dockPosition,
     };
   } catch {
     return defaultDesktopState;
@@ -164,10 +168,12 @@ function WindowFrame({
   id,
   title,
   active,
+  maximized,
   children,
   onFocus,
   onClose,
   onMinimize,
+  onMaximize,
   onPointerDown,
   onPointerMove,
   onPointerUp,
@@ -179,10 +185,12 @@ function WindowFrame({
   id: WindowId;
   title: string;
   active: boolean;
+  maximized: boolean;
   children: ReactNode;
   onFocus: () => void;
   onClose: () => void;
   onMinimize: () => void;
+  onMaximize: () => void;
   onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void;
   onPointerMove: (event: ReactPointerEvent<HTMLElement>) => void;
   onPointerUp: (event: ReactPointerEvent<HTMLElement>) => void;
@@ -193,7 +201,7 @@ function WindowFrame({
 }) {
   return (
     <section
-      className={`window ${id} ${active ? 'is-active' : ''}`}
+      className={`window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
       onMouseDown={onFocus}
       onContextMenu={(event) => {
         event.preventDefault();
@@ -208,13 +216,13 @@ function WindowFrame({
         <span className="window-header-spacer" aria-hidden="true" />
         <div className="window-title"><strong>~/alex/</strong>{title.toLowerCase()}</div>
         <div className="traffic-lights" onPointerDown={(event) => event.stopPropagation()}>
-          <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} data-testid={`button-minimize-${id}`}><Minus size={10} strokeWidth={2.6} /></button>
-          <button className="maximize" onClick={onFocus} aria-label={`Focus ${title}`} data-testid={`button-focus-${id}`}><Maximize2 size={9} strokeWidth={2.4} /></button>
-          <button className="close" onClick={onClose} aria-label={`Close ${title}`} data-testid={`button-close-${id}`}><X size={9} strokeWidth={2.6} /></button>
+          <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} title="Minimize" data-testid={`button-minimize-${id}`}><Minus size={10} strokeWidth={2.6} /><span className="window-control-tooltip">Minimize</span></button>
+          <button className="maximize" onClick={onMaximize} aria-label={`${maximized ? 'Restore' : 'Maximize'} ${title}`} title={maximized ? 'Restore' : 'Maximize'} data-testid={`button-maximize-${id}`}><Maximize2 size={9} strokeWidth={2.4} /><span className="window-control-tooltip">{maximized ? 'Restore' : 'Maximize'}</span></button>
+          <button className="close" onClick={onClose} aria-label={`Close ${title}`} title="Close" data-testid={`button-close-${id}`}><X size={9} strokeWidth={2.6} /><span className="window-control-tooltip">Close</span></button>
         </div>
       </header>
       {children}
-      {(['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'] as ResizeDirection[]).map((direction) => (
+      {!maximized && (['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'] as ResizeDirection[]).map((direction) => (
         <span
           key={direction}
           className={`window-resize-handle window-resize-${direction}`}
@@ -645,6 +653,7 @@ function DesktopFolder({
         ? <span className="desktop-app-icon" aria-hidden="true">{appIcon}</span>
         : <span className="desktop-folder-icon" aria-hidden="true" />}
       <span className="desktop-folder-label">{label}</span>
+      <span className="desktop-icon-tooltip" aria-hidden="true">Double-click to {open ? 'focus' : 'open'} {label}</span>
     </button>
   );
 }
@@ -657,19 +666,54 @@ function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [stickyVisible, setStickyVisible] = useState(true);
   const [stickyOnTop, setStickyOnTop] = useState(false);
+  const [maximizedWindows, setMaximizedWindows] = useState<Partial<Record<WindowId, boolean>>>({});
   const [activeStickyId, setActiveStickyId] = useState<StickyItemId>('sticky');
   const [stickies, setStickies] = useState<StickyData[]>(savedDesktopState.stickies);
   const [dragPositions, setDragPositions] = useState<ItemPositions>(savedDesktopState.itemPositions);
   const [itemSizes, setItemSizes] = useState<ItemSizes>(savedDesktopState.itemSizes);
   const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; target: 'desktop' | 'dock' } | null>(null);
   const [stickyMenu, setStickyMenu] = useState<{ x: number; y: number; id: StickyItemId } | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [iconSize, setIconSize] = useState<IconSize>(savedDesktopState.iconSize);
   const [snapToGrid, setSnapToGrid] = useState(savedDesktopState.snapToGrid);
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
   const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
+  const [dockPosition, setDockPosition] = useState<DockPosition>(savedDesktopState.dockPosition);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
+  const dockDragRef = useRef<{ active: boolean; startX: number; startY: number; moved: boolean } | null>(null);
+
+  const startDockDrag = (event: React.PointerEvent<HTMLElement>) => {
+    if (event.button !== 0 || window.matchMedia('(max-width: 760px)').matches) return;
+    dockDragRef.current = { active: true, startX: event.clientX, startY: event.clientY, moved: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const moveDockDrag = (event: React.PointerEvent<HTMLElement>) => {
+    if (!dockDragRef.current?.active) return;
+    const { startX, startY } = dockDragRef.current;
+    if (Math.abs(event.clientX - startX) > 10 || Math.abs(event.clientY - startY) > 10) {
+      dockDragRef.current.moved = true;
+      const distTop = event.clientY;
+      const distBottom = window.innerHeight - event.clientY;
+      const distLeft = event.clientX;
+      const distRight = window.innerWidth - event.clientX;
+      const min = Math.min(distTop, distBottom, distLeft, distRight);
+      let newPos: DockPosition = dockPosition;
+      if (min === distTop) newPos = 'top';
+      else if (min === distBottom) newPos = 'bottom';
+      else if (min === distLeft) newPos = 'left';
+      else if (min === distRight) newPos = 'right';
+      if (newPos !== dockPosition) setDockPosition(newPos);
+    }
+  };
+  const endDockDrag = (event: React.PointerEvent<HTMLElement>) => {
+    if (!dockDragRef.current?.active) return;
+    dockDragRef.current.active = false;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    setTimeout(() => { dockDragRef.current = null; }, 50);
+  };
   const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean; currentLeft: number; currentTop: number } | null>(null);
   const resizeRef = useRef<{
     id: DesktopItemId;
@@ -701,13 +745,14 @@ function Home() {
       theme,
       showDesktopIcons,
       stickies,
+      dockPosition,
     };
     try {
       window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(desktopState));
     } catch {
       // The desktop remains usable when storage is unavailable.
     }
-  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -809,11 +854,17 @@ function Home() {
     if (!target) return;
     const nextLeft = event.clientX - areaRect.left - drag.offsetX;
     const nextTop = event.clientY - areaRect.top - drag.offsetY;
-    const maxLeft = Math.max(0, areaRect.width - target.width);
-    const maxTop = Math.max(0, areaRect.height - target.height);
+    const padRight = dockPosition === 'right' ? 70 : 0;
+    const padBottom = dockPosition === 'bottom' ? 70 : 0;
+    const padLeft = dockPosition === 'left' ? 70 : 0;
+    const padTop = dockPosition === 'top' ? 70 : 0;
+    const maxLeft = Math.max(0, areaRect.width - target.width - padRight);
+    const maxTop = Math.max(0, areaRect.height - target.height - padBottom);
+    const minLeft = padLeft;
+    const minTop = padTop;
     const staysOnDesktop = drag.id.startsWith('sticky') || draggableTarget?.classList.contains('desktop-folder');
-    const left = staysOnDesktop ? Math.max(0, Math.min(maxLeft, nextLeft)) : nextLeft;
-    const top = staysOnDesktop ? Math.max(0, Math.min(maxTop, nextTop)) : nextTop;
+    const left = staysOnDesktop ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft;
+    const top = staysOnDesktop ? Math.max(minTop, Math.min(maxTop, nextTop)) : nextTop;
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
       drag.moved = true;
     }
@@ -836,8 +887,12 @@ function Home() {
         const target = event.currentTarget.getBoundingClientRect();
         if (area) {
           const grid = iconSize === 'large' ? 96 : 76;
-          const left = Math.max(0, Math.min(area.clientWidth - target.width, Math.round(drag.currentLeft / grid) * grid));
-          const top = Math.max(0, Math.min(area.clientHeight - target.height, Math.round(drag.currentTop / grid) * grid));
+          const minLeft = dockPosition === 'left' ? 70 : 0;
+          const minTop = dockPosition === 'top' ? 70 : 0;
+          const maxLeft = area.clientWidth - target.width - (dockPosition === 'right' ? 70 : 0);
+          const maxTop = area.clientHeight - target.height - (dockPosition === 'bottom' ? 70 : 0);
+          const left = Math.max(minLeft, Math.min(maxLeft, Math.round(drag.currentLeft / grid) * grid));
+          const top = Math.max(minTop, Math.min(maxTop, Math.round(drag.currentTop / grid) * grid));
           setDragPositions((current) => ({ ...current, [drag.id]: { left, top } }));
         }
       }
@@ -970,7 +1025,7 @@ function Home() {
     const usesLightText = selectedColor.foreground === 'light';
     return {
       ...itemStyle(sticky.id),
-      zIndex: stickyOnTop && activeStickyId === sticky.id ? 31 : stickyOnTop ? 30 : 3,
+      zIndex: stickyOnTop && activeStickyId === sticky.id ? 11 : 3,
       '--sticky-bg': selectedColor.background,
       '--sticky-text': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-muted': usesLightText ? '#edf1f5' : '#37414d',
@@ -1030,6 +1085,7 @@ function Home() {
     setContextMenu({
       x: Math.max(8, Math.min(event.clientX, window.innerWidth - 430)),
       y: Math.max(8, Math.min(event.clientY, window.innerHeight - 270)),
+      target: 'desktop'
     });
   };
   const autoArrangeIcons = () => {
@@ -1037,15 +1093,16 @@ function Home() {
     if (!area) return;
     const width = iconSize === 'large' ? 88 : 70;
     const row = iconSize === 'large' ? 86 : 68;
-    const left = Math.max(16, area.clientWidth - width - 28);
+    const left = Math.max(dockPosition === 'left' ? 100 : 16, area.clientWidth - width - (dockPosition === 'right' ? 94 : 28));
+    const startTop = dockPosition === 'top' ? 132 : 62;
     setFolderPositions({});
     setDragPositions((current) => ({
       ...current,
-      'desktop-about': { left, top: 62 },
-      'desktop-work': { left, top: 62 + row },
-      'desktop-terminal': { left, top: 62 + row * 2 },
-      'desktop-contact': { left, top: 62 + row * 3 },
-      'desktop-stickies-app': { left, top: 62 + row * 4 },
+      'desktop-about': { left, top: startTop },
+      'desktop-work': { left, top: startTop + row },
+      'desktop-terminal': { left, top: startTop + row * 2 },
+      'desktop-contact': { left, top: startTop + row * 3 },
+      'desktop-stickies-app': { left, top: startTop + row * 4 },
     }));
     setContextMenu(null);
   };
@@ -1062,6 +1119,7 @@ function Home() {
     setSnapToGrid(defaultDesktopState.snapToGrid);
     setShowDesktopIcons(defaultDesktopState.showDesktopIcons);
     setStickies(defaultDesktopState.stickies);
+    setDockPosition(defaultDesktopState.dockPosition);
     setActiveStickyId('sticky');
     setContextMenu(null);
     setStickyMenu(null);
@@ -1069,19 +1127,40 @@ function Home() {
   };
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
-    onFocus: () => setActiveWindow(id),
+    maximized: Boolean(maximizedWindows[id]),
+    onFocus: () => {
+      setActiveWindow(id);
+      setStickyOnTop(false);
+    },
     onClose: () => closeWindow(id),
     onMinimize: () => minimizeWindow(id),
+    onMaximize: () => {
+      setActiveWindow(id);
+      setStickyOnTop(false);
+      setMaximizedWindows((current) => ({ ...current, [id]: !current[id] }));
+    },
     onPointerDown: (event: ReactPointerEvent<HTMLElement>) => {
       setActiveWindow(id);
-      startDrag(id, event);
+      setStickyOnTop(false);
+      if (!maximizedWindows[id]) startDrag(id, event);
     },
     onPointerMove: moveDrag,
     onPointerUp: endDrag,
-    onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>, direction: ResizeDirection) => startResize(id, event, direction),
+    onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>, direction: ResizeDirection) => {
+      if (!maximizedWindows[id]) startResize(id, event, direction);
+    },
     onResizeMove: moveResize,
     onResizeEnd: endResize,
-    style: itemStyle(id),
+    style: maximizedWindows[id]
+      ? {
+        left: dockPosition === 'left' ? 82 : 12,
+        top: dockPosition === 'top' ? 82 : 12,
+        right: dockPosition === 'right' ? 82 : 12,
+        bottom: dockPosition === 'bottom' ? 82 : 12,
+        width: 'auto',
+        height: 'auto',
+      }
+      : itemStyle(id),
   });
 
   return (
@@ -1109,7 +1188,11 @@ function Home() {
         </div>
       </header>
 
-      <div className="desktop-area" ref={desktopAreaRef} onContextMenu={openDesktopContextMenu}>
+      <div
+        className={`desktop-area dock-space-${dockPosition}`}
+        ref={desktopAreaRef}
+        onContextMenu={openDesktopContextMenu}
+      >
         <div className="desktop-intro">
           <span className="eyebrow">personal workspace / v1.0</span>
           <h1>Thoughtful interfaces.<br /><em>Fast systems.</em></h1>
@@ -1211,7 +1294,7 @@ function Home() {
         {windows.terminal && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
       </div>
 
-      {contextMenu && (
+      {contextMenu?.target === 'desktop' && (
         <div
           className="desktop-context-menu"
           style={{ left: contextMenu.x, top: contextMenu.y }}
@@ -1253,6 +1336,33 @@ function Home() {
             <span className="context-check" />
             <span>Reset desktop…</span>
           </button>
+        </div>
+      )}
+
+      {contextMenu?.target === 'dock' && (
+        <div
+          className="desktop-context-menu"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onPointerDown={(event) => event.stopPropagation()}
+          onContextMenu={(event) => event.preventDefault()}
+          role="menu"
+          aria-label="Dock options"
+          data-testid="menu-dock-context"
+        >
+          <div className="sticky-color-menu-title dock-menu-title">Dock position</div>
+          {(['top', 'right', 'bottom', 'left'] as DockPosition[]).map((position) => (
+            <button
+              type="button"
+              key={position}
+              className="context-menu-button"
+              role="menuitemradio"
+              aria-checked={dockPosition === position}
+              onClick={() => { setDockPosition(position); setContextMenu(null); }}
+            >
+              <span className="context-check">{dockPosition === position && <Check size={12} />}</span>
+              <span>{position[0].toUpperCase() + position.slice(1)}</span>
+            </button>
+          ))}
         </div>
       )}
 
@@ -1325,7 +1435,30 @@ function Home() {
         </div>
       )}
 
-      <nav className="dock" aria-label="Portfolio applications">
+      <nav
+        className={`dock dock-${dockPosition}`}
+        aria-label="Application dock. Drag to a screen edge or right-click to choose its position."
+        title="Drag to reposition dock"
+        onPointerDown={startDockDrag}
+        onPointerMove={moveDockDrag}
+        onPointerUp={endDockDrag}
+        onPointerCancel={endDockDrag}
+        onClickCapture={(e) => {
+          if (dockDragRef.current?.moved) {
+            e.stopPropagation();
+            e.preventDefault();
+          }
+        }}
+        onContextMenu={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setContextMenu({
+            x: Math.max(8, Math.min(event.clientX, window.innerWidth - 220)),
+            y: Math.max(8, Math.min(event.clientY, window.innerHeight - 250)),
+            target: 'dock'
+          });
+        }}
+      >
         <button className={`dock-item ${windows.about ? 'active' : ''}`} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About · 1</span></button>
         <button className={`dock-item ${windows.work ? 'active' : ''}`} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><span>Work · 2</span></button>
         <button className={`dock-item ${windows.terminal ? 'active' : ''}`} onClick={() => openWindow('terminal')} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></button>

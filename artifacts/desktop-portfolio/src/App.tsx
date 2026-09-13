@@ -667,6 +667,7 @@ function Home() {
   const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [stickyMenu, setStickyMenu] = useState<{ x: number; y: number; id: StickyItemId } | null>(null);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [iconSize, setIconSize] = useState<IconSize>(savedDesktopState.iconSize);
   const [snapToGrid, setSnapToGrid] = useState(savedDesktopState.snapToGrid);
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
@@ -692,6 +693,15 @@ function Home() {
     const timer = window.setInterval(updateClock, 30000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!resetDialogOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setResetDialogOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [resetDialogOpen]);
 
   useEffect(() => {
     const desktopState: SavedDesktopState = {
@@ -1026,7 +1036,6 @@ function Home() {
     setContextMenu(null);
   };
   const resetDesktop = () => {
-    if (!window.confirm('Reset icon positions and desktop preferences to their original settings?')) return;
     try {
       window.localStorage.removeItem(DESKTOP_STORAGE_KEY);
     } catch {
@@ -1043,6 +1052,7 @@ function Home() {
     setActiveStickyId('sticky');
     setContextMenu(null);
     setStickyMenu(null);
+    setResetDialogOpen(false);
   };
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
@@ -1217,7 +1227,18 @@ function Home() {
           <div className="context-menu-separator" />
           <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
           <div className="context-menu-separator" />
-          <button type="button" className="context-menu-button context-menu-danger" role="menuitem" onClick={resetDesktop}><span className="context-check" /><span>Reset desktop…</span></button>
+          <button
+            type="button"
+            className="context-menu-button context-menu-danger"
+            role="menuitem"
+            onClick={() => {
+              setContextMenu(null);
+              setResetDialogOpen(true);
+            }}
+          >
+            <span className="context-check" />
+            <span>Reset desktop…</span>
+          </button>
         </div>
       )}
 
@@ -1255,6 +1276,32 @@ function Home() {
           <div className="sticky-color-name">
             {stickyPalette.find((color) => color.id === stickies.find((sticky) => sticky.id === stickyMenu.id)?.color)?.label ?? 'Lemon'}
           </div>
+        </div>
+      )}
+
+      {resetDialogOpen && (
+        <div
+          className="reset-dialog-backdrop"
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) setResetDialogOpen(false);
+          }}
+        >
+          <section
+            className="reset-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="reset-dialog-title"
+            aria-describedby="reset-dialog-description"
+            data-testid="dialog-reset-desktop"
+          >
+            <span className="reset-dialog-eyebrow">desktop settings</span>
+            <h2 id="reset-dialog-title">Reset desktop?</h2>
+            <p id="reset-dialog-description">Icon positions, window layouts, stickies, and desktop preferences will return to their original settings.</p>
+            <div className="reset-dialog-actions">
+              <button type="button" autoFocus onClick={() => setResetDialogOpen(false)} data-testid="button-cancel-reset">Cancel</button>
+              <button type="button" className="reset-dialog-confirm" onClick={resetDesktop} data-testid="button-confirm-reset">Reset desktop</button>
+            </div>
+          </section>
         </div>
       )}
 

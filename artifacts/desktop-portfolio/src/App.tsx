@@ -8,6 +8,13 @@ import {
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import {
+  ActionButton,
+  ProjectCard,
+  SectionLabel,
+  StatusIndicator,
+  Surface,
+} from '@workspace/alex-os-design-system/components/ui/alex-os';
 
 const queryClient = new QueryClient();
 
@@ -351,7 +358,7 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
   return (
     <WindowFrame {...props} id="about" title="About">
       <div className="window-body">
-        <span className="section-kicker">readme.md</span>
+        <SectionLabel className="section-kicker">readme.md</SectionLabel>
         <h2>Interfaces with a pulse.</h2>
         <div className="about-grid">
           <div>
@@ -379,7 +386,7 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
         <div className="window-body case-study" data-testid="case-study-orbit">
           <div className="case-study-topbar">
             <button className="case-study-back" onClick={() => setCaseStudyOpen(false)} data-testid="button-back-to-work"><ArrowLeft size={15} />all projects</button>
-            <span className="section-kicker">case study / product systems / 2024</span>
+            <SectionLabel className="section-kicker">case study / product systems / 2024</SectionLabel>
           </div>
           <div className="case-study-hero">
             <div>
@@ -388,11 +395,11 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
             </div>
             <span className="case-study-role">Product design<br />Frontend engineering</span>
           </div>
-          <div className="case-study-metrics" aria-label="Project outcomes">
+          <Surface className="case-study-metrics" aria-label="Project outcomes">
             <div><strong>34%</strong><span>faster account reviews</span></div>
             <div><strong>2.1×</strong><span>more risks caught early</span></div>
             <div><strong>18%</strong><span>fewer support escalations</span></div>
-          </div>
+          </Surface>
           <div className="orbit-preview" aria-label="Orbit CRM interface preview">
             <div className="orbit-sidebar"><span className="orbit-logo">ORBIT</span><i /><i /><i /><i /></div>
             <div className="orbit-dashboard">
@@ -409,16 +416,21 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
         </div>
       ) : (
         <div className="window-body">
-          <span className="section-kicker">projects / selected</span>
+          <SectionLabel className="section-kicker">projects / selected</SectionLabel>
           <h2>Things I’ve shipped.</h2>
           <div className="project-list">
             {projects.map((project) => (
-              <article className="project-card" key={project.id} data-testid={`card-project-${project.id}`}>
-                <span className="project-index" style={{ color: project.color }}>{project.id}</span>
-                <div className="project-copy"><h3>{project.name}</h3><p>{project.desc}</p></div>
-                <span className="project-tag">{project.tag}</span>
-                <button className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => setCaseStudyOpen(true)}>view case study <ArrowUpRight size={13} /></button>
-              </article>
+              <ProjectCard
+                className="project-card"
+                key={project.id}
+                data-testid={`card-project-${project.id}`}
+                index={project.id}
+                title={project.name}
+                description={project.desc}
+                tag={project.tag}
+                accent={project.color}
+                action={<ActionButton className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => setCaseStudyOpen(true)}>view case study <ArrowUpRight size={13} /></ActionButton>}
+              />
             ))}
           </div>
           <p style={{ marginTop: 18, fontFamily: 'var(--app-font-mono)', fontSize: 10 }}>04 case studies · 4 shipped systems · 0 design handoffs left behind</p>
@@ -432,7 +444,7 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
   return (
     <WindowFrame {...props} id="contact" title="Start a conversation">
       <div className="window-body contact-copy">
-        <span className="section-kicker">contact.txt</span>
+        <SectionLabel className="section-kicker">contact.txt</SectionLabel>
         <h2>Have a hard problem?</h2>
         <p>Tell me what you’re making, where it’s stuck, and what “better” would feel like. I’ll get back to you with a considered reply, usually within a couple of days.</p>
         <a className="contact-button" href="mailto:hello@alexrivera.dev" data-testid="link-email-alex">email alex <Mail size={16} /></a>
@@ -1599,7 +1611,7 @@ function Home() {
         </div>
         <div className="system-right">
           <span className="system-network">open to good problems</span>
-          <span className="system-status"><span className="status-dot" />online</span>
+          <StatusIndicator className="system-status" dotClassName="status-dot" />
           <Wifi className="system-network" size={14} />
           <BatteryMedium className="system-network" size={16} />
           <span data-testid="text-system-clock">{clock}</span>
@@ -1644,12 +1656,12 @@ function Home() {
         onContextMenu={openDesktopContextMenu}
       >
         <div className="desktop-intro">
-          <span className="eyebrow">personal workspace / v1.0</span>
+          <SectionLabel className="eyebrow">personal workspace / v1.0</SectionLabel>
           <h1>Thoughtful interfaces.<br /><em>Fast systems.</em></h1>
           <p>Alex Rivera is a product-minded frontend engineer making software feel clear, capable, and a little more human.</p>
           <div className="quick-actions">
-            <button className="quick-button primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></button>
-            <button className="quick-button" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></button>
+            <ActionButton className="quick-button primary" variant="primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></ActionButton>
+            <ActionButton className="quick-button" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></ActionButton>
           </div>
         </div>
 

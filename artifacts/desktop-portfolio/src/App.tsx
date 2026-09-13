@@ -44,6 +44,8 @@ type StickyData = {
   color: StickyColorId;
   text: string;
   rotation: number;
+  author: 'alex' | 'user';
+  createdAt: string;
 };
 
 const defaultSticky: StickyData = {
@@ -51,7 +53,19 @@ const defaultSticky: StickyData = {
   color: 'lemon',
   text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
   rotation: 3,
+  author: 'alex',
+  createdAt: '09:42',
 };
+
+const formatStickyTime = () => new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date());
+const createUserSticky = (id: StickyItemId, color: StickyColorId = defaultSticky.color, rotation = defaultSticky.rotation): StickyData => ({
+  id,
+  color,
+  text: '',
+  rotation,
+  author: 'user',
+  createdAt: formatStickyTime(),
+});
 
 type SavedDesktopState = {
   folderPositions: FolderPositions;
@@ -106,6 +120,8 @@ function loadDesktopState(): SavedDesktopState {
           ? [{
             ...sticky,
             rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
+            author: sticky.author === 'user' || sticky.author === 'alex' ? sticky.author : sticky.id === 'sticky' ? 'alex' : 'user',
+            createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt ? sticky.createdAt : sticky.id === 'sticky' ? '09:42' : 'saved',
           }]
           : []
       ))
@@ -124,7 +140,7 @@ function loadDesktopState(): SavedDesktopState {
       snapToGrid: typeof parsed.snapToGrid === 'boolean' ? parsed.snapToGrid : defaultDesktopState.snapToGrid,
       theme: parsed.theme === 'light' ? 'light' : defaultDesktopState.theme,
       showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
-      stickies: stickies.length ? stickies : [defaultSticky],
+      stickies: Array.isArray(parsed.stickies) ? stickies : [defaultSticky],
     };
   } catch {
     return defaultDesktopState;
@@ -734,7 +750,7 @@ function Home() {
   const minimizeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
   const handleStickyDock = () => {
     if (!stickies.length) {
-      setStickies([{ ...defaultSticky, text: '' }]);
+      setStickies([createUserSticky('sticky')]);
       setActiveStickyId('sticky');
       setStickyVisible(true);
       setStickyOnTop(true);
@@ -752,7 +768,7 @@ function Home() {
   };
   const openStickies = () => {
     if (!stickies.length) {
-      setStickies([{ ...defaultSticky, text: '' }]);
+      setStickies([createUserSticky('sticky')]);
       setActiveStickyId('sticky');
     }
     setStickyVisible(true);
@@ -975,7 +991,7 @@ function Home() {
     const left = Math.max(12, Math.min((area?.clientWidth ?? 900) - width - 12, (sourcePosition?.left ?? (area?.clientWidth ?? 900) * .58) + offset));
     const top = Math.max(18, Math.min((area?.clientHeight ?? 650) - height - 18, (sourcePosition?.top ?? 95) + offset));
     const rotations = [-2, 1, -3, 2, -.8];
-    setStickies((current) => [...current, { id, color: source.color, text: '', rotation: rotations[(numericIds.length - 1) % rotations.length] }]);
+    setStickies((current) => [...current, createUserSticky(id, source.color, rotations[(numericIds.length - 1) % rotations.length])]);
     setDragPositions((current) => ({ ...current, [id]: { left, top } }));
     setItemSizes((current) => ({ ...current, [id]: { width, height } }));
     setActiveStickyId(id);
@@ -1158,7 +1174,7 @@ function Home() {
                 aria-label={`Sticky note ${index + 1} text`}
                 placeholder="Write a note…"
               />
-              <span className="note-signoff">— alex, {index === 0 ? '09:42' : 'now'}</span>
+              <span className="note-signoff">— {sticky.author}, {sticky.createdAt}</span>
             </div>
             {(['top-left', 'top-right', 'bottom-left'] as const).map((corner, cornerIndex) => (
               <button

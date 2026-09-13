@@ -242,6 +242,62 @@ test('keeps storage recovery help visible and keyboard-operable on narrow screen
   await expect(storageNotice).toHaveCount(1);
 });
 
+test('reflows storage recovery help with enlarged text without clipping controls', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.addInitScript(() => {
+    Object.defineProperty(Storage.prototype, 'getItem', {
+      configurable: true,
+      value: () => {
+        throw new Error('localStorage getItem blocked');
+      },
+    });
+  });
+  await page.reload();
+  await page.addStyleTag({ content: '.storage-notice { font-size: 22px !important; }' });
+
+  const storageNotice = page.getByTestId('notice-storage-unavailable');
+  const storageHelp = page.getByRole('button', { name: 'How to restore saving' });
+  await expect(storageNotice).toHaveCount(1);
+  await expect(storageHelp).toBeVisible();
+
+  await storageHelp.focus();
+  await page.keyboard.press('Enter');
+
+  const guidance = page.getByText('Leave private browsing, or allow this site to store site data in your browser settings.');
+  const hideHelp = page.getByRole('button', { name: 'Hide help' });
+  const retrySaving = page.getByRole('button', { name: 'Try saving again' });
+  await expect(hideHelp).toBeFocused();
+  await expect(guidance).toBeVisible();
+  await expect(retrySaving).toBeVisible();
+  await expect(storageNotice).toHaveCount(1);
+
+  const noticeMetrics = await storageNotice.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    return {
+      left: bounds.left,
+      right: bounds.right,
+      top: bounds.top,
+      bottom: bounds.bottom,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+    };
+  });
+  expect(noticeMetrics.left).toBeGreaterThanOrEqual(0);
+  expect(noticeMetrics.right).toBeLessThanOrEqual(320);
+  expect(noticeMetrics.top).toBeGreaterThanOrEqual(0);
+  expect(noticeMetrics.bottom).toBeLessThanOrEqual(640);
+  expect(noticeMetrics.scrollWidth).toBeLessThanOrEqual(noticeMetrics.clientWidth);
+
+  await retrySaving.focus();
+  await expect(retrySaving).toBeFocused();
+  expect(await retrySaving.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe('none');
+  await hideHelp.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'How to restore saving' })).toHaveAttribute('aria-expanded', 'false');
+  await expect(guidance).toBeHidden();
+  await expect(storageNotice).toHaveCount(1);
+});
+
 test('resets a sticky rotation in both themes and keeps it upright after reload', async ({ page }) => {
   const sticky = page.getByTestId('sticky-sticky');
   const rotationHandle = page.getByTestId('button-rotate-sticky-top-right');

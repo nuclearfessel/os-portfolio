@@ -9,8 +9,8 @@ Source: `artifacts/desktop-portfolio/src/App.tsx` and `src/index.css`.
 | Status Indicator | `components/status-indicator.md` | none | system bar online state | Pilot | implemented |
 | Surface | `components/surface.md` | none | windows, cards, menus, Dock | Pilot | implemented |
 | Project Card | `components/project-card.md` | Action Button | selected-work list | Pilot | implemented |
-| Window Frame | pending | Surface | all app windows | Later | pending |
-| Dock Item | pending | Action Button | desktop/tablet/mobile navigation | Later | pending |
-| Desktop Launcher | pending | Status Indicator | desktop app launchers | Later | pending |
-| Sticky Note | pending | Surface, Action Button | desktop stickies | Later | pending |
-| Context Menu | pending | Surface, Action Button | desktop settings | Later | pending |
+| Window Frame | `components/window-frame.md` | Surface | all app windows | Second | implemented |
+| Dock Item | `components/dock-item.md` | Action Button | desktop/tablet/mobile navigation | Second | implemented |
+| Desktop Launcher | `components/desktop-launcher.md` | Status Indicator | desktop app launchers | Second | implemented |
+| Sticky Note | `components/sticky-note.md` | Surface, Action Button | desktop stickies | Second | implemented |
+| Context Menu | `components/context-menu.md` | Surface, Action Button | desktop settings | Second | implemented |

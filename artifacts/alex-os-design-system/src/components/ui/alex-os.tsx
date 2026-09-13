@@ -125,3 +125,32 @@ export function ProjectCard({
     </article>
   );
 }
+
+export const WindowSurface = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
+  ({ className, ...props }, ref) => (
+    <section ref={ref} className={classes('rounded-lg border border-border bg-card text-card-foreground shadow-xl', className)} {...props} />
+  ),
+);
+WindowSurface.displayName = 'WindowSurface';
+
+export const DockItem = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }>(
+  ({ className, active = false, type = 'button', ...props }, ref) => (
+    <button ref={ref} type={type} className={classes('relative grid place-items-center rounded-lg border transition-colors duration-100', active && 'active', className)} {...props} />
+  ),
+);
+DockItem.displayName = 'DockItem';
+
+export const DesktopLauncher = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { open?: boolean }>(
+  ({ className, open = false, type = 'button', ...props }, ref) => (
+    <button ref={ref} type={type} className={classes(open && 'is-open', className)} {...props} />
+  ),
+);
+DesktopLauncher.displayName = 'DesktopLauncher';
+
+export function StickyNoteSurface({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={classes('rounded-lg border shadow-xl', className)} {...props} />;
+}
+
+export function ContextMenuSurface({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={classes('rounded-md border border-border bg-popover text-popover-foreground shadow-xl', className)} {...props} />;
+}

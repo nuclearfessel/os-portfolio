@@ -10,10 +10,15 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import {
   ActionButton,
+  ContextMenuSurface,
+  DesktopLauncher,
+  DockItem,
   ProjectCard,
   SectionLabel,
   StatusIndicator,
+  StickyNoteSurface,
   Surface,
+  WindowSurface,
 } from '@workspace/alex-os-design-system/components/ui/alex-os';
 
 const queryClient = new QueryClient();
@@ -316,7 +321,7 @@ function WindowFrame({
   style?: React.CSSProperties;
 }) {
   return (
-    <section
+    <WindowSurface
       className={`window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
       onMouseDown={onFocus}
       onContextMenu={(event) => {
@@ -350,7 +355,7 @@ function WindowFrame({
           aria-label={`Resize ${title} window from ${direction}`}
         />
       ))}
-    </section>
+    </WindowSurface>
   );
 }
 
@@ -757,8 +762,9 @@ function DesktopFolder({
 }) {
   const action = `${singleTap ? 'Tap' : 'Double-click'} to ${open ? 'focus' : 'open'} ${label}`;
   return (
-    <button
+    <DesktopLauncher
       className={`desktop-folder desktop-launcher-${id} ${appIcon ? 'desktop-app' : ''} ${open ? 'is-open' : ''}`}
+      open={open}
       onClick={singleTap ? onToggle : undefined}
       onDoubleClick={singleTap ? undefined : onToggle}
       onPointerDown={onPointerDown}
@@ -778,7 +784,7 @@ function DesktopFolder({
         : <span className="desktop-folder-icon" aria-hidden="true" />}
       <span className="desktop-folder-label">{label}</span>
       <span className="desktop-icon-tooltip" aria-hidden="true">{action}</span>
-    </button>
+    </DesktopLauncher>
   );
 }
 
@@ -1700,7 +1706,7 @@ function Home() {
             }}
             aria-label={`Draggable sticky note ${index + 1}`}
           >
-            <div className="desktop-note-surface">
+            <StickyNoteSurface className="desktop-note-surface">
               <span className="note-label">field note / {String(index + 4).padStart(3, '0')}</span>
               <button
                 type="button"
@@ -1745,7 +1751,7 @@ function Home() {
                 <button type="button" onClick={() => addSticky(sticky.id)}><Plus size={14} /> Add</button>
                 <button type="button" className="managed-sticky-delete" onClick={() => deleteSticky(sticky.id)}><X size={14} /> Delete</button>
               </div>
-            </div>
+            </StickyNoteSurface>
             {(['top-left', 'top-right', 'bottom-left'] as const).map((corner, cornerIndex) => (
               <button
                 type="button"
@@ -1782,7 +1788,7 @@ function Home() {
       </div>
 
       {contextMenu?.target === 'desktop' && (
-        <div
+        <ContextMenuSurface
           className="desktop-context-menu"
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onPointerDown={(event) => event.stopPropagation()}
@@ -1831,7 +1837,7 @@ function Home() {
             <span className="context-check" />
             <span>Reset desktop…</span>
           </button>
-        </div>
+        </ContextMenuSurface>
       )}
 
       {contextMenu?.target === 'dock' && (
@@ -2005,12 +2011,12 @@ function Home() {
           });
         }}
       >
-        <button className={`dock-item ${windows.work && (workspaceMode === 'desktop' || activeWindow === 'work') ? 'active' : ''}`} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><span>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</span></button>
-        <button className={`dock-item ${windows.about && (workspaceMode === 'desktop' || activeWindow === 'about') ? 'active' : ''}`} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About{workspaceMode === 'desktop' ? ' · 1' : ''}</span></button>
-        <button className={`dock-item ${windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact') ? 'active' : ''}`} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</span></button>
+        <DockItem className="dock-item" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><span>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</span></DockItem>
+        <DockItem className="dock-item" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About{workspaceMode === 'desktop' ? ' · 1' : ''}</span></DockItem>
+        <DockItem className="dock-item" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</span></DockItem>
         {workspaceMode !== 'desktop' && (
-          <button
-            className={`dock-item dock-mode-toggle mode-${theme}`}
+            <DockItem
+              className={`dock-item dock-mode-toggle mode-${theme}`}
             onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')}
             aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             data-testid="button-dock-mode"
@@ -2020,13 +2026,13 @@ function Home() {
               <Moon className="mode-moon" size={20} strokeWidth={1.8} />
             </div>
             <span>Mode</span>
-          </button>
+            </DockItem>
         )}
         {workspaceMode === 'desktop' && (
           <>
-            <button className={`dock-item ${windows.terminal ? 'active' : ''}`} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></button>
-            <button className={`dock-item ${stickyVisible ? 'active' : ''}`} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><span>Stickies</span></button>
-            <button className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><span>Shortcuts</span></button>
+            <DockItem className="dock-item" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></DockItem>
+            <DockItem className="dock-item" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><span>Stickies</span></DockItem>
+            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><span>Shortcuts</span></DockItem>
           </>
         )}
       </nav>

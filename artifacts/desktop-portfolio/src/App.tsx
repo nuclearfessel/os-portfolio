@@ -22,6 +22,7 @@ type StickyItemId = 'sticky' | `sticky-${number}`;
 type DesktopItemId = WindowId | StickyItemId;
 type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
+type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
 
 const stickyPalette = [
   { id: 'lemon', label: 'Lemon', background: 'rgba(255, 216, 77, .9)', foreground: 'dark' },
@@ -40,12 +41,14 @@ type StickyData = {
   id: StickyItemId;
   color: StickyColorId;
   text: string;
+  rotation: number;
 };
 
 const defaultSticky: StickyData = {
   id: 'sticky',
   color: 'lemon',
   text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
+  rotation: 3,
 };
 
 type SavedDesktopState = {
@@ -93,11 +96,16 @@ function loadDesktopState(): SavedDesktopState {
       }),
     ) as ItemSizes;
     const stickies = Array.isArray(parsed.stickies)
-      ? parsed.stickies.filter((sticky): sticky is StickyData => (
+      ? parsed.stickies.flatMap((sticky) => (
         Boolean(sticky)
         && (sticky.id === 'sticky' || /^sticky-\d+$/.test(sticky.id))
         && stickyPalette.some((color) => color.id === sticky.color)
         && typeof sticky.text === 'string'
+          ? [{
+            ...sticky,
+            rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
+          }]
+          : []
       ))
       : [{
         ...defaultSticky,
@@ -161,7 +169,7 @@ function WindowFrame({
   onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void;
   onPointerMove: (event: ReactPointerEvent<HTMLElement>) => void;
   onPointerUp: (event: ReactPointerEvent<HTMLElement>) => void;
-  onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>) => void;
+  onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>, direction: ResizeDirection) => void;
   onResizeMove: (event: ReactPointerEvent<HTMLSpanElement>) => void;
   onResizeEnd: (event: ReactPointerEvent<HTMLSpanElement>) => void;
   style?: React.CSSProperties;
@@ -185,16 +193,18 @@ function WindowFrame({
         </div>
       </header>
       {children}
-      <span
-        className="desktop-resize-handle"
-        onPointerDown={(event) => { event.stopPropagation(); onResizeStart(event); }}
-        onPointerMove={onResizeMove}
-        onPointerUp={onResizeEnd}
-        onPointerCancel={onResizeEnd}
-        role="separator"
-        aria-label={`Resize ${title} window`}
-        tabIndex={0}
-      />
+      {(['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'] as ResizeDirection[]).map((direction) => (
+        <span
+          key={direction}
+          className={`window-resize-handle window-resize-${direction}`}
+          onPointerDown={(event) => { event.stopPropagation(); onResizeStart(event, direction); }}
+          onPointerMove={onResizeMove}
+          onPointerUp={onResizeEnd}
+          onPointerCancel={onResizeEnd}
+          role="separator"
+          aria-label={`Resize ${title} window from ${direction}`}
+        />
+      ))}
     </section>
   );
 }
@@ -659,7 +669,17 @@ function Home() {
   const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean } | null>(null);
-  const resizeRef = useRef<{ id: DesktopItemId; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
+  const resizeRef = useRef<{
+    id: DesktopItemId;
+    direction: ResizeDirection;
+    startX: number;
+    startY: number;
+    startWidth: number;
+    startHeight: number;
+    startLeft: number;
+    startTop: number;
+  } | null>(null);
+  const rotateRef = useRef<{ id: StickyItemId; centerX: number; centerY: number; pointerAngle: number; rotation: number } | null>(null);
   const folderDragRef = useRef<{ id: WindowId; offsetX: number; offsetY: number; moved: boolean; startLeft: number; startTop: number } | null>(null);
 
   useEffect(() => {
@@ -741,19 +761,19 @@ function Home() {
     const area = desktopAreaRef.current;
     if (!area) return;
     const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
-    const target = draggableTarget?.getBoundingClientRect();
+    if (!draggableTarget) return;
+    const target = draggableTarget.getBoundingClientRect();
     const areaRect = area.getBoundingClientRect();
-    if (!target) return;
     const currentPosition = dragPositions[id] ?? {
-      left: target.left - areaRect.left,
-      top: target.top - areaRect.top,
+      left: draggableTarget.offsetLeft,
+      top: draggableTarget.offsetTop,
     };
 
     setDragPositions((current) => ({ ...current, [id]: currentPosition }));
     dragRef.current = {
       id,
-      offsetX: event.clientX - target.left,
-      offsetY: event.clientY - target.top,
+      offsetX: event.clientX - areaRect.left - currentPosition.left,
+      offsetY: event.clientY - areaRect.top - currentPosition.top,
       moved: false,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -784,17 +804,23 @@ function Home() {
     }
     dragRef.current = null;
   };
-  const startResize = (id: DesktopItemId, event: ReactPointerEvent<HTMLSpanElement>) => {
+  const startResize = (id: DesktopItemId, event: ReactPointerEvent<HTMLSpanElement>, direction: ResizeDirection = 'se') => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
     const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
+    const area = desktopAreaRef.current;
+    if (!target || !area) return;
+    const startLeft = dragPositions[id]?.left ?? target.offsetLeft;
+    const startTop = dragPositions[id]?.top ?? target.offsetTop;
+    setDragPositions((current) => ({ ...current, [id]: { left: startLeft, top: startTop } }));
     resizeRef.current = {
       id,
+      direction,
       startX: event.clientX,
       startY: event.clientY,
-      startWidth: rect.width,
-      startHeight: rect.height,
+      startWidth: target.offsetWidth,
+      startHeight: target.offsetHeight,
+      startLeft,
+      startTop,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -804,15 +830,70 @@ function Home() {
     const isSticky = resize.id.startsWith('sticky');
     const minWidth = isSticky ? 140 : 320;
     const minHeight = isSticky ? 100 : 240;
-    const width = Math.max(minWidth, resize.startWidth + event.clientX - resize.startX);
-    const height = Math.max(minHeight, resize.startHeight + event.clientY - resize.startY);
+    const deltaX = event.clientX - resize.startX;
+    const deltaY = event.clientY - resize.startY;
+    const growsEast = resize.direction.includes('e');
+    const growsWest = resize.direction.includes('w');
+    const growsSouth = resize.direction.includes('s');
+    const growsNorth = resize.direction.includes('n');
+    const width = Math.max(minWidth, resize.startWidth + (growsEast ? deltaX : growsWest ? -deltaX : 0));
+    const height = Math.max(minHeight, resize.startHeight + (growsSouth ? deltaY : growsNorth ? -deltaY : 0));
+    const left = growsWest ? resize.startLeft + resize.startWidth - width : resize.startLeft;
+    const top = growsNorth ? resize.startTop + resize.startHeight - height : resize.startTop;
     setItemSizes((current) => ({ ...current, [resize.id]: { width, height } }));
+    setDragPositions((current) => ({ ...current, [resize.id]: { left, top } }));
   };
   const endResize = (event: ReactPointerEvent<HTMLSpanElement>) => {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
     resizeRef.current = null;
+  };
+  const startRotate = (id: StickyItemId, rotation: number, event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (window.matchMedia('(max-width: 760px)').matches) return;
+    const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    rotateRef.current = {
+      id,
+      centerX,
+      centerY,
+      pointerAngle: Math.atan2(event.clientY - centerY, event.clientX - centerX) * 180 / Math.PI,
+      rotation,
+    };
+    setActiveStickyId(id);
+    setStickyOnTop(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.stopPropagation();
+  };
+  const moveRotate = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const rotate = rotateRef.current;
+    if (!rotate) return;
+    const pointerAngle = Math.atan2(event.clientY - rotate.centerY, event.clientX - rotate.centerX) * 180 / Math.PI;
+    let delta = pointerAngle - rotate.pointerAngle;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    const rawRotation = rotate.rotation + delta;
+    const rotation = event.shiftKey ? Math.round(rawRotation / 15) * 15 : Math.round(rawRotation * 10) / 10;
+    setStickies((current) => current.map((sticky) => sticky.id === rotate.id ? { ...sticky, rotation } : sticky));
+  };
+  const endRotate = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    rotateRef.current = null;
+  };
+  const rotateWithKeyboard = (id: StickyItemId, event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const direction = event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 1 : -1;
+    const increment = event.shiftKey ? 15 : 1;
+    setActiveStickyId(id);
+    setStickyOnTop(true);
+    setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation: Math.round((sticky.rotation + direction * increment) * 10) / 10 } : sticky));
   };
   const startFolderDrag = (id: WindowId, event: ReactPointerEvent<HTMLButtonElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
@@ -892,6 +973,7 @@ function Home() {
       '--sticky-muted': usesLightText ? '#edf1f5' : '#37414d',
       '--sticky-accent': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-border': usesLightText ? 'rgba(255, 255, 255, .28)' : 'rgba(29, 36, 48, .25)',
+      '--sticky-rotation': `${sticky.rotation}deg`,
     } as React.CSSProperties;
   };
   const addSticky = (sourceId: StickyItemId) => {
@@ -905,7 +987,8 @@ function Home() {
     const offset = 28 + (stickies.length % 4) * 12;
     const left = Math.max(12, Math.min((area?.clientWidth ?? 900) - width - 12, (sourcePosition?.left ?? (area?.clientWidth ?? 900) * .58) + offset));
     const top = Math.max(18, Math.min((area?.clientHeight ?? 650) - height - 18, (sourcePosition?.top ?? 95) + offset));
-    setStickies((current) => [...current, { id, color: source.color, text: '' }]);
+    const rotations = [-2, 1, -3, 2, -.8];
+    setStickies((current) => [...current, { id, color: source.color, text: '', rotation: rotations[(numericIds.length - 1) % rotations.length] }]);
     setDragPositions((current) => ({ ...current, [id]: { left, top } }));
     setItemSizes((current) => ({ ...current, [id]: { width, height } }));
     setActiveStickyId(id);
@@ -968,7 +1051,7 @@ function Home() {
     },
     onPointerMove: moveDrag,
     onPointerUp: endDrag,
-    onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>) => startResize(id, event),
+    onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>, direction: ResizeDirection) => startResize(id, event, direction),
     onResizeMove: moveResize,
     onResizeEnd: endResize,
     style: itemStyle(id),
@@ -1061,6 +1144,21 @@ function Home() {
               />
               <span className="note-signoff">— alex, {index === 0 ? '09:42' : 'now'}</span>
             </div>
+            {(['top-left', 'top-right', 'bottom-left'] as const).map((corner, cornerIndex) => (
+              <button
+                type="button"
+                key={corner}
+                className={`sticky-rotate-handle sticky-rotate-${corner}`}
+                aria-label={`Rotate sticky note ${index + 1} from ${corner.replace('-', ' ')}, currently ${Math.round(sticky.rotation)} degrees`}
+                data-testid={`button-rotate-${sticky.id}-${corner}`}
+                tabIndex={cornerIndex === 1 ? 0 : -1}
+                onPointerDown={(event) => startRotate(sticky.id, sticky.rotation, event)}
+                onPointerMove={moveRotate}
+                onPointerUp={endRotate}
+                onPointerCancel={endRotate}
+                onKeyDown={(event) => rotateWithKeyboard(sticky.id, event)}
+              />
+            ))}
             <span
               className="desktop-resize-handle"
               onPointerDown={(event) => { event.stopPropagation(); startResize(sticky.id, event); }}

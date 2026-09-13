@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Desktop Portfolio"
+description = "A personal portfolio presented as an interactive desktop operating system, blending familiar Mac polish with Linux-inspired utility and developer culture."
+version = "1.0.0"
+id = "artifacts/desktop-portfolio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25997
+
+[services.development]
+run = "pnpm --filter @workspace/desktop-portfolio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/desktop-portfolio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/desktop-portfolio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25997"
+BASE_PATH = "/"

@@ -347,6 +347,9 @@ button { cursor: pointer; }
 .mobile-shortcut-menu { position: fixed; z-index: 50; inset: 50px 14px auto; padding: 16px; color: #edf0f8; background: #1d2038; border: 1px solid rgba(228,255,91,.35); border-radius: 8px; box-shadow: 0 18px 50px rgba(0,0,0,.4); }
 .shortcut-number { margin-right: 8px; color: #e4ff5b; font-family: var(--app-font-mono); }
 .desktop-hint { position: fixed; bottom: 8px; left: 18px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; color: #686e88; font: 10px var(--app-font-mono); }
+.storage-notice { position: fixed; z-index: 150; top: 50px; left: 50%; width: min(430px, calc(100vw - 24px)); display: flex; align-items: baseline; justify-content: center; gap: 7px; transform: translateX(-50%); padding: 8px 12px; color: #f3f5fb; background: rgba(35, 39, 63, .96); border: 1px solid rgba(228, 255, 91, .34); border-radius: 7px; box-shadow: 0 10px 30px rgba(0, 0, 0, .3); pointer-events: none; font: 11px var(--app-font-sans); line-height: 1.35; text-align: center; }
+.storage-notice strong { color: #e4ff5b; font-weight: 650; }
+.storage-notice span { color: #e2e6f0; }
 @keyframes enter { from { opacity: 0; } to { opacity: 1; } }
 @keyframes window-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes context-in { from { opacity: 0; } to { opacity: 1; } }
@@ -420,6 +423,9 @@ button { cursor: pointer; }
 .theme-light .mobile-shortcut-menu { color: #1f3440; background: rgba(247,250,248,.98); border-color: rgba(26,83,91,.28); box-shadow: 0 18px 50px rgba(48,68,71,.24); }
 .theme-light .shortcut-number { color: #0b665d; }
 .theme-light .desktop-hint { color: #4f6070; }
+.theme-light .storage-notice { color: #173847; background: rgba(247,250,248,.97); border-color: rgba(11,102,93,.32); box-shadow: 0 10px 30px rgba(48,68,71,.22); }
+.theme-light .storage-notice strong { color: #0b665d; }
+.theme-light .storage-notice span { color: #435965; }
 .theme-light .desktop-context-menu, .theme-light .context-submenu { color: #1f3440; background: rgba(247,250,248,.98); border-color: rgba(26,83,91,.22); box-shadow: 0 18px 55px rgba(48,68,71,.24); }
 .theme-light .context-menu-row > button:hover, .theme-light .context-menu-row:focus-within > button, .theme-light .context-menu-button:hover, .theme-light .context-menu-button:focus-visible, .theme-light .context-submenu button:hover, .theme-light .context-submenu button:focus-visible { color: #f7fbf8; background: #0b665d; }
 .theme-light .context-menu-danger { color: #a73543; }

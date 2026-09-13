@@ -173,6 +173,9 @@ const ToggleGroupDemo = lazyPage(() =>
 const TooltipDemo = lazyPage(() =>
   import('./demos/tooltip').then(({ TooltipDemo }) => TooltipDemo),
 );
+const AccessibilityPage = lazyPage(() =>
+  import('./accessibility').then(({ AccessibilityPage }) => AccessibilityPage),
+);
 const FesOsDemo = lazyPage(() =>
   import('./demos/fes-os').then(({ FesOsDemo }) => FesOsDemo),
 );
@@ -218,17 +221,10 @@ export const NAV_GROUPS: NavGroup[] = [
         description: 'Actions, labels, status, surfaces, and project cards used by the portfolio.',
         Page: FesOsDemo,
       },
-      {
-        id: 'fes-os-guidelines',
-        name: 'Iconography, motion & patterns',
-        description: 'Keyline icon rules, motion timing, and responsive workspace composition.',
-        Page: GuidelinesDemo,
-      },
     ],
   },
-  { name: 'Brand', entries: [] },
   {
-    name: 'Colors',
+    name: 'Foundations',
     entries: [
       {
         id: 'color-roles',
@@ -236,27 +232,29 @@ export const NAV_GROUPS: NavGroup[] = [
         description: 'Brand, semantic, text, background, and border colors.',
         Page: ColorsPage,
       },
-    ],
-  },
-  {
-    name: 'Fonts',
-    entries: [
       {
         id: 'type-scale',
-        name: 'Type scale',
+        name: 'Typography',
         description: 'Font families, headings, body text, labels, and captions.',
         Page: FontsPage,
       },
-    ],
-  },
-  {
-    name: 'Layout',
-    entries: [
       {
         id: 'spacing-radius',
-        name: 'Spacing and radius',
+        name: 'Spacing & radius',
         description: 'The spacing rhythm and corner treatments used by the system.',
         Page: LayoutPage,
+      },
+      {
+        id: 'fes-os-guidelines',
+        name: 'Iconography & motion',
+        description: 'Keyline icon rules, motion timing, and responsive workspace composition.',
+        Page: GuidelinesDemo,
+      },
+      {
+        id: 'accessibility',
+        name: 'Accessibility',
+        description: 'WCAG AA targets and the accessibility rules followed by the portfolio.',
+        Page: AccessibilityPage,
       },
     ],
   },

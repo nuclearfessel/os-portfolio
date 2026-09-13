@@ -762,6 +762,7 @@ function Home() {
   const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; target: 'desktop' | 'dock' } | null>(null);
   const [stickyMenu, setStickyMenu] = useState<{ x: number; y: number; id: StickyItemId } | null>(null);
+  const [stickyPendingDelete, setStickyPendingDelete] = useState<StickyItemId | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [iconSize, setIconSize] = useState<IconSize>(savedDesktopState.iconSize);
   const [snapToGrid, setSnapToGrid] = useState(savedDesktopState.snapToGrid);
@@ -927,6 +928,7 @@ function Home() {
         setMobileOpen(false);
         setContextMenu(null);
         setStickyMenu(null);
+        setStickyPendingDelete(null);
       }
       if (event.metaKey || event.ctrlKey) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '`': 'terminal' };
@@ -1358,6 +1360,7 @@ function Home() {
     });
   };
   const deleteSticky = (id: StickyItemId) => {
+    if (id === 'sticky') return;
     const remaining = stickies.filter((sticky) => sticky.id !== id);
     setStickies(remaining);
     setActiveStickyId((activeId) => activeId === id ? (remaining[0]?.id ?? 'sticky') : activeId);
@@ -1385,6 +1388,7 @@ function Home() {
       return next;
     });
     setStickyMenu(null);
+    setStickyPendingDelete(null);
   };
   const cycleStickyColor = (id: StickyItemId) => {
     setStickies((current) => current.map((sticky) => {
@@ -1599,6 +1603,22 @@ function Home() {
               >
                 <Plus size={16} strokeWidth={2} aria-hidden="true" />
               </button>
+              {sticky.id !== 'sticky' && (
+                <button
+                  type="button"
+                  className="sticky-delete-button"
+                  aria-label={`Delete sticky note ${index + 1}`}
+                  data-testid={`button-delete-${sticky.id}`}
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setStickyMenu(null);
+                    setStickyPendingDelete(sticky.id);
+                  }}
+                >
+                  <X size={15} strokeWidth={2} aria-hidden="true" />
+                </button>
+              )}
               <textarea
                 className="sticky-text"
                 value={sticky.text}
@@ -1769,17 +1789,52 @@ function Home() {
             <span className="context-check" aria-hidden="true">0°</span>
             <span>Reset rotation</span>
           </button>
-          <div className="context-menu-separator" />
-          <button
-            type="button"
-            className="context-menu-button context-menu-danger"
-            role="menuitem"
-            onClick={() => deleteSticky(stickyMenu.id)}
-            data-testid="button-delete-sticky"
+          {stickyMenu.id !== 'sticky' && (
+            <>
+              <div className="context-menu-separator" />
+              <button
+                type="button"
+                className="context-menu-button context-menu-danger"
+                role="menuitem"
+                onClick={() => {
+                  setStickyPendingDelete(stickyMenu.id);
+                  setStickyMenu(null);
+                }}
+                data-testid="button-delete-sticky"
+              >
+                <X size={14} aria-hidden="true" />
+                <span>Delete this sticky…</span>
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {stickyPendingDelete && (
+        <div className="reset-dialog-backdrop">
+          <section
+            className="reset-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-sticky-dialog-title"
+            aria-describedby="delete-sticky-dialog-description"
+            data-testid="dialog-delete-sticky"
           >
-            <X size={14} aria-hidden="true" />
-            <span>Delete this sticky</span>
-          </button>
+            <span className="reset-dialog-eyebrow">sticky note</span>
+            <h2 id="delete-sticky-dialog-title">Delete this sticky?</h2>
+            <p id="delete-sticky-dialog-description">Its text, color, size, position, and rotation will be permanently removed from this desktop.</p>
+            <div className="reset-dialog-actions">
+              <button type="button" className="quick-button" onClick={() => setStickyPendingDelete(null)} autoFocus>Cancel</button>
+              <button
+                type="button"
+                className="quick-button reset-confirm-button"
+                onClick={() => deleteSticky(stickyPendingDelete)}
+                data-testid="button-confirm-delete-sticky"
+              >
+                Delete sticky
+              </button>
+            </div>
+          </section>
         </div>
       )}
 

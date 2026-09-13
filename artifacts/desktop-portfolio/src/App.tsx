@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
-  Apple, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
+  Apple, ArrowLeft, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
   Check, Command, FolderGit2, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
   UserRound, Wifi, X,
 } from 'lucide-react';
@@ -135,9 +135,9 @@ function WindowFrame({
     >
       <header className="window-header" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
         <div className="traffic-lights" onPointerDown={(event) => event.stopPropagation()}>
-          <button className="close" onClick={onClose} aria-label={`Close ${title}`} data-testid={`button-close-${id}`}><X size={7} strokeWidth={3} /></button>
-          <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} data-testid={`button-minimize-${id}`}><Minus size={8} strokeWidth={3} /></button>
-          <button className="maximize" onClick={onFocus} aria-label={`Focus ${title}`} data-testid={`button-focus-${id}`}><Maximize2 size={7} strokeWidth={3} /></button>
+          <button className="close" onClick={onClose} aria-label={`Close ${title}`} data-testid={`button-close-${id}`}><X size={9} strokeWidth={2.6} /></button>
+          <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} data-testid={`button-minimize-${id}`}><Minus size={10} strokeWidth={2.6} /></button>
+          <button className="maximize" onClick={onFocus} aria-label={`Focus ${title}`} data-testid={`button-focus-${id}`}><Maximize2 size={9} strokeWidth={2.4} /></button>
         </div>
         <div className="window-title"><strong>~/alex/</strong>{title.toLowerCase()}</div>
       </header>
@@ -180,23 +180,61 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
 }
 
 function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
+  const [caseStudyOpen, setCaseStudyOpen] = useState(false);
+
   return (
     <WindowFrame {...props} id="work" title="Selected work">
-      <div className="window-body">
-        <span className="section-kicker">projects / selected</span>
-        <h2>Things I’ve shipped.</h2>
-        <div className="project-list">
-          {projects.map((project) => (
-            <article className="project-card" key={project.id} data-testid={`card-project-${project.id}`}>
-              <span className="project-index" style={{ color: project.color }}>{project.id}</span>
-              <div className="project-copy"><h3>{project.name}</h3><p>{project.desc}</p></div>
-              <span className="project-tag">{project.tag}</span>
-              <button className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => window.alert(`${project.name} case study coming soon.`)}>view case study <ArrowUpRight size={11} /></button>
-            </article>
-          ))}
+      {caseStudyOpen ? (
+        <div className="window-body case-study" data-testid="case-study-orbit">
+          <button className="case-study-back" onClick={() => setCaseStudyOpen(false)} data-testid="button-back-to-work"><ArrowLeft size={15} />all projects</button>
+          <span className="section-kicker">case study / product systems / 2024</span>
+          <div className="case-study-hero">
+            <div>
+              <h2>Orbit CRM</h2>
+              <p>A calmer command center for customer teams managing complex accounts.</p>
+            </div>
+            <span className="case-study-role">Product design<br />Frontend engineering</span>
+          </div>
+          <div className="case-study-metrics" aria-label="Project outcomes">
+            <div><strong>34%</strong><span>faster account reviews</span></div>
+            <div><strong>2.1×</strong><span>more risks caught early</span></div>
+            <div><strong>18%</strong><span>fewer support escalations</span></div>
+          </div>
+          <div className="orbit-preview" aria-label="Orbit CRM interface preview">
+            <div className="orbit-sidebar"><span className="orbit-logo">ORBIT</span><i /><i /><i /><i /></div>
+            <div className="orbit-dashboard">
+              <div className="orbit-preview-header"><span>Account health</span><b>Q4 review</b></div>
+              <div className="orbit-stat-row"><span><b>92</b> healthy</span><span><b>14</b> watch</span><span><b>03</b> at risk</span></div>
+              <div className="orbit-chart"><span /><span /><span /><span /><span /><span /></div>
+            </div>
+          </div>
+          <div className="case-study-sections">
+            <section><span>01 / challenge</span><h3>Important signals were buried.</h3><p>Account teams were jumping between six tools to understand customer health. Reviews were slow, risk was found late, and every manager used a different process.</p></section>
+            <section><span>02 / approach</span><h3>Design around decisions, not data.</h3><p>I worked with success leads to map the few decisions that changed an account’s trajectory, then built a focused workspace that grouped signals, history, and next actions together.</p></section>
+            <section><span>03 / outcome</span><h3>One shared operating rhythm.</h3><p>The new workflow made weekly reviews faster and more consistent. Teams caught risk sooner, reduced handoff gaps, and spent more time acting instead of assembling reports.</p></section>
+          </div>
         </div>
-        <p style={{ marginTop: 18, fontFamily: 'var(--app-font-mono)', fontSize: 10 }}>03 projects · 8 shipped systems · 0 design handoffs left behind</p>
-      </div>
+      ) : (
+        <div className="window-body">
+          <span className="section-kicker">projects / selected</span>
+          <h2>Things I’ve shipped.</h2>
+          <div className="project-list">
+            {projects.map((project) => (
+              <article className="project-card" key={project.id} data-testid={`card-project-${project.id}`}>
+                <span className="project-index" style={{ color: project.color }}>{project.id}</span>
+                <div className="project-copy"><h3>{project.name}</h3><p>{project.desc}</p></div>
+                <span className="project-tag">{project.tag}</span>
+                {project.id === '01' ? (
+                  <button className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => setCaseStudyOpen(true)}>view case study <ArrowUpRight size={13} /></button>
+                ) : (
+                  <button className="project-link" disabled data-testid={`button-open-project-${project.id}`}>coming soon</button>
+                )}
+              </article>
+            ))}
+          </div>
+          <p style={{ marginTop: 18, fontFamily: 'var(--app-font-mono)', fontSize: 10 }}>03 projects · 8 shipped systems · 0 design handoffs left behind</p>
+        </div>
+      )}
     </WindowFrame>
   );
 }
@@ -232,7 +270,7 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
         <span className="section-kicker">contact.txt</span>
         <h2>Have a hard problem?</h2>
         <p>Tell me what you’re making, where it’s stuck, and what “better” would feel like. I’ll get back to you with a considered reply, usually within a couple of days.</p>
-        <a className="contact-button" href="mailto:hello@alexrivera.dev" data-testid="link-email-alex">email alex <Mail size={14} /></a>
+        <a className="contact-button" href="mailto:hello@alexrivera.dev" data-testid="link-email-alex">email alex <Mail size={16} /></a>
         <p style={{ fontFamily: 'var(--app-font-mono)', fontSize: 10, marginTop: 18 }}>hello@alexrivera.dev</p>
       </div>
     </WindowFrame>

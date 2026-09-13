@@ -36,8 +36,12 @@ test('persists moved icons and every desktop preference across reloads', async (
   await page.mouse.move(initialBox!.x - 180, initialBox!.y + 100, { steps: 8 });
   await page.mouse.up();
 
-  const movedStyle = await aboutFolder.getAttribute('style');
-  expect(movedStyle).toContain('inset:');
+  const movedStyle = await aboutFolder.evaluate((element) => ({
+    left: element.style.left,
+    top: element.style.top,
+  }));
+  expect(movedStyle.left).not.toBe('');
+  expect(movedStyle.top).not.toBe('');
 
   await openDesktopMenu(page);
   await chooseSubmenuOption(page, 'View', 'Small icons');
@@ -61,6 +65,8 @@ test('persists moved icons and every desktop preference across reloads', async (
   expect(savedBeforeReload.snapToGrid).toBe(true);
   expect(savedBeforeReload.theme).toBe('dark');
   expect(savedBeforeReload.showDesktopIcons).toBe(false);
+  expect(Number.parseFloat(movedStyle.left)).toBeCloseTo(savedBeforeReload.itemPositions['desktop-about'].left, 2);
+  expect(Number.parseFloat(movedStyle.top)).toBeCloseTo(savedBeforeReload.itemPositions['desktop-about'].top, 2);
 
   await page.reload();
 
@@ -73,6 +79,12 @@ test('persists moved icons and every desktop preference across reloads', async (
   await openDesktopMenu(page);
   await expect(page.getByRole('menuitemcheckbox', { name: 'Snap to grid' })).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' })).toHaveAttribute('aria-checked', 'false');
+  await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
+  const restoredStyle = await page.getByTestId('button-folder-about').evaluate((element) => ({
+    left: element.style.left,
+    top: element.style.top,
+  }));
+  expect(restoredStyle).toEqual(movedStyle);
 });
 
 test('falls back to safe defaults when saved data is corrupted', async ({ page }) => {
@@ -123,8 +135,18 @@ test('Reset desktop restores every default after confirmation', async ({ page })
   await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
   await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
-  await expect(page.getByTestId('button-folder-about')).not.toHaveAttribute('style', /inset/);
-  await expect(page.getByTestId('sticky-sticky')).not.toHaveAttribute('style', /inset|width|height/);
+  const resetLauncherStyle = await page.getByTestId('button-folder-about').evaluate((element) => ({
+    left: element.style.left,
+    top: element.style.top,
+  }));
+  expect(resetLauncherStyle).toEqual({ left: '', top: '' });
+  const resetStickyStyle = await page.getByTestId('sticky-sticky').evaluate((element) => ({
+    left: element.style.left,
+    top: element.style.top,
+    width: element.style.width,
+    height: element.style.height,
+  }));
+  expect(resetStickyStyle).toEqual({ left: '', top: '', width: '', height: '' });
 
   await openDesktopMenu(page);
   await expect(page.getByRole('menuitemcheckbox', { name: 'Snap to grid' })).toHaveAttribute('aria-checked', 'false');

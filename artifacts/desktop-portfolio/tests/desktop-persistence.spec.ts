@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'fes-os.desktop.v2';
+const storageKey = 'fes-os.desktop.v3';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -372,6 +372,9 @@ test('stays usable when browser storage reads, writes, and removals fail', async
     stickies: [{
       id: 'sticky',
       text: inMemoryState.stickyText,
+    }, {
+      id: 'sticky-1',
+      text: '',
     }],
     dockPosition: 'right',
   });
@@ -590,9 +593,9 @@ test('deletes only user-created stickies after confirmation and clears their sav
   await addStickyButton.focus();
   await page.keyboard.press('Enter');
 
-  const createdSticky = page.getByTestId('sticky-sticky-1');
-  const createdText = createdSticky.getByRole('textbox', { name: 'Sticky note 2 text' });
-  const deleteButton = page.getByTestId('button-delete-sticky-1');
+  const createdSticky = page.getByTestId('sticky-sticky-2');
+  const createdText = createdSticky.getByRole('textbox', { name: 'Sticky note 3 text' });
+  const deleteButton = page.getByTestId('button-delete-sticky-2');
   await expect(createdSticky).toBeVisible();
   await createdText.fill('Delete this saved note.');
 
@@ -606,12 +609,12 @@ test('deletes only user-created stickies after confirmation and clears their sav
   await expect.poll(async () => page.evaluate((key) => {
     const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
     return {
-      sticky: saved.stickies?.find((item: { id: string }) => item.id === 'sticky-1'),
-      position: saved.itemPositions?.['sticky-1'],
-      size: saved.itemSizes?.['sticky-1'],
+      sticky: saved.stickies?.find((item: { id: string }) => item.id === 'sticky-2'),
+      position: saved.itemPositions?.['sticky-2'],
+      size: saved.itemSizes?.['sticky-2'],
     };
   }, storageKey)).toMatchObject({
-    sticky: { id: 'sticky-1', text: 'Delete this saved note.' },
+    sticky: { id: 'sticky-2', text: 'Delete this saved note.' },
     position: { left: expect.any(Number), top: expect.any(Number) },
     size: { width: expect.any(Number), height: expect.any(Number) },
   });
@@ -639,7 +642,7 @@ test('deletes only user-created stickies after confirmation and clears their sav
   await expect(createdSticky).toBeVisible();
   await expect(deleteButton).toBeFocused();
 
-  await openStickyMenu(page, 'sticky-1');
+  await openStickyMenu(page, 'sticky-2');
   await page.getByRole('menuitem', { name: 'Delete this sticky…' }).click();
   await expect(deleteDialog).toBeVisible();
   await confirmDelete.focus();
@@ -651,22 +654,22 @@ test('deletes only user-created stickies after confirmation and clears their sav
     const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
     return {
       stickyIds: saved.stickies?.map((item: { id: string }) => item.id),
-      hasPosition: Object.hasOwn(saved.itemPositions ?? {}, 'sticky-1'),
-      hasSize: Object.hasOwn(saved.itemSizes ?? {}, 'sticky-1'),
+      hasPosition: Object.hasOwn(saved.itemPositions ?? {}, 'sticky-2'),
+      hasSize: Object.hasOwn(saved.itemSizes ?? {}, 'sticky-2'),
     };
   }, storageKey)).toEqual({
-    stickyIds: ['sticky'],
+    stickyIds: ['sticky', 'sticky-1'],
     hasPosition: false,
     hasSize: false,
   });
 
   await page.reload();
-  await expect(page.getByTestId('sticky-sticky-1')).toHaveCount(0);
+  await expect(page.getByTestId('sticky-sticky-2')).toHaveCount(0);
   await expect(page.getByTestId('sticky-sticky')).toBeVisible();
   const savedAfterReload = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
-  expect(savedAfterReload.stickies.map((item: { id: string }) => item.id)).toEqual(['sticky']);
-  expect(savedAfterReload.itemPositions).not.toHaveProperty('sticky-1');
-  expect(savedAfterReload.itemSizes).not.toHaveProperty('sticky-1');
+  expect(savedAfterReload.stickies.map((item: { id: string }) => item.id)).toEqual(['sticky', 'sticky-1']);
+  expect(savedAfterReload.itemPositions).not.toHaveProperty('sticky-2');
+  expect(savedAfterReload.itemSizes).not.toHaveProperty('sticky-2');
 });
 
 test('keeps stickies hidden on mobile and tablet workspaces', async ({ page }) => {
@@ -711,9 +714,9 @@ test('Reset desktop restores every default after confirmation', async ({ page })
   ]);
   await page.reload();
   await page.getByTestId('button-close-work').click();
-  await page.getByTestId('button-close-terminal').click();
-  await page.getByTestId('button-dock-about').click();
+  await page.getByTestId('button-close-about').click();
   await page.getByTestId('button-dock-contact').click();
+  await page.getByTestId('button-dock-terminal').click();
   await page.getByTestId('button-dock-stickies').click();
   await page.getByTestId('button-dock-stickies').click();
 
@@ -749,8 +752,8 @@ test('Reset desktop restores every default after confirmation', async ({ page })
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
   await expect(page.getByTestId('window-work')).toBeVisible();
   await expect(page.getByTestId('window-work')).toHaveClass(/is-active/);
-  await expect(page.getByTestId('window-terminal')).toBeVisible();
-  await expect(page.getByTestId('window-about')).toHaveCount(0);
+  await expect(page.getByTestId('window-terminal')).toHaveCount(0);
+  await expect(page.getByTestId('window-about')).toBeVisible();
   await expect(page.getByTestId('window-contact')).toHaveCount(0);
   await expect(page.getByTestId('sticky-sticky')).toBeVisible();
   const resetLauncherStyle = await page.getByTestId('button-folder-about').evaluate((element) => ({
@@ -785,6 +788,13 @@ test('Reset desktop restores every default after confirmation', async ({ page })
       rotation: 3,
       author: 'fes',
       createdAt: '09:42',
+    }, {
+      id: 'sticky-1',
+      color: 'orange',
+      text: '',
+      rotation: -2,
+      author: 'user',
+      createdAt: 'saved',
     }],
     dockPosition: 'bottom',
   });

@@ -164,6 +164,15 @@ const defaultSticky: StickyData = {
   createdAt: '09:42',
 };
 
+const defaultSecondSticky: StickyData = {
+  id: 'sticky-1',
+  color: 'orange',
+  text: '',
+  rotation: -2,
+  author: 'user',
+  createdAt: 'saved',
+};
+
 const formatStickyTime = () => new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date());
 const createUserSticky = (id: StickyItemId, color: StickyColorId = defaultSticky.color, rotation = defaultSticky.rotation): StickyData => ({
   id,
@@ -186,7 +195,7 @@ type SavedDesktopState = {
   dockPosition: DockPosition;
 };
 
-const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v2';
+const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v3';
 const DESKTOP_GRID_SIZE = 4;
 let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {
@@ -197,7 +206,7 @@ const defaultDesktopState: SavedDesktopState = {
   snapToGrid: false,
   theme: 'light',
   showDesktopIcons: true,
-  stickies: [defaultSticky],
+  stickies: [defaultSticky, defaultSecondSticky],
   dockPosition: 'bottom',
 };
 
@@ -278,7 +287,7 @@ function loadDesktopState(): SavedDesktopState {
       snapToGrid: typeof parsed.snapToGrid === 'boolean' ? parsed.snapToGrid : defaultDesktopState.snapToGrid,
       theme: parsed.theme === 'light' || parsed.theme === 'dark' ? parsed.theme : defaultDesktopState.theme,
       showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
-      stickies: Array.isArray(parsed.stickies) ? stickies : [defaultSticky],
+      stickies: Array.isArray(parsed.stickies) ? stickies : defaultDesktopState.stickies,
       dockPosition: ['bottom', 'top', 'left', 'right'].includes(parsed.dockPosition as string) ? (parsed.dockPosition as DockPosition) : defaultDesktopState.dockPosition,
     };
   } catch {
@@ -294,10 +303,10 @@ const projects = [
 ];
 
 const initialWindows: WindowState = {
-  about: false,
+  about: true,
   work: true,
   contact: false,
-  terminal: true,
+  terminal: false,
 };
 
 function WindowFrame({

@@ -8,8 +8,6 @@ import {
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import NotFound from '@/pages/not-found';
-import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient();
 
@@ -792,6 +790,26 @@ function Home() {
   const managedLayout = workspaceMode === 'managed';
   const effectiveDockPosition: DockPosition = workspaceMode === 'desktop' && !coarsePointer ? dockPosition : 'bottom';
   const singleTapLaunch = workspaceMode !== 'desktop' || coarsePointer;
+  const getCurrentDesktopState = (): SavedDesktopState => ({
+    folderPositions: workspaceMode === 'desktop' ? folderPositions : desktopGeometryRef.current.folderPositions,
+    itemPositions: workspaceMode === 'desktop' ? dragPositions : desktopGeometryRef.current.dragPositions,
+    itemSizes: workspaceMode === 'desktop' ? itemSizes : desktopGeometryRef.current.itemSizes,
+    iconSize,
+    snapToGrid,
+    theme,
+    showDesktopIcons,
+    stickies,
+    dockPosition,
+  });
+  const retryDesktopSave = () => {
+    try {
+      window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(getCurrentDesktopState()));
+      setStorageUnavailable(false);
+      setStorageHelpOpen(false);
+    } catch {
+      setStorageUnavailable(true);
+    }
+  };
 
   const startDockDrag = (event: React.PointerEvent<HTMLElement>) => {
     if (event.button !== 0 || workspaceMode !== 'desktop' || coarsePointer) return;
@@ -914,19 +932,8 @@ function Home() {
   }, [workspaceMode]);
 
   useEffect(() => {
-    const desktopState: SavedDesktopState = {
-      folderPositions: workspaceMode === 'desktop' ? folderPositions : desktopGeometryRef.current.folderPositions,
-      itemPositions: workspaceMode === 'desktop' ? dragPositions : desktopGeometryRef.current.dragPositions,
-      itemSizes: workspaceMode === 'desktop' ? itemSizes : desktopGeometryRef.current.itemSizes,
-      iconSize,
-      snapToGrid,
-      theme,
-      showDesktopIcons,
-      stickies,
-      dockPosition,
-    };
     try {
-      window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(desktopState));
+      window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(getCurrentDesktopState()));
     } catch {
       setStorageUnavailable(true);
     }
@@ -1567,9 +1574,12 @@ function Home() {
             </button>
           </div>
           {storageHelpOpen && (
-            <p id="storage-recovery-guidance" className="storage-recovery-guidance">
-              Leave private browsing, or allow this site to store site data in your browser settings, then reload this page.
-            </p>
+            <div id="storage-recovery-guidance" className="storage-recovery-guidance">
+              <p>Leave private browsing, or allow this site to store site data in your browser settings.</p>
+              <button type="button" className="storage-help-toggle" onClick={retryDesktopSave}>
+                Try saving again
+              </button>
+            </div>
           )}
         </aside>
       )}
@@ -1941,29 +1951,13 @@ function Home() {
   );
 }
 
-function Router() {
-  return (
-    <RoutedErrorBoundary>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route component={NotFound} />
-      </Switch>
-    </RoutedErrorBoundary>
-  );
-}
-
-function RoutedErrorBoundary({ children }: { children: ReactNode }) {
-  const [location] = useLocation();
-  return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
-}
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
+        <ErrorBoundary>
+          <Home />
+        </ErrorBoundary>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

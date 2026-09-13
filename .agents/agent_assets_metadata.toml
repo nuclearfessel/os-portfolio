@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "-i0i8fhqPf_tS21UwjSP6"
+uri = "file://claude-desktop-portfolio-source.zip"
+type = "unspecified"
+title = "Claude Desktop Portfolio Source"
+description = "Clean source archive for editing the desktop portfolio with Claude Code. Includes required workspace configuration and source files; excludes dependencies, builds, caches, and test reports."
+logical_id = "c69dcb85-84c5-4470-9202-adcbfb12ed19"
+content_hash = "sha256:e4c30af557f1e68863efc5473450dfbdd3c78d9c8f47853e10a486916b7f0221"
+size = 181471
+mtime_ms = 1789312776044
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d159fe7f-a716-4487-8eae-fc1245a06d3f/c69dcb85-84c5-4470-9202-adcbfb12ed19/8d5571af-0d82-4df3-9cfa-2203dff34263"
+storage_version_token = "1789312790624282"
+content_type = "application/octet-stream"

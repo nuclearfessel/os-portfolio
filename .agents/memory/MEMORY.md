@@ -3,3 +3,4 @@
 - [Responsive desktop geometry](responsive-desktop-geometry.md) — responsive reflow is temporary; preserve and restore the user’s desktop layout.
 - [Fes OS component ownership](fes-os-component-ownership.md) — shared visual primitives belong to the design-system package; product behavior stays in the portfolio.
 - [Firefox sticky initialization](firefox-sticky-initialization.md) — never persist first-render sticky geometry measured before CSS is ready.
+- [Firefox launcher pointer capture](firefox-launcher-pointer-capture.md) — release launcher capture when Firefox reports no primary button during a captured move.

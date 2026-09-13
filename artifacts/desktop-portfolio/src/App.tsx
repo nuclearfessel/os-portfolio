@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
   Check, FileText as StickyNote, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
-  Plus, Cursor as MousePointer2, Terminal, CircleUser as UserRound, Wifi, X,
+  Moon, Plus, Cursor as MousePointer2, Sun, Terminal, CircleUser as UserRound, Wifi, X,
 } from '@keyline-icons/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -1998,6 +1998,20 @@ function Home() {
         <button className={`dock-item ${windows.work && (workspaceMode === 'desktop' || activeWindow === 'work') ? 'active' : ''}`} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><span>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</span></button>
         <button className={`dock-item ${windows.about && (workspaceMode === 'desktop' || activeWindow === 'about') ? 'active' : ''}`} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About{workspaceMode === 'desktop' ? ' · 1' : ''}</span></button>
         <button className={`dock-item ${windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact') ? 'active' : ''}`} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</span></button>
+        {workspaceMode !== 'desktop' && (
+          <button
+            className={`dock-item dock-mode-toggle mode-${theme}`}
+            onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')}
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            data-testid="button-dock-mode"
+          >
+            <div className="mode-icon" aria-hidden="true">
+              <Sun className="mode-sun" size={20} strokeWidth={1.8} />
+              <Moon className="mode-moon" size={20} strokeWidth={1.8} />
+            </div>
+            <span>Mode</span>
+          </button>
+        )}
         {workspaceMode === 'desktop' && (
           <>
             <button className={`dock-item ${windows.terminal ? 'active' : ''}`} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></button>

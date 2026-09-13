@@ -319,6 +319,12 @@ button { cursor: pointer; }
 .dock.dock-left .dock-item span { left: 53px; top: 50%; transform: translateY(-50%); }
 .dock.dock-right .dock-item span { right: 53px; top: 50%; transform: translateY(-50%); }
 .dock-item:hover span { opacity: 1; }
+.mode-icon { position: relative !important; width: 20px; height: 20px; display: block; padding: 0 !important; overflow: visible; opacity: 1 !important; color: inherit; background: transparent !important; border: 0 !important; transform: none !important; }
+.mode-icon svg { position: absolute; inset: 0; display: block; transition: opacity .24s ease, transform .34s cubic-bezier(.2,.8,.2,1); }
+.mode-light .mode-sun { opacity: 1; transform: rotate(0deg) scale(1); }
+.mode-light .mode-moon { opacity: 0; transform: rotate(-55deg) scale(.35); }
+.mode-dark .mode-sun { opacity: 0; transform: rotate(80deg) scale(.35); }
+.mode-dark .mode-moon { opacity: 1; transform: rotate(0deg) scale(1); }
 .desktop-context-menu { position: fixed; z-index: 100; width: 218px; padding: 6px; color: #edf0f8; background: rgba(29,32,54,.98); border: 1px solid rgba(210,218,255,.2); border-radius: 8px; box-shadow: 0 18px 55px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.05); backdrop-filter: none; font: 12px var(--app-font-sans); animation: context-in .08s ease-out both; }
 .context-menu-row { position: relative; }
 .context-menu-row > button, .context-menu-button, .context-submenu button { width: 100%; min-height: 30px; display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 7px; padding: 5px 8px; color: inherit; background: transparent; border: 0; border-radius: 5px; text-align: left; }
@@ -591,7 +597,9 @@ button { cursor: pointer; }
 .dock-mobile-menu .dock-item { color: #9ba3c2; background: transparent; border-color: transparent; }
 .theme-light .dock-mobile-menu .dock-item { color: #50645e; }
 .dock-mobile-menu .dock-item.active { color: #e4ff5b; }
+.dock-mobile-menu .dock-mode-toggle, .dock-tablet-menu .dock-mode-toggle { color: #86d9ee; }
 .theme-light .dock-mobile-menu .dock-item.active { color: #0b665d; }
+.theme-light .dock-mobile-menu .dock-mode-toggle, .theme-light .dock-tablet-menu .dock-mode-toggle { color: #0b665d; }
 .dock-mobile-menu .dock-item.active::after,
 .dock-tablet-menu .dock-item.active::after { display: none; }
 .dock-mobile-menu .dock-item span,

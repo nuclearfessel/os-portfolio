@@ -296,10 +296,34 @@ function loadDesktopState(): SavedDesktopState {
 }
 
 const projects = [
-  { id: '01', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
-  { id: '02', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
-  { id: '03', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
-  { id: '04', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
+  {
+    id: '01',
+    name: 'Intuitive Surgical Design System',
+    desc: 'Lead production, documentation and library management as adoption grew from 1 to 25 product teams.',
+    tag: 'Mar 2022 - Aug 2026',
+    color: '#e4ff5b',
+  },
+  {
+    id: '02',
+    name: 'SimNow 2.0 — da Vinci Simulator UI update',
+    desc: 'Unified the da Vinci console and Inuitive Digital design systems for surgeon training simulator UI.',
+    tag: 'Mar 2022 - Jan 2025',
+    color: '#e4ff5b',
+  },
+  {
+    id: '03',
+    name: "Cedar — REI's Design System",
+    desc: "Library and tooling contributions to Cedar, REI's open-source design system",
+    tag: 'June 2019 – June 2020',
+    color: '#e4ff5b',
+  },
+  {
+    id: '04',
+    name: 'Microsoft Windows 10 Language Installer',
+    desc: "Redesigned Windows 10's language pack installer flow as a clearer, focused modal-dialog experience",
+    tag: '2017–2018',
+    color: '#e4ff5b',
+  },
 ];
 
 const initialWindows: WindowState = {

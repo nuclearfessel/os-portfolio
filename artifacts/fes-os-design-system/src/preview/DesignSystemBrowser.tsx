@@ -7,7 +7,7 @@ import {
   NAV_GROUPS,
   OVERVIEW_ENTRY,
   type NavGroup,
-} from './fes-registry';
+} from './registry';
 
 function readHashId(): string {
   const id = new URLSearchParams(window.location.hash.slice(1)).get('page');

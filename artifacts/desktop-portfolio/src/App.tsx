@@ -399,7 +399,7 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
           </div>
           <div className="fact-list">
             <div className="fact"><label>currently</label><span>Independent / open to select teams</span></div>
-            <div className="fact"><label>timezone</label><span>ET · UTC−05:00</span></div>
+            <div className="fact"><label>timezone</label><span>PT · UTC−08:00</span></div>
             <div className="fact"><label>outside the screen</label><span>Long walks, short novels, analog synths</span></div>
           </div>
         </div>

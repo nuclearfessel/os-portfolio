@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Apple, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
-  Command, FolderGit2, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
+  Command, Folder, FolderGit2, FolderOpen, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
   UserRound, Wifi, X,
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -194,6 +194,34 @@ function TerminalWindow({
   );
 }
 
+function DesktopFolder({
+  label,
+  meta,
+  open,
+  onToggle,
+}: {
+  label: string;
+  meta: string;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  const Icon = open ? FolderOpen : Folder;
+
+  return (
+    <button
+      className={`desktop-folder ${open ? 'is-open' : ''}`}
+      onClick={onToggle}
+      aria-pressed={open}
+      aria-label={`${open ? 'Close' : 'Open'} ${label} folder`}
+      data-testid={`button-folder-${label.toLowerCase()}`}
+    >
+      <span className="desktop-folder-icon"><Icon size={29} strokeWidth={1.5} /></span>
+      <span className="desktop-folder-label">{label}</span>
+      <span className="desktop-folder-meta">{open ? 'open · click to close' : meta}</span>
+    </button>
+  );
+}
+
 function Home() {
   const [windows, setWindows] = useState<WindowState>(initialWindows);
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
@@ -226,6 +254,13 @@ function Home() {
   };
   const closeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
   const minimizeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
+  const toggleFolder = (id: WindowId) => {
+    if (windows[id]) {
+      closeWindow(id);
+    } else {
+      openWindow(id);
+    }
+  };
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
     onFocus: () => setActiveWindow(id),
@@ -263,6 +298,12 @@ function Home() {
             <button className="quick-button primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></button>
             <button className="quick-button" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></button>
           </div>
+        </div>
+
+        <div className="desktop-folders" aria-label="Portfolio folders">
+          <DesktopFolder label="about" meta="readme.md" open={windows.about} onToggle={() => toggleFolder('about')} />
+          <DesktopFolder label="work" meta="03 projects" open={windows.work} onToggle={() => toggleFolder('work')} />
+          <DesktopFolder label="notes" meta="toolkit + thoughts" open={windows.notes} onToggle={() => toggleFolder('notes')} />
         </div>
 
         <aside className="desktop-note">

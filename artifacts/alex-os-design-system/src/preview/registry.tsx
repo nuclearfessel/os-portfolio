@@ -173,6 +173,12 @@ const ToggleGroupDemo = lazyPage(() =>
 const TooltipDemo = lazyPage(() =>
   import('./demos/tooltip').then(({ TooltipDemo }) => TooltipDemo),
 );
+const AlexOsDemo = lazyPage(() =>
+  import('./demos/alex-os').then(({ AlexOsDemo }) => AlexOsDemo),
+);
+const GuidelinesDemo = lazyPage(() =>
+  import('./demos/guidelines').then(({ GuidelinesDemo }) => GuidelinesDemo),
+);
 
 export type PreviewEntry = {
   // Globally unique across every group — it is the deep-link slug (`#page=<id>`)
@@ -190,9 +196,9 @@ export type NavGroup = {
 };
 
 export const DESIGN_SYSTEM = {
-  title: 'Design System',
+  title: 'Alex OS Design System',
   description:
-    'A reusable system of foundations, components, and patterns for product surfaces.',
+    'Foundations, components, and responsive interaction patterns for the Alex Rivera desktop portfolio in light and dark themes.',
 } as const;
 
 export const OVERVIEW_ENTRY: PreviewEntry = {
@@ -203,6 +209,23 @@ export const OVERVIEW_ENTRY: PreviewEntry = {
 };
 
 export const NAV_GROUPS: NavGroup[] = [
+  {
+    name: 'Alex OS',
+    entries: [
+      {
+        id: 'alex-os-pilot',
+        name: 'Portfolio primitives',
+        description: 'Actions, labels, status, surfaces, and project cards used by the portfolio.',
+        Page: AlexOsDemo,
+      },
+      {
+        id: 'alex-os-guidelines',
+        name: 'Iconography, motion & patterns',
+        description: 'Keyline icon rules, motion timing, and responsive workspace composition.',
+        Page: GuidelinesDemo,
+      },
+    ],
+  },
   { name: 'Brand', entries: [] },
   {
     name: 'Colors',

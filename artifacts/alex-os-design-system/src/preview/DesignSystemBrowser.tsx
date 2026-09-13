@@ -7,7 +7,7 @@ import {
   NAV_GROUPS,
   OVERVIEW_ENTRY,
   type NavGroup,
-} from './registry';
+} from './alex-registry';
 
 function readHashId(): string {
   const id = new URLSearchParams(window.location.hash.slice(1)).get('page');
@@ -93,6 +93,9 @@ function NavigationItems({
 }
 
 export function DesignSystemBrowser() {
+  const [theme, setTheme] = useState<'light' | 'dark'>(() =>
+    localStorage.getItem('alex-os-design-system.theme') === 'dark' ? 'dark' : 'light',
+  );
   const [selectedId, select] = useSelectedId();
   const [query, setQuery] = useState('');
   const mobileNav = useRef<HTMLDetailsElement>(null);
@@ -125,6 +128,11 @@ export function DesignSystemBrowser() {
     window.scrollTo({ top: 0 });
   }, [active.id]);
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('alex-os-design-system.theme', theme);
+  }, [theme]);
+
   const showOverview = `${OVERVIEW_ENTRY.name} ${OVERVIEW_ENTRY.description}`
     .toLowerCase()
     .includes(normalizedQuery);
@@ -140,8 +148,18 @@ export function DesignSystemBrowser() {
     <div className="min-h-screen bg-background text-foreground md:grid md:grid-cols-[260px_minmax(0,1fr)]">
       <aside className="border-b bg-muted/20 md:sticky md:top-0 md:flex md:h-screen md:flex-col md:border-b-0 md:border-r">
         <div className="border-b px-5 py-5">
-          <p className="text-sm font-semibold">{DESIGN_SYSTEM.title}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Browse the system</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold">{DESIGN_SYSTEM.title}</p>
+            <button
+              type="button"
+              onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')}
+              className="rounded-md border bg-card px-2 py-1 font-mono text-[10px] uppercase tracking-wide transition-colors hover:border-primary hover:text-primary"
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+            >
+              {theme}
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">Browse both themes</p>
         </div>
         <div className="p-4 pb-2">
           <Input

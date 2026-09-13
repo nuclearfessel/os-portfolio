@@ -46,12 +46,14 @@ export function SectionLabel({ className, ...props }: HTMLAttributes<HTMLSpanEle
 export type StatusIndicatorProps = HTMLAttributes<HTMLSpanElement> & {
   label?: string;
   tone?: 'online' | 'idle' | 'danger';
+  dotClassName?: string;
 };
 
 export function StatusIndicator({
   className,
   label = 'online',
   tone = 'online',
+  dotClassName,
   ...props
 }: StatusIndicatorProps) {
   return (
@@ -63,6 +65,7 @@ export function StatusIndicator({
           tone === 'online' && 'bg-primary text-primary',
           tone === 'idle' && 'bg-muted-foreground text-muted-foreground',
           tone === 'danger' && 'bg-destructive text-destructive',
+          dotClassName,
         )}
       />
       {label}

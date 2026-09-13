@@ -33,6 +33,19 @@ async function openStickyMenu(page: Page, stickyId = 'sticky') {
   await expect(page.getByRole('menu', { name: 'Sticky options' })).toBeVisible();
 }
 
+async function openDockMenu(page: Page) {
+  await page.locator('.dock').evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    element.dispatchEvent(new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: bounds.left + bounds.width / 2,
+      clientY: bounds.top + bounds.height / 2,
+    }));
+  });
+  await expect(page.getByRole('menu', { name: 'Dock options' })).toBeVisible();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await page.evaluate((key) => localStorage.removeItem(key), storageKey);
@@ -165,15 +178,88 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   ).__storageFailureAttempts.getItem)).toBeGreaterThan(0);
 
   await page.getByTestId('button-open-contact').click();
-  await expect(page.getByTestId('window-contact')).toBeVisible();
+  const contactWindow = page.getByTestId('window-contact');
+  await expect(contactWindow).toBeVisible();
+
+  const contactHeader = contactWindow.locator('.window-header');
+  const initialContactBox = await contactWindow.boundingBox();
+  expect(initialContactBox).not.toBeNull();
+  await contactHeader.hover();
+  await page.mouse.down();
+  await page.mouse.move(initialContactBox!.x + 90, initialContactBox!.y + 70, { steps: 6 });
+  await page.mouse.up();
+
+  const movedContactBox = await contactWindow.boundingBox();
+  expect(movedContactBox).not.toBeNull();
+  const resizeHandleBox = await contactWindow.locator('.window-resize-se').boundingBox();
+  expect(resizeHandleBox).not.toBeNull();
+  await page.mouse.move(resizeHandleBox!.x + resizeHandleBox!.width / 2, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(movedContactBox!.x + movedContactBox!.width + 45, movedContactBox!.y + movedContactBox!.height + 30, { steps: 6 });
+  await page.mouse.up();
+
+  const aboutFolder = page.getByTestId('button-folder-about');
+  const initialAboutBox = await aboutFolder.boundingBox();
+  expect(initialAboutBox).not.toBeNull();
+  await aboutFolder.hover();
+  await page.mouse.down();
+  await page.mouse.move(initialAboutBox!.x - 140, initialAboutBox!.y + 80, { steps: 6 });
+  await page.mouse.up();
+  const launcherGeometry = await aboutFolder.evaluate((element) => ({
+    left: Number.parseFloat(element.style.left),
+    top: Number.parseFloat(element.style.top),
+    width: Number.NaN,
+    height: Number.NaN,
+  }));
+
+  await page.getByTestId('button-dock-stickies').click();
+  const sticky = page.getByTestId('sticky-sticky');
+  const initialStickyBox = await sticky.boundingBox();
+  expect(initialStickyBox).not.toBeNull();
+  await sticky.locator('.note-label').hover();
+  await page.mouse.down();
+  await page.mouse.move(initialStickyBox!.x - 100, initialStickyBox!.y + 65, { steps: 6 });
+  await page.mouse.up();
+  await sticky.getByRole('textbox', { name: 'Sticky note 1 text' }).fill('Recovery keeps the whole desktop.');
 
   await openDesktopMenu(page);
   await chooseSubmenuOption(page, 'Theme', 'Dark');
+  await openDesktopMenu(page);
+  await chooseSubmenuOption(page, 'View', 'Small icons');
+  await openDesktopMenu(page);
+  await page.getByRole('menuitemcheckbox', { name: 'Snap to grid' }).click();
+  await openDesktopMenu(page);
+  await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
+  await openDockMenu(page);
+  await page.getByRole('menuitemradio', { name: 'Right' }).click();
+
   await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
+  await expect(aboutFolder).toBeHidden();
+  await expect(page.locator('.desktop-area')).toHaveClass(/dock-space-right/);
   await expect(storageNotice).toHaveCount(1);
   expect(await page.evaluate(() => (
     window as typeof window & { __storageFailureAttempts: { setItem: number } }
   ).__storageFailureAttempts.setItem)).toBeGreaterThan(0);
+
+  const visibleInMemoryState = await page.evaluate(() => {
+    const readGeometry = (selector: string) => {
+      const element = document.querySelector<HTMLElement>(selector);
+      if (!element) throw new Error(`Missing ${selector}`);
+      return {
+        left: Number.parseFloat(element.style.left),
+        top: Number.parseFloat(element.style.top),
+        width: Number.parseFloat(element.style.width),
+        height: Number.parseFloat(element.style.height),
+      };
+    };
+    return {
+      contact: readGeometry('[data-testid="window-contact"]'),
+      sticky: readGeometry('[data-testid="sticky-sticky"]'),
+      stickyText: (document.querySelector('[aria-label="Sticky note 1 text"]') as HTMLTextAreaElement).value,
+    };
+  });
+  const inMemoryState = { launcher: launcherGeometry, ...visibleInMemoryState };
 
   const attemptsBeforeRetry = await page.evaluate(() => (
     window as typeof window & { __storageFailureAttempts: { setItem: number } }
@@ -182,6 +268,27 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await expect(storageNotice).toHaveCount(1);
   await expect(recoveryGuidance).toBeVisible();
   await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
+  await expect(aboutFolder).toBeHidden();
+  await expect(page.locator('.desktop-area')).toHaveClass(/dock-space-right/);
+  await expect(sticky.getByRole('textbox', { name: 'Sticky note 1 text' })).toHaveValue(inMemoryState.stickyText);
+  expect(await page.evaluate(() => {
+    const readGeometry = (selector: string) => {
+      const element = document.querySelector<HTMLElement>(selector);
+      if (!element) throw new Error(`Missing ${selector}`);
+      return {
+        left: Number.parseFloat(element.style.left),
+        top: Number.parseFloat(element.style.top),
+        width: Number.parseFloat(element.style.width),
+        height: Number.parseFloat(element.style.height),
+      };
+    };
+    return {
+      contact: readGeometry('[data-testid="window-contact"]'),
+      sticky: readGeometry('[data-testid="sticky-sticky"]'),
+      stickyText: (document.querySelector('[aria-label="Sticky note 1 text"]') as HTMLTextAreaElement).value,
+    };
+  })).toEqual(visibleInMemoryState);
   expect(await page.evaluate(() => (
     window as typeof window & { __storageFailureAttempts: { setItem: number } }
   ).__storageFailureAttempts.setItem)).toBe(attemptsBeforeRetry + 1);
@@ -191,10 +298,27 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   ).__allowStorage());
   await retrySaving.click();
   await expect(storageNotice).toHaveCount(0);
-  await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey)).toMatchObject({
+  const recoveredSnapshot = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+  expect(recoveredSnapshot).toMatchObject({
+    iconSize: 'small',
+    snapToGrid: true,
     theme: 'dark',
+    showDesktopIcons: false,
+    stickies: [{
+      id: 'sticky',
+      text: inMemoryState.stickyText,
+    }],
+    dockPosition: 'right',
   });
-  await expect(page.getByTestId('window-contact')).toBeVisible();
+  expect(recoveredSnapshot.itemPositions['desktop-about'].left).toBeCloseTo(inMemoryState.launcher.left, 2);
+  expect(recoveredSnapshot.itemPositions['desktop-about'].top).toBeCloseTo(inMemoryState.launcher.top, 2);
+  expect(recoveredSnapshot.itemPositions.contact.left).toBeCloseTo(inMemoryState.contact.left, 2);
+  expect(recoveredSnapshot.itemPositions.contact.top).toBeCloseTo(inMemoryState.contact.top, 2);
+  expect(recoveredSnapshot.itemPositions.sticky.left).toBeCloseTo(inMemoryState.sticky.left, 2);
+  expect(recoveredSnapshot.itemPositions.sticky.top).toBeCloseTo(inMemoryState.sticky.top, 2);
+  expect(recoveredSnapshot.itemSizes.contact.width).toBeCloseTo(inMemoryState.contact.width, 2);
+  expect(recoveredSnapshot.itemSizes.contact.height).toBeCloseTo(inMemoryState.contact.height, 2);
+  await expect(contactWindow).toBeVisible();
 });
 
 test('keeps storage recovery help visible and keyboard-operable on narrow screens', async ({ page }) => {

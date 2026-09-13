@@ -279,6 +279,7 @@ function WindowFrame({
   onClose,
   onMinimize,
   onMaximize,
+  onHeaderDoubleClick,
   onPointerDown,
   onPointerMove,
   onPointerUp,
@@ -296,6 +297,7 @@ function WindowFrame({
   onClose: () => void;
   onMinimize: () => void;
   onMaximize: () => void;
+  onHeaderDoubleClick: (event: ReactMouseEvent<HTMLElement>) => void;
   onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void;
   onPointerMove: (event: ReactPointerEvent<HTMLElement>) => void;
   onPointerUp: (event: ReactPointerEvent<HTMLElement>) => void;
@@ -317,7 +319,7 @@ function WindowFrame({
       data-testid={`window-${id}`}
       aria-label={`${title} window`}
     >
-      <header className="window-header" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
+      <header className="window-header" onDoubleClick={onHeaderDoubleClick} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
         <span className="window-header-spacer" aria-hidden="true" />
         <div className="window-title"><strong>~/alex/</strong>{title.toLowerCase()}</div>
         <div className="traffic-lights" onPointerDown={(event) => event.stopPropagation()}>
@@ -1545,6 +1547,12 @@ function Home() {
     onClose: () => closeWindow(id),
     onMinimize: () => minimizeWindow(id),
     onMaximize: () => {
+      setActiveWindow(id);
+      setStickyOnTop(false);
+      setMaximizedWindows((current) => ({ ...current, [id]: !current[id] }));
+    },
+    onHeaderDoubleClick: (event: ReactMouseEvent<HTMLElement>) => {
+      if (deviceMode !== 'desktop' || (event.target as HTMLElement).closest('.traffic-lights')) return;
       setActiveWindow(id);
       setStickyOnTop(false);
       setMaximizedWindows((current) => ({ ...current, [id]: !current[id] }));

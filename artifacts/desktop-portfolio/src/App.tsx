@@ -373,8 +373,10 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
     <WindowFrame {...props} id="work" title="Selected work">
       {caseStudyOpen ? (
         <div className="window-body case-study" data-testid="case-study-orbit">
-          <button className="case-study-back" onClick={() => setCaseStudyOpen(false)} data-testid="button-back-to-work"><ArrowLeft size={15} />all projects</button>
-          <span className="section-kicker">case study / product systems / 2024</span>
+          <div className="case-study-topbar">
+            <button className="case-study-back" onClick={() => setCaseStudyOpen(false)} data-testid="button-back-to-work"><ArrowLeft size={15} />all projects</button>
+            <span className="section-kicker">case study / product systems / 2024</span>
+          </div>
           <div className="case-study-hero">
             <div>
               <h2>Orbit CRM</h2>

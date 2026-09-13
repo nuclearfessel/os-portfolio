@@ -119,14 +119,20 @@ button { cursor: pointer; }
 .desktop-folder:nth-child(1) { left: 46px; bottom: 150px; }
 .desktop-folder:nth-child(2) { left: 142px; bottom: 150px; }
 .desktop-folder:nth-child(3) { left: 238px; bottom: 150px; }
+.desktop-folder:nth-child(4) { left: 334px; bottom: 150px; }
+.desktop-folder:nth-child(5) { left: 430px; bottom: 150px; }
 .desktop-folder:hover, .desktop-folder:focus-visible { color: #fff; outline: none; }
 .desktop-folder:active { cursor: grabbing; }
 .desktop-folder-icon { position: relative; display: block; width: 58px; height: 43px; border-radius: 5px 7px 7px 7px; background: linear-gradient(180deg, #81c7f4 0%, #4c9ee3 52%, #347fca 100%); box-shadow: 0 6px 12px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.42); transition: filter .1s; }
 .desktop-folder-icon::before { content: ''; position: absolute; left: 4px; top: -6px; width: 25px; height: 10px; border-radius: 5px 5px 0 0; background: #68b4ea; box-shadow: inset 0 1px 0 rgba(255,255,255,.28); }
 .desktop-folder-icon::after { content: ''; position: absolute; inset: 5px 4px auto; height: 1px; background: rgba(255,255,255,.32); }
+.desktop-launcher-work .desktop-folder-icon { background: linear-gradient(180deg, #b299ef 0%, #8464d1 52%, #6245b0 100%); }
+.desktop-launcher-work .desktop-folder-icon::before { background: #9d82e0; }
 .desktop-folder:hover .desktop-folder-icon { filter: brightness(1.06); }
 .desktop-folder.is-open .desktop-folder-icon { filter: brightness(1.1) saturate(1.08); }
 .desktop-app-icon { width: 54px; height: 54px; display: grid; place-items: center; color: #e4ff5b; background: linear-gradient(145deg, #252a43, #111420); border: 1px solid #4b526d; border-radius: 12px; box-shadow: 0 7px 14px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.08); transition: filter .1s, border-color .1s; }
+.desktop-launcher-contact .desktop-app-icon { color: #b7fff3; background: linear-gradient(145deg, #176f70, #0a3e46); border-color: #4a9b98; }
+.desktop-launcher-stickies-app .desktop-app-icon { color: #392600; background: linear-gradient(145deg, #ffd96a, #d99520); border-color: #ffe39a; }
 .desktop-app:hover .desktop-app-icon, .desktop-app.is-open .desktop-app-icon { filter: brightness(1.12); border-color: rgba(228,255,91,.65); }
 .desktop-folder-label { max-width: 84px; overflow: hidden; padding: 2px 5px; border-radius: 4px; font: 11px var(--app-font-sans); line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
 .desktop-folder.is-open .desktop-folder-label { color: #fff; background: #3568a8; }
@@ -359,6 +365,8 @@ button { cursor: pointer; }
 .theme-light .case-study-metrics strong { color: #0b665d; }
 .theme-light .case-study-sections section { border-color: #b9cbc5; }
 .theme-light .desktop-app-icon { color: #f3ffbe; background: linear-gradient(145deg, #365761, #19343c); border-color: #5d7d84; }
+.theme-light .desktop-launcher-contact .desktop-app-icon { color: #f1fffc; background: linear-gradient(145deg, #168184, #0d555c); border-color: #397f80; }
+.theme-light .desktop-launcher-stickies-app .desktop-app-icon { color: #352300; background: linear-gradient(145deg, #ffd85d, #e3a22d); border-color: #b47711; }
 .theme-light .window.terminal { color: #17213b; background: rgba(247,250,248,.97); border-color: rgba(11,102,93,.5); }
 .theme-light .window.terminal .window-header { background: rgba(219,232,228,.9); }
 .theme-light .window.terminal .window-title { color: #4f6269; }
@@ -399,8 +407,8 @@ button { cursor: pointer; }
 @media (max-width: 760px) {
   .system-bar { padding: 0 13px; }.system-left .system-separator, .system-left .system-location { display: none; }.system-right .system-network { display: none; }
   .desktop-area { padding: 30px 18px 110px; }.desktop-note { display: none; }.desktop-intro { max-width: 100%; }.desktop-intro h1 { font-size: 43px; }
-  .desktop-folders { position: relative; inset: auto; display: flex; margin-top: 28px; gap: 5px; pointer-events: auto; }
-  .desktop-folder, .desktop-folder:nth-child(1), .desktop-folder:nth-child(2), .desktop-folder:nth-child(3) { position: relative; inset: auto; width: 94px; padding-inline: 4px; }
+  .desktop-folders { position: relative; inset: auto; display: flex; flex-wrap: wrap; margin-top: 28px; gap: 5px; pointer-events: auto; }
+  .desktop-folder, .desktop-folder:nth-child(1), .desktop-folder:nth-child(2), .desktop-folder:nth-child(3), .desktop-folder:nth-child(4), .desktop-folder:nth-child(5) { position: relative; inset: auto; width: 94px; padding-inline: 4px; }
   .desktop-resize-handle { display: none; }
   .window, .window.work, .window.about, .window.contact, .window.terminal { position: fixed; inset: 55px 12px 96px; width: auto; height: auto; min-height: 0; }.window.contact { bottom: auto; height: auto; }.window.terminal { inset: auto 12px 91px; height: 360px; }
   .about-grid { grid-template-columns: 1fr; gap: 10px; }.window-body { padding: 18px; }.window-body h2 { font-size: 29px; }.fact-list { margin-top: 12px; }.dock { bottom: 14px; max-width: calc(100vw - 24px); }.dock-item { width: 41px; height: 41px; }

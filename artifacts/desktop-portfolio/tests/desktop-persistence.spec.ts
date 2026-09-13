@@ -423,9 +423,17 @@ test('reflows storage recovery help with enlarged text without clipping controls
   expect(await retrySaving.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe('none');
   await hideHelp.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('button', { name: 'How to restore saving' })).toHaveAttribute('aria-expanded', 'false');
+  const showHelp = page.getByRole('button', { name: 'How to restore saving' });
+  await expect(showHelp).toHaveAttribute('aria-expanded', 'false');
   await expect(guidance).toBeHidden();
   await expect(storageNotice).toHaveCount(1);
+  await showHelp.focus();
+  await page.keyboard.press('Enter');
+  await expect(retrySaving).toBeVisible();
+  await retrySaving.focus();
+  await page.keyboard.press('Enter');
+  await expect(storageNotice).toHaveCount(0);
+  await expect(page.getByTestId('notice-storage-restored')).toHaveCount(1);
 });
 
 test('resets a sticky rotation in both themes and keeps it upright after reload', async ({ page }) => {

@@ -104,16 +104,25 @@ export function DesignSystemBrowser() {
 
   const filteredGroups = useMemo(
     () =>
-      NAV_GROUPS.map((group) => ({
-        ...group,
-        entries: group.name.toLowerCase().includes(normalizedQuery)
+      NAV_GROUPS.map((group) => {
+        const matchingEntries = group.name.toLowerCase().includes(normalizedQuery)
           ? group.entries
           : group.entries.filter((entry) =>
               `${entry.name} ${entry.description}`
                 .toLowerCase()
                 .includes(normalizedQuery),
-            ),
-      })).filter((group) => group.entries.length > 0),
+            );
+
+        return {
+          ...group,
+          entries:
+            group.name === 'Foundations'
+              ? matchingEntries
+              : [...matchingEntries].sort((a, b) =>
+                  a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+                ),
+        };
+      }).filter((group) => group.entries.length > 0),
     [normalizedQuery],
   );
 

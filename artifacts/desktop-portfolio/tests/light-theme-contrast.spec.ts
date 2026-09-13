@@ -149,3 +149,53 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
   const terminalFocusRatio = await contrastRatio(terminalExample);
   expect(terminalFocusRatio, `terminal example focus contrast ${terminalFocusRatio.toFixed(2)}:1 should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
 });
+
+test('light theme About, Contact, and case study windows meet WCAG AA contrast', async ({ page }) => {
+  await page.addInitScript(([key]) => {
+    localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));
+  }, [storageKey]);
+  await page.goto('/');
+  await switchToLightTheme(page);
+
+  await page.getByTestId('button-dock-about').click();
+  await expect(page.getByTestId('window-about')).toBeVisible();
+  const aboutRepresentatives = [
+    { name: 'About heading', locator: page.locator('.window.about .window-body h2') },
+    { name: 'About body copy', locator: page.locator('.window.about .window-body p').first() },
+    { name: 'About fact label', locator: page.locator('.window.about .fact label').first() },
+    { name: 'About fact value', locator: page.locator('.window.about .fact span').first() },
+    { name: 'About signature', locator: page.locator('.window.about .signature') },
+  ];
+
+  await page.getByTestId('button-dock-contact').click();
+  await expect(page.getByTestId('window-contact')).toBeVisible();
+  const contactRepresentatives = [
+    { name: 'Contact heading', locator: page.locator('.window.contact .window-body h2') },
+    { name: 'Contact body copy', locator: page.locator('.window.contact .window-body p').first() },
+    { name: 'Contact email button', locator: page.getByTestId('link-email-alex') },
+    { name: 'Contact email address', locator: page.locator('.window.contact .window-body p').last() },
+  ];
+
+  await page.getByTestId('button-dock-work').click();
+  await page.getByTestId('button-open-project-01').click();
+  await expect(page.getByTestId('case-study-orbit')).toBeVisible();
+  const caseStudyRepresentatives = [
+    { name: 'Case study back link', locator: page.getByTestId('button-back-to-work') },
+    { name: 'Case study heading', locator: page.locator('.case-study h2') },
+    { name: 'Case study hero copy', locator: page.locator('.case-study-hero p') },
+    { name: 'Case study role', locator: page.locator('.case-study-role') },
+    { name: 'Case study metric value', locator: page.locator('.case-study-metrics strong').first() },
+    { name: 'Case study metric label', locator: page.locator('.case-study-metrics span').first() },
+    { name: 'Case study section heading', locator: page.locator('.case-study-sections h3').first() },
+    { name: 'Case study section copy', locator: page.locator('.case-study-sections p').first() },
+  ];
+
+  for (const representative of [...aboutRepresentatives, ...contactRepresentatives, ...caseStudyRepresentatives]) {
+    await expect(representative.locator, `${representative.name} should be visible`).toBeVisible();
+    const ratio = await contrastRatio(representative.locator);
+    expect(
+      ratio,
+      `${representative.name} contrast ${ratio.toFixed(2)}:1 should meet WCAG AA`,
+    ).toBeGreaterThanOrEqual(4.5);
+  }
+});

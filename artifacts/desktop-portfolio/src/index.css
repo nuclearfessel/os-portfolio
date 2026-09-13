@@ -115,7 +115,7 @@ button { cursor: pointer; }
 .quick-button:hover, .project-link:hover, .contact-button:hover { border-color: rgba(228,255,91,.7); color: #e4ff5b; background: rgba(55, 61, 87, .8); }
 .quick-button.primary { color: #111326; background: #e4ff5b; border-color: #e4ff5b; font-weight: 600; }
 .desktop-folders { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-.desktop-folder { position: absolute; width: 88px; display: grid; justify-items: center; gap: 7px; padding: 5px 4px; color: #e8eaf4; border: 0; background: transparent; text-align: center; cursor: grab; pointer-events: auto; transition: color .1s; touch-action: none; }
+.desktop-folder { position: absolute; width: 88px; display: grid; justify-items: center; gap: 7px; padding: 5px 4px; color: #e8eaf4; border: 0; background: transparent; text-align: center; cursor: grab; pointer-events: auto; transition: color .1s; touch-action: none; user-select: none; -webkit-user-select: none; }
 .desktop-folder:nth-child(1) { left: 46px; bottom: 150px; }
 .desktop-folder:nth-child(2) { left: 142px; bottom: 150px; }
 .desktop-folder:nth-child(3) { left: 238px; bottom: 150px; }

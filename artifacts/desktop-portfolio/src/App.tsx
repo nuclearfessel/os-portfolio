@@ -20,7 +20,8 @@ type Theme = 'dark' | 'light';
 type DesktopLauncherId = WindowId | 'stickies-app';
 type FolderPositions = Partial<Record<DesktopLauncherId, { left: number; top: number }>>;
 type StickyItemId = 'sticky' | `sticky-${number}`;
-type DesktopItemId = WindowId | StickyItemId;
+type DesktopLauncherDragId = `desktop-${DesktopLauncherId}`;
+type DesktopItemId = WindowId | StickyItemId | DesktopLauncherDragId;
 type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
@@ -616,10 +617,12 @@ function DesktopFolder({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
+      onDragStart={(event) => event.preventDefault()}
       style={style}
       aria-pressed={open}
       aria-label={`Double-click to ${open ? 'focus' : 'open'} ${label} ${appIcon ? 'application' : 'folder'}`}
       title={`Double-click to ${open ? 'focus' : 'open'} ${label}`}
+      data-draggable-item
       data-testid={`button-folder-${id}`}
     >
       {appIcon
@@ -651,7 +654,7 @@ function Home() {
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
   const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean } | null>(null);
+  const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean; currentLeft: number; currentTop: number } | null>(null);
   const resizeRef = useRef<{
     id: DesktopItemId;
     direction: ResizeDirection;
@@ -663,7 +666,7 @@ function Home() {
     startTop: number;
   } | null>(null);
   const rotateRef = useRef<{ id: StickyItemId; centerX: number; centerY: number; pointerAngle: number; rotation: number } | null>(null);
-  const folderDragRef = useRef<{ id: DesktopLauncherId; offsetX: number; offsetY: number; moved: boolean; startLeft: number; startTop: number } | null>(null);
+  const lastDesktopDragRef = useRef<{ id: DesktopLauncherDragId; endedAt: number } | null>(null);
 
   useEffect(() => {
     const updateClock = () => setClock(new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date()));
@@ -745,7 +748,7 @@ function Home() {
     setMobileOpen(false);
   };
   const startDrag = (id: DesktopItemId, event: ReactPointerEvent<HTMLElement>) => {
-    if (window.matchMedia('(max-width: 760px)').matches) return;
+    if (event.button !== 0 || window.matchMedia('(max-width: 760px)').matches) return;
     const area = desktopAreaRef.current;
     if (!area) return;
     const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
@@ -763,6 +766,8 @@ function Home() {
       offsetX: event.clientX - areaRect.left - currentPosition.left,
       offsetY: event.clientY - areaRect.top - currentPosition.top,
       moved: false,
+      currentLeft: currentPosition.left,
+      currentTop: currentPosition.top,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -778,12 +783,14 @@ function Home() {
     const nextTop = event.clientY - areaRect.top - drag.offsetY;
     const maxLeft = Math.max(0, areaRect.width - target.width);
     const maxTop = Math.max(0, areaRect.height - target.height);
-    const isSticky = drag.id.startsWith('sticky');
-    const left = isSticky ? Math.max(0, Math.min(maxLeft, nextLeft)) : nextLeft;
-    const top = isSticky ? Math.max(0, Math.min(maxTop, nextTop)) : nextTop;
+    const staysOnDesktop = drag.id.startsWith('sticky') || draggableTarget?.classList.contains('desktop-folder');
+    const left = staysOnDesktop ? Math.max(0, Math.min(maxLeft, nextLeft)) : nextLeft;
+    const top = staysOnDesktop ? Math.max(0, Math.min(maxTop, nextTop)) : nextTop;
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
       drag.moved = true;
     }
+    drag.currentLeft = left;
+    drag.currentTop = top;
     setDragPositions((current) => ({ ...current, [drag.id]: { left, top } }));
   };
   const endDrag = (event: ReactPointerEvent<HTMLElement>) => {
@@ -791,6 +798,23 @@ function Home() {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
     dragRef.current = null;
+  };
+  const endDesktopLauncherDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = dragRef.current;
+    if (drag?.moved) {
+      lastDesktopDragRef.current = { id: drag.id as DesktopLauncherDragId, endedAt: performance.now() };
+      if (snapToGrid) {
+        const area = desktopAreaRef.current;
+        const target = event.currentTarget.getBoundingClientRect();
+        if (area) {
+          const grid = iconSize === 'large' ? 96 : 76;
+          const left = Math.max(0, Math.min(area.clientWidth - target.width, Math.round(drag.currentLeft / grid) * grid));
+          const top = Math.max(0, Math.min(area.clientHeight - target.height, Math.round(drag.currentTop / grid) * grid));
+          setDragPositions((current) => ({ ...current, [drag.id]: { left, top } }));
+        }
+      }
+    }
+    endDrag(event);
   };
   const startResize = (id: DesktopItemId, event: ReactPointerEvent<HTMLSpanElement>, direction: ResizeDirection = 'se') => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
@@ -883,59 +907,11 @@ function Home() {
     setStickyOnTop(true);
     setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation: Math.round((sticky.rotation + direction * increment) * 10) / 10 } : sticky));
   };
-  const startFolderDrag = (id: DesktopLauncherId, event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (window.matchMedia('(max-width: 760px)').matches) return;
-    const area = desktopAreaRef.current;
-    if (!area) return;
-    const areaRect = area.getBoundingClientRect();
-    const target = event.currentTarget.getBoundingClientRect();
-    const left = target.left - areaRect.left;
-    const top = target.top - areaRect.top;
-    folderDragRef.current = {
-      id,
-      offsetX: event.clientX - target.left,
-      offsetY: event.clientY - target.top,
-      moved: false,
-      startLeft: left,
-      startTop: top,
-    };
-    setFolderPositions((current) => ({ ...current, [id]: current[id] ?? { left, top } }));
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-  const moveFolderDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    const drag = folderDragRef.current;
-    const area = desktopAreaRef.current;
-    if (!drag || !area) return;
-    const areaRect = area.getBoundingClientRect();
-    const target = event.currentTarget.getBoundingClientRect();
-    const left = Math.max(0, Math.min(areaRect.width - target.width, event.clientX - areaRect.left - drag.offsetX));
-    const top = Math.max(0, Math.min(areaRect.height - target.height, event.clientY - areaRect.top - drag.offsetY));
-    if (Math.abs(left - drag.startLeft) > 3 || Math.abs(top - drag.startTop) > 3) {
-      drag.moved = true;
-    }
-    setFolderPositions((current) => ({ ...current, [drag.id]: { left, top } }));
-  };
-  const endFolderDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-    const drag = folderDragRef.current;
-    if (!drag?.moved || !snapToGrid) return;
-    const area = desktopAreaRef.current;
-    const position = folderPositions[drag.id];
-    if (!area || !position) return;
-    const target = event.currentTarget.getBoundingClientRect();
-    const grid = iconSize === 'large' ? 96 : 76;
-    const left = Math.max(0, Math.min(area.clientWidth - target.width, Math.round(position.left / grid) * grid));
-    const top = Math.max(0, Math.min(area.clientHeight - target.height, Math.round(position.top / grid) * grid));
-    setFolderPositions((current) => ({ ...current, [drag.id]: { left, top } }));
-  };
   const handleDesktopWindowOpen = (id: WindowId) => {
-    if (folderDragRef.current?.id === id && folderDragRef.current.moved) {
-      folderDragRef.current = null;
+    const recentDrag = lastDesktopDragRef.current;
+    if (recentDrag?.id === `desktop-${id}` && performance.now() - recentDrag.endedAt < 500) {
       return;
     }
-    folderDragRef.current = null;
     if (windows[id]) {
       setActiveWindow(id);
       return;
@@ -943,11 +919,10 @@ function Home() {
     openWindow(id);
   };
   const handleDesktopStickiesOpen = () => {
-    if (folderDragRef.current?.id === 'stickies-app' && folderDragRef.current.moved) {
-      folderDragRef.current = null;
+    const recentDrag = lastDesktopDragRef.current;
+    if (recentDrag?.id === 'desktop-stickies-app' && performance.now() - recentDrag.endedAt < 500) {
       return;
     }
-    folderDragRef.current = null;
     openStickies();
   };
   const positionStyle = (id: DesktopItemId): React.CSSProperties | undefined => {
@@ -958,6 +933,10 @@ function Home() {
     ...positionStyle(id),
     ...(itemSizes[id] ? { width: itemSizes[id]?.width, height: itemSizes[id]?.height } : {}),
   });
+  const launcherStyle = (id: DesktopLauncherId): React.CSSProperties | undefined => {
+    const position = dragPositions[`desktop-${id}`] ?? folderPositions[id];
+    return position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined;
+  };
   const stickyStyle = (sticky: StickyData) => {
     const selectedColor = stickyPalette.find((color) => color.id === sticky.color) ?? stickyPalette[0];
     const usesLightText = selectedColor.foreground === 'light';
@@ -1010,13 +989,15 @@ function Home() {
     const width = iconSize === 'large' ? 88 : 70;
     const row = iconSize === 'large' ? 86 : 68;
     const left = Math.max(16, area.clientWidth - width - 28);
-    setFolderPositions({
-      about: { left, top: 62 },
-      work: { left, top: 62 + row },
-      terminal: { left, top: 62 + row * 2 },
-      contact: { left, top: 62 + row * 3 },
-      'stickies-app': { left, top: 62 + row * 4 },
-    });
+    setFolderPositions({});
+    setDragPositions((current) => ({
+      ...current,
+      'desktop-about': { left, top: 62 },
+      'desktop-work': { left, top: 62 + row },
+      'desktop-terminal': { left, top: 62 + row * 2 },
+      'desktop-contact': { left, top: 62 + row * 3 },
+      'desktop-stickies-app': { left, top: 62 + row * 4 },
+    }));
     setContextMenu(null);
   };
   const resetDesktop = () => {
@@ -1092,11 +1073,11 @@ function Home() {
 
         {showDesktopIcons && (
           <div className="desktop-folders" aria-label="Desktop applications and folders">
-            <DesktopFolder id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startFolderDrag('about', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.about ? { left: folderPositions.about.left, top: folderPositions.about.top, bottom: 'auto' } : undefined} />
-            <DesktopFolder id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startFolderDrag('work', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.work ? { left: folderPositions.work.left, top: folderPositions.work.top, bottom: 'auto' } : undefined} />
-            <DesktopFolder id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startFolderDrag('terminal', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.terminal ? { left: folderPositions.terminal.left, top: folderPositions.terminal.top, bottom: 'auto' } : undefined} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
-            <DesktopFolder id="contact" label="Email Alex" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startFolderDrag('contact', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.contact ? { left: folderPositions.contact.left, top: folderPositions.contact.top, bottom: 'auto' } : undefined} appIcon={<Mail size={30} strokeWidth={1.7} />} />
-            <DesktopFolder id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startFolderDrag('stickies-app', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions['stickies-app'] ? { left: folderPositions['stickies-app'].left, top: folderPositions['stickies-app'].top, bottom: 'auto' } : undefined} appIcon={<StickyNote size={30} strokeWidth={1.7} />} />
+            <DesktopFolder id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} />
+            <DesktopFolder id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} />
+            <DesktopFolder id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
+            <DesktopFolder id="contact" label="Email Alex" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<Mail size={30} strokeWidth={1.7} />} />
+            <DesktopFolder id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<StickyNote size={30} strokeWidth={1.7} />} />
           </div>
         )}
 

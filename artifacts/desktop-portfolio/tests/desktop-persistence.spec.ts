@@ -136,6 +136,10 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
   await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
+  const storageNotice = page.getByTestId('notice-storage-unavailable');
+  await expect(storageNotice).toHaveCount(1);
+  await expect(storageNotice).toContainText('Changes won’t be saved.');
+  await expect(storageNotice).toContainText('They’ll work for this session, but reset after you reload.');
   expect(await page.evaluate(() => (
     window as typeof window & { __storageFailureAttempts: { getItem: number } }
   ).__storageFailureAttempts.getItem)).toBeGreaterThan(0);
@@ -146,6 +150,7 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await openDesktopMenu(page);
   await chooseSubmenuOption(page, 'Theme', 'Dark');
   await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(storageNotice).toHaveCount(1);
   expect(await page.evaluate(() => (
     window as typeof window & { __storageFailureAttempts: { setItem: number } }
   ).__storageFailureAttempts.setItem)).toBeGreaterThan(0);
@@ -158,6 +163,7 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
   await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
+  await expect(storageNotice).toHaveCount(1);
   expect(await page.evaluate(() => (
     window as typeof window & { __storageFailureAttempts: { removeItem: number } }
   ).__storageFailureAttempts.removeItem)).toBeGreaterThan(0);

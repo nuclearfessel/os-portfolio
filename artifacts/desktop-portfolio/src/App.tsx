@@ -159,6 +159,7 @@ type SavedDesktopState = {
 };
 
 const DESKTOP_STORAGE_KEY = 'alex-os.desktop.v1';
+let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {
   folderPositions: {},
   itemPositions: {},
@@ -172,8 +173,15 @@ const defaultDesktopState: SavedDesktopState = {
 };
 
 function loadDesktopState(): SavedDesktopState {
+  let savedState = '{}';
   try {
-    const parsed = JSON.parse(window.localStorage.getItem(DESKTOP_STORAGE_KEY) ?? '{}') as Partial<SavedDesktopState> & { stickyColor?: StickyColorId };
+    savedState = window.localStorage.getItem(DESKTOP_STORAGE_KEY) ?? '{}';
+  } catch {
+    storageUnavailableDuringLoad = true;
+    return defaultDesktopState;
+  }
+  try {
+    const parsed = JSON.parse(savedState) as Partial<SavedDesktopState> & { stickyColor?: StickyColorId };
     const folderPositions = Object.fromEntries(
       Object.entries(parsed.folderPositions ?? {}).filter((entry): entry is [string, { left: number; top: number }] => {
         const position = entry[1];
@@ -748,6 +756,7 @@ function DesktopFolder({
 
 function Home() {
   const [savedDesktopState] = useState(loadDesktopState);
+  const [storageUnavailable, setStorageUnavailable] = useState(storageUnavailableDuringLoad);
   const [windows, setWindows] = useState<WindowState>(initialWindows);
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
   const [clock, setClock] = useState('');
@@ -918,7 +927,7 @@ function Home() {
     try {
       window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(desktopState));
     } catch {
-      // The desktop remains usable when storage is unavailable.
+      setStorageUnavailable(true);
     }
   }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode]);
 
@@ -1455,7 +1464,7 @@ function Home() {
     try {
       window.localStorage.removeItem(DESKTOP_STORAGE_KEY);
     } catch {
-      // State still resets for this session when storage is unavailable.
+      setStorageUnavailable(true);
     }
     desktopGeometryRef.current = {
       dragPositions: defaultDesktopState.itemPositions,
@@ -1540,6 +1549,13 @@ function Home() {
           <button className="mobile-menu" onClick={() => setMobileOpen((value) => !value)} aria-label="Open portfolio menu" data-testid="button-mobile-menu"><Menu size={17} /></button>
         </div>
       </header>
+
+      {storageUnavailable && (
+        <aside className="storage-notice" role="status" aria-live="polite" data-testid="notice-storage-unavailable">
+          <strong>Changes won’t be saved.</strong>
+          <span>They’ll work for this session, but reset after you reload.</span>
+        </aside>
+      )}
 
       <div
         className={`desktop-area dock-space-${dockPosition}`}

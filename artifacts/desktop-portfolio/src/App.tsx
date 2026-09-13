@@ -364,7 +364,11 @@ function Home() {
     resizeRef.current = null;
   };
   const handleFolderClick = (id: WindowId) => {
-    toggleFolder(id);
+    if (windows[id]) {
+      setActiveWindow(id);
+      return;
+    }
+    openWindow(id);
   };
   const positionStyle = (id: WindowId | 'sticky'): React.CSSProperties | undefined => {
     const position = dragPositions[id];

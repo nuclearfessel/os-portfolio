@@ -52,6 +52,41 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
+test('keeps keyboard focus predictable in desktop, dock, and sticky context menus', async ({ page }) => {
+  const desktop = page.locator('.desktop-area');
+  await desktop.focus();
+  await openDesktopMenu(page);
+  await expect(page.getByRole('menuitem', { name: 'View' })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('menuitemcheckbox', { name: 'Snap to grid' })).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await expect(page.getByRole('menuitem', { name: 'View' })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('menu', { name: 'Desktop options' })).toHaveCount(0);
+  await expect(desktop).toBeFocused();
+
+  const dock = page.locator('.dock');
+  await openDockMenu(page);
+  await expect(page.getByRole('menuitemradio', { name: 'Top' })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('menuitemradio', { name: 'Right' })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('menu', { name: 'Dock options' })).toHaveCount(0);
+  await expect(dock).toBeFocused();
+
+  const stickyText = page.getByTestId('sticky-sticky').getByRole('textbox', { name: 'Sticky note 1 text' });
+  await stickyText.focus();
+  await openStickyMenu(page);
+  await expect(page.getByRole('menuitemradio', { name: 'Lemon' })).toBeFocused();
+  await page.keyboard.press('End');
+  await expect(page.getByRole('menuitem', { name: 'Reset rotation' })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('menuitemradio', { name: 'Lemon' })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('menu', { name: 'Sticky options' })).toHaveCount(0);
+  await expect(stickyText).toBeFocused();
+});
+
 test('persists moved icons and every desktop preference across reloads', async ({ page }) => {
   const aboutFolder = page.getByTestId('button-folder-about');
   const initialBox = await aboutFolder.boundingBox();

@@ -148,6 +148,27 @@ test('persists moved icons and every desktop preference across reloads', async (
   expect(restoredStyle).toEqual(movedStyle);
 });
 
+test('snaps desktop launchers to a 4px grid', async ({ page }) => {
+  await openDesktopMenu(page);
+  await page.getByRole('menuitemcheckbox', { name: 'Snap to grid' }).click();
+
+  const aboutFolder = page.getByTestId('button-folder-about');
+  const initialBox = await aboutFolder.boundingBox();
+  expect(initialBox).not.toBeNull();
+
+  await aboutFolder.hover();
+  await page.mouse.down();
+  await page.mouse.move(initialBox!.x - 137, initialBox!.y + 43, { steps: 6 });
+  await page.mouse.up();
+
+  const position = await aboutFolder.evaluate((element) => ({
+    left: Number.parseFloat(element.style.left),
+    top: Number.parseFloat(element.style.top),
+  }));
+  expect(position.left % 4).toBeCloseTo(0, 5);
+  expect(position.top % 4).toBeCloseTo(0, 5);
+});
+
 test('falls back to safe defaults when saved data is corrupted', async ({ page }) => {
   await page.evaluate(([key, value]) => localStorage.setItem(key, value), [storageKey, '{not-json']);
   await page.reload();

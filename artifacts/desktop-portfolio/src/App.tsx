@@ -187,6 +187,7 @@ type SavedDesktopState = {
 };
 
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v1';
+const DESKTOP_GRID_SIZE = 4;
 let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {
   folderPositions: {},
@@ -1357,13 +1358,12 @@ function Home() {
         const area = desktopAreaRef.current;
         const target = event.currentTarget.getBoundingClientRect();
         if (area) {
-          const grid = iconSize === 'large' ? 96 : 76;
           const minLeft = dockPosition === 'left' ? 70 : 0;
           const minTop = dockPosition === 'top' ? 70 : 0;
           const maxLeft = area.clientWidth - target.width - (dockPosition === 'right' ? 70 : 0);
           const maxTop = area.clientHeight - target.height - (dockPosition === 'bottom' ? 70 : 0);
-          const left = Math.max(minLeft, Math.min(maxLeft, Math.round(drag.currentLeft / grid) * grid));
-          const top = Math.max(minTop, Math.min(maxTop, Math.round(drag.currentTop / grid) * grid));
+          const left = Math.max(minLeft, Math.min(maxLeft, Math.round(drag.currentLeft / DESKTOP_GRID_SIZE) * DESKTOP_GRID_SIZE));
+          const top = Math.max(minTop, Math.min(maxTop, Math.round(drag.currentTop / DESKTOP_GRID_SIZE) * DESKTOP_GRID_SIZE));
           setDragPositions((current) => ({ ...current, [drag.id]: { left, top } }));
         }
       }

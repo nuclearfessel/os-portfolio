@@ -229,6 +229,9 @@ button { cursor: pointer; }
 .theme-light .system-separator { color: #9aa8a3; }
 .theme-light .status-dot { background: #168b78; box-shadow: 0 0 0 3px rgba(22,139,120,.13); }
 .theme-light .desktop-intro p, .theme-light .window-body p { color: #586878; }
+.theme-light .desktop-folder, .theme-light .desktop-folder-label { color: #173847; }
+.theme-light .desktop-folder-label { text-shadow: 0 1px 1px rgba(255,255,255,.9); }
+.theme-light .desktop-folder.is-open .desktop-folder-label { color: #fff; background: #0b665d; text-shadow: none; }
 .theme-light .quick-button { color: #24354a; background: rgba(248,251,249,.74); border-color: rgba(29,71,78,.18); }
 .theme-light .quick-button.primary { color: #f7fbf8; background: #0b665d; border-color: #0b665d; }
 .theme-light .quick-button:hover, .theme-light .project-link:hover, .theme-light .contact-button:hover { color: #f7fbf8; background: #cb664f; border-color: #cb664f; }

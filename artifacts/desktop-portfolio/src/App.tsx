@@ -38,6 +38,13 @@ function WindowFrame({
   onFocus,
   onClose,
   onMinimize,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onResizeStart,
+  onResizeMove,
+  onResizeEnd,
+  style,
 }: {
   id: WindowId;
   title: string;
@@ -46,16 +53,25 @@ function WindowFrame({
   onFocus: () => void;
   onClose: () => void;
   onMinimize: () => void;
+  onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void;
+  onPointerMove: (event: ReactPointerEvent<HTMLElement>) => void;
+  onPointerUp: (event: ReactPointerEvent<HTMLElement>) => void;
+  onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>) => void;
+  onResizeMove: (event: ReactPointerEvent<HTMLSpanElement>) => void;
+  onResizeEnd: (event: ReactPointerEvent<HTMLSpanElement>) => void;
+  style?: React.CSSProperties;
 }) {
   return (
     <section
       className={`window ${id} ${active ? 'is-active' : ''}`}
       onMouseDown={onFocus}
+      data-draggable-item
+      style={style}
       data-testid={`window-${id}`}
       aria-label={`${title} window`}
     >
-      <header className="window-header">
-        <div className="traffic-lights">
+      <header className="window-header" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
+        <div className="traffic-lights" onPointerDown={(event) => event.stopPropagation()}>
           <button className="close" onClick={onClose} aria-label={`Close ${title}`} data-testid={`button-close-${id}`}><X size={7} strokeWidth={3} /></button>
           <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} data-testid={`button-minimize-${id}`}><Minus size={8} strokeWidth={3} /></button>
           <button className="maximize" onClick={onFocus} aria-label={`Focus ${title}`} data-testid={`button-focus-${id}`}><Maximize2 size={7} strokeWidth={3} /></button>
@@ -63,6 +79,16 @@ function WindowFrame({
         <div className="window-title"><strong>~/alex/</strong>{title.toLowerCase()}</div>
       </header>
       {children}
+      <span
+        className="desktop-resize-handle"
+        onPointerDown={(event) => { event.stopPropagation(); onResizeStart(event); }}
+        onPointerMove={onResizeMove}
+        onPointerUp={onResizeEnd}
+        onPointerCancel={onResizeEnd}
+        role="separator"
+        aria-label={`Resize ${title} window`}
+        tabIndex={0}
+      />
     </section>
   );
 }
@@ -199,25 +225,11 @@ function DesktopFolder({
   meta,
   open,
   onToggle,
-  onPointerDown,
-  onPointerMove,
-  onPointerUp,
-  onResizeStart,
-  onResizeMove,
-  onResizeEnd,
-  style,
 }: {
   label: string;
   meta: string;
   open: boolean;
   onToggle: () => void;
-  onPointerDown: (event: ReactPointerEvent<HTMLButtonElement>) => void;
-  onPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => void;
-  onPointerUp: (event: ReactPointerEvent<HTMLButtonElement>) => void;
-  onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>) => void;
-  onResizeMove: (event: ReactPointerEvent<HTMLSpanElement>) => void;
-  onResizeEnd: (event: ReactPointerEvent<HTMLSpanElement>) => void;
-  style?: React.CSSProperties;
 }) {
   const Icon = open ? FolderOpen : Folder;
 
@@ -225,11 +237,6 @@ function DesktopFolder({
     <button
       className={`desktop-folder ${open ? 'is-open' : ''}`}
       onClick={onToggle}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-      style={style}
       aria-pressed={open}
       aria-label={`${open ? 'Close' : 'Open'} ${label} folder`}
       data-testid={`button-folder-${label.toLowerCase()}`}
@@ -237,16 +244,6 @@ function DesktopFolder({
       <span className="desktop-folder-icon"><Icon size={29} strokeWidth={1.5} /></span>
       <span className="desktop-folder-label">{label}</span>
       <span className="desktop-folder-meta">{open ? 'open · click to close' : meta}</span>
-      <span
-        className="desktop-resize-handle"
-        onPointerDown={(event) => { event.stopPropagation(); onResizeStart(event); }}
-        onPointerMove={onResizeMove}
-        onPointerUp={onResizeEnd}
-        onPointerCancel={onResizeEnd}
-        role="separator"
-        aria-label={`Resize ${label} folder`}
-        tabIndex={0}
-      />
     </button>
   );
 }
@@ -299,8 +296,10 @@ function Home() {
     if (window.matchMedia('(max-width: 760px)').matches) return;
     const area = desktopAreaRef.current;
     if (!area) return;
-    const target = event.currentTarget.getBoundingClientRect();
+    const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
+    const target = draggableTarget?.getBoundingClientRect();
     const areaRect = area.getBoundingClientRect();
+    if (!target) return;
     const currentPosition = dragPositions[id] ?? {
       left: target.left - areaRect.left,
       top: target.top - areaRect.top,
@@ -320,7 +319,9 @@ function Home() {
     const area = desktopAreaRef.current;
     if (!drag || !area) return;
     const areaRect = area.getBoundingClientRect();
-    const target = event.currentTarget.getBoundingClientRect();
+    const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
+    const target = draggableTarget?.getBoundingClientRect();
+    if (!target) return;
     const maxLeft = Math.max(0, areaRect.width - target.width);
     const maxTop = Math.max(0, areaRect.height - target.height);
     const left = Math.max(0, Math.min(maxLeft, event.clientX - areaRect.left - drag.offsetX));
@@ -337,7 +338,7 @@ function Home() {
   };
   const startResize = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLSpanElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
-    const target = event.currentTarget.parentElement;
+    const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     if (!target) return;
     const rect = target.getBoundingClientRect();
     resizeRef.current = {
@@ -420,14 +421,15 @@ function Home() {
         </div>
 
         <div className="desktop-folders" aria-label="Portfolio folders">
-          <DesktopFolder label="about" meta="readme.md" open={windows.about} onToggle={() => handleFolderClick('about')} onPointerDown={(event) => startDrag('about', event)} onPointerMove={moveDrag} onPointerUp={endDrag} onResizeStart={(event) => startResize('about', event)} onResizeMove={moveResize} onResizeEnd={endResize} style={itemStyle('about')} />
-          <DesktopFolder label="work" meta="03 projects" open={windows.work} onToggle={() => handleFolderClick('work')} onPointerDown={(event) => startDrag('work', event)} onPointerMove={moveDrag} onPointerUp={endDrag} onResizeStart={(event) => startResize('work', event)} onResizeMove={moveResize} onResizeEnd={endResize} style={itemStyle('work')} />
-          <DesktopFolder label="notes" meta="toolkit + thoughts" open={windows.notes} onToggle={() => handleFolderClick('notes')} onPointerDown={(event) => startDrag('notes', event)} onPointerMove={moveDrag} onPointerUp={endDrag} onResizeStart={(event) => startResize('notes', event)} onResizeMove={moveResize} onResizeEnd={endResize} style={itemStyle('notes')} />
+          <DesktopFolder label="about" meta="readme.md" open={windows.about} onToggle={() => handleFolderClick('about')} />
+          <DesktopFolder label="work" meta="03 projects" open={windows.work} onToggle={() => handleFolderClick('work')} />
+          <DesktopFolder label="notes" meta="toolkit + thoughts" open={windows.notes} onToggle={() => handleFolderClick('notes')} />
         </div>
 
         <aside
           className="desktop-note"
-          style={positionStyle('sticky')}
+          data-draggable-item
+          style={itemStyle('sticky')}
           onPointerDown={(event) => startDrag('sticky', event)}
           onPointerMove={moveDrag}
           onPointerUp={endDrag}

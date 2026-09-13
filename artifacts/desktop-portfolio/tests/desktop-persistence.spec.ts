@@ -100,6 +100,56 @@ test('falls back to safe defaults when saved data is corrupted', async ({ page }
   await expect(page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' })).toHaveAttribute('aria-checked', 'true');
 });
 
+test('stays usable when browser storage reads, writes, and removals fail', async ({ page }) => {
+  await page.addInitScript(() => {
+    const attempts = { getItem: 0, setItem: 0, removeItem: 0 };
+    Object.defineProperty(window, '__storageFailureAttempts', {
+      configurable: true,
+      value: attempts,
+    });
+
+    for (const method of ['getItem', 'setItem', 'removeItem'] as const) {
+      Object.defineProperty(Storage.prototype, method, {
+        configurable: true,
+        value: () => {
+          attempts[method] += 1;
+          throw new Error(`localStorage ${method} blocked`);
+        },
+      });
+    }
+  });
+  await page.reload();
+
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
+  await expect(page.getByTestId('button-folder-about')).toBeVisible();
+  expect(await page.evaluate(() => (
+    window as typeof window & { __storageFailureAttempts: { getItem: number } }
+  ).__storageFailureAttempts.getItem)).toBeGreaterThan(0);
+
+  await page.getByTestId('button-dock-about').click();
+  await expect(page.getByTestId('window-about')).toBeVisible();
+
+  await openDesktopMenu(page);
+  await chooseSubmenuOption(page, 'Theme', 'Dark');
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  expect(await page.evaluate(() => (
+    window as typeof window & { __storageFailureAttempts: { setItem: number } }
+  ).__storageFailureAttempts.setItem)).toBeGreaterThan(0);
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
+  await expect(page.getByRole('alertdialog', { name: 'Reset desktop?' })).toBeVisible();
+  await page.getByTestId('button-confirm-reset').click();
+
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
+  await expect(page.getByTestId('button-folder-about')).toBeVisible();
+  expect(await page.evaluate(() => (
+    window as typeof window & { __storageFailureAttempts: { removeItem: number } }
+  ).__storageFailureAttempts.removeItem)).toBeGreaterThan(0);
+});
+
 test('Reset desktop restores every default after confirmation', async ({ page }) => {
   await page.evaluate(([key, state]) => localStorage.setItem(key, JSON.stringify(state)), [
     storageKey,

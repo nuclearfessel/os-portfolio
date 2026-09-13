@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
-  Apple, ArrowLeft, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
-  Check, Command, FolderGit2, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
-  UserRound, Wifi, X,
-} from 'lucide-react';
+  Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
+  Check, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
+  Cursor as MousePointer2, Terminal, CircleUser as UserRound, Wifi, X,
+} from '@keyline-icons/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';

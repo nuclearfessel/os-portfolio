@@ -604,6 +604,21 @@ test('deletes only user-created stickies after confirmation and clears their sav
   expect(savedAfterReload.itemSizes).not.toHaveProperty('sticky-1');
 });
 
+test('keeps stickies hidden on mobile and tablet workspaces', async ({ page }) => {
+  for (const viewport of [
+    { width: 320, height: 640, workspaceClass: /workspace-managed/ },
+    { width: 1024, height: 768, workspaceClass: /workspace-tablet-landscape/ },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.reload();
+
+    await expect(page.locator('.os-shell')).toHaveClass(viewport.workspaceClass);
+    await expect(page.locator('[data-testid^="sticky-"]')).toHaveCount(0);
+    await expect(page.getByTestId('button-dock-stickies')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /sticky/i })).toHaveCount(0);
+  }
+});
+
 test('Reset desktop restores every default after confirmation', async ({ page }) => {
   await page.evaluate(([key, state]) => localStorage.setItem(key, JSON.stringify(state)), [
     storageKey,

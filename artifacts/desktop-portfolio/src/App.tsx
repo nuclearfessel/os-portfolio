@@ -186,7 +186,7 @@ type SavedDesktopState = {
   dockPosition: DockPosition;
 };
 
-const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v1';
+const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v2';
 const DESKTOP_GRID_SIZE = 4;
 let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {

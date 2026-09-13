@@ -1749,7 +1749,9 @@ function Home() {
                 <button type="button" onClick={() => selectAdjacentSticky(1)} disabled={stickies.length < 2} aria-label="Next sticky"><ChevronRight size={14} /></button>
                 <button type="button" onClick={() => cycleStickyColor(sticky.id)}>Color</button>
                 <button type="button" onClick={() => addSticky(sticky.id)}><Plus size={14} /> Add</button>
-                <button type="button" className="managed-sticky-delete" onClick={() => deleteSticky(sticky.id)}><X size={14} /> Delete</button>
+                {sticky.id !== 'sticky' && (
+                  <button type="button" className="managed-sticky-delete" onClick={() => deleteSticky(sticky.id)}><X size={14} /> Delete</button>
+                )}
               </div>
             </StickyNoteSurface>
             {(['top-left', 'top-right', 'bottom-left'] as const).map((corner, cornerIndex) => (

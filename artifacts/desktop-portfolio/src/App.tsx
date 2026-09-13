@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
-  Apple, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
+  Apple, ArrowLeft, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
   Check, Command, FolderGit2, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
   UserRound, Wifi, X,
 } from 'lucide-react';
@@ -17,6 +17,67 @@ type WindowId = 'about' | 'work' | 'notes' | 'contact' | 'terminal';
 type WindowState = Record<WindowId, boolean>;
 type IconSize = 'large' | 'small';
 type Theme = 'dark' | 'light';
+type FolderPositions = Partial<Record<WindowId, { left: number; top: number }>>;
+type DesktopItemId = WindowId | 'sticky';
+type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
+type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
+
+type SavedDesktopState = {
+  folderPositions: FolderPositions;
+  itemPositions: ItemPositions;
+  itemSizes: ItemSizes;
+  iconSize: IconSize;
+  snapToGrid: boolean;
+  theme: Theme;
+  showDesktopIcons: boolean;
+};
+
+const DESKTOP_STORAGE_KEY = 'alex-os.desktop.v1';
+const defaultDesktopState: SavedDesktopState = {
+  folderPositions: {},
+  itemPositions: {},
+  itemSizes: {},
+  iconSize: 'large',
+  snapToGrid: false,
+  theme: 'dark',
+  showDesktopIcons: true,
+};
+
+function loadDesktopState(): SavedDesktopState {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(DESKTOP_STORAGE_KEY) ?? '{}') as Partial<SavedDesktopState>;
+    const folderPositions = Object.fromEntries(
+      Object.entries(parsed.folderPositions ?? {}).filter((entry): entry is [string, { left: number; top: number }] => {
+        const position = entry[1];
+        return Boolean(position) && Number.isFinite(position.left) && Number.isFinite(position.top);
+      }),
+    ) as FolderPositions;
+    const itemPositions = Object.fromEntries(
+      Object.entries(parsed.itemPositions ?? {}).filter((entry): entry is [string, { left: number; top: number }] => {
+        const position = entry[1];
+        return Boolean(position) && Number.isFinite(position.left) && Number.isFinite(position.top);
+      }),
+    ) as ItemPositions;
+    const itemSizes = Object.fromEntries(
+      Object.entries(parsed.itemSizes ?? {}).filter((entry): entry is [string, { width: number; height: number }] => {
+        const size = entry[1];
+        return Boolean(size) && Number.isFinite(size.width) && size.width > 0 && Number.isFinite(size.height) && size.height > 0;
+      }),
+    ) as ItemSizes;
+
+    return {
+      folderPositions,
+      itemPositions,
+      itemSizes,
+      iconSize: parsed.iconSize === 'small' ? 'small' : defaultDesktopState.iconSize,
+      snapToGrid: typeof parsed.snapToGrid === 'boolean' ? parsed.snapToGrid : defaultDesktopState.snapToGrid,
+      theme: parsed.theme === 'light' ? 'light' : defaultDesktopState.theme,
+      showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
+    };
+  } catch {
+    return defaultDesktopState;
+  }
+}
 
 const projects = [
   { id: '01', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
@@ -74,9 +135,9 @@ function WindowFrame({
     >
       <header className="window-header" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
         <div className="traffic-lights" onPointerDown={(event) => event.stopPropagation()}>
-          <button className="close" onClick={onClose} aria-label={`Close ${title}`} data-testid={`button-close-${id}`}><X size={7} strokeWidth={3} /></button>
-          <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} data-testid={`button-minimize-${id}`}><Minus size={8} strokeWidth={3} /></button>
-          <button className="maximize" onClick={onFocus} aria-label={`Focus ${title}`} data-testid={`button-focus-${id}`}><Maximize2 size={7} strokeWidth={3} /></button>
+          <button className="close" onClick={onClose} aria-label={`Close ${title}`} data-testid={`button-close-${id}`}><X size={9} strokeWidth={2.6} /></button>
+          <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} data-testid={`button-minimize-${id}`}><Minus size={10} strokeWidth={2.6} /></button>
+          <button className="maximize" onClick={onFocus} aria-label={`Focus ${title}`} data-testid={`button-focus-${id}`}><Maximize2 size={9} strokeWidth={2.4} /></button>
         </div>
         <div className="window-title"><strong>~/alex/</strong>{title.toLowerCase()}</div>
       </header>
@@ -119,23 +180,61 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
 }
 
 function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
+  const [caseStudyOpen, setCaseStudyOpen] = useState(false);
+
   return (
     <WindowFrame {...props} id="work" title="Selected work">
-      <div className="window-body">
-        <span className="section-kicker">projects / selected</span>
-        <h2>Things I’ve shipped.</h2>
-        <div className="project-list">
-          {projects.map((project) => (
-            <article className="project-card" key={project.id} data-testid={`card-project-${project.id}`}>
-              <span className="project-index" style={{ color: project.color }}>{project.id}</span>
-              <div className="project-copy"><h3>{project.name}</h3><p>{project.desc}</p></div>
-              <span className="project-tag">{project.tag}</span>
-              <button className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => window.alert(`${project.name} case study coming soon.`)}>view case study <ArrowUpRight size={11} /></button>
-            </article>
-          ))}
+      {caseStudyOpen ? (
+        <div className="window-body case-study" data-testid="case-study-orbit">
+          <button className="case-study-back" onClick={() => setCaseStudyOpen(false)} data-testid="button-back-to-work"><ArrowLeft size={15} />all projects</button>
+          <span className="section-kicker">case study / product systems / 2024</span>
+          <div className="case-study-hero">
+            <div>
+              <h2>Orbit CRM</h2>
+              <p>A calmer command center for customer teams managing complex accounts.</p>
+            </div>
+            <span className="case-study-role">Product design<br />Frontend engineering</span>
+          </div>
+          <div className="case-study-metrics" aria-label="Project outcomes">
+            <div><strong>34%</strong><span>faster account reviews</span></div>
+            <div><strong>2.1×</strong><span>more risks caught early</span></div>
+            <div><strong>18%</strong><span>fewer support escalations</span></div>
+          </div>
+          <div className="orbit-preview" aria-label="Orbit CRM interface preview">
+            <div className="orbit-sidebar"><span className="orbit-logo">ORBIT</span><i /><i /><i /><i /></div>
+            <div className="orbit-dashboard">
+              <div className="orbit-preview-header"><span>Account health</span><b>Q4 review</b></div>
+              <div className="orbit-stat-row"><span><b>92</b> healthy</span><span><b>14</b> watch</span><span><b>03</b> at risk</span></div>
+              <div className="orbit-chart"><span /><span /><span /><span /><span /><span /></div>
+            </div>
+          </div>
+          <div className="case-study-sections">
+            <section><span>01 / challenge</span><h3>Important signals were buried.</h3><p>Account teams were jumping between six tools to understand customer health. Reviews were slow, risk was found late, and every manager used a different process.</p></section>
+            <section><span>02 / approach</span><h3>Design around decisions, not data.</h3><p>I worked with success leads to map the few decisions that changed an account’s trajectory, then built a focused workspace that grouped signals, history, and next actions together.</p></section>
+            <section><span>03 / outcome</span><h3>One shared operating rhythm.</h3><p>The new workflow made weekly reviews faster and more consistent. Teams caught risk sooner, reduced handoff gaps, and spent more time acting instead of assembling reports.</p></section>
+          </div>
         </div>
-        <p style={{ marginTop: 18, fontFamily: 'var(--app-font-mono)', fontSize: 10 }}>03 projects · 8 shipped systems · 0 design handoffs left behind</p>
-      </div>
+      ) : (
+        <div className="window-body">
+          <span className="section-kicker">projects / selected</span>
+          <h2>Things I’ve shipped.</h2>
+          <div className="project-list">
+            {projects.map((project) => (
+              <article className="project-card" key={project.id} data-testid={`card-project-${project.id}`}>
+                <span className="project-index" style={{ color: project.color }}>{project.id}</span>
+                <div className="project-copy"><h3>{project.name}</h3><p>{project.desc}</p></div>
+                <span className="project-tag">{project.tag}</span>
+                {project.id === '01' ? (
+                  <button className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => setCaseStudyOpen(true)}>view case study <ArrowUpRight size={13} /></button>
+                ) : (
+                  <button className="project-link" disabled data-testid={`button-open-project-${project.id}`}>coming soon</button>
+                )}
+              </article>
+            ))}
+          </div>
+          <p style={{ marginTop: 18, fontFamily: 'var(--app-font-mono)', fontSize: 10 }}>03 projects · 8 shipped systems · 0 design handoffs left behind</p>
+        </div>
+      )}
     </WindowFrame>
   );
 }
@@ -171,7 +270,7 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
         <span className="section-kicker">contact.txt</span>
         <h2>Have a hard problem?</h2>
         <p>Tell me what you’re making, where it’s stuck, and what “better” would feel like. I’ll get back to you with a considered reply, usually within a couple of days.</p>
-        <a className="contact-button" href="mailto:hello@alexrivera.dev" data-testid="link-email-alex">email alex <Mail size={14} /></a>
+        <a className="contact-button" href="mailto:hello@alexrivera.dev" data-testid="link-email-alex">email alex <Mail size={16} /></a>
         <p style={{ fontFamily: 'var(--app-font-mono)', fontSize: 10, marginTop: 18 }}>hello@alexrivera.dev</p>
       </div>
     </WindowFrame>
@@ -296,21 +395,22 @@ function DesktopFolder({
 }
 
 function Home() {
+  const [savedDesktopState] = useState(loadDesktopState);
   const [windows, setWindows] = useState<WindowState>(initialWindows);
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dragPositions, setDragPositions] = useState<Partial<Record<WindowId | 'sticky', { left: number; top: number }>>>({});
-  const [itemSizes, setItemSizes] = useState<Partial<Record<WindowId | 'sticky', { width: number; height: number }>>>({});
-  const [folderPositions, setFolderPositions] = useState<Partial<Record<WindowId, { left: number; top: number }>>>({});
+  const [dragPositions, setDragPositions] = useState<ItemPositions>(savedDesktopState.itemPositions);
+  const [itemSizes, setItemSizes] = useState<ItemSizes>(savedDesktopState.itemSizes);
+  const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
-  const [iconSize, setIconSize] = useState<IconSize>('large');
-  const [snapToGrid, setSnapToGrid] = useState(false);
-  const [theme, setTheme] = useState<Theme>('dark');
-  const [showDesktopIcons, setShowDesktopIcons] = useState(true);
+  const [iconSize, setIconSize] = useState<IconSize>(savedDesktopState.iconSize);
+  const [snapToGrid, setSnapToGrid] = useState(savedDesktopState.snapToGrid);
+  const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
+  const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ id: WindowId | 'sticky'; offsetX: number; offsetY: number; moved: boolean } | null>(null);
-  const resizeRef = useRef<{ id: WindowId | 'sticky'; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
+  const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean } | null>(null);
+  const resizeRef = useRef<{ id: DesktopItemId; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
   const folderDragRef = useRef<{ id: WindowId; offsetX: number; offsetY: number; moved: boolean; startLeft: number; startTop: number } | null>(null);
 
   useEffect(() => {
@@ -319,6 +419,23 @@ function Home() {
     const timer = window.setInterval(updateClock, 30000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const desktopState: SavedDesktopState = {
+      folderPositions,
+      itemPositions: dragPositions,
+      itemSizes,
+      iconSize,
+      snapToGrid,
+      theme,
+      showDesktopIcons,
+    };
+    try {
+      window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(desktopState));
+    } catch {
+      // The desktop remains usable when storage is unavailable.
+    }
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, theme, showDesktopIcons]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -342,7 +459,7 @@ function Home() {
   };
   const closeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
   const minimizeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
-  const startDrag = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLElement>) => {
+  const startDrag = (id: DesktopItemId, event: ReactPointerEvent<HTMLElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
     const area = desktopAreaRef.current;
     if (!area) return;
@@ -389,7 +506,7 @@ function Home() {
     }
     dragRef.current = null;
   };
-  const startResize = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLSpanElement>) => {
+  const startResize = (id: DesktopItemId, event: ReactPointerEvent<HTMLSpanElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
     const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     if (!target) return;
@@ -477,11 +594,11 @@ function Home() {
     }
     openWindow(id);
   };
-  const positionStyle = (id: WindowId | 'sticky'): React.CSSProperties | undefined => {
+  const positionStyle = (id: DesktopItemId): React.CSSProperties | undefined => {
     const position = dragPositions[id];
     return position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined;
   };
-  const itemStyle = (id: WindowId | 'sticky'): React.CSSProperties => ({
+  const itemStyle = (id: DesktopItemId): React.CSSProperties => ({
     ...positionStyle(id),
     ...(itemSizes[id] ? { width: itemSizes[id]?.width, height: itemSizes[id]?.height } : {}),
   });
@@ -505,6 +622,22 @@ function Home() {
       work: { left, top: 62 + row },
       notes: { left, top: 62 + row * 2 },
     });
+    setContextMenu(null);
+  };
+  const resetDesktop = () => {
+    if (!window.confirm('Reset icon positions and desktop preferences to their original settings?')) return;
+    try {
+      window.localStorage.removeItem(DESKTOP_STORAGE_KEY);
+    } catch {
+      // State still resets for this session when storage is unavailable.
+    }
+    setFolderPositions(defaultDesktopState.folderPositions);
+    setDragPositions(defaultDesktopState.itemPositions);
+    setItemSizes(defaultDesktopState.itemSizes);
+    setIconSize(defaultDesktopState.iconSize);
+    setSnapToGrid(defaultDesktopState.snapToGrid);
+    setTheme(defaultDesktopState.theme);
+    setShowDesktopIcons(defaultDesktopState.showDesktopIcons);
     setContextMenu(null);
   };
   const windowProps = (id: WindowId) => ({
@@ -625,6 +758,8 @@ function Home() {
           </div>
           <div className="context-menu-separator" />
           <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
+          <div className="context-menu-separator" />
+          <button type="button" className="context-menu-button context-menu-danger" role="menuitem" onClick={resetDesktop}><span className="context-check" /><span>Reset desktop…</span></button>
         </div>
       )}
 

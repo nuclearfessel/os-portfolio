@@ -25,6 +25,7 @@ test('desktop-only apps disappear outside desktop mode', async ({ page }) => {
 
   await expect(page.getByTestId('button-dock-stickies')).toBeVisible();
   await expect(page.getByTestId('button-dock-terminal')).toBeVisible();
+  await expect(page.getByTestId('button-dock-mode')).toHaveCount(0);
   await expect(page.getByTestId('button-folder-stickies-app')).toBeVisible();
   await expect(page.getByTestId('button-folder-terminal')).toBeVisible();
 
@@ -39,6 +40,7 @@ test('desktop-only apps disappear outside desktop mode', async ({ page }) => {
     await expect(page.locator('.os-shell')).toHaveClass(new RegExp(`orientation-${viewport.orientation}`));
     await expect(page.getByTestId('button-dock-stickies')).toHaveCount(0);
     await expect(page.getByTestId('button-dock-terminal')).toHaveCount(0);
+    await expect(page.getByTestId('button-dock-mode')).toBeVisible();
     await expect(page.locator('.desktop-folders')).toHaveCount(0);
     await expect(page.getByTestId('window-terminal')).toHaveCount(0);
   }
@@ -54,6 +56,11 @@ test('non-desktop dock is fixed, labeled, and focuses the selected app', async (
   await expect(page.getByTestId('button-dock-work').locator('span')).toBeVisible();
   await expect(page.getByTestId('button-dock-about').locator('span')).toBeVisible();
   await expect(page.getByTestId('button-dock-contact').locator('span')).toBeVisible();
+  await expect(page.getByTestId('button-dock-mode').getByText('Mode')).toBeVisible();
+
+  await page.getByTestId('button-dock-mode').click();
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.getByTestId('button-dock-mode')).toHaveAttribute('aria-label', 'Switch to light mode');
 
   await page.getByTestId('button-dock-about').click();
   await expect(page.getByTestId('window-about')).toBeVisible();

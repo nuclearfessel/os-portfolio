@@ -29,10 +29,19 @@ type DockPosition = 'top' | 'right' | 'bottom' | 'left';
 type Position = { left: number; top: number };
 type Size = { width: number; height: number };
 type WorkspaceBounds = { left: number; top: number; right: number; bottom: number };
+type WorkspaceMode = 'desktop' | 'tablet-landscape' | 'managed';
 
 const STICKY_CONTROL_OVERFLOW = 24;
 const STICKY_VIEWPORT_GAP = 2;
 const DOCK_SAFE_INSET = 70;
+
+function readWorkspaceMode(): WorkspaceMode {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  if (width <= 760 || (width <= 1024 && height >= width) || (width <= 900 && height <= 600)) return 'managed';
+  if (width <= 1180) return 'tablet-landscape';
+  return 'desktop';
+}
 
 function stickyFootprintRadii(size: Size, rotation: number) {
   const radians = rotation * Math.PI / 180;
@@ -697,6 +706,7 @@ function DesktopFolder({
   onPointerUp,
   style,
   appIcon,
+  singleTap,
 }: {
   id: DesktopLauncherId;
   label: string;
@@ -707,11 +717,14 @@ function DesktopFolder({
   onPointerUp: (event: ReactPointerEvent<HTMLButtonElement>) => void;
   style?: React.CSSProperties;
   appIcon?: ReactNode;
+  singleTap: boolean;
 }) {
+  const action = `${singleTap ? 'Tap' : 'Double-click'} to ${open ? 'focus' : 'open'} ${label}`;
   return (
     <button
       className={`desktop-folder desktop-launcher-${id} ${appIcon ? 'desktop-app' : ''} ${open ? 'is-open' : ''}`}
-      onDoubleClick={onToggle}
+      onClick={singleTap ? onToggle : undefined}
+      onDoubleClick={singleTap ? undefined : onToggle}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -719,8 +732,8 @@ function DesktopFolder({
       onDragStart={(event) => event.preventDefault()}
       style={style}
       aria-pressed={open}
-      aria-label={`Double-click to ${open ? 'focus' : 'open'} ${label} ${appIcon ? 'application' : 'folder'}`}
-      title={`Double-click to ${open ? 'focus' : 'open'} ${label}`}
+      aria-label={`${action} ${appIcon ? 'application' : 'folder'}`}
+      title={action}
       data-draggable-item
       data-testid={`button-folder-${id}`}
     >
@@ -728,7 +741,7 @@ function DesktopFolder({
         ? <span className="desktop-app-icon" aria-hidden="true">{appIcon}</span>
         : <span className="desktop-folder-icon" aria-hidden="true" />}
       <span className="desktop-folder-label">{label}</span>
-      <span className="desktop-icon-tooltip" aria-hidden="true">Double-click to {open ? 'focus' : 'open'} {label}</span>
+      <span className="desktop-icon-tooltip" aria-hidden="true">{action}</span>
     </button>
   );
 }
@@ -755,11 +768,22 @@ function Home() {
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
   const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
   const [dockPosition, setDockPosition] = useState<DockPosition>(savedDesktopState.dockPosition);
+  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>(readWorkspaceMode);
+  const [coarsePointer, setCoarsePointer] = useState(() => window.matchMedia('(pointer: coarse)').matches);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const dockDragRef = useRef<{ active: boolean; startX: number; startY: number; moved: boolean } | null>(null);
+  const desktopGeometryRef = useRef({
+    dragPositions: savedDesktopState.itemPositions,
+    itemSizes: savedDesktopState.itemSizes,
+    folderPositions: savedDesktopState.folderPositions,
+  });
+  const previousWorkspaceModeRef = useRef(workspaceMode);
+  const managedLayout = workspaceMode === 'managed';
+  const effectiveDockPosition: DockPosition = workspaceMode === 'desktop' && !coarsePointer ? dockPosition : 'bottom';
+  const singleTapLaunch = workspaceMode !== 'desktop' || coarsePointer;
 
   const startDockDrag = (event: React.PointerEvent<HTMLElement>) => {
-    if (event.button !== 0 || window.matchMedia('(max-width: 760px)').matches) return;
+    if (event.button !== 0 || workspaceMode !== 'desktop' || coarsePointer) return;
     dockDragRef.current = { active: true, startX: event.clientX, startY: event.clientY, moved: false };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -811,10 +835,78 @@ function Home() {
   }, []);
 
   useEffect(() => {
+    const pointerQuery = window.matchMedia('(pointer: coarse)');
+    const updateWorkspace = () => {
+      setWorkspaceMode(readWorkspaceMode());
+      setCoarsePointer(pointerQuery.matches);
+    };
+    updateWorkspace();
+    window.addEventListener('resize', updateWorkspace);
+    pointerQuery.addEventListener('change', updateWorkspace);
+    return () => {
+      window.removeEventListener('resize', updateWorkspace);
+      pointerQuery.removeEventListener('change', updateWorkspace);
+    };
+  }, []);
+
+  useEffect(() => {
+    const previousMode = previousWorkspaceModeRef.current;
+    if (previousMode === 'desktop' && workspaceMode !== 'desktop') {
+      desktopGeometryRef.current = { dragPositions, itemSizes, folderPositions };
+    } else if (previousMode !== 'desktop' && workspaceMode === 'desktop') {
+      setDragPositions(desktopGeometryRef.current.dragPositions);
+      setItemSizes(desktopGeometryRef.current.itemSizes);
+      setFolderPositions(desktopGeometryRef.current.folderPositions);
+    }
+    previousWorkspaceModeRef.current = workspaceMode;
+  }, [workspaceMode]);
+
+  useEffect(() => {
+    if (workspaceMode === 'desktop') {
+      desktopGeometryRef.current = { dragPositions, itemSizes, folderPositions };
+    }
+  }, [dragPositions, folderPositions, itemSizes, workspaceMode]);
+
+  useEffect(() => {
+    if (workspaceMode !== 'tablet-landscape') return;
+    const reclampWindows = () => {
+      const area = desktopAreaRef.current;
+      if (!area) return;
+      const areaRect = area.getBoundingClientRect();
+      const dockRect = document.querySelector<HTMLElement>('.dock')?.getBoundingClientRect();
+      const bottom = Math.max(0, (dockRect?.top ?? window.innerHeight - 76) - areaRect.top - 8);
+      setDragPositions((current) => {
+        let changed = false;
+        const next = { ...current };
+        for (const id of ['about', 'work', 'contact', 'terminal'] as WindowId[]) {
+          const element = area.querySelector<HTMLElement>(`[data-testid="window-${id}"]`);
+          if (!element) continue;
+          const position = current[id] ?? { left: element.offsetLeft, top: element.offsetTop };
+          const constrained = {
+            left: Math.max(8, Math.min(areaRect.width - element.offsetWidth - 8, position.left)),
+            top: Math.max(8, Math.min(bottom - element.offsetHeight, position.top)),
+          };
+          if (Math.abs(constrained.left - position.left) >= .1 || Math.abs(constrained.top - position.top) >= .1) {
+            next[id] = constrained;
+            changed = true;
+          }
+        }
+        return changed ? next : current;
+      });
+    };
+    const frame = window.requestAnimationFrame(reclampWindows);
+    window.addEventListener('resize', reclampWindows);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', reclampWindows);
+    };
+  }, [workspaceMode]);
+
+  useEffect(() => {
     const desktopState: SavedDesktopState = {
-      folderPositions,
-      itemPositions: dragPositions,
-      itemSizes,
+      folderPositions: workspaceMode === 'desktop' ? folderPositions : desktopGeometryRef.current.folderPositions,
+      itemPositions: workspaceMode === 'desktop' ? dragPositions : desktopGeometryRef.current.dragPositions,
+      itemSizes: workspaceMode === 'desktop' ? itemSizes : desktopGeometryRef.current.itemSizes,
       iconSize,
       snapToGrid,
       theme,
@@ -827,7 +919,7 @@ function Home() {
     } catch {
       // The desktop remains usable when storage is unavailable.
     }
-  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -854,7 +946,7 @@ function Home() {
   const closeWindow = (id: WindowId) => {
     const area = desktopAreaRef.current;
     const windowElement = area?.querySelector<HTMLElement>(`[data-testid="window-${id}"]`);
-    if (area && windowElement && !window.matchMedia('(max-width: 760px)').matches) {
+    if (area && windowElement && workspaceMode === 'desktop') {
       const areaRect = area.getBoundingClientRect();
       const windowRect = windowElement.getBoundingClientRect();
       setDragPositions((current) => ({
@@ -907,10 +999,10 @@ function Home() {
     const topDockEdge = dockRect ? dockRect.bottom - areaRect.top : DOCK_SAFE_INSET;
     const bottomDockEdge = dockRect ? dockRect.top - areaRect.top : visibleBottom - DOCK_SAFE_INSET;
     return {
-      left: STICKY_VIEWPORT_GAP + (dockPosition === 'left' ? leftDockEdge : 0),
-      top: STICKY_VIEWPORT_GAP + (dockPosition === 'top' ? topDockEdge : 0),
-      right: (dockPosition === 'right' ? rightDockEdge : visibleRight) - STICKY_VIEWPORT_GAP,
-      bottom: (dockPosition === 'bottom' ? bottomDockEdge : visibleBottom) - STICKY_VIEWPORT_GAP,
+      left: STICKY_VIEWPORT_GAP + (effectiveDockPosition === 'left' ? leftDockEdge : 0),
+      top: STICKY_VIEWPORT_GAP + (effectiveDockPosition === 'top' ? topDockEdge : 0),
+      right: (effectiveDockPosition === 'right' ? rightDockEdge : visibleRight) - STICKY_VIEWPORT_GAP,
+      bottom: (effectiveDockPosition === 'bottom' ? bottomDockEdge : visibleBottom) - STICKY_VIEWPORT_GAP,
     };
   };
   const setStickyRotation = (id: StickyItemId, rotation: number) => {
@@ -934,7 +1026,7 @@ function Home() {
   }).join('|');
   useEffect(() => {
     const reclampStickies = () => {
-      if (window.matchMedia('(max-width: 760px)').matches) return;
+      if (workspaceMode === 'managed') return;
       const workspace = stickyWorkspace();
       const area = desktopAreaRef.current;
       if (!workspace || !area) return;
@@ -983,9 +1075,10 @@ function Home() {
       window.cancelAnimationFrame(frame);
       window.removeEventListener('resize', reclampStickies);
     };
-  }, [dockPosition, stickyGeometrySignature, stickySizeSignature]);
+  }, [effectiveDockPosition, stickyGeometrySignature, stickySizeSignature, workspaceMode]);
   const startDrag = (id: DesktopItemId, event: ReactPointerEvent<HTMLElement>) => {
-    if (event.button !== 0 || window.matchMedia('(max-width: 760px)').matches) return;
+    const isLauncher = id.startsWith('desktop-');
+    if (event.button !== 0 || workspaceMode === 'managed' || (isLauncher && (workspaceMode !== 'desktop' || coarsePointer))) return;
     const area = desktopAreaRef.current;
     if (!area) return;
     const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
@@ -1018,10 +1111,10 @@ function Home() {
     if (!draggableTarget || !target) return;
     const nextLeft = event.clientX - areaRect.left - drag.offsetX;
     const nextTop = event.clientY - areaRect.top - drag.offsetY;
-    const padRight = dockPosition === 'right' ? 70 : 0;
-    const padBottom = dockPosition === 'bottom' ? 70 : 0;
-    const padLeft = dockPosition === 'left' ? 70 : 0;
-    const padTop = dockPosition === 'top' ? 70 : 0;
+    const padRight = effectiveDockPosition === 'right' ? 70 : 0;
+    const padBottom = effectiveDockPosition === 'bottom' ? 70 : 0;
+    const padLeft = effectiveDockPosition === 'left' ? 70 : 0;
+    const padTop = effectiveDockPosition === 'top' ? 70 : 0;
     const maxLeft = Math.max(0, areaRect.width - target.width - padRight);
     const maxTop = Math.max(0, areaRect.height - target.height - padBottom);
     const minLeft = padLeft;
@@ -1033,8 +1126,9 @@ function Home() {
     const constrainedSticky = sticky && workspace && stickySize
       ? constrainStickyPosition({ left: nextLeft, top: nextTop }, stickySize, sticky.rotation, workspace)
       : null;
-    const left = constrainedSticky?.left ?? (staysOnDesktop ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft);
-    const top = constrainedSticky?.top ?? (staysOnDesktop ? Math.max(minTop, Math.min(maxTop, nextTop)) : Math.max(0, nextTop));
+    const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal'].includes(drag.id);
+    const left = constrainedSticky?.left ?? (staysOnDesktop || constrainsWindow ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft);
+    const top = constrainedSticky?.top ?? (staysOnDesktop || constrainsWindow ? Math.max(minTop, Math.min(maxTop, nextTop)) : Math.max(0, nextTop));
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
       drag.moved = true;
     }
@@ -1070,7 +1164,7 @@ function Home() {
     endDrag(event);
   };
   const startResize = (id: DesktopItemId, event: ReactPointerEvent<HTMLSpanElement>, direction: ResizeDirection = 'se') => {
-    if (window.matchMedia('(max-width: 760px)').matches) return;
+    if (workspaceMode === 'managed' || (id.startsWith('sticky') && coarsePointer)) return;
     const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     const area = desktopAreaRef.current;
     if (!target || !area) return;
@@ -1132,7 +1226,7 @@ function Home() {
     resizeRef.current = null;
   };
   const startRotate = (id: StickyItemId, rotation: number, event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (window.matchMedia('(max-width: 760px)').matches) return;
+    if (workspaceMode !== 'desktop' || coarsePointer) return;
     const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     if (!target) return;
     const rect = target.getBoundingClientRect();
@@ -1192,7 +1286,7 @@ function Home() {
       return;
     }
     if (windows[id]) {
-      setActiveWindow(id);
+      openWindow(id);
       return;
     }
     openWindow(id);
@@ -1213,6 +1307,7 @@ function Home() {
     ...(itemSizes[id] ? { width: itemSizes[id]?.width, height: itemSizes[id]?.height } : {}),
   });
   const launcherStyle = (id: DesktopLauncherId): React.CSSProperties | undefined => {
+    if (workspaceMode !== 'desktop' || coarsePointer) return undefined;
     const position = dragPositions[`desktop-${id}`] ?? folderPositions[id];
     return position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined;
   };
@@ -1220,7 +1315,7 @@ function Home() {
     const selectedColor = stickyPalette.find((color) => color.id === sticky.color) ?? stickyPalette[0];
     const usesLightText = selectedColor.foreground === 'light';
     return {
-      ...itemStyle(sticky.id),
+      ...(managedLayout ? {} : itemStyle(sticky.id)),
       zIndex: stickyOnTop && activeStickyId === sticky.id ? 11 : 3,
       '--sticky-bg': selectedColor.background,
       '--sticky-text': usesLightText ? '#ffffff' : '#1d2430',
@@ -1228,7 +1323,7 @@ function Home() {
       '--sticky-accent': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-border': usesLightText ? 'rgba(255, 255, 255, .28)' : 'rgba(29, 36, 48, .25)',
       '--sticky-handle': selectedColor.handle,
-      '--sticky-rotation': `${sticky.rotation}deg`,
+      '--sticky-rotation': `${managedLayout ? 0 : sticky.rotation}deg`,
     } as React.CSSProperties;
   };
   const addSticky = (sourceId: StickyItemId) => {
@@ -1236,13 +1331,22 @@ function Home() {
     const numericIds = stickies.map((sticky) => sticky.id === 'sticky' ? 0 : Number(sticky.id.slice(7))).filter(Number.isFinite);
     const id = `sticky-${Math.max(0, ...numericIds) + 1}` as StickyItemId;
     const area = desktopAreaRef.current;
-    const sourcePosition = dragPositions[sourceId];
+    const sourcePosition = workspaceMode === 'desktop'
+      ? dragPositions[sourceId]
+      : desktopGeometryRef.current.dragPositions[sourceId];
     const width = itemSizes[sourceId]?.width ?? 214;
     const height = itemSizes[sourceId]?.height ?? 132;
     const offset = 28 + (stickies.length % 4) * 12;
-    const left = Math.max(12, Math.min((area?.clientWidth ?? 900) - width - 12, (sourcePosition?.left ?? (area?.clientWidth ?? 900) * .58) + offset));
-    const top = Math.max(18, Math.min((area?.clientHeight ?? 650) - height - 18, (sourcePosition?.top ?? 95) + offset));
+    const layoutWidth = workspaceMode === 'desktop' ? (area?.clientWidth ?? 900) : Math.max(900, window.innerWidth);
+    const layoutHeight = workspaceMode === 'desktop' ? (area?.clientHeight ?? 650) : Math.max(650, window.innerHeight - 42);
+    const left = Math.max(12, Math.min(layoutWidth - width - 12, (sourcePosition?.left ?? layoutWidth * .58) + offset));
+    const top = Math.max(18, Math.min(layoutHeight - height - 18, (sourcePosition?.top ?? 95) + offset));
     const rotations = [-2, 1, -3, 2, -.8];
+    desktopGeometryRef.current = {
+      ...desktopGeometryRef.current,
+      dragPositions: { ...desktopGeometryRef.current.dragPositions, [id]: { left, top } },
+      itemSizes: { ...desktopGeometryRef.current.itemSizes, [id]: { width, height } },
+    };
     setStickies((current) => [...current, createUserSticky(id, source.color, rotations[(numericIds.length - 1) % rotations.length])]);
     setDragPositions((current) => ({ ...current, [id]: { left, top } }));
     setItemSizes((current) => ({ ...current, [id]: { width, height } }));
@@ -1261,6 +1365,15 @@ function Home() {
       setStickyVisible(false);
       setStickyOnTop(false);
     }
+    const desktopPositions = { ...desktopGeometryRef.current.dragPositions };
+    const desktopSizes = { ...desktopGeometryRef.current.itemSizes };
+    delete desktopPositions[id];
+    delete desktopSizes[id];
+    desktopGeometryRef.current = {
+      ...desktopGeometryRef.current,
+      dragPositions: desktopPositions,
+      itemSizes: desktopSizes,
+    };
     setDragPositions((current) => {
       const next = { ...current };
       delete next[id];
@@ -1272,6 +1385,18 @@ function Home() {
       return next;
     });
     setStickyMenu(null);
+  };
+  const cycleStickyColor = (id: StickyItemId) => {
+    setStickies((current) => current.map((sticky) => {
+      if (sticky.id !== id) return sticky;
+      const index = stickyPalette.findIndex((color) => color.id === sticky.color);
+      return { ...sticky, color: stickyPalette[(index + 1) % stickyPalette.length].id };
+    }));
+  };
+  const selectAdjacentSticky = (direction: -1 | 1) => {
+    const index = Math.max(0, stickies.findIndex((sticky) => sticky.id === activeStickyId));
+    const next = stickies[(index + direction + stickies.length) % stickies.length];
+    if (next) setActiveStickyId(next.id);
   };
   const resetStickyRotation = (id: StickyItemId) => {
     setStickyRotation(id, 0);
@@ -1297,15 +1422,29 @@ function Home() {
     const row = iconSize === 'large' ? 86 : 68;
     const left = Math.max(dockPosition === 'left' ? 100 : 16, area.clientWidth - width - (dockPosition === 'right' ? 94 : 28));
     const startTop = dockPosition === 'top' ? 132 : 62;
-    setFolderPositions({});
-    setDragPositions((current) => ({
-      ...current,
+    const arrangedPositions: ItemPositions = {
+      ...dragPositions,
       'desktop-about': { left, top: startTop },
       'desktop-work': { left, top: startTop + row },
       'desktop-terminal': { left, top: startTop + row * 2 },
       'desktop-contact': { left, top: startTop + row * 3 },
       'desktop-stickies-app': { left, top: startTop + row * 4 },
-    }));
+    };
+    const savedDesktopPositions: ItemPositions = {
+      ...desktopGeometryRef.current.dragPositions,
+      'desktop-about': arrangedPositions['desktop-about'],
+      'desktop-work': arrangedPositions['desktop-work'],
+      'desktop-terminal': arrangedPositions['desktop-terminal'],
+      'desktop-contact': arrangedPositions['desktop-contact'],
+      'desktop-stickies-app': arrangedPositions['desktop-stickies-app'],
+    };
+    desktopGeometryRef.current = {
+      ...desktopGeometryRef.current,
+      dragPositions: savedDesktopPositions,
+      folderPositions: {},
+    };
+    setFolderPositions({});
+    setDragPositions(arrangedPositions);
     setContextMenu(null);
   };
   const resetDesktop = () => {
@@ -1314,6 +1453,11 @@ function Home() {
     } catch {
       // State still resets for this session when storage is unavailable.
     }
+    desktopGeometryRef.current = {
+      dragPositions: defaultDesktopState.itemPositions,
+      itemSizes: defaultDesktopState.itemSizes,
+      folderPositions: defaultDesktopState.folderPositions,
+    };
     setFolderPositions(defaultDesktopState.folderPositions);
     setDragPositions(defaultDesktopState.itemPositions);
     setItemSizes(defaultDesktopState.itemSizes);
@@ -1354,7 +1498,9 @@ function Home() {
     },
     onResizeMove: moveResize,
     onResizeEnd: endResize,
-    style: maximizedWindows[id]
+    style: managedLayout
+      ? undefined
+      : maximizedWindows[id]
       ? {
         left: dockPosition === 'left' ? 82 : 12,
         top: dockPosition === 'top' ? 82 : 12,
@@ -1368,7 +1514,7 @@ function Home() {
 
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize}`}
+      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
     >
@@ -1408,15 +1554,15 @@ function Home() {
 
         {showDesktopIcons && (
           <div className="desktop-folders" aria-label="Desktop applications and folders">
-            <DesktopFolder id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} />
-            <DesktopFolder id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} />
-            <DesktopFolder id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
-            <DesktopFolder id="contact" label="Email Alex" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<Mail size={30} strokeWidth={1.7} />} />
-            <DesktopFolder id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<StickyNote size={30} strokeWidth={1.7} />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} />
+            <DesktopFolder singleTap={singleTapLaunch} id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} />
+            <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="contact" label="Email Alex" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<Mail size={30} strokeWidth={1.7} />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<StickyNote size={30} strokeWidth={1.7} />} />
           </div>
         )}
 
-        {stickyVisible && stickies.map((sticky, index) => (
+        {stickyVisible && (!managedLayout || stickyOnTop) && stickies.filter((sticky) => !managedLayout || sticky.id === activeStickyId).map((sticky, index) => (
           <aside
             key={sticky.id}
             className="desktop-note"
@@ -1462,6 +1608,14 @@ function Home() {
                 placeholder="Write a note…"
               />
               <span className="note-signoff">— {sticky.author}, {sticky.createdAt}</span>
+              <div className="managed-sticky-toolbar" aria-label="Sticky note controls">
+                <button type="button" onClick={() => selectAdjacentSticky(-1)} disabled={stickies.length < 2} aria-label="Previous sticky"><ArrowLeft size={14} /></button>
+                <span>{Math.max(1, stickies.findIndex((item) => item.id === sticky.id) + 1)} / {stickies.length}</span>
+                <button type="button" onClick={() => selectAdjacentSticky(1)} disabled={stickies.length < 2} aria-label="Next sticky"><ChevronRight size={14} /></button>
+                <button type="button" onClick={() => cycleStickyColor(sticky.id)}>Color</button>
+                <button type="button" onClick={() => addSticky(sticky.id)}><Plus size={14} /> Add</button>
+                <button type="button" className="managed-sticky-delete" onClick={() => deleteSticky(sticky.id)}><X size={14} /> Delete</button>
+              </div>
             </div>
             {(['top-left', 'top-right', 'bottom-left'] as const).map((corner, cornerIndex) => (
               <button
@@ -1492,10 +1646,10 @@ function Home() {
           </aside>
         ))}
 
-        {windows.work && <WorkWindow {...windowProps('work')} />}
-        {windows.about && <AboutWindow {...windowProps('about')} />}
-        {windows.contact && <ContactWindow {...windowProps('contact')} />}
-        {windows.terminal && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
+        {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
+        {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
+        {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
+        {windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
       </div>
 
       {contextMenu?.target === 'desktop' && (
@@ -1651,15 +1805,18 @@ function Home() {
       )}
 
       <nav
-        className={`dock dock-${dockPosition}`}
+        className={`dock dock-${effectiveDockPosition}`}
         aria-label="Application dock. Drag to a screen edge or right-click to choose its position."
         title="Drag to reposition dock"
-        onPointerDown={startDockDrag}
+        onPointerDown={(event) => {
+          if ((event.target as HTMLElement).closest('button')) return;
+          startDockDrag(event);
+        }}
         onPointerMove={moveDockDrag}
         onPointerUp={endDockDrag}
         onPointerCancel={endDockDrag}
         onClickCapture={(e) => {
-          if (dockDragRef.current?.moved) {
+          if (dockDragRef.current?.moved && !(e.target as HTMLElement).closest('button')) {
             e.stopPropagation();
             e.preventDefault();
           }

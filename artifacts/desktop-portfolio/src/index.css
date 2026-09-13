@@ -149,7 +149,7 @@ button { cursor: pointer; }
 .desktop-folder.is-open .desktop-folder-label { color: #fff; background: #3568a8; }
 .desktop-launcher-work.is-open .desktop-folder-label { background: #913047; }
 .desktop-folder:focus-visible .desktop-folder-label { outline: 1px solid rgba(134,217,238,.9); outline-offset: 2px; }
-.desktop-icon-tooltip, .window-control-tooltip, .dock-item span { box-sizing: border-box; width: max-content; max-width: none; padding: 5px calc(var(--spacing) * 3); overflow: visible; color: hsl(var(--popover-foreground)); background: hsl(var(--popover)); border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm); box-shadow: 0 5px 16px rgba(0,0,0,.24); opacity: 0; pointer-events: none; white-space: nowrap; font: 10px/1.2 var(--app-font-mono); transition: opacity .1s, transform .1s; }
+.desktop-icon-tooltip, .window-control-tooltip, .dock-item-label-tooltip { box-sizing: border-box; width: max-content; max-width: none; padding: 5px calc(var(--spacing) * 3); overflow: visible; color: hsl(var(--popover-foreground)); background: hsl(var(--popover)); border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm); box-shadow: 0 5px 16px rgba(0,0,0,.24); opacity: 0; pointer-events: none; white-space: nowrap; font: 10px/1.2 var(--app-font-mono); transition: opacity .1s, transform .1s; }
 .desktop-icon-tooltip { position: absolute; left: 50%; bottom: calc(100% + 4px); z-index: 20; transform: translate(-50%, 3px); }
 .desktop-folder:hover .desktop-icon-tooltip, .desktop-folder:focus-visible .desktop-icon-tooltip { opacity: 1; transform: translate(-50%, 0); }
 .icons-small .desktop-folder { width: 70px; gap: 5px; }
@@ -315,12 +315,15 @@ button { cursor: pointer; }
 .dock.dock-top .dock-item.active::after { top: -5px; left: 50%; transform: translateX(-50%); }
 .dock.dock-left .dock-item.active::after { left: -5px; top: 50%; transform: translateY(-50%); }
 .dock.dock-right .dock-item.active::after { right: -5px; top: 50%; transform: translateY(-50%); }
-.dock-item span { position: absolute; z-index: 10; }
-.dock.dock-bottom .dock-item span { bottom: 53px; left: 50%; transform: translateX(-50%); }
-.dock.dock-top .dock-item span { top: 53px; left: 50%; transform: translateX(-50%); }
-.dock.dock-left .dock-item span { left: 53px; top: 50%; transform: translateY(-50%); }
-.dock.dock-right .dock-item span { right: 53px; top: 50%; transform: translateY(-50%); }
-.dock-item:hover span { opacity: 1; }
+.dock-item-label-tooltip { position: absolute; z-index: 10; opacity: 0; transition: opacity .1s, transform .1s; }
+.dock.dock-bottom .dock-item .dock-item-label-tooltip { bottom: 53px; left: 50%; transform: translate(-50%, 3px); }
+.dock.dock-top .dock-item .dock-item-label-tooltip { top: 53px; left: 50%; transform: translate(-50%, -3px); }
+.dock.dock-left .dock-item .dock-item-label-tooltip { left: 53px; top: 50%; transform: translate(3px, -50%); }
+.dock.dock-right .dock-item .dock-item-label-tooltip { right: 53px; top: 50%; transform: translate(-3px, -50%); }
+.dock.dock-bottom .dock-item:hover .dock-item-label-tooltip, .dock.dock-bottom .dock-item:focus-visible .dock-item-label-tooltip,
+.dock.dock-top .dock-item:hover .dock-item-label-tooltip, .dock.dock-top .dock-item:focus-visible .dock-item-label-tooltip { opacity: 1; transform: translate(-50%, 0); }
+.dock.dock-left .dock-item:hover .dock-item-label-tooltip, .dock.dock-left .dock-item:focus-visible .dock-item-label-tooltip,
+.dock.dock-right .dock-item:hover .dock-item-label-tooltip, .dock.dock-right .dock-item:focus-visible .dock-item-label-tooltip { opacity: 1; transform: translate(0, -50%); }
 .mode-icon { position: relative !important; width: 20px; height: 20px; display: block; padding: 0 !important; overflow: visible; opacity: 1 !important; color: inherit; background: transparent !important; border: 0 !important; transform: none !important; }
 .mode-icon svg { position: absolute; inset: 0; display: block; transition: opacity .24s ease, transform .34s cubic-bezier(.2,.8,.2,1); }
 .mode-light .mode-sun { opacity: 1; transform: rotate(0deg) scale(1); }

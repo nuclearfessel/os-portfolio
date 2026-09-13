@@ -3,6 +3,7 @@ import {
   ContextMenuSurface,
   DesktopLauncher,
   DockItem,
+  DockItemLabel,
   ProjectCard,
   SectionLabel,
   StatusIndicator,
@@ -63,9 +64,24 @@ export function FesOsDemo() {
         </StickyNoteSurface>
       </div>
 
-      <Surface className="flex flex-wrap items-end gap-5 p-5">
+      <Surface className="flex flex-wrap items-end gap-8 p-5">
         <DesktopLauncher className="rounded-md border border-border p-3 text-sm" open>About launcher</DesktopLauncher>
-        <DockItem className="size-14 bg-secondary" active aria-label="Active Dock item">01</DockItem>
+        <div className="space-y-2">
+          <SectionLabel>desktop / tooltip label</SectionLabel>
+          <DockItem className="size-14 bg-secondary" active aria-label="Active desktop Dock item">
+            01
+            <DockItemLabel presentation="tooltip" className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 opacity-100">
+              Work · 2
+            </DockItemLabel>
+          </DockItem>
+        </div>
+        <div className="space-y-2">
+          <SectionLabel>mobile + tablet / inline label</SectionLabel>
+          <DockItem className="flex h-14 w-20 flex-col gap-1 bg-secondary" active aria-label="Active responsive Dock item">
+            01
+            <DockItemLabel presentation="inline">Work</DockItemLabel>
+          </DockItem>
+        </div>
         <ContextMenuSurface className="w-48 p-2 text-sm">
           <div className="rounded px-2 py-1.5 hover:bg-secondary">Theme</div>
           <div className="rounded px-2 py-1.5 hover:bg-secondary">Reset desktop…</div>

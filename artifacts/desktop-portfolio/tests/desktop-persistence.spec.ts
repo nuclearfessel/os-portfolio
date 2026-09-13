@@ -186,6 +186,68 @@ test('keeps long desktop icon tooltips evenly padded without overflow', async ({
   expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth);
 });
 
+test('renders dock labels with the same surface as folder and toolbar tooltips', async ({ page }) => {
+  const readSurface = async (selector: ReturnType<typeof page.locator>) =>
+    selector.evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return {
+        backgroundColor: style.backgroundColor,
+        borderColor: style.borderColor,
+        borderRadius: style.borderRadius,
+        borderWidth: style.borderWidth,
+        boxShadow: style.boxShadow,
+        color: style.color,
+        fontFamily: style.fontFamily,
+        fontSize: style.fontSize,
+        lineHeight: style.lineHeight,
+        padding: style.padding,
+      };
+    });
+
+  const folderSurface = await readSurface(
+    page.getByTestId('button-folder-terminal').locator('.desktop-icon-tooltip'),
+  );
+  const toolbarSurface = await readSurface(
+    page.getByTestId('button-close-about').locator('.window-control-tooltip'),
+  );
+  const dockSurface = await readSurface(
+    page.getByTestId('button-dock-terminal').locator('.dock-item-label-tooltip'),
+  );
+
+  expect(toolbarSurface).toEqual(folderSurface);
+  expect(dockSurface).toEqual(folderSurface);
+});
+
+test('keeps mobile and tablet dock labels free of desktop tooltip effects', async ({ page }) => {
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 820, height: 1180 },
+  ]) {
+    await page.setViewportSize(viewport);
+    const dockLabel = page.getByTestId('button-dock-work').locator('span');
+    await expect(dockLabel).toBeVisible();
+
+    const style = await dockLabel.evaluate((element) => {
+      const computed = window.getComputedStyle(element);
+      return {
+        background: computed.backgroundColor,
+        borderWidth: computed.borderWidth,
+        boxShadow: computed.boxShadow,
+        hasVisibleBoxShadow:
+          computed.boxShadow !== 'none' &&
+          [...computed.boxShadow.matchAll(/rgba\([^)]*,\s*([\d.]+)\)/g)]
+            .some((match) => Number(match[1]) > 0),
+        padding: computed.padding,
+      };
+    });
+
+    expect(style.background).toBe('rgba(0, 0, 0, 0)');
+    expect(style.borderWidth).toBe('0px');
+    expect(style.hasVisibleBoxShadow).toBe(false);
+    expect(style.padding).toBe('0px');
+  }
+});
+
 test('reopens a closed window at the same position and size', async ({ page }) => {
   await page.getByTestId('button-dock-contact').click();
   const contactWindow = page.getByTestId('window-contact');

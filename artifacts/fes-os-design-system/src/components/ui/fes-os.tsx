@@ -4,6 +4,7 @@ import {
   type HTMLAttributes,
   type ReactNode,
 } from 'react';
+import { tooltipSurfaceClassName } from './tooltip';
 
 function classes(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(' ');
@@ -139,6 +140,28 @@ export const DockItem = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLB
   ),
 );
 DockItem.displayName = 'DockItem';
+
+export type DockItemLabelProps = HTMLAttributes<HTMLSpanElement> & {
+  presentation?: 'tooltip' | 'inline';
+};
+
+export const DockItemLabel = forwardRef<HTMLSpanElement, DockItemLabelProps>(
+  ({ className, presentation = 'tooltip', ...props }, ref) => (
+    <span
+      ref={ref}
+      className={classes(
+        'dock-item-label pointer-events-none whitespace-nowrap text-[10px]',
+        presentation === 'tooltip' &&
+          classes('dock-item-label-tooltip', tooltipSurfaceClassName),
+        presentation === 'inline' &&
+          'dock-item-label-inline block w-auto max-w-none border-0 bg-transparent p-0 font-sans leading-none text-inherit shadow-none',
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
+DockItemLabel.displayName = 'DockItemLabel';
 
 export const DesktopLauncher = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { open?: boolean }>(
   ({ className, open = false, type = 'button', ...props }, ref) => (

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Apple, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
-  Command, FolderGit2, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
+  Check, Command, FolderGit2, Mail, Maximize2, Menu, Minus, MousePointer2, Terminal,
   UserRound, Wifi, X,
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -15,6 +15,8 @@ const queryClient = new QueryClient();
 
 type WindowId = 'about' | 'work' | 'notes' | 'contact' | 'terminal';
 type WindowState = Record<WindowId, boolean>;
+type IconSize = 'large' | 'small';
+type Theme = 'dark' | 'light';
 
 const projects = [
   { id: '01', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
@@ -181,14 +183,49 @@ function TerminalWindow({
 }: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
   const [command, setCommand] = useState('');
   const [history, setHistory] = useState<string[]>([]);
+  const [cwd, setCwd] = useState('~');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const submitCommand = (event: FormEvent) => {
     event.preventDefault();
     const normalized = command.trim().toLowerCase();
     if (!normalized) return;
+    const [verb, ...args] = normalized.split(/\s+/);
+
+    if (verb === 'exit') {
+      props.onClose();
+      return;
+    }
+
+    if (verb === 'cd') {
+      const destination = args.join(' ');
+      const folders: Record<string, string> = {
+        '': '~',
+        '~': '~',
+        '~/': '~',
+        '/home/alex': '~',
+        about: '~/about',
+        '~/about': '~/about',
+        work: '~/work',
+        '~/work': '~/work',
+        notes: '~/notes',
+        '~/notes': '~/notes',
+        contact: '~/contact',
+        '~/contact': '~/contact',
+        '/': '/',
+      };
+      const nextDirectory = destination === '..'
+        ? cwd === '/' ? '/' : '~'
+        : folders[destination];
+      const output = nextDirectory ? '' : `cd: no such file or directory: ${destination}`;
+      if (nextDirectory) setCwd(nextDirectory);
+      setHistory((current) => [...current, `› ${command}`, ...(output ? [output] : [])]);
+      setCommand('');
+      return;
+    }
+
     const output = normalized === 'help'
-      ? 'about   work   notes   contact   clear'
+      ? 'about   work   notes   contact   cd [folder]   exit   clear'
       : normalized === 'clear'
         ? ''
         : normalized === 'about'
@@ -212,7 +249,7 @@ function TerminalWindow({
         <div className="terminal-output" style={{ color: '#e4ff5b' }}>type “help” to explore, or use the dock below.</div>
         {history.map((line, index) => <div className={line.startsWith('›') ? 'terminal-line terminal-command' : 'terminal-output'} key={`${line}-${index}`}>{line}</div>)}
         <form className="terminal-form" onSubmit={submitCommand}>
-          <span className="terminal-prompt">alex@studio:~$</span>
+          <span className="terminal-prompt">alex@studio:{cwd}$</span>
           <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => setCommand(event.target.value)} aria-label="Terminal command" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" />
         </form>
       </div>
@@ -266,6 +303,11 @@ function Home() {
   const [dragPositions, setDragPositions] = useState<Partial<Record<WindowId | 'sticky', { left: number; top: number }>>>({});
   const [itemSizes, setItemSizes] = useState<Partial<Record<WindowId | 'sticky', { width: number; height: number }>>>({});
   const [folderPositions, setFolderPositions] = useState<Partial<Record<WindowId, { left: number; top: number }>>>({});
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [iconSize, setIconSize] = useState<IconSize>('large');
+  const [snapToGrid, setSnapToGrid] = useState(false);
+  const [theme, setTheme] = useState<Theme>('dark');
+  const [showDesktopIcons, setShowDesktopIcons] = useState(true);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: WindowId | 'sticky'; offsetX: number; offsetY: number; moved: boolean } | null>(null);
   const resizeRef = useRef<{ id: WindowId | 'sticky'; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
@@ -280,7 +322,10 @@ function Home() {
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMobileOpen(false);
+      if (event.key === 'Escape') {
+        setMobileOpen(false);
+        setContextMenu(null);
+      }
       if (event.metaKey || event.ctrlKey) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'notes', '4': 'contact', '`': 'terminal' };
       const id = shortcuts[event.key];
@@ -409,6 +454,16 @@ function Home() {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
+    const drag = folderDragRef.current;
+    if (!drag?.moved || !snapToGrid) return;
+    const area = desktopAreaRef.current;
+    const position = folderPositions[drag.id];
+    if (!area || !position) return;
+    const target = event.currentTarget.getBoundingClientRect();
+    const grid = iconSize === 'large' ? 96 : 76;
+    const left = Math.max(0, Math.min(area.clientWidth - target.width, Math.round(position.left / grid) * grid));
+    const top = Math.max(0, Math.min(area.clientHeight - target.height, Math.round(position.top / grid) * grid));
+    setFolderPositions((current) => ({ ...current, [drag.id]: { left, top } }));
   };
   const handleFolderClick = (id: WindowId) => {
     if (folderDragRef.current?.id === id && folderDragRef.current.moved) {
@@ -430,6 +485,28 @@ function Home() {
     ...positionStyle(id),
     ...(itemSizes[id] ? { width: itemSizes[id]?.width, height: itemSizes[id]?.height } : {}),
   });
+  const openDesktopContextMenu = (event: ReactMouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('.window, .desktop-note, .desktop-folder')) return;
+    event.preventDefault();
+    setContextMenu({
+      x: Math.max(8, Math.min(event.clientX, window.innerWidth - 430)),
+      y: Math.max(8, Math.min(event.clientY, window.innerHeight - 270)),
+    });
+  };
+  const autoArrangeIcons = () => {
+    const area = desktopAreaRef.current;
+    if (!area) return;
+    const width = iconSize === 'large' ? 88 : 70;
+    const row = iconSize === 'large' ? 86 : 68;
+    const left = Math.max(16, area.clientWidth - width - 28);
+    setFolderPositions({
+      about: { left, top: 62 },
+      work: { left, top: 62 + row },
+      notes: { left, top: 62 + row * 2 },
+    });
+    setContextMenu(null);
+  };
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
     onFocus: () => setActiveWindow(id),
@@ -448,10 +525,10 @@ function Home() {
   });
 
   return (
-    <main className="os-shell">
+    <main className={`os-shell theme-${theme} icons-${iconSize}`} onPointerDown={() => setContextMenu(null)}>
       <header className="system-bar">
         <div className="system-left">
-          <Apple size={14} strokeWidth={1.8} color="#e4ff5b" aria-hidden="true" />
+          <Apple className="system-logo" size={14} strokeWidth={1.8} aria-hidden="true" />
           <span className="system-mark">ALEX.OS</span>
           <span className="system-separator">/</span>
           <span className="system-location">Brooklyn, NY</span>
@@ -468,7 +545,7 @@ function Home() {
         </div>
       </header>
 
-      <div className="desktop-area" ref={desktopAreaRef}>
+      <div className="desktop-area" ref={desktopAreaRef} onContextMenu={openDesktopContextMenu}>
         <div className="desktop-intro">
           <span className="eyebrow">personal workspace / v1.0</span>
           <h1>Thoughtful interfaces.<br /><em>Fast systems.</em></h1>
@@ -479,11 +556,13 @@ function Home() {
           </div>
         </div>
 
-        <div className="desktop-folders" aria-label="Portfolio folders">
-          <DesktopFolder id="about" label="about" open={windows.about} onToggle={() => handleFolderClick('about')} onPointerDown={(event) => startFolderDrag('about', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.about ? { left: folderPositions.about.left, top: folderPositions.about.top, bottom: 'auto' } : undefined} />
-          <DesktopFolder id="work" label="work" open={windows.work} onToggle={() => handleFolderClick('work')} onPointerDown={(event) => startFolderDrag('work', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.work ? { left: folderPositions.work.left, top: folderPositions.work.top, bottom: 'auto' } : undefined} />
-          <DesktopFolder id="notes" label="notes" open={windows.notes} onToggle={() => handleFolderClick('notes')} onPointerDown={(event) => startFolderDrag('notes', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.notes ? { left: folderPositions.notes.left, top: folderPositions.notes.top, bottom: 'auto' } : undefined} />
-        </div>
+        {showDesktopIcons && (
+          <div className="desktop-folders" aria-label="Portfolio folders">
+            <DesktopFolder id="about" label="about" open={windows.about} onToggle={() => handleFolderClick('about')} onPointerDown={(event) => startFolderDrag('about', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.about ? { left: folderPositions.about.left, top: folderPositions.about.top, bottom: 'auto' } : undefined} />
+            <DesktopFolder id="work" label="work" open={windows.work} onToggle={() => handleFolderClick('work')} onPointerDown={(event) => startFolderDrag('work', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.work ? { left: folderPositions.work.left, top: folderPositions.work.top, bottom: 'auto' } : undefined} />
+            <DesktopFolder id="notes" label="notes" open={windows.notes} onToggle={() => handleFolderClick('notes')} onPointerDown={(event) => startFolderDrag('notes', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.notes ? { left: folderPositions.notes.left, top: folderPositions.notes.top, bottom: 'auto' } : undefined} />
+          </div>
+        )}
 
         <aside
           className="desktop-note"
@@ -516,6 +595,38 @@ function Home() {
         {windows.contact && <ContactWindow {...windowProps('contact')} />}
         {windows.terminal && <TerminalWindow {...windowProps('terminal')} />}
       </div>
+
+      {contextMenu && (
+        <div
+          className="desktop-context-menu"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onPointerDown={(event) => event.stopPropagation()}
+          onContextMenu={(event) => event.preventDefault()}
+          role="menu"
+          aria-label="Desktop options"
+          data-testid="menu-desktop-context"
+        >
+          <div className="context-menu-row has-submenu">
+            <button type="button" role="menuitem" aria-haspopup="menu"><span className="context-check" /><span>View</span><ChevronRight size={13} /></button>
+            <div className="context-submenu" role="menu" aria-label="Icon size">
+              <button type="button" role="menuitemradio" aria-checked={iconSize === 'large'} onClick={() => { setIconSize('large'); setContextMenu(null); }}><span className="context-check">{iconSize === 'large' && <Check size={12} />}</span><span>Large icons</span></button>
+              <button type="button" role="menuitemradio" aria-checked={iconSize === 'small'} onClick={() => { setIconSize('small'); setContextMenu(null); }}><span className="context-check">{iconSize === 'small' && <Check size={12} />}</span><span>Small icons</span></button>
+            </div>
+          </div>
+          <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={snapToGrid} onClick={() => setSnapToGrid((value) => !value)}><span className="context-check">{snapToGrid && <Check size={12} />}</span><span>Snap to grid</span></button>
+          <button type="button" className="context-menu-button" role="menuitem" onClick={autoArrangeIcons}><span className="context-check" /><span>Auto arrange icons</span></button>
+          <div className="context-menu-separator" />
+          <div className="context-menu-row has-submenu">
+            <button type="button" role="menuitem" aria-haspopup="menu"><span className="context-check" /><span>Theme</span><ChevronRight size={13} /></button>
+            <div className="context-submenu" role="menu" aria-label="Theme">
+              <button type="button" role="menuitemradio" aria-checked={theme === 'light'} onClick={() => { setTheme('light'); setContextMenu(null); }}><span className="context-check">{theme === 'light' && <Check size={12} />}</span><span>Light</span></button>
+              <button type="button" role="menuitemradio" aria-checked={theme === 'dark'} onClick={() => { setTheme('dark'); setContextMenu(null); }}><span className="context-check">{theme === 'dark' && <Check size={12} />}</span><span>Dark</span></button>
+            </div>
+          </div>
+          <div className="context-menu-separator" />
+          <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
+        </div>
+      )}
 
       <nav className="dock" aria-label="Portfolio applications">
         <button className={`dock-item ${windows.about ? 'active' : ''}`} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About · 1</span></button>

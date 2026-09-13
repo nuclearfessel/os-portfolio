@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'alex-os.desktop.v1';
+const storageKey = 'fes-os.desktop.v1';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -523,6 +523,87 @@ test('resets a sticky rotation in both themes and keeps it upright after reload'
   await expect.poll(readRotation).toBe('0deg');
 });
 
+test('deletes only user-created stickies after confirmation and clears their saved layout', async ({ page }) => {
+  const originalSticky = page.getByTestId('sticky-sticky');
+  await expect(originalSticky.getByRole('button', { name: /Delete/ })).toHaveCount(0);
+  await openStickyMenu(page);
+  await expect(page.getByTestId('button-delete-sticky')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+
+  const addStickyButton = page.getByTestId('button-add-sticky');
+  await addStickyButton.focus();
+  await page.keyboard.press('Enter');
+
+  const createdSticky = page.getByTestId('sticky-sticky-1');
+  const createdText = createdSticky.getByRole('textbox', { name: 'Sticky note 2 text' });
+  const deleteButton = page.getByTestId('button-delete-sticky-1');
+  await expect(createdSticky).toBeVisible();
+  await createdText.fill('Delete this saved note.');
+
+  const initialBox = await createdSticky.boundingBox();
+  expect(initialBox).not.toBeNull();
+  await createdSticky.locator('.note-label').hover({ force: true });
+  await page.mouse.down();
+  await page.mouse.move(initialBox!.x - 90, initialBox!.y + 65, { steps: 6 });
+  await page.mouse.up();
+
+  await expect.poll(async () => page.evaluate((key) => {
+    const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
+    return {
+      sticky: saved.stickies?.find((item: { id: string }) => item.id === 'sticky-1'),
+      position: saved.itemPositions?.['sticky-1'],
+      size: saved.itemSizes?.['sticky-1'],
+    };
+  }, storageKey)).toMatchObject({
+    sticky: { id: 'sticky-1', text: 'Delete this saved note.' },
+    position: { left: expect.any(Number), top: expect.any(Number) },
+    size: { width: expect.any(Number), height: expect.any(Number) },
+  });
+
+  await deleteButton.click();
+  const deleteDialog = page.getByRole('alertdialog', { name: 'Delete this sticky?' });
+  await expect(deleteDialog).toBeVisible();
+  await deleteDialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(createdSticky).toBeVisible();
+  await expect(createdText).toHaveValue('Delete this saved note.');
+
+  await deleteButton.focus();
+  await page.keyboard.press('Enter');
+  await expect(deleteDialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(deleteDialog).toHaveCount(0);
+  await expect(createdSticky).toBeVisible();
+
+  await openStickyMenu(page, 'sticky-1');
+  await page.getByRole('menuitem', { name: 'Delete this sticky…' }).click();
+  await expect(deleteDialog).toBeVisible();
+  const confirmDelete = page.getByTestId('button-confirm-delete-sticky');
+  await confirmDelete.focus();
+  await page.keyboard.press('Enter');
+
+  await expect(createdSticky).toHaveCount(0);
+  await expect.poll(async () => page.evaluate((key) => {
+    const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
+    return {
+      stickyIds: saved.stickies?.map((item: { id: string }) => item.id),
+      hasPosition: Object.hasOwn(saved.itemPositions ?? {}, 'sticky-1'),
+      hasSize: Object.hasOwn(saved.itemSizes ?? {}, 'sticky-1'),
+    };
+  }, storageKey)).toEqual({
+    stickyIds: ['sticky'],
+    hasPosition: false,
+    hasSize: false,
+  });
+
+  await page.reload();
+  await expect(page.getByTestId('sticky-sticky-1')).toHaveCount(0);
+  await expect(page.getByTestId('sticky-sticky')).toBeVisible();
+  const savedAfterReload = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+  expect(savedAfterReload.stickies.map((item: { id: string }) => item.id)).toEqual(['sticky']);
+  expect(savedAfterReload.itemPositions).not.toHaveProperty('sticky-1');
+  expect(savedAfterReload.itemSizes).not.toHaveProperty('sticky-1');
+});
+
 test('Reset desktop restores every default after confirmation', async ({ page }) => {
   await page.evaluate(([key, state]) => localStorage.setItem(key, JSON.stringify(state)), [
     storageKey,
@@ -588,7 +669,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
       color: 'lemon',
       text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
       rotation: 3,
-      author: 'alex',
+      author: 'fes',
       createdAt: '09:42',
     }],
     dockPosition: 'bottom',

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'alex-os.desktop.v1';
+const storageKey = 'fes-os.desktop.v1';
 
 async function resetStorage(page: Page) {
   await page.goto('/');

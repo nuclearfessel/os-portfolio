@@ -178,6 +178,10 @@ function WindowFrame({
     <section
       className={`window ${id} ${active ? 'is-active' : ''}`}
       onMouseDown={onFocus}
+      onContextMenu={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
       data-draggable-item
       style={style}
       data-testid={`window-${id}`}
@@ -1058,7 +1062,11 @@ function Home() {
   });
 
   return (
-    <main className={`os-shell theme-${theme} icons-${iconSize}`} onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}>
+    <main
+      className={`os-shell theme-${theme} icons-${iconSize}`}
+      onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
+      onContextMenu={(event) => event.preventDefault()}
+    >
       <header className="system-bar">
         <div className="system-left">
           <Apple className="system-logo" size={14} strokeWidth={1.8} aria-hidden="true" />

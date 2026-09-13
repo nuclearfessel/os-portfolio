@@ -126,6 +126,7 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
     await expect(state.locator).toBeFocused();
     const focusRatio = await contrastRatio(state.locator);
     expect(
+      focusRatio,
       `${state.name} focus contrast ${focusRatio.toFixed(2)}:1 should meet WCAG AA`,
     ).toBeGreaterThanOrEqual(4.5);
   }
@@ -141,6 +142,8 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
   await page.keyboard.press('Escape');
 
   await page.getByTestId('button-dock-terminal').click();
+  await page.getByTestId('input-terminal-command').fill('help');
+  await page.getByTestId('input-terminal-command').press('Enter');
   const terminalExample = page.locator('.terminal-examples button').first();
   await terminalExample.hover();
   const terminalHoverRatio = await contrastRatio(terminalExample);

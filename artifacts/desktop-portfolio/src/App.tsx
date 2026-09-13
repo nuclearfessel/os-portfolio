@@ -28,17 +28,32 @@ type Position = { left: number; top: number };
 type Size = { width: number; height: number };
 type WorkspaceBounds = { left: number; top: number; right: number; bottom: number };
 type WorkspaceMode = 'desktop' | 'tablet-landscape' | 'managed';
+type DeviceMode = 'desktop' | 'tablet' | 'mobile';
+type ViewportProfile = {
+  deviceMode: DeviceMode;
+  orientation: 'portrait' | 'landscape';
+  workspaceMode: WorkspaceMode;
+};
 
 const STICKY_CONTROL_OVERFLOW = 24;
 const STICKY_VIEWPORT_GAP = 2;
 const DOCK_SAFE_INSET = 70;
 
-function readWorkspaceMode(): WorkspaceMode {
+function readViewportProfile(): ViewportProfile {
   const width = window.innerWidth;
   const height = window.innerHeight;
-  if (width <= 760 || (width <= 1024 && height >= width) || (width <= 900 && height <= 600)) return 'managed';
-  if (width <= 1180) return 'tablet-landscape';
-  return 'desktop';
+  const orientation = height >= width ? 'portrait' : 'landscape';
+  const deviceMode: DeviceMode = width <= 760 || (width <= 900 && height <= 600)
+    ? 'mobile'
+    : width <= 1180
+      ? 'tablet'
+      : 'desktop';
+  const workspaceMode: WorkspaceMode = deviceMode === 'desktop'
+    ? 'desktop'
+    : deviceMode === 'tablet' && orientation === 'landscape'
+      ? 'tablet-landscape'
+      : 'managed';
+  return { deviceMode, orientation, workspaceMode };
 }
 
 function stickyFootprintRadii(size: Size, rotation: number) {
@@ -778,7 +793,7 @@ function Home() {
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
   const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
   const [dockPosition, setDockPosition] = useState<DockPosition>(savedDesktopState.dockPosition);
-  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>(readWorkspaceMode);
+  const [viewportProfile, setViewportProfile] = useState<ViewportProfile>(readViewportProfile);
   const [coarsePointer, setCoarsePointer] = useState(() => window.matchMedia('(pointer: coarse)').matches);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const dockDragRef = useRef<{ active: boolean; startX: number; startY: number; moved: boolean } | null>(null);
@@ -787,6 +802,7 @@ function Home() {
     itemSizes: savedDesktopState.itemSizes,
     folderPositions: savedDesktopState.folderPositions,
   });
+  const { deviceMode, orientation, workspaceMode } = viewportProfile;
   const previousWorkspaceModeRef = useRef(workspaceMode);
   const managedLayout = workspaceMode === 'managed';
   const effectiveDockPosition: DockPosition = workspaceMode === 'desktop' && !coarsePointer ? dockPosition : 'bottom';
@@ -869,7 +885,7 @@ function Home() {
   useEffect(() => {
     const pointerQuery = window.matchMedia('(pointer: coarse)');
     const updateWorkspace = () => {
-      setWorkspaceMode(readWorkspaceMode());
+      setViewportProfile(readViewportProfile());
       setCoarsePointer(pointerQuery.matches);
     };
     updateWorkspace();
@@ -880,6 +896,17 @@ function Home() {
       pointerQuery.removeEventListener('change', updateWorkspace);
     };
   }, []);
+
+  useEffect(() => {
+    if (workspaceMode === 'desktop') return;
+    setStickyOnTop(false);
+    setContextMenu(null);
+    setStickyMenu(null);
+    if (activeWindow !== 'terminal') return;
+    const fallback = (['work', 'about', 'contact'] as WindowId[]).find((id) => windows[id]) ?? 'work';
+    if (!windows[fallback]) setWindows((current) => ({ ...current, [fallback]: true }));
+    setActiveWindow(fallback);
+  }, [activeWindow, windows, workspaceMode]);
 
   useEffect(() => {
     const previousMode = previousWorkspaceModeRef.current;
@@ -960,6 +987,7 @@ function Home() {
       if (event.metaKey || event.ctrlKey) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '`': 'terminal' };
       const id = shortcuts[event.key];
+      if (id === 'terminal' && workspaceMode !== 'desktop') return;
       if (id) { event.preventDefault(); openWindow(id); }
     };
     window.addEventListener('keydown', handleShortcut);
@@ -967,6 +995,7 @@ function Home() {
   });
 
   const openWindow = (id: WindowId) => {
+    if (id === 'terminal' && workspaceMode !== 'desktop') return;
     setWindows((current) => ({ ...current, [id]: true }));
     setActiveWindow(id);
     setStickyOnTop(false);
@@ -1005,6 +1034,7 @@ function Home() {
     }
     setStickyVisible(true);
     setStickyOnTop(true);
+    if (stickies.length > 0) setActiveStickyId(stickies[0].id);
     setMobileOpen(false);
   };
   const openStickies = () => {
@@ -1545,7 +1575,7 @@ function Home() {
 
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'}`}
+      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
     >
@@ -1614,7 +1644,7 @@ function Home() {
           </div>
         </div>
 
-        {showDesktopIcons && (
+        {showDesktopIcons && workspaceMode === 'desktop' && (
           <div className="desktop-folders" aria-label="Desktop applications and folders">
             <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} />
             <DesktopFolder singleTap={singleTapLaunch} id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} />
@@ -1624,7 +1654,7 @@ function Home() {
           </div>
         )}
 
-        {stickyVisible && (!managedLayout || stickyOnTop) && stickies.filter((sticky) => !managedLayout || sticky.id === activeStickyId).map((sticky, index) => (
+        {workspaceMode === 'desktop' && stickyVisible && (!managedLayout || stickyOnTop) && stickies.filter((sticky) => !managedLayout || sticky.id === activeStickyId).map((sticky, index) => (
           <aside
             key={sticky.id}
             className="desktop-note"
@@ -1727,7 +1757,7 @@ function Home() {
         {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
         {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
-        {windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
+        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
       </div>
 
       {contextMenu?.target === 'desktop' && (
@@ -1740,16 +1770,20 @@ function Home() {
           aria-label="Desktop options"
           data-testid="menu-desktop-context"
         >
-          <div className="context-menu-row has-submenu">
-            <button type="button" role="menuitem" aria-haspopup="menu"><span className="context-check" /><span>View</span><ChevronRight size={13} /></button>
-            <div className="context-submenu" role="menu" aria-label="Icon size">
-              <button type="button" role="menuitemradio" aria-checked={iconSize === 'large'} onClick={() => { setIconSize('large'); setContextMenu(null); }}><span className="context-check">{iconSize === 'large' && <Check size={12} />}</span><span>Large icons</span></button>
-              <button type="button" role="menuitemradio" aria-checked={iconSize === 'small'} onClick={() => { setIconSize('small'); setContextMenu(null); }}><span className="context-check">{iconSize === 'small' && <Check size={12} />}</span><span>Small icons</span></button>
-            </div>
-          </div>
-          <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={snapToGrid} onClick={() => setSnapToGrid((value) => !value)}><span className="context-check">{snapToGrid && <Check size={12} />}</span><span>Snap to grid</span></button>
-          <button type="button" className="context-menu-button" role="menuitem" onClick={autoArrangeIcons}><span className="context-check" /><span>Auto arrange icons</span></button>
-          <div className="context-menu-separator" />
+          {workspaceMode === 'desktop' && (
+            <>
+              <div className="context-menu-row has-submenu">
+                <button type="button" role="menuitem" aria-haspopup="menu"><span className="context-check" /><span>View</span><ChevronRight size={13} /></button>
+                <div className="context-submenu" role="menu" aria-label="Icon size">
+                  <button type="button" role="menuitemradio" aria-checked={iconSize === 'large'} onClick={() => { setIconSize('large'); setContextMenu(null); }}><span className="context-check">{iconSize === 'large' && <Check size={12} />}</span><span>Large icons</span></button>
+                  <button type="button" role="menuitemradio" aria-checked={iconSize === 'small'} onClick={() => { setIconSize('small'); setContextMenu(null); }}><span className="context-check">{iconSize === 'small' && <Check size={12} />}</span><span>Small icons</span></button>
+                </div>
+              </div>
+              <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={snapToGrid} onClick={() => setSnapToGrid((value) => !value)}><span className="context-check">{snapToGrid && <Check size={12} />}</span><span>Snap to grid</span></button>
+              <button type="button" className="context-menu-button" role="menuitem" onClick={autoArrangeIcons}><span className="context-check" /><span>Auto arrange icons</span></button>
+              <div className="context-menu-separator" />
+            </>
+          )}
           <div className="context-menu-row has-submenu">
             <button type="button" role="menuitem" aria-haspopup="menu"><span className="context-check" /><span>Theme</span><ChevronRight size={13} /></button>
             <div className="context-submenu" role="menu" aria-label="Theme">
@@ -1757,8 +1791,12 @@ function Home() {
               <button type="button" role="menuitemradio" aria-checked={theme === 'dark'} onClick={() => { setTheme('dark'); setContextMenu(null); }}><span className="context-check">{theme === 'dark' && <Check size={12} />}</span><span>Dark</span></button>
             </div>
           </div>
-          <div className="context-menu-separator" />
-          <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
+          {workspaceMode === 'desktop' && (
+            <>
+              <div className="context-menu-separator" />
+              <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
+            </>
+          )}
           <div className="context-menu-separator" />
           <button
             type="button"
@@ -1918,10 +1956,11 @@ function Home() {
       )}
 
       <nav
-        className={`dock dock-${effectiveDockPosition}`}
-        aria-label="Application dock. Drag to a screen edge or right-click to choose its position."
-        title="Drag to reposition dock"
+        className={`dock dock-${effectiveDockPosition} ${workspaceMode !== 'desktop' ? 'dock-fixed' : ''} ${deviceMode === 'mobile' ? 'dock-mobile-menu' : ''} ${deviceMode === 'tablet' ? 'dock-tablet-menu' : ''}`}
+        aria-label={workspaceMode === 'desktop' ? 'Application dock. Drag to a screen edge or right-click to choose its position.' : 'Application menu'}
+        title={workspaceMode === 'desktop' ? "Drag to reposition dock" : undefined}
         onPointerDown={(event) => {
+          if (workspaceMode !== 'desktop') return;
           if ((event.target as HTMLElement).closest('button')) return;
           startDockDrag(event);
         }}
@@ -1937,6 +1976,7 @@ function Home() {
         onContextMenu={(event) => {
           event.preventDefault();
           event.stopPropagation();
+          if (workspaceMode !== 'desktop') return;
           setContextMenu({
             x: Math.max(8, Math.min(event.clientX, window.innerWidth - 220)),
             y: Math.max(8, Math.min(event.clientY, window.innerHeight - 250)),
@@ -1944,18 +1984,22 @@ function Home() {
           });
         }}
       >
-        <button className={`dock-item ${windows.about ? 'active' : ''}`} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About · 1</span></button>
-        <button className={`dock-item ${windows.work ? 'active' : ''}`} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><span>Work · 2</span></button>
-        <button className={`dock-item ${windows.terminal ? 'active' : ''}`} onClick={() => openWindow('terminal')} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></button>
-        <button className={`dock-item ${windows.contact ? 'active' : ''}`} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact · 3</span></button>
-        <button className={`dock-item ${stickyVisible ? 'active' : ''}`} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><span>Stickies</span></button>
-        <button className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><span>Shortcuts</span></button>
+        <button className={`dock-item ${windows.work && (workspaceMode === 'desktop' || activeWindow === 'work') ? 'active' : ''}`} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><span>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</span></button>
+        <button className={`dock-item ${windows.about && (workspaceMode === 'desktop' || activeWindow === 'about') ? 'active' : ''}`} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About{workspaceMode === 'desktop' ? ' · 1' : ''}</span></button>
+        <button className={`dock-item ${windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact') ? 'active' : ''}`} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</span></button>
+        {workspaceMode === 'desktop' && (
+          <>
+            <button className={`dock-item ${windows.terminal ? 'active' : ''}`} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></button>
+            <button className={`dock-item ${stickyVisible ? 'active' : ''}`} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><span>Stickies</span></button>
+            <button className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><span>Shortcuts</span></button>
+          </>
+        )}
       </nav>
 
       {mobileOpen && (
         <div className="mobile-shortcut-menu" data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
-          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>Use 1–3 to open a window. Press backtick for the terminal. Escape closes this menu.</p>
+          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–3 to open a window. Press backtick for the terminal.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
             {(['about', 'work', 'contact'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span className="shortcut-number">{index + 1}</span>{id}</button>)}
           </div>

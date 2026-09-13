@@ -116,15 +116,26 @@ test('falls back to safe defaults when saved data is corrupted', async ({ page }
 test('stays usable when browser storage reads, writes, and removals fail', async ({ page }) => {
   await page.addInitScript(() => {
     const attempts = { getItem: 0, setItem: 0, removeItem: 0 };
+    let storageBlocked = true;
     Object.defineProperty(window, '__storageFailureAttempts', {
       configurable: true,
       value: attempts,
     });
+    Object.defineProperty(window, '__allowStorage', {
+      configurable: true,
+      value: () => {
+        storageBlocked = false;
+      },
+    });
 
     for (const method of ['getItem', 'setItem', 'removeItem'] as const) {
+      const original = Storage.prototype[method];
       Object.defineProperty(Storage.prototype, method, {
         configurable: true,
-        value: () => {
+        value: function (...args: [string, string?]) {
+          if (!storageBlocked) {
+            return original.apply(this, args as never);
+          }
           attempts[method] += 1;
           throw new Error(`localStorage ${method} blocked`);
         },
@@ -143,7 +154,10 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   const storageHelp = page.getByRole('button', { name: 'How to restore saving' });
   await expect(storageHelp).toHaveAttribute('aria-expanded', 'false');
   await storageHelp.click();
-  await expect(page.getByText('Leave private browsing, or allow this site to store site data in your browser settings, then reload this page.')).toBeVisible();
+  const recoveryGuidance = page.getByText('Leave private browsing, or allow this site to store site data in your browser settings.');
+  const retrySaving = page.getByRole('button', { name: 'Try saving again' });
+  await expect(recoveryGuidance).toBeVisible();
+  await expect(retrySaving).toBeVisible();
   await expect(page.getByRole('button', { name: 'Hide help' })).toHaveAttribute('aria-expanded', 'true');
   await expect(storageNotice).toHaveCount(1);
   expect(await page.evaluate(() => (
@@ -161,18 +175,26 @@ test('stays usable when browser storage reads, writes, and removals fail', async
     window as typeof window & { __storageFailureAttempts: { setItem: number } }
   ).__storageFailureAttempts.setItem)).toBeGreaterThan(0);
 
-  await openDesktopMenu(page);
-  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
-  await expect(page.getByRole('alertdialog', { name: 'Reset desktop?' })).toBeVisible();
-  await page.getByTestId('button-confirm-reset').click();
-
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
-  await expect(page.getByTestId('button-folder-about')).toBeVisible();
+  const attemptsBeforeRetry = await page.evaluate(() => (
+    window as typeof window & { __storageFailureAttempts: { setItem: number } }
+  ).__storageFailureAttempts.setItem);
+  await retrySaving.click();
   await expect(storageNotice).toHaveCount(1);
+  await expect(recoveryGuidance).toBeVisible();
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
   expect(await page.evaluate(() => (
-    window as typeof window & { __storageFailureAttempts: { removeItem: number } }
-  ).__storageFailureAttempts.removeItem)).toBeGreaterThan(0);
+    window as typeof window & { __storageFailureAttempts: { setItem: number } }
+  ).__storageFailureAttempts.setItem)).toBe(attemptsBeforeRetry + 1);
+
+  await page.evaluate(() => (
+    window as typeof window & { __allowStorage: () => void }
+  ).__allowStorage());
+  await retrySaving.click();
+  await expect(storageNotice).toHaveCount(0);
+  await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey)).toMatchObject({
+    theme: 'dark',
+  });
+  await expect(page.getByTestId('window-contact')).toBeVisible();
 });
 
 test('keeps storage recovery help visible and keyboard-operable on narrow screens', async ({ page }) => {
@@ -198,7 +220,7 @@ test('keeps storage recovery help visible and keyboard-operable on narrow screen
   expect(await storageHelp.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe('none');
   await page.keyboard.press('Enter');
 
-  const guidance = page.getByText('Leave private browsing, or allow this site to store site data in your browser settings, then reload this page.');
+  const guidance = page.getByText('Leave private browsing, or allow this site to store site data in your browser settings.');
   const hideHelp = page.getByRole('button', { name: 'Hide help' });
   await expect(guidance).toBeVisible();
   await expect(hideHelp).toBeFocused();

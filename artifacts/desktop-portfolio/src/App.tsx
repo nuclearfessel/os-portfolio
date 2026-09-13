@@ -22,6 +22,20 @@ type DesktopItemId = WindowId | 'sticky';
 type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 
+const stickyPalette = [
+  { id: 'parchment', label: 'Parchment', background: 'rgba(255, 244, 188, .9)' },
+  { id: 'sage', label: 'Sage', background: 'rgba(220, 232, 211, .9)' },
+  { id: 'mist', label: 'Mist', background: 'rgba(215, 231, 232, .9)' },
+  { id: 'lavender', label: 'Lavender', background: 'rgba(226, 220, 239, .9)' },
+  { id: 'rose', label: 'Rose', background: 'rgba(239, 217, 221, .9)' },
+  { id: 'peach', label: 'Peach', background: 'rgba(241, 221, 207, .9)' },
+  { id: 'sand', label: 'Sand', background: 'rgba(232, 223, 202, .9)' },
+  { id: 'blue', label: 'Blue gray', background: 'rgba(215, 223, 235, .9)' },
+  { id: 'mint', label: 'Mint', background: 'rgba(213, 233, 223, .9)' },
+  { id: 'mauve', label: 'Mauve', background: 'rgba(228, 216, 226, .9)' },
+] as const;
+type StickyColorId = typeof stickyPalette[number]['id'];
+
 type SavedDesktopState = {
   folderPositions: FolderPositions;
   itemPositions: ItemPositions;
@@ -30,6 +44,7 @@ type SavedDesktopState = {
   snapToGrid: boolean;
   theme: Theme;
   showDesktopIcons: boolean;
+  stickyColor: StickyColorId;
 };
 
 const DESKTOP_STORAGE_KEY = 'alex-os.desktop.v1';
@@ -41,6 +56,7 @@ const defaultDesktopState: SavedDesktopState = {
   snapToGrid: false,
   theme: 'dark',
   showDesktopIcons: true,
+  stickyColor: 'parchment',
 };
 
 function loadDesktopState(): SavedDesktopState {
@@ -73,6 +89,7 @@ function loadDesktopState(): SavedDesktopState {
       snapToGrid: typeof parsed.snapToGrid === 'boolean' ? parsed.snapToGrid : defaultDesktopState.snapToGrid,
       theme: parsed.theme === 'light' ? 'light' : defaultDesktopState.theme,
       showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
+      stickyColor: stickyPalette.some((color) => color.id === parsed.stickyColor) ? parsed.stickyColor as StickyColorId : defaultDesktopState.stickyColor,
     };
   } catch {
     return defaultDesktopState;
@@ -594,10 +611,12 @@ function Home() {
   const [itemSizes, setItemSizes] = useState<ItemSizes>(savedDesktopState.itemSizes);
   const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [stickyMenu, setStickyMenu] = useState<{ x: number; y: number } | null>(null);
   const [iconSize, setIconSize] = useState<IconSize>(savedDesktopState.iconSize);
   const [snapToGrid, setSnapToGrid] = useState(savedDesktopState.snapToGrid);
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
   const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
+  const [stickyColor, setStickyColor] = useState<StickyColorId>(savedDesktopState.stickyColor);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean } | null>(null);
   const resizeRef = useRef<{ id: DesktopItemId; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
@@ -619,19 +638,21 @@ function Home() {
       snapToGrid,
       theme,
       showDesktopIcons,
+      stickyColor,
     };
     try {
       window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(desktopState));
     } catch {
       // The desktop remains usable when storage is unavailable.
     }
-  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, theme, showDesktopIcons]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickyColor, theme, showDesktopIcons]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setMobileOpen(false);
         setContextMenu(null);
+        setStickyMenu(null);
       }
       if (event.metaKey || event.ctrlKey) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'notes', '4': 'contact', '`': 'terminal' };
@@ -803,10 +824,21 @@ function Home() {
     ...positionStyle(id),
     ...(itemSizes[id] ? { width: itemSizes[id]?.width, height: itemSizes[id]?.height } : {}),
   });
+  const selectedStickyColor = stickyPalette.find((color) => color.id === stickyColor) ?? stickyPalette[0];
+  const stickyStyle = {
+    ...itemStyle('sticky'),
+    zIndex: stickyOnTop ? 30 : 3,
+    '--sticky-bg': selectedStickyColor.background,
+    '--sticky-text': '#29313d',
+    '--sticky-muted': '#46515c',
+    '--sticky-accent': '#36505c',
+    '--sticky-border': 'rgba(41, 49, 61, .22)',
+  } as React.CSSProperties;
   const openDesktopContextMenu = (event: ReactMouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
     if (target.closest('.window, .desktop-note, .desktop-folder')) return;
     event.preventDefault();
+    setStickyMenu(null);
     setContextMenu({
       x: Math.max(8, Math.min(event.clientX, window.innerWidth - 430)),
       y: Math.max(8, Math.min(event.clientY, window.innerHeight - 270)),
@@ -839,7 +871,9 @@ function Home() {
     setSnapToGrid(defaultDesktopState.snapToGrid);
     setTheme(defaultDesktopState.theme);
     setShowDesktopIcons(defaultDesktopState.showDesktopIcons);
+    setStickyColor(defaultDesktopState.stickyColor);
     setContextMenu(null);
+    setStickyMenu(null);
   };
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
@@ -859,7 +893,7 @@ function Home() {
   });
 
   return (
-    <main className={`os-shell theme-${theme} icons-${iconSize}`} onPointerDown={() => setContextMenu(null)}>
+    <main className={`os-shell theme-${theme} icons-${iconSize}`} onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}>
       <header className="system-bar">
         <div className="system-left">
           <Apple className="system-logo" size={14} strokeWidth={1.8} aria-hidden="true" />
@@ -902,11 +936,21 @@ function Home() {
           <aside
             className="desktop-note"
             data-draggable-item
-            style={{ ...itemStyle('sticky'), zIndex: stickyOnTop ? 30 : 3 }}
+            style={stickyStyle}
             onPointerDown={(event) => { setStickyOnTop(true); startDrag('sticky', event); }}
             onPointerMove={moveDrag}
             onPointerUp={endDrag}
             onPointerCancel={endDrag}
+            onContextMenu={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setStickyOnTop(true);
+              setContextMenu(null);
+              setStickyMenu({
+                x: Math.max(8, Math.min(event.clientX, window.innerWidth - 224)),
+                y: Math.max(8, Math.min(event.clientY, window.innerHeight - 216)),
+              });
+            }}
             aria-label="Draggable field note"
           >
             <span className="note-label">field note / 004</span>
@@ -963,6 +1007,38 @@ function Home() {
           <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
           <div className="context-menu-separator" />
           <button type="button" className="context-menu-button context-menu-danger" role="menuitem" onClick={resetDesktop}><span className="context-check" /><span>Reset desktop…</span></button>
+        </div>
+      )}
+
+      {stickyMenu && (
+        <div
+          className="desktop-context-menu sticky-color-menu"
+          style={{ left: stickyMenu.x, top: stickyMenu.y }}
+          onPointerDown={(event) => event.stopPropagation()}
+          onContextMenu={(event) => event.preventDefault()}
+          role="menu"
+          aria-label="Sticky background color"
+          data-testid="menu-sticky-colors"
+        >
+          <div className="sticky-color-menu-title">Sticky color</div>
+          <div className="sticky-color-grid">
+            {stickyPalette.map((color) => (
+              <button
+                type="button"
+                key={color.id}
+                className="sticky-color-option"
+                style={{ background: color.background }}
+                role="menuitemradio"
+                aria-checked={stickyColor === color.id}
+                aria-label={color.label}
+                title={color.label}
+                onClick={() => { setStickyColor(color.id); setStickyMenu(null); }}
+              >
+                {stickyColor === color.id && <Check size={14} />}
+              </button>
+            ))}
+          </div>
+          <div className="sticky-color-name">{selectedStickyColor.label}</div>
         </div>
       )}
 

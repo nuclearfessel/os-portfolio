@@ -18,9 +18,14 @@ type WindowState = Record<WindowId, boolean>;
 type IconSize = 'large' | 'small';
 type Theme = 'dark' | 'light';
 type FolderPositions = Partial<Record<WindowId, { left: number; top: number }>>;
+type DesktopItemId = WindowId | 'sticky';
+type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
+type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 
 type SavedDesktopState = {
   folderPositions: FolderPositions;
+  itemPositions: ItemPositions;
+  itemSizes: ItemSizes;
   iconSize: IconSize;
   snapToGrid: boolean;
   theme: Theme;
@@ -30,6 +35,8 @@ type SavedDesktopState = {
 const DESKTOP_STORAGE_KEY = 'alex-os.desktop.v1';
 const defaultDesktopState: SavedDesktopState = {
   folderPositions: {},
+  itemPositions: {},
+  itemSizes: {},
   iconSize: 'large',
   snapToGrid: false,
   theme: 'dark',
@@ -45,9 +52,23 @@ function loadDesktopState(): SavedDesktopState {
         return Boolean(position) && Number.isFinite(position.left) && Number.isFinite(position.top);
       }),
     ) as FolderPositions;
+    const itemPositions = Object.fromEntries(
+      Object.entries(parsed.itemPositions ?? {}).filter((entry): entry is [string, { left: number; top: number }] => {
+        const position = entry[1];
+        return Boolean(position) && Number.isFinite(position.left) && Number.isFinite(position.top);
+      }),
+    ) as ItemPositions;
+    const itemSizes = Object.fromEntries(
+      Object.entries(parsed.itemSizes ?? {}).filter((entry): entry is [string, { width: number; height: number }] => {
+        const size = entry[1];
+        return Boolean(size) && Number.isFinite(size.width) && size.width > 0 && Number.isFinite(size.height) && size.height > 0;
+      }),
+    ) as ItemSizes;
 
     return {
       folderPositions,
+      itemPositions,
+      itemSizes,
       iconSize: parsed.iconSize === 'small' ? 'small' : defaultDesktopState.iconSize,
       snapToGrid: typeof parsed.snapToGrid === 'boolean' ? parsed.snapToGrid : defaultDesktopState.snapToGrid,
       theme: parsed.theme === 'light' ? 'light' : defaultDesktopState.theme,
@@ -341,8 +362,8 @@ function Home() {
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dragPositions, setDragPositions] = useState<Partial<Record<WindowId | 'sticky', { left: number; top: number }>>>({});
-  const [itemSizes, setItemSizes] = useState<Partial<Record<WindowId | 'sticky', { width: number; height: number }>>>({});
+  const [dragPositions, setDragPositions] = useState<ItemPositions>(savedDesktopState.itemPositions);
+  const [itemSizes, setItemSizes] = useState<ItemSizes>(savedDesktopState.itemSizes);
   const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [iconSize, setIconSize] = useState<IconSize>(savedDesktopState.iconSize);
@@ -350,8 +371,8 @@ function Home() {
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
   const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ id: WindowId | 'sticky'; offsetX: number; offsetY: number; moved: boolean } | null>(null);
-  const resizeRef = useRef<{ id: WindowId | 'sticky'; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
+  const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean } | null>(null);
+  const resizeRef = useRef<{ id: DesktopItemId; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
   const folderDragRef = useRef<{ id: WindowId; offsetX: number; offsetY: number; moved: boolean; startLeft: number; startTop: number } | null>(null);
 
   useEffect(() => {
@@ -362,13 +383,21 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    const desktopState: SavedDesktopState = { folderPositions, iconSize, snapToGrid, theme, showDesktopIcons };
+    const desktopState: SavedDesktopState = {
+      folderPositions,
+      itemPositions: dragPositions,
+      itemSizes,
+      iconSize,
+      snapToGrid,
+      theme,
+      showDesktopIcons,
+    };
     try {
       window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(desktopState));
     } catch {
       // The desktop remains usable when storage is unavailable.
     }
-  }, [folderPositions, iconSize, snapToGrid, theme, showDesktopIcons]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, theme, showDesktopIcons]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -392,7 +421,7 @@ function Home() {
   };
   const closeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
   const minimizeWindow = (id: WindowId) => setWindows((current) => ({ ...current, [id]: false }));
-  const startDrag = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLElement>) => {
+  const startDrag = (id: DesktopItemId, event: ReactPointerEvent<HTMLElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
     const area = desktopAreaRef.current;
     if (!area) return;
@@ -439,7 +468,7 @@ function Home() {
     }
     dragRef.current = null;
   };
-  const startResize = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLSpanElement>) => {
+  const startResize = (id: DesktopItemId, event: ReactPointerEvent<HTMLSpanElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
     const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     if (!target) return;
@@ -527,11 +556,11 @@ function Home() {
     }
     openWindow(id);
   };
-  const positionStyle = (id: WindowId | 'sticky'): React.CSSProperties | undefined => {
+  const positionStyle = (id: DesktopItemId): React.CSSProperties | undefined => {
     const position = dragPositions[id];
     return position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined;
   };
-  const itemStyle = (id: WindowId | 'sticky'): React.CSSProperties => ({
+  const itemStyle = (id: DesktopItemId): React.CSSProperties => ({
     ...positionStyle(id),
     ...(itemSizes[id] ? { width: itemSizes[id]?.width, height: itemSizes[id]?.height } : {}),
   });
@@ -565,6 +594,8 @@ function Home() {
       // State still resets for this session when storage is unavailable.
     }
     setFolderPositions(defaultDesktopState.folderPositions);
+    setDragPositions(defaultDesktopState.itemPositions);
+    setItemSizes(defaultDesktopState.itemSizes);
     setIconSize(defaultDesktopState.iconSize);
     setSnapToGrid(defaultDesktopState.snapToGrid);
     setTheme(defaultDesktopState.theme);

@@ -39,6 +39,8 @@ type DockPosition = 'top' | 'right' | 'bottom' | 'left';
 type Position = { left: number; top: number };
 type Size = { width: number; height: number };
 type WorkspaceBounds = { left: number; top: number; right: number; bottom: number };
+const DEFAULT_STICKY_SIZE: Size = { width: 214, height: 138 };
+const MIN_STICKY_SIZE: Size = { width: 140, height: 100 };
 type WorkspaceMode = 'desktop' | 'tablet-landscape' | 'managed';
 type DeviceMode = 'desktop' | 'tablet' | 'mobile';
 type ViewportProfile = {
@@ -216,8 +218,20 @@ function loadDesktopState(): SavedDesktopState {
     ) as FolderPositions;
     const itemPositions = Object.fromEntries(
       Object.entries(parsed.itemPositions ?? {}).filter((entry): entry is [string, { left: number; top: number }] => {
-        const position = entry[1];
-        return position !== undefined && Number.isFinite(position.left) && Number.isFinite(position.top);
+        const [id, position] = entry;
+        if (position === undefined || !Number.isFinite(position.left) || !Number.isFinite(position.top)) return false;
+        const savedSize = parsed.itemSizes?.[id as DesktopItemId];
+        if (
+          id.startsWith('sticky')
+          && savedSize
+          && (
+            !Number.isFinite(savedSize.width)
+            || !Number.isFinite(savedSize.height)
+            || savedSize.width < MIN_STICKY_SIZE.width
+            || savedSize.height < MIN_STICKY_SIZE.height
+          )
+        ) return false;
+        return true;
       }).map(([id, position]) => [
         id,
         {
@@ -228,8 +242,10 @@ function loadDesktopState(): SavedDesktopState {
     ) as ItemPositions;
     const itemSizes = Object.fromEntries(
       Object.entries(parsed.itemSizes ?? {}).filter((entry): entry is [string, { width: number; height: number }] => {
-        const size = entry[1];
-        return size !== undefined && Number.isFinite(size.width) && size.width > 0 && Number.isFinite(size.height) && size.height > 0;
+        const [id, size] = entry;
+        if (size === undefined || !Number.isFinite(size.width) || !Number.isFinite(size.height)) return false;
+        if (id.startsWith('sticky')) return size.width >= MIN_STICKY_SIZE.width && size.height >= MIN_STICKY_SIZE.height;
+        return size.width > 0 && size.height > 0;
       }),
     ) as ItemSizes;
     const stickies = Array.isArray(parsed.stickies)
@@ -1132,7 +1148,9 @@ function Home() {
   const setStickyRotation = (id: StickyItemId, rotation: number) => {
     const workspace = stickyWorkspace();
     const element = desktopAreaRef.current?.querySelector<HTMLElement>(`[data-testid="sticky-${id}"]`);
-    const size = itemSizes[id] ?? (element ? { width: element.offsetWidth, height: element.offsetHeight } : { width: 214, height: 138 });
+    const size = itemSizes[id] ?? (element && element.offsetWidth >= MIN_STICKY_SIZE.width && element.offsetHeight >= MIN_STICKY_SIZE.height
+      ? { width: element.offsetWidth, height: element.offsetHeight }
+      : DEFAULT_STICKY_SIZE);
     setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation } : sticky));
     if (workspace) {
       setDragPositions((current) => {
@@ -1158,7 +1176,7 @@ function Home() {
       for (const sticky of stickies) {
         const element = area.querySelector<HTMLElement>(`[data-testid="sticky-${sticky.id}"]`);
         if (!element) continue;
-        const size = itemSizes[sticky.id] ?? { width: element.offsetWidth, height: element.offsetHeight };
+        const size = itemSizes[sticky.id] ?? DEFAULT_STICKY_SIZE;
         fittedSizes[sticky.id] = fitStickySize(size, sticky.rotation, workspace);
       }
       setItemSizes((current) => {
@@ -1168,7 +1186,7 @@ function Home() {
           const fitted = fittedSizes[sticky.id];
           if (!fitted) continue;
           const currentSize = current[sticky.id];
-          if (!currentSize && Math.abs(fitted.width - 214) < .1 && Math.abs(fitted.height - 138) < .1) continue;
+          if (!currentSize && Math.abs(fitted.width - DEFAULT_STICKY_SIZE.width) < .1 && Math.abs(fitted.height - DEFAULT_STICKY_SIZE.height) < .1) continue;
           if (!currentSize || Math.abs(currentSize.width - fitted.width) >= .1 || Math.abs(currentSize.height - fitted.height) >= .1) {
             next[sticky.id] = fitted;
             changed = true;
@@ -1183,7 +1201,8 @@ function Home() {
           const element = area.querySelector<HTMLElement>(`[data-testid="sticky-${sticky.id}"]`);
           const size = fittedSizes[sticky.id];
           if (!element || !size) continue;
-          const position = current[sticky.id] ?? { left: element.offsetLeft, top: element.offsetTop };
+          const position = current[sticky.id];
+          if (!position) continue;
           const constrained = constrainStickyPosition(position, size, sticky.rotation, workspace);
           if (Math.abs(constrained.left - position.left) >= .1 || Math.abs(constrained.top - position.top) >= .1) {
             next[sticky.id] = constrained;
@@ -1311,8 +1330,8 @@ function Home() {
     const resize = resizeRef.current;
     if (!resize) return;
     const isSticky = resize.id.startsWith('sticky');
-    const minWidth = isSticky ? 140 : 320;
-    const minHeight = isSticky ? 100 : 240;
+    const minWidth = isSticky ? MIN_STICKY_SIZE.width : 320;
+    const minHeight = isSticky ? MIN_STICKY_SIZE.height : 240;
     const deltaX = event.clientX - resize.startX;
     const deltaY = event.clientY - resize.startY;
     const growsEast = resize.direction.includes('e');
@@ -1458,8 +1477,8 @@ function Home() {
     const sourcePosition = workspaceMode === 'desktop'
       ? dragPositions[sourceId]
       : desktopGeometryRef.current.dragPositions[sourceId];
-    const width = itemSizes[sourceId]?.width ?? 214;
-    const height = itemSizes[sourceId]?.height ?? 132;
+    const width = itemSizes[sourceId]?.width ?? DEFAULT_STICKY_SIZE.width;
+    const height = itemSizes[sourceId]?.height ?? DEFAULT_STICKY_SIZE.height;
     const offset = 28 + (stickies.length % 4) * 12;
     const layoutWidth = workspaceMode === 'desktop' ? (area?.clientWidth ?? 900) : Math.max(900, window.innerWidth);
     const layoutHeight = workspaceMode === 'desktop' ? (area?.clientHeight ?? 650) : Math.max(650, window.innerHeight - 42);

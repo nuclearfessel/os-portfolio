@@ -1149,8 +1149,8 @@ function Home() {
     const target = draggableTarget.getBoundingClientRect();
     const areaRect = area.getBoundingClientRect();
     const currentPosition = dragPositions[id] ?? {
-      left: draggableTarget.offsetLeft,
-      top: draggableTarget.offsetTop,
+      left: target.left - areaRect.left,
+      top: target.top - areaRect.top,
     };
 
     setDragPositions((current) => ({ ...current, [id]: currentPosition }));

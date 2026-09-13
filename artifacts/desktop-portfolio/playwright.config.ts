@@ -20,5 +20,17 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'firefox-blocked-storage',
+      testMatch: /desktop-persistence\.spec\.ts/,
+      grep: /stays usable when browser storage reads, writes, and removals fail/,
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit-blocked-storage',
+      testMatch: /desktop-persistence\.spec\.ts/,
+      grep: /stays usable when browser storage reads, writes, and removals fail/,
+      use: { ...devices['Desktop Safari'] },
+    },
   ],
 });

@@ -1,0 +1,54 @@
+name: Desktop WebKit recovery
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-webkit-recovery-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  webkit-storage-recovery:
+    name: WebKit storage recovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install WebKit and system dependencies
+        run: pnpm --filter @workspace/desktop-portfolio exec playwright install --with-deps webkit
+
+      - name: Run WebKit recovery checks
+        run: pnpm --filter @workspace/desktop-portfolio run test:e2e:webkit-recovery
+
+      - name: Upload Playwright diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-webkit-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/desktop-portfolio/playwright-report/
+            artifacts/desktop-portfolio/test-results/
+          if-no-files-found: warn
+          retention-days: 7

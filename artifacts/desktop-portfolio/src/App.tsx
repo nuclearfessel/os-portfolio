@@ -492,7 +492,7 @@ const shellFiles: Record<string, ShellNode> = {
   '/': { type: 'directory' },
   '/home': { type: 'directory' },
   '/home/fes': { type: 'directory' },
-  '/home/fes/README.md': { type: 'file', content: 'Fes Naqvi\nProduct-minded frontend engineer building thoughtful interfaces and fast systems.\n\nTry: ls, cd work, cat README.md, open work' },
+  '/home/fes/README.md': { type: 'file', content: 'Fes Naqvi\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd work, cat README.md, open work' },
   '/home/fes/about': { type: 'directory' },
   '/home/fes/about/bio.txt': { type: 'file', content: 'Frontend engineer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
   '/home/fes/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },

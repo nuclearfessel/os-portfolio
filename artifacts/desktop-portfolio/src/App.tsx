@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
   Check, FileText as StickyNote, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
-  Moon, Plus, Cursor as MousePointer2, Sun, Terminal, CircleUser as UserRound, Wifi, X,
+  Moon, Plus, Sun, Terminal, CircleUser as UserRound, Wifi, X,
 } from '@keyline-icons/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -2030,7 +2030,6 @@ function Home() {
           </div>
         </div>
       )}
-      <div className="desktop-hint"><MousePointer2 size={11} />click around, stay curious</div>
     </main>
   );
 }

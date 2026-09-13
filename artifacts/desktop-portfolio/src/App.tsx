@@ -258,7 +258,7 @@ function NotesWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
             <p>Taking on one thoughtful product partnership from spring onward. Best fit: small teams with a real problem and high standards.</p>
           </div>
         </div>
-        <p style={{ marginTop: 24, color: '#e4ff5b', fontFamily: 'var(--app-font-mono)', fontSize: 11 }}>→ Recent note: why good empty states feel like hospitality</p>
+        <p className="recent-note">→ Recent note: why good empty states feel like hospitality</p>
       </div>
     </WindowFrame>
   );
@@ -344,9 +344,9 @@ function TerminalWindow({
   return (
     <WindowFrame {...props} id="terminal" title="Terminal">
       <div className="window-body terminal-body" onClick={() => inputRef.current?.focus()}>
-        <div className="terminal-line"><span className="terminal-prompt">alex@studio</span><span>:</span><span style={{ color: '#86d9ee' }}>~</span><span>$</span><span className="terminal-command">whoami</span></div>
+        <div className="terminal-line"><span className="terminal-prompt">alex@studio</span><span>:</span><span className="terminal-path">~</span><span>$</span><span className="terminal-command">whoami</span></div>
         <div className="terminal-output">alex rivera / product-minded frontend engineer{'\n'}building thoughtful interfaces and fast systems.</div>
-        <div className="terminal-output" style={{ color: '#e4ff5b' }}>type “help” to explore, or use the dock below.</div>
+        <div className="terminal-output terminal-hint">type “help” to explore, or use the dock below.</div>
         {history.map((line, index) => <div className={line.startsWith('›') ? 'terminal-line terminal-command' : 'terminal-output'} key={`${line}-${index}`}>{line}</div>)}
         <form className="terminal-form" onSubmit={submitCommand}>
           <span className="terminal-prompt">alex@studio:{cwd}$</span>
@@ -710,7 +710,7 @@ function Home() {
         >
           <span className="note-label">field note / 004</span>
           <p>The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.</p>
-          <span style={{ color: '#707691', font: '10px var(--app-font-mono)' }}>— alex, 09:42</span>
+          <span className="note-signoff">— alex, 09:42</span>
           <span
             className="desktop-resize-handle"
             onPointerDown={(event) => { event.stopPropagation(); startResize('sticky', event); }}
@@ -774,15 +774,15 @@ function Home() {
       </nav>
 
       {mobileOpen && (
-        <div style={{ position: 'fixed', zIndex: 50, inset: '50px 14px auto', padding: 16, border: '1px solid rgba(228,255,91,.35)', borderRadius: 8, background: '#1d2038', boxShadow: '0 18px 50px rgba(0,0,0,.4)' }} data-testid="menu-mobile">
+        <div className="mobile-shortcut-menu" data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
           <p style={{ margin: '9px 0 14px', fontSize: 12 }}>Use 1–4 to open a window. Press backtick for the terminal. Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
-            {(['about', 'work', 'notes', 'contact'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span style={{ fontFamily: 'var(--app-font-mono)', color: '#e4ff5b', marginRight: 8 }}>{index + 1}</span>{id}</button>)}
+            {(['about', 'work', 'notes', 'contact'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span className="shortcut-number">{index + 1}</span>{id}</button>)}
           </div>
         </div>
       )}
-      <div style={{ position: 'fixed', bottom: 8, left: 18, color: '#4f546c', font: '10px var(--app-font-mono)', zIndex: 2 }}><MousePointer2 size={11} style={{ verticalAlign: 'middle', marginRight: 5 }} />click around, stay curious</div>
+      <div className="desktop-hint"><MousePointer2 size={11} />click around, stay curious</div>
     </main>
   );
 }

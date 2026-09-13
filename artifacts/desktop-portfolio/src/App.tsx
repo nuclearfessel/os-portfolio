@@ -278,79 +278,266 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
   );
 }
 
+type ShellNode = { type: 'directory' } | { type: 'file'; content: string };
+type ShellEntry = { id: number; cwd: string; command: string; output?: string; error?: boolean };
+
+const shellFiles: Record<string, ShellNode> = {
+  '/': { type: 'directory' },
+  '/home': { type: 'directory' },
+  '/home/alex': { type: 'directory' },
+  '/home/alex/README.md': { type: 'file', content: 'Alex Rivera\nProduct-minded frontend engineer building thoughtful interfaces and fast systems.\n\nTry: ls, cd work, cat README.md, open work' },
+  '/home/alex/about': { type: 'directory' },
+  '/home/alex/about/bio.txt': { type: 'file', content: 'Frontend engineer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
+  '/home/alex/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
+  '/home/alex/work': { type: 'directory' },
+  '/home/alex/work/orbit-crm.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
+  '/home/alex/work/field-notes.md': { type: 'file', content: 'Field Notes\nOffline-first field research software for teams who work beyond the signal.\nSystems · 2023' },
+  '/home/alex/work/signal-kit.md': { type: 'file', content: 'Signal Kit\nA living component library that turns product intent into shipped interface.\nDesign engineering · 2023' },
+  '/home/alex/notes': { type: 'directory' },
+  '/home/alex/notes/principles.txt': { type: 'file', content: '1. Make the next decision easier.\n2. Prefer boring infrastructure and expressive interfaces.\n3. Good empty states feel like hospitality.' },
+  '/home/alex/notes/stack.txt': { type: 'file', content: 'TypeScript · React · CSS systems · Node.js · Postgres · Playwright · Figma · Motion' },
+  '/home/alex/contact': { type: 'directory' },
+  '/home/alex/contact/contact.txt': { type: 'file', content: 'Email: hello@alexrivera.dev\nStatus: Open to thoughtful product partnerships.' },
+};
+
+const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
+const shellExamples = ['ls', 'cd work', 'cat orbit-crm.md', 'open work', 'theme light', 'history', 'clear'];
+
+function normalizeShellPath(cwd: string, target = '~') {
+  const home = '/home/alex';
+  const expanded = target.startsWith('~') ? `${home}${target.slice(1)}` : target;
+  const source = expanded.startsWith('/') ? expanded : `${cwd}/${expanded}`;
+  const parts: string[] = [];
+  for (const part of source.split('/')) {
+    if (!part || part === '.') continue;
+    if (part === '..') parts.pop();
+    else parts.push(part);
+  }
+  return `/${parts.join('/')}` || '/';
+}
+
+function displayShellPath(path: string) {
+  if (path === '/home/alex') return '~';
+  if (path.startsWith('/home/alex/')) return `~${path.slice('/home/alex'.length)}`;
+  return path;
+}
+
+function listShellDirectory(path: string) {
+  const prefix = path === '/' ? '/' : `${path}/`;
+  return Object.keys(shellFiles)
+    .filter((candidate) => candidate.startsWith(prefix) && candidate !== path)
+    .map((candidate) => candidate.slice(prefix.length).split('/')[0])
+    .filter((name, index, names) => name && names.indexOf(name) === index)
+    .sort();
+}
+
 function TerminalWindow({
+  onOpenWindow,
+  onCloseWindow,
+  onSetTheme,
   ...props
-}: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
+}: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
+  onOpenWindow: (id: WindowId) => void;
+  onCloseWindow: (id: WindowId) => void;
+  onSetTheme: (theme: Theme) => void;
+}) {
   const [command, setCommand] = useState('');
-  const [history, setHistory] = useState<string[]>([]);
-  const [cwd, setCwd] = useState('~');
+  const [entries, setEntries] = useState<ShellEntry[]>([]);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number | null>(null);
+  const [cwd, setCwd] = useState('/home/alex');
+  const [previousCwd, setPreviousCwd] = useState('/home/alex');
   const inputRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const nextEntryId = useRef(1);
+
+  useEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+  }, [entries, cwd]);
+
+  const appendEntry = (raw: string, output?: string, error = false, entryCwd = cwd) => {
+    setEntries((current) => [...current, { id: nextEntryId.current++, cwd: entryCwd, command: raw, output, error }]);
+  };
+
+  const insertCommand = (example: string) => {
+    setCommand(example);
+    setHistoryIndex(null);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const completeCommand = () => {
+    const trimmedStart = command.replace(/^\s+/, '');
+    const parts = trimmedStart.split(/\s+/);
+    if (parts.length === 1 && !trimmedStart.endsWith(' ')) {
+      const matches = shellCommands.filter((item) => item.startsWith(parts[0].toLowerCase()));
+      if (matches.length === 1) setCommand(`${matches[0]} `);
+      return;
+    }
+    const token = parts.at(-1) ?? '';
+    const slash = token.lastIndexOf('/');
+    const parentToken = slash >= 0 ? token.slice(0, slash + 1) : '';
+    const fragment = slash >= 0 ? token.slice(slash + 1) : token;
+    const parentPath = normalizeShellPath(cwd, parentToken || '.');
+    const matches = listShellDirectory(parentPath).filter((name) => name.startsWith(fragment));
+    if (matches.length !== 1) return;
+    const completedPath = normalizeShellPath(parentPath, matches[0]);
+    const suffix = shellFiles[completedPath]?.type === 'directory' ? '/' : '';
+    parts[parts.length - 1] = `${parentToken}${matches[0]}${suffix}`;
+    setCommand(parts.join(' '));
+  };
 
   const submitCommand = (event: FormEvent) => {
     event.preventDefault();
-    const normalized = command.trim().toLowerCase();
-    if (!normalized) return;
-    const [verb, ...args] = normalized.split(/\s+/);
+    const raw = command.trim();
+    if (!raw) return;
+    const [rawVerb, ...rawArgs] = raw.split(/\s+/);
+    const verb = rawVerb.toLowerCase();
+    const args = rawArgs.join(' ');
+    const entryCwd = cwd;
+    const nextHistory = [...commandHistory, raw];
+    setCommandHistory(nextHistory);
+    setHistoryIndex(null);
+    setCommand('');
 
     if (verb === 'exit') {
       props.onClose();
       return;
     }
-
-    if (verb === 'cd') {
-      const destination = args.join(' ');
-      const folders: Record<string, string> = {
-        '': '~',
-        '~': '~',
-        '~/': '~',
-        '/home/alex': '~',
-        about: '~/about',
-        '~/about': '~/about',
-        work: '~/work',
-        '~/work': '~/work',
-        notes: '~/notes',
-        '~/notes': '~/notes',
-        contact: '~/contact',
-        '~/contact': '~/contact',
-        '/': '/',
-      };
-      const nextDirectory = destination === '..'
-        ? cwd === '/' ? '/' : '~'
-        : folders[destination];
-      const output = nextDirectory ? '' : `cd: no such file or directory: ${destination}`;
-      if (nextDirectory) setCwd(nextDirectory);
-      setHistory((current) => [...current, `› ${command}`, ...(output ? [output] : [])]);
-      setCommand('');
+    if (verb === 'clear') {
+      setEntries([]);
       return;
     }
+    if (verb === 'help') {
+      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, notes, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
+      return;
+    }
+    if (verb === 'pwd') {
+      appendEntry(raw, cwd);
+      return;
+    }
+    if (verb === 'ls') {
+      const path = normalizeShellPath(cwd, args || '.');
+      const node = shellFiles[path];
+      if (!node) appendEntry(raw, `ls: cannot access '${args || '.'}': No such file or directory`, true);
+      else if (node.type !== 'directory') appendEntry(raw, path.split('/').pop());
+      else appendEntry(raw, listShellDirectory(path).map((name) => shellFiles[normalizeShellPath(path, name)]?.type === 'directory' ? `${name}/` : name).join('   ') || '(empty)');
+      return;
+    }
+    if (verb === 'cd') {
+      const target = args === '-' ? previousCwd : normalizeShellPath(cwd, args || '~');
+      const node = shellFiles[target];
+      if (!node) appendEntry(raw, `cd: ${args || '~'}: No such file or directory`, true);
+      else if (node.type !== 'directory') appendEntry(raw, `cd: ${args}: Not a directory`, true);
+      else {
+        appendEntry(raw, args === '-' ? displayShellPath(target) : undefined, false, entryCwd);
+        setPreviousCwd(cwd);
+        setCwd(target);
+      }
+      return;
+    }
+    if (verb === 'cat') {
+      if (!args) {
+        appendEntry(raw, 'cat: missing file operand', true);
+        return;
+      }
+      const path = normalizeShellPath(cwd, args);
+      const node = shellFiles[path];
+      if (!node) appendEntry(raw, `cat: ${args}: No such file or directory`, true);
+      else if (node.type === 'directory') appendEntry(raw, `cat: ${args}: Is a directory`, true);
+      else appendEntry(raw, node.content);
+      return;
+    }
+    if (verb === 'open' || verb === 'close') {
+      const target = rawArgs[0]?.toLowerCase();
+      const validWindows: WindowId[] = ['about', 'work', 'notes', 'contact', 'terminal'];
+      if (verb === 'close' && target === 'all') {
+        (['about', 'work', 'notes', 'contact'] as WindowId[]).forEach(onCloseWindow);
+        appendEntry(raw, 'Closed all portfolio windows.');
+      } else if (!validWindows.includes(target as WindowId)) {
+        appendEntry(raw, `${verb}: expected about, work, notes, contact, terminal${verb === 'close' ? ', or all' : ''}`, true);
+      } else {
+        if (verb === 'open') onOpenWindow(target as WindowId);
+        else if (target === 'terminal') props.onClose();
+        else onCloseWindow(target as WindowId);
+        appendEntry(raw, `${verb === 'open' ? 'Opened' : 'Closed'} ${target}.`);
+      }
+      return;
+    }
+    if (verb === 'theme') {
+      const mode = rawArgs[0]?.toLowerCase();
+      if (mode !== 'light' && mode !== 'dark') appendEntry(raw, 'theme: expected light or dark', true);
+      else {
+        onSetTheme(mode);
+        appendEntry(raw, `Theme changed to ${mode}.`);
+      }
+      return;
+    }
+    if (verb === 'history') {
+      appendEntry(raw, nextHistory.map((item, index) => `${String(index + 1).padStart(3, ' ')}  ${item}`).join('\n'));
+      return;
+    }
+    if (verb === 'whoami') {
+      appendEntry(raw, 'alex');
+      return;
+    }
+    if (verb === 'date') {
+      appendEntry(raw, new Intl.DateTimeFormat('en-US', { dateStyle: 'full', timeStyle: 'long' }).format(new Date()));
+      return;
+    }
+    if (verb === 'echo') {
+      appendEntry(raw, rawArgs.join(' '));
+      return;
+    }
+    appendEntry(raw, `${rawVerb}: command not found. Type 'help' for available commands.`, true);
+  };
 
-    const output = normalized === 'help'
-      ? 'about   work   notes   contact   cd [folder]   exit   clear'
-      : normalized === 'clear'
-        ? ''
-        : normalized === 'about'
-          ? 'Alex Rivera — frontend engineer, product thinker, detail obsessive.'
-          : normalized === 'work'
-            ? 'Orbit CRM · Field Notes · Signal Kit'
-            : normalized === 'notes'
-              ? 'TypeScript, React, systems thinking, good questions.'
-              : normalized === 'contact'
-                ? 'hello@alexrivera.dev'
-                : `command not found: ${normalized}. try "help"`;
-    setHistory((current) => normalized === 'clear' ? [] : [...current, `› ${command}`, output]);
-    setCommand('');
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      completeCommand();
+      return;
+    }
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+    event.preventDefault();
+    if (!commandHistory.length) return;
+    if (event.key === 'ArrowUp') {
+      const nextIndex = historyIndex === null ? commandHistory.length - 1 : Math.max(0, historyIndex - 1);
+      setHistoryIndex(nextIndex);
+      setCommand(commandHistory[nextIndex]);
+    } else {
+      if (historyIndex === null) return;
+      const nextIndex = historyIndex + 1;
+      if (nextIndex >= commandHistory.length) {
+        setHistoryIndex(null);
+        setCommand('');
+      } else {
+        setHistoryIndex(nextIndex);
+        setCommand(commandHistory[nextIndex]);
+      }
+    }
   };
 
   return (
     <WindowFrame {...props} id="terminal" title="Terminal">
-      <div className="window-body terminal-body" onClick={() => inputRef.current?.focus()}>
-        <div className="terminal-line"><span className="terminal-prompt">alex@studio</span><span>:</span><span className="terminal-path">~</span><span>$</span><span className="terminal-command">whoami</span></div>
+      <div ref={bodyRef} className="window-body terminal-body" onClick={() => inputRef.current?.focus()}>
+        <div className="terminal-line"><span className="terminal-prompt">alex@studio:~$</span><span className="terminal-command">whoami</span></div>
         <div className="terminal-output">alex rivera / product-minded frontend engineer{'\n'}building thoughtful interfaces and fast systems.</div>
-        <div className="terminal-output terminal-hint">type “help” to explore, or use the dock below.</div>
-        {history.map((line, index) => <div className={line.startsWith('›') ? 'terminal-line terminal-command' : 'terminal-output'} key={`${line}-${index}`}>{line}</div>)}
+        <div className="terminal-output terminal-hint">type “help” to explore. use ↑/↓ for history and Tab to complete.</div>
+        {entries.map((entry) => (
+          <div className="terminal-entry" key={entry.id}>
+            <div className="terminal-line"><span className="terminal-prompt">alex@studio:{displayShellPath(entry.cwd)}$</span><span className="terminal-command">{entry.command}</span></div>
+            {entry.output && <div className={`terminal-output ${entry.error ? 'terminal-error' : ''}`} onPointerDown={(event) => event.stopPropagation()}>{entry.output}</div>}
+            {entry.command.toLowerCase() === 'help' && (
+              <div className="terminal-examples" aria-label="Example terminal commands">
+                <span>click to paste:</span>
+                {shellExamples.map((example) => <button type="button" key={example} onClick={() => insertCommand(example)}>{example}</button>)}
+              </div>
+            )}
+          </div>
+        ))}
         <form className="terminal-form" onSubmit={submitCommand}>
-          <span className="terminal-prompt">alex@studio:{cwd}$</span>
-          <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => setCommand(event.target.value)} aria-label="Terminal command" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" />
+          <span className="terminal-prompt">alex@studio:{displayShellPath(cwd)}$</span>
+          <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => { setCommand(event.target.value); setHistoryIndex(null); }} onKeyDown={handleInputKeyDown} aria-label="Terminal command" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" spellCheck={false} />
         </form>
       </div>
     </WindowFrame>
@@ -727,7 +914,7 @@ function Home() {
         {windows.about && <AboutWindow {...windowProps('about')} />}
         {windows.notes && <NotesWindow {...windowProps('notes')} />}
         {windows.contact && <ContactWindow {...windowProps('contact')} />}
-        {windows.terminal && <TerminalWindow {...windowProps('terminal')} />}
+        {windows.terminal && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} />}
       </div>
 
       {contextMenu && (

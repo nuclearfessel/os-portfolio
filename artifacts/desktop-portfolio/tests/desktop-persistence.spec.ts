@@ -127,8 +127,8 @@ test('stays usable when browser storage reads, writes, and removals fail', async
     window as typeof window & { __storageFailureAttempts: { getItem: number } }
   ).__storageFailureAttempts.getItem)).toBeGreaterThan(0);
 
-  await page.getByTestId('button-dock-about').click();
-  await expect(page.getByTestId('window-about')).toBeVisible();
+  await page.getByTestId('button-open-contact').click();
+  await expect(page.getByTestId('window-contact')).toBeVisible();
 
   await openDesktopMenu(page);
   await chooseSubmenuOption(page, 'Theme', 'Dark');

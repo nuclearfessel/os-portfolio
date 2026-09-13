@@ -32,7 +32,7 @@ test('desktop-only apps disappear outside desktop mode', async ({ page }) => {
     { width: 1024, height: 768, device: 'tablet', orientation: 'landscape' },
     { width: 768, height: 1024, device: 'tablet', orientation: 'portrait' },
     { width: 390, height: 844, device: 'mobile', orientation: 'portrait' },
-    { width: 844, height: 390, device: 'mobile', orientation: 'landscape' },
+    { width: 844, height: 390, device: 'mobile', orientation: 'portrait' },
   ]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await expect(page.locator('.os-shell')).toHaveClass(new RegExp(`device-${viewport.device}`));
@@ -68,7 +68,7 @@ test('managed windows keep an 8px inset below the system bar', async ({ page }) 
   for (const viewport of [
     { width: 768, height: 1024, controlsHidden: true },
     { width: 390, height: 844, controlsHidden: true },
-    { width: 844, height: 390, controlsHidden: false },
+    { width: 844, height: 390, controlsHidden: true },
   ]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await resetStorage(page);

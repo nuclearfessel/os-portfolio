@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
-  Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, BookOpen, ChevronRight,
+  Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
   Check, FileText as StickyNote, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
   Plus, Cursor as MousePointer2, Terminal, CircleUser as UserRound, Wifi, X,
 } from '@keyline-icons/react';
@@ -13,7 +13,7 @@ import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient();
 
-type WindowId = 'about' | 'work' | 'notes' | 'contact' | 'terminal';
+type WindowId = 'about' | 'work' | 'contact' | 'terminal';
 type WindowState = Record<WindowId, boolean>;
 type IconSize = 'large' | 'small';
 type Theme = 'dark' | 'light';
@@ -138,7 +138,6 @@ const projects = [
 const initialWindows: WindowState = {
   about: false,
   work: true,
-  notes: false,
   contact: false,
   terminal: true,
 };
@@ -296,30 +295,6 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
   );
 }
 
-function NotesWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
-  return (
-    <WindowFrame {...props} id="notes" title="Notes & stack">
-      <div className="window-body">
-        <span className="section-kicker">/notes / toolkit</span>
-        <h2>Curious by default.</h2>
-        <div className="stack-layout">
-          <div>
-            <p>My stack follows the problem, not the other way around. I like boring infrastructure, expressive interfaces, and tools that make the next decision easier.</p>
-            <div className="stack-list">
-              {['TypeScript', 'React', 'Next.js', 'CSS systems', 'Node.js', 'Postgres', 'Playwright', 'Figma', 'Motion'].map((item) => <span className="stack-chip" key={item}>{item}</span>)}
-            </div>
-          </div>
-          <div className="availability">
-            <strong><span className="status-dot" style={{ display: 'inline-block', marginRight: 8 }} />available for 2025</strong>
-            <p>Taking on one thoughtful product partnership from spring onward. Best fit: small teams with a real problem and high standards.</p>
-          </div>
-        </div>
-        <p className="recent-note">→ Recent note: why good empty states feel like hospitality</p>
-      </div>
-    </WindowFrame>
-  );
-}
-
 function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
   return (
     <WindowFrame {...props} id="contact" title="Start a conversation">
@@ -349,9 +324,6 @@ const shellFiles: Record<string, ShellNode> = {
   '/home/alex/work/orbit-crm.md': { type: 'file', content: 'Orbit CRM\nA calmer command center for customer teams managing complex accounts.\nProduct design + frontend engineering · 2024' },
   '/home/alex/work/field-notes.md': { type: 'file', content: 'Field Notes\nOffline-first field research software for teams who work beyond the signal.\nSystems · 2023' },
   '/home/alex/work/signal-kit.md': { type: 'file', content: 'Signal Kit\nA living component library that turns product intent into shipped interface.\nDesign engineering · 2023' },
-  '/home/alex/notes': { type: 'directory' },
-  '/home/alex/notes/principles.txt': { type: 'file', content: '1. Make the next decision easier.\n2. Prefer boring infrastructure and expressive interfaces.\n3. Good empty states feel like hospitality.' },
-  '/home/alex/notes/stack.txt': { type: 'file', content: 'TypeScript · React · CSS systems · Node.js · Postgres · Playwright · Figma · Motion' },
   '/home/alex/contact': { type: 'directory' },
   '/home/alex/contact/contact.txt': { type: 'file', content: 'Email: hello@alexrivera.dev\nStatus: Open to thoughtful product partnerships.' },
 };
@@ -468,7 +440,7 @@ function TerminalWindow({
       return;
     }
     if (verb === 'help') {
-      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, notes, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
+      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
       return;
     }
     if (verb === 'pwd') {
@@ -510,16 +482,16 @@ function TerminalWindow({
     }
     if (verb === 'open' || verb === 'close') {
       const target = rawArgs[0]?.toLowerCase();
-      const validWindows: WindowId[] = ['about', 'work', 'notes', 'contact', 'terminal'];
+      const validWindows: WindowId[] = ['about', 'work', 'contact', 'terminal'];
       if (verb === 'close' && target === 'all') {
-        const openPortfolioWindows = (['about', 'work', 'notes', 'contact'] as WindowId[]).filter((id) => openWindows[id]);
+        const openPortfolioWindows = (['about', 'work', 'contact'] as WindowId[]).filter((id) => openWindows[id]);
         if (!openPortfolioWindows.length) appendEntry(raw, 'All portfolio windows are already closed.');
         else {
           openPortfolioWindows.forEach(onCloseWindow);
           appendEntry(raw, 'Closed all portfolio windows.');
         }
       } else if (!validWindows.includes(target as WindowId)) {
-        appendEntry(raw, `${verb}: expected about, work, notes, contact, terminal${verb === 'close' ? ', or all' : ''}`, true);
+        appendEntry(raw, `${verb}: expected about, work, contact, terminal${verb === 'close' ? ', or all' : ''}`, true);
       } else if (verb === 'open' && openWindows[target as WindowId]) {
         appendEntry(raw, `${target} is already open.`);
       } else if (verb === 'close' && !openWindows[target as WindowId]) {
@@ -623,6 +595,7 @@ function DesktopFolder({
   onPointerMove,
   onPointerUp,
   style,
+  appIcon,
 }: {
   id: WindowId;
   label: string;
@@ -632,10 +605,11 @@ function DesktopFolder({
   onPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => void;
   onPointerUp: (event: ReactPointerEvent<HTMLButtonElement>) => void;
   style?: React.CSSProperties;
+  appIcon?: ReactNode;
 }) {
   return (
     <button
-      className={`desktop-folder ${open ? 'is-open' : ''}`}
+      className={`desktop-folder ${appIcon ? 'desktop-app' : ''} ${open ? 'is-open' : ''}`}
       onClick={onToggle}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -643,10 +617,12 @@ function DesktopFolder({
       onPointerCancel={onPointerUp}
       style={style}
       aria-pressed={open}
-      aria-label={`${open ? 'Focus' : 'Open'} ${label} folder`}
+      aria-label={`${open ? 'Focus' : 'Open'} ${label} ${appIcon ? 'application' : 'folder'}`}
       data-testid={`button-folder-${id}`}
     >
-      <span className="desktop-folder-icon" aria-hidden="true" />
+      {appIcon
+        ? <span className="desktop-app-icon" aria-hidden="true">{appIcon}</span>
+        : <span className="desktop-folder-icon" aria-hidden="true" />}
       <span className="desktop-folder-label">{label}</span>
     </button>
   );
@@ -720,7 +696,7 @@ function Home() {
         setStickyMenu(null);
       }
       if (event.metaKey || event.ctrlKey) return;
-      const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'notes', '4': 'contact', '`': 'terminal' };
+      const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '`': 'terminal' };
       const id = shortcuts[event.key];
       if (id) { event.preventDefault(); openWindow(id); }
     };
@@ -1022,7 +998,7 @@ function Home() {
     setFolderPositions({
       about: { left, top: 62 },
       work: { left, top: 62 + row },
-      notes: { left, top: 62 + row * 2 },
+      terminal: { left, top: 62 + row * 2 },
     });
     setContextMenu(null);
   };
@@ -1101,7 +1077,7 @@ function Home() {
           <div className="desktop-folders" aria-label="Portfolio folders">
             <DesktopFolder id="about" label="about" open={windows.about} onToggle={() => handleFolderClick('about')} onPointerDown={(event) => startFolderDrag('about', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.about ? { left: folderPositions.about.left, top: folderPositions.about.top, bottom: 'auto' } : undefined} />
             <DesktopFolder id="work" label="work" open={windows.work} onToggle={() => handleFolderClick('work')} onPointerDown={(event) => startFolderDrag('work', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.work ? { left: folderPositions.work.left, top: folderPositions.work.top, bottom: 'auto' } : undefined} />
-            <DesktopFolder id="notes" label="notes" open={windows.notes} onToggle={() => handleFolderClick('notes')} onPointerDown={(event) => startFolderDrag('notes', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.notes ? { left: folderPositions.notes.left, top: folderPositions.notes.top, bottom: 'auto' } : undefined} />
+            <DesktopFolder id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleFolderClick('terminal')} onPointerDown={(event) => startFolderDrag('terminal', event)} onPointerMove={moveFolderDrag} onPointerUp={endFolderDrag} style={folderPositions.terminal ? { left: folderPositions.terminal.left, top: folderPositions.terminal.top, bottom: 'auto' } : undefined} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
           </div>
         )}
 
@@ -1182,7 +1158,6 @@ function Home() {
 
         {windows.work && <WorkWindow {...windowProps('work')} />}
         {windows.about && <AboutWindow {...windowProps('about')} />}
-        {windows.notes && <NotesWindow {...windowProps('notes')} />}
         {windows.contact && <ContactWindow {...windowProps('contact')} />}
         {windows.terminal && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
       </div>
@@ -1293,9 +1268,8 @@ function Home() {
       <nav className="dock" aria-label="Portfolio applications">
         <button className={`dock-item ${windows.about ? 'active' : ''}`} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><span>About · 1</span></button>
         <button className={`dock-item ${windows.work ? 'active' : ''}`} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><span>Work · 2</span></button>
-        <button className={`dock-item ${windows.notes ? 'active' : ''}`} onClick={() => openWindow('notes')} aria-label="Open notes and stack" data-testid="button-dock-notes"><BookOpen size={20} /><span>Notes · 3</span></button>
         <button className={`dock-item ${windows.terminal ? 'active' : ''}`} onClick={() => openWindow('terminal')} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><span>Terminal · `</span></button>
-        <button className={`dock-item ${windows.contact ? 'active' : ''}`} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact · 4</span></button>
+        <button className={`dock-item ${windows.contact ? 'active' : ''}`} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><span>Contact · 3</span></button>
         <button className={`dock-item ${stickyVisible ? 'active' : ''}`} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><span>Stickies</span></button>
         <button className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><span>Shortcuts</span></button>
       </nav>
@@ -1303,9 +1277,9 @@ function Home() {
       {mobileOpen && (
         <div className="mobile-shortcut-menu" data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
-          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>Use 1–4 to open a window. Press backtick for the terminal. Escape closes this menu.</p>
+          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>Use 1–3 to open a window. Press backtick for the terminal. Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
-            {(['about', 'work', 'notes', 'contact'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span className="shortcut-number">{index + 1}</span>{id}</button>)}
+            {(['about', 'work', 'contact'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span className="shortcut-number">{index + 1}</span>{id}</button>)}
           </div>
         </div>
       )}

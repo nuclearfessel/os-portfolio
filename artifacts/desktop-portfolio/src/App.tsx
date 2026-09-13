@@ -335,6 +335,7 @@ function Home() {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
+    dragRef.current = null;
   };
   const startResize = (id: WindowId | 'sticky', event: ReactPointerEvent<HTMLSpanElement>) => {
     if (window.matchMedia('(max-width: 760px)').matches) return;
@@ -353,8 +354,8 @@ function Home() {
   const moveResize = (event: ReactPointerEvent<HTMLSpanElement>) => {
     const resize = resizeRef.current;
     if (!resize) return;
-    const minWidth = resize.id === 'sticky' ? 160 : 78;
-    const minHeight = resize.id === 'sticky' ? 110 : 72;
+    const minWidth = resize.id === 'sticky' ? 160 : 320;
+    const minHeight = resize.id === 'sticky' ? 110 : 240;
     const width = Math.max(minWidth, resize.startWidth + event.clientX - resize.startX);
     const height = Math.max(minHeight, resize.startHeight + event.clientY - resize.startY);
     setItemSizes((current) => ({ ...current, [resize.id]: { width, height } }));
@@ -366,11 +367,6 @@ function Home() {
     resizeRef.current = null;
   };
   const handleFolderClick = (id: WindowId) => {
-    if (dragRef.current?.id === id && dragRef.current.moved) {
-      dragRef.current = null;
-      return;
-    }
-    dragRef.current = null;
     toggleFolder(id);
   };
   const positionStyle = (id: WindowId | 'sticky'): React.CSSProperties | undefined => {
@@ -386,6 +382,16 @@ function Home() {
     onFocus: () => setActiveWindow(id),
     onClose: () => closeWindow(id),
     onMinimize: () => minimizeWindow(id),
+    onPointerDown: (event: ReactPointerEvent<HTMLElement>) => {
+      setActiveWindow(id);
+      startDrag(id, event);
+    },
+    onPointerMove: moveDrag,
+    onPointerUp: endDrag,
+    onResizeStart: (event: ReactPointerEvent<HTMLSpanElement>) => startResize(id, event),
+    onResizeMove: moveResize,
+    onResizeEnd: endResize,
+    style: itemStyle(id),
   });
 
   return (

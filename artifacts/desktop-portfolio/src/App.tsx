@@ -480,7 +480,7 @@ const shellFiles: Record<string, ShellNode> = {
 };
 
 const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd work', 'cat orbit-crm.md', 'open work', 'theme light', 'history', 'clear'];
+const shellExamples = ['ls', 'cd work', 'cat ~/work/orbit-crm.md', 'open work', 'theme light', 'history', 'clear'];
 
 function normalizeShellPath(cwd: string, target = '~') {
   const home = '/home/fes';

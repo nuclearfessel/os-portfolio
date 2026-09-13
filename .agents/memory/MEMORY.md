@@ -1,2 +1,3 @@
 - [Desktop drag state isolation](desktop-drag-state-isolation.md) — launchers and their corresponding windows must use separate position identities.
 - [Playwright validation environment](playwright-validation-environment.md) — desktop E2E dependencies and browsers may need restoring from the workspace cache.
+- [Responsive desktop geometry](responsive-desktop-geometry.md) — responsive reflow is temporary; preserve and restore the user’s desktop layout.

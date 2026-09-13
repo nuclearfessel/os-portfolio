@@ -98,3 +98,54 @@ test('light theme representative text meets WCAG AA contrast', async ({ page }) 
     ).toBeGreaterThanOrEqual(4.5);
   }
 });
+
+test('light theme interactive hover and focus states meet WCAG AA contrast', async ({ page }) => {
+  await page.addInitScript(([key]) => {
+    localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));
+  }, [storageKey]);
+  await page.goto('/');
+  await switchToLightTheme(page);
+
+  const states: Array<{ name: string; locator: Locator }> = [
+    { name: 'secondary quick action hover', locator: page.getByTestId('button-open-contact') },
+    { name: 'primary quick action focus', locator: page.getByTestId('button-open-work') },
+    { name: 'window control focus', locator: page.getByTestId('button-maximize-work') },
+    { name: 'project link hover', locator: page.getByTestId('button-open-project-01') },
+    { name: 'Dock item hover', locator: page.getByTestId('button-dock-contact') },
+  ];
+
+  for (const state of states) {
+    await state.locator.hover();
+    const hoverRatio = await contrastRatio(state.locator);
+    expect(
+      hoverRatio,
+      `${state.name} contrast ${hoverRatio.toFixed(2)}:1 should meet WCAG AA`,
+    ).toBeGreaterThanOrEqual(4.5);
+
+    await state.locator.focus();
+    await expect(state.locator).toBeFocused();
+    const focusRatio = await contrastRatio(state.locator);
+    expect(
+      `${state.name} focus contrast ${focusRatio.toFixed(2)}:1 should meet WCAG AA`,
+    ).toBeGreaterThanOrEqual(4.5);
+  }
+
+  await openDesktopMenu(page);
+  const menuItem = page.getByRole('menuitem', { name: 'Auto arrange icons' });
+  await menuItem.hover();
+  const menuHoverRatio = await contrastRatio(menuItem);
+  expect(menuHoverRatio, `menu hover contrast ${menuHoverRatio.toFixed(2)}:1 should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
+  await menuItem.focus();
+  const menuFocusRatio = await contrastRatio(menuItem);
+  expect(menuFocusRatio, `menu focus contrast ${menuFocusRatio.toFixed(2)}:1 should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
+  await page.keyboard.press('Escape');
+
+  await page.getByTestId('button-dock-terminal').click();
+  const terminalExample = page.locator('.terminal-examples button').first();
+  await terminalExample.hover();
+  const terminalHoverRatio = await contrastRatio(terminalExample);
+  expect(terminalHoverRatio, `terminal example hover contrast ${terminalHoverRatio.toFixed(2)}:1 should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
+  await terminalExample.focus();
+  const terminalFocusRatio = await contrastRatio(terminalExample);
+  expect(terminalFocusRatio, `terminal example focus contrast ${terminalFocusRatio.toFixed(2)}:1 should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
+});

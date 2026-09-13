@@ -199,8 +199,8 @@ button { cursor: pointer; }
   border-radius: 10px;
   background: rgba(23, 25, 45, .98);
   box-shadow: 0 24px 70px rgba(0,0,0,.4), 0 2px 0 rgba(255,255,255,.05) inset;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   animation: window-in .14s ease-out both;
 }
 .window.is-active { z-index: 10; border-color: rgba(228,255,91,.43); }

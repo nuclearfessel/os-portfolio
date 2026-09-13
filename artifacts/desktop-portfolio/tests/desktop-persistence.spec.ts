@@ -218,9 +218,10 @@ test('stays usable when browser storage reads, writes, and removals fail', async
 
   await page.getByTestId('button-dock-stickies').click();
   const sticky = page.getByTestId('sticky-sticky');
+  await expect(sticky).toBeVisible();
   const initialStickyBox = await sticky.boundingBox();
   expect(initialStickyBox).not.toBeNull();
-  await sticky.locator('.note-label').hover();
+  await sticky.locator('.note-label').hover({ force: true });
   await page.mouse.down();
   await page.mouse.move(initialStickyBox!.x - 100, initialStickyBox!.y + 65, { steps: 6 });
   await page.mouse.up();

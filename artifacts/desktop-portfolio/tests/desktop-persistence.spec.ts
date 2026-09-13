@@ -161,7 +161,9 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
   const storageNotice = page.getByTestId('notice-storage-unavailable');
+  const storageRestored = page.getByTestId('notice-storage-restored');
   await expect(storageNotice).toHaveCount(1);
+  await expect(storageRestored).toHaveCount(0);
   await expect(storageNotice).toContainText('Changes won’t be saved.');
   await expect(storageNotice).toContainText('They’ll work for this session, but reset after you reload.');
   const storageHelp = page.getByRole('button', { name: 'How to restore saving' });
@@ -266,6 +268,7 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   ).__storageFailureAttempts.setItem);
   await retrySaving.click();
   await expect(storageNotice).toHaveCount(1);
+  await expect(storageRestored).toHaveCount(0);
   await expect(recoveryGuidance).toBeVisible();
   await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
   await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
@@ -298,6 +301,9 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   ).__allowStorage());
   await retrySaving.click();
   await expect(storageNotice).toHaveCount(0);
+  await expect(storageRestored).toHaveText('Saving restored. Current desktop changes are saved.');
+  await expect(storageRestored).toHaveAttribute('role', 'status');
+  await expect(storageRestored).toHaveAttribute('aria-live', 'polite');
   const recoveredSnapshot = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
   expect(recoveredSnapshot).toMatchObject({
     iconSize: 'small',

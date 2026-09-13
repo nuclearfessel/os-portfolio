@@ -26,6 +26,75 @@ type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
 type DockPosition = 'top' | 'right' | 'bottom' | 'left';
+type Position = { left: number; top: number };
+type Size = { width: number; height: number };
+type WorkspaceBounds = { left: number; top: number; right: number; bottom: number };
+
+const STICKY_CONTROL_OVERFLOW = 24;
+const STICKY_VIEWPORT_GAP = 2;
+const DOCK_SAFE_INSET = 70;
+
+function stickyFootprintRadii(size: Size, rotation: number) {
+  const radians = rotation * Math.PI / 180;
+  const cosine = Math.abs(Math.cos(radians));
+  const sine = Math.abs(Math.sin(radians));
+  const halfWidth = size.width / 2 + STICKY_CONTROL_OVERFLOW;
+  const halfHeight = size.height / 2 + STICKY_CONTROL_OVERFLOW;
+  return {
+    x: cosine * halfWidth + sine * halfHeight,
+    y: sine * halfWidth + cosine * halfHeight,
+  };
+}
+
+function stickyPositionBounds(size: Size, rotation: number, workspace: WorkspaceBounds) {
+  const radius = stickyFootprintRadii(size, rotation);
+  const minLeft = workspace.left + radius.x - size.width / 2;
+  const maxLeft = workspace.right - radius.x - size.width / 2;
+  const minTop = workspace.top + radius.y - size.height / 2;
+  const maxTop = workspace.bottom - radius.y - size.height / 2;
+  const centeredLeft = (workspace.left + workspace.right - size.width) / 2;
+  const centeredTop = (workspace.top + workspace.bottom - size.height) / 2;
+  return {
+    minLeft: minLeft <= maxLeft ? minLeft : centeredLeft,
+    maxLeft: minLeft <= maxLeft ? maxLeft : centeredLeft,
+    minTop: minTop <= maxTop ? minTop : centeredTop,
+    maxTop: minTop <= maxTop ? maxTop : centeredTop,
+  };
+}
+
+function constrainStickyPosition(position: Position, size: Size, rotation: number, workspace: WorkspaceBounds): Position {
+  const bounds = stickyPositionBounds(size, rotation, workspace);
+  return {
+    left: Math.max(bounds.minLeft, Math.min(bounds.maxLeft, position.left)),
+    top: Math.max(bounds.minTop, Math.min(bounds.maxTop, position.top)),
+  };
+}
+
+function stickySizeFits(size: Size, rotation: number, workspace: WorkspaceBounds) {
+  const radius = stickyFootprintRadii(size, rotation);
+  return radius.x * 2 <= workspace.right - workspace.left && radius.y * 2 <= workspace.bottom - workspace.top;
+}
+
+function fitStickySize(size: Size, rotation: number, workspace: WorkspaceBounds): Size {
+  if (stickySizeFits(size, rotation, workspace)) return size;
+  const minimum = { width: Math.min(140, size.width), height: Math.min(100, size.height) };
+  if (!stickySizeFits(minimum, rotation, workspace)) return minimum;
+  let low = 0;
+  let high = 1;
+  for (let index = 0; index < 18; index += 1) {
+    const amount = (low + high) / 2;
+    const candidate = {
+      width: minimum.width + (size.width - minimum.width) * amount,
+      height: minimum.height + (size.height - minimum.height) * amount,
+    };
+    if (stickySizeFits(candidate, rotation, workspace)) low = amount;
+    else high = amount;
+  }
+  return {
+    width: minimum.width + (size.width - minimum.width) * low,
+    height: minimum.height + (size.height - minimum.height) * low,
+  };
+}
 
 const stickyPalette = [
   { id: 'lemon', label: 'Lemon', background: 'rgba(255, 216, 77, .82)', foreground: 'dark', handle: '#8f6900' },
@@ -106,7 +175,13 @@ function loadDesktopState(): SavedDesktopState {
       Object.entries(parsed.itemPositions ?? {}).filter((entry): entry is [string, { left: number; top: number }] => {
         const position = entry[1];
         return position !== undefined && Number.isFinite(position.left) && Number.isFinite(position.top);
-      }),
+      }).map(([id, position]) => [
+        id,
+        {
+          ...position,
+          top: ['about', 'work', 'contact', 'terminal'].includes(id) ? Math.max(0, position.top) : position.top,
+        },
+      ]),
     ) as ItemPositions;
     const itemSizes = Object.fromEntries(
       Object.entries(parsed.itemSizes ?? {}).filter((entry): entry is [string, { width: number; height: number }] => {
@@ -820,6 +895,95 @@ function Home() {
     setStickyOnTop(true);
     setMobileOpen(false);
   };
+  const stickyWorkspace = (): WorkspaceBounds | null => {
+    const area = desktopAreaRef.current;
+    if (!area) return null;
+    const areaRect = area.getBoundingClientRect();
+    const dockRect = document.querySelector<HTMLElement>('.dock')?.getBoundingClientRect();
+    const visibleRight = Math.min(areaRect.right, window.innerWidth) - areaRect.left;
+    const visibleBottom = Math.min(areaRect.bottom, window.innerHeight) - areaRect.top;
+    const leftDockEdge = dockRect ? dockRect.right - areaRect.left : DOCK_SAFE_INSET;
+    const rightDockEdge = dockRect ? dockRect.left - areaRect.left : visibleRight - DOCK_SAFE_INSET;
+    const topDockEdge = dockRect ? dockRect.bottom - areaRect.top : DOCK_SAFE_INSET;
+    const bottomDockEdge = dockRect ? dockRect.top - areaRect.top : visibleBottom - DOCK_SAFE_INSET;
+    return {
+      left: STICKY_VIEWPORT_GAP + (dockPosition === 'left' ? leftDockEdge : 0),
+      top: STICKY_VIEWPORT_GAP + (dockPosition === 'top' ? topDockEdge : 0),
+      right: (dockPosition === 'right' ? rightDockEdge : visibleRight) - STICKY_VIEWPORT_GAP,
+      bottom: (dockPosition === 'bottom' ? bottomDockEdge : visibleBottom) - STICKY_VIEWPORT_GAP,
+    };
+  };
+  const setStickyRotation = (id: StickyItemId, rotation: number) => {
+    const workspace = stickyWorkspace();
+    const element = desktopAreaRef.current?.querySelector<HTMLElement>(`[data-testid="sticky-${id}"]`);
+    const size = itemSizes[id] ?? (element ? { width: element.offsetWidth, height: element.offsetHeight } : { width: 214, height: 138 });
+    setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation } : sticky));
+    if (workspace) {
+      setDragPositions((current) => {
+        const position = current[id] ?? { left: element?.offsetLeft ?? 0, top: element?.offsetTop ?? 0 };
+        const constrained = constrainStickyPosition(position, size, rotation, workspace);
+        if (Math.abs(constrained.left - position.left) < .1 && Math.abs(constrained.top - position.top) < .1) return current;
+        return { ...current, [id]: constrained };
+      });
+    }
+  };
+  const stickyGeometrySignature = stickies.map((sticky) => `${sticky.id}:${sticky.rotation}`).join('|');
+  const stickySizeSignature = stickies.map((sticky) => {
+    const size = itemSizes[sticky.id];
+    return `${sticky.id}:${size?.width ?? ''}:${size?.height ?? ''}`;
+  }).join('|');
+  useEffect(() => {
+    const reclampStickies = () => {
+      if (window.matchMedia('(max-width: 760px)').matches) return;
+      const workspace = stickyWorkspace();
+      const area = desktopAreaRef.current;
+      if (!workspace || !area) return;
+      const fittedSizes: ItemSizes = {};
+      for (const sticky of stickies) {
+        const element = area.querySelector<HTMLElement>(`[data-testid="sticky-${sticky.id}"]`);
+        if (!element) continue;
+        const size = itemSizes[sticky.id] ?? { width: element.offsetWidth, height: element.offsetHeight };
+        fittedSizes[sticky.id] = fitStickySize(size, sticky.rotation, workspace);
+      }
+      setItemSizes((current) => {
+        let changed = false;
+        const next = { ...current };
+        for (const sticky of stickies) {
+          const fitted = fittedSizes[sticky.id];
+          if (!fitted) continue;
+          const currentSize = current[sticky.id];
+          if (!currentSize && Math.abs(fitted.width - 214) < .1 && Math.abs(fitted.height - 138) < .1) continue;
+          if (!currentSize || Math.abs(currentSize.width - fitted.width) >= .1 || Math.abs(currentSize.height - fitted.height) >= .1) {
+            next[sticky.id] = fitted;
+            changed = true;
+          }
+        }
+        return changed ? next : current;
+      });
+      setDragPositions((current) => {
+        let changed = false;
+        const next = { ...current };
+        for (const sticky of stickies) {
+          const element = area.querySelector<HTMLElement>(`[data-testid="sticky-${sticky.id}"]`);
+          const size = fittedSizes[sticky.id];
+          if (!element || !size) continue;
+          const position = current[sticky.id] ?? { left: element.offsetLeft, top: element.offsetTop };
+          const constrained = constrainStickyPosition(position, size, sticky.rotation, workspace);
+          if (Math.abs(constrained.left - position.left) >= .1 || Math.abs(constrained.top - position.top) >= .1) {
+            next[sticky.id] = constrained;
+            changed = true;
+          }
+        }
+        return changed ? next : current;
+      });
+    };
+    const frame = window.requestAnimationFrame(reclampStickies);
+    window.addEventListener('resize', reclampStickies);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', reclampStickies);
+    };
+  }, [dockPosition, stickyGeometrySignature, stickySizeSignature]);
   const startDrag = (id: DesktopItemId, event: ReactPointerEvent<HTMLElement>) => {
     if (event.button !== 0 || window.matchMedia('(max-width: 760px)').matches) return;
     const area = desktopAreaRef.current;
@@ -851,7 +1015,7 @@ function Home() {
     const areaRect = area.getBoundingClientRect();
     const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     const target = draggableTarget?.getBoundingClientRect();
-    if (!target) return;
+    if (!draggableTarget || !target) return;
     const nextLeft = event.clientX - areaRect.left - drag.offsetX;
     const nextTop = event.clientY - areaRect.top - drag.offsetY;
     const padRight = dockPosition === 'right' ? 70 : 0;
@@ -863,8 +1027,14 @@ function Home() {
     const minLeft = padLeft;
     const minTop = padTop;
     const staysOnDesktop = drag.id.startsWith('sticky') || draggableTarget?.classList.contains('desktop-folder');
-    const left = staysOnDesktop ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft;
-    const top = staysOnDesktop ? Math.max(minTop, Math.min(maxTop, nextTop)) : nextTop;
+    const sticky = drag.id.startsWith('sticky') ? stickies.find((item) => item.id === drag.id) : undefined;
+    const workspace = sticky ? stickyWorkspace() : null;
+    const stickySize = sticky ? (itemSizes[sticky.id] ?? { width: draggableTarget.offsetWidth, height: draggableTarget.offsetHeight }) : null;
+    const constrainedSticky = sticky && workspace && stickySize
+      ? constrainStickyPosition({ left: nextLeft, top: nextTop }, stickySize, sticky.rotation, workspace)
+      : null;
+    const left = constrainedSticky?.left ?? (staysOnDesktop ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft);
+    const top = constrainedSticky?.top ?? (staysOnDesktop ? Math.max(minTop, Math.min(maxTop, nextTop)) : Math.max(0, nextTop));
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
       drag.moved = true;
     }
@@ -931,10 +1101,27 @@ function Home() {
     const growsWest = resize.direction.includes('w');
     const growsSouth = resize.direction.includes('s');
     const growsNorth = resize.direction.includes('n');
-    const width = Math.max(minWidth, resize.startWidth + (growsEast ? deltaX : growsWest ? -deltaX : 0));
-    const height = Math.max(minHeight, resize.startHeight + (growsSouth ? deltaY : growsNorth ? -deltaY : 0));
-    const left = growsWest ? resize.startLeft + resize.startWidth - width : resize.startLeft;
-    const top = growsNorth ? resize.startTop + resize.startHeight - height : resize.startTop;
+    let width = Math.max(minWidth, resize.startWidth + (growsEast ? deltaX : growsWest ? -deltaX : 0));
+    let height = Math.max(minHeight, resize.startHeight + (growsSouth ? deltaY : growsNorth ? -deltaY : 0));
+    let left = growsWest ? resize.startLeft + resize.startWidth - width : resize.startLeft;
+    let top = growsNorth ? resize.startTop + resize.startHeight - height : resize.startTop;
+    if (isSticky) {
+      const sticky = stickies.find((item) => item.id === resize.id);
+      const workspace = stickyWorkspace();
+      if (sticky && workspace) {
+        const fitted = fitStickySize({ width, height }, sticky.rotation, workspace);
+        width = fitted.width;
+        height = fitted.height;
+        left = growsWest ? resize.startLeft + resize.startWidth - width : resize.startLeft;
+        top = growsNorth ? resize.startTop + resize.startHeight - height : resize.startTop;
+        const constrained = constrainStickyPosition({ left, top }, fitted, sticky.rotation, workspace);
+        left = constrained.left;
+        top = constrained.top;
+      }
+    } else if (top < 0) {
+      height = Math.max(minHeight, height + top);
+      top = 0;
+    }
     setItemSizes((current) => ({ ...current, [resize.id]: { width, height } }));
     setDragPositions((current) => ({ ...current, [resize.id]: { left, top } }));
   };
@@ -972,7 +1159,7 @@ function Home() {
     if (delta < -180) delta += 360;
     const rawRotation = rotate.rotation + delta;
     const rotation = event.shiftKey ? Math.round(rawRotation / 15) * 15 : Math.round(rawRotation * 10) / 10;
-    setStickies((current) => current.map((sticky) => sticky.id === rotate.id ? { ...sticky, rotation } : sticky));
+    setStickyRotation(rotate.id, rotation);
   };
   const endRotate = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
@@ -986,7 +1173,7 @@ function Home() {
       event.stopPropagation();
       setActiveStickyId(id);
       setStickyOnTop(true);
-      setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation: 0 } : sticky));
+      setStickyRotation(id, 0);
       return;
     }
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
@@ -996,7 +1183,8 @@ function Home() {
     const increment = event.shiftKey ? 15 : 1;
     setActiveStickyId(id);
     setStickyOnTop(true);
-    setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation: Math.round((sticky.rotation + direction * increment) * 10) / 10 } : sticky));
+    const sticky = stickies.find((item) => item.id === id);
+    if (sticky) setStickyRotation(id, Math.round((sticky.rotation + direction * increment) * 10) / 10);
   };
   const handleDesktopWindowOpen = (id: WindowId) => {
     const recentDrag = lastDesktopDragRef.current;
@@ -1086,7 +1274,7 @@ function Home() {
     setStickyMenu(null);
   };
   const resetStickyRotation = (id: StickyItemId) => {
-    setStickies((current) => current.map((sticky) => sticky.id === id ? { ...sticky, rotation: 0 } : sticky));
+    setStickyRotation(id, 0);
     setActiveStickyId(id);
     setStickyOnTop(true);
     setStickyMenu(null);

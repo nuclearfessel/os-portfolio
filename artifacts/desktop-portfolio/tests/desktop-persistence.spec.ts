@@ -129,7 +129,8 @@ test('falls back to safe defaults when saved data is corrupted', async ({ page }
 test('stays usable when browser storage reads, writes, and removals fail', async ({ page }) => {
   await page.addInitScript(() => {
     const attempts = { getItem: 0, setItem: 0, removeItem: 0 };
-    let storageBlocked = true;
+    const storageRecoveryMarker = 'desktop-storage-recovered';
+    let storageBlocked = window.name !== storageRecoveryMarker;
     Object.defineProperty(window, '__storageFailureAttempts', {
       configurable: true,
       value: attempts,
@@ -138,6 +139,7 @@ test('stays usable when browser storage reads, writes, and removals fail', async
       configurable: true,
       value: () => {
         storageBlocked = false;
+        window.name = storageRecoveryMarker;
       },
     });
 
@@ -325,6 +327,57 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   expect(recoveredSnapshot.itemSizes.contact.width).toBeCloseTo(inMemoryState.contact.width, 2);
   expect(recoveredSnapshot.itemSizes.contact.height).toBeCloseTo(inMemoryState.contact.height, 2);
   await expect(contactWindow).toBeVisible();
+
+  await page.reload();
+
+  await expect(page.getByTestId('notice-storage-unavailable')).toHaveCount(0);
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
+  await expect(page.getByTestId('button-folder-about')).toBeHidden();
+  await expect(page.locator('.desktop-area')).toHaveClass(/dock-space-right/);
+  await page.getByTestId('button-dock-contact').click();
+  await expect(page.getByTestId('window-contact')).toBeVisible();
+  await expect(page.getByTestId('sticky-sticky').getByRole('textbox', { name: 'Sticky note 1 text' }))
+    .toHaveValue(inMemoryState.stickyText);
+
+  const restoredVisibleState = await page.evaluate(() => {
+    const readGeometry = (selector: string) => {
+      const element = document.querySelector<HTMLElement>(selector);
+      if (!element) throw new Error(`Missing ${selector}`);
+      return {
+        left: Number.parseFloat(element.style.left),
+        top: Number.parseFloat(element.style.top),
+        width: Number.parseFloat(element.style.width),
+        height: Number.parseFloat(element.style.height),
+      };
+    };
+    return {
+      contact: readGeometry('[data-testid="window-contact"]'),
+      sticky: readGeometry('[data-testid="sticky-sticky"]'),
+    };
+  });
+  expect(restoredVisibleState.contact.left).toBeCloseTo(inMemoryState.contact.left, 2);
+  expect(restoredVisibleState.contact.top).toBeCloseTo(inMemoryState.contact.top, 2);
+  expect(restoredVisibleState.contact.width).toBeCloseTo(inMemoryState.contact.width, 2);
+  expect(restoredVisibleState.contact.height).toBeCloseTo(inMemoryState.contact.height, 2);
+  expect(restoredVisibleState.sticky.left).toBeCloseTo(inMemoryState.sticky.left, 2);
+  expect(restoredVisibleState.sticky.top).toBeCloseTo(inMemoryState.sticky.top, 2);
+
+  await openDesktopMenu(page);
+  await expect(page.getByRole('menuitemcheckbox', { name: 'Snap to grid' })).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' })).toHaveAttribute('aria-checked', 'false');
+  await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
+  const restoredLauncherGeometry = await page.getByTestId('button-folder-about').evaluate((element) => ({
+    left: Number.parseFloat(element.style.left),
+    top: Number.parseFloat(element.style.top),
+  }));
+  expect(restoredLauncherGeometry.left).toBeCloseTo(inMemoryState.launcher.left, 2);
+  expect(restoredLauncherGeometry.top).toBeCloseTo(inMemoryState.launcher.top, 2);
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
+  await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey))
+    .toEqual(recoveredSnapshot);
 });
 
 test('keeps storage recovery help visible and keyboard-operable on narrow screens', async ({ page }) => {

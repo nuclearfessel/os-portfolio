@@ -393,7 +393,7 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
         <h2>Interfaces with a pulse.</h2>
         <div className="about-grid">
           <div>
-            <p>I’m Fes Naqvi, a product-minded frontend engineer based in Seattle. I build the connective tissue between a good idea and a product people want to keep using.</p>
+            <p>I’m Fes Naqvi, a product-minded design based in Seattle. I build the connective tissue between a good idea and a product people want to keep using.</p>
             <p>My favorite work lives where interaction design, resilient systems, and a sharp point of view overlap. I care about the small delays, the useful defaults, and the moment software gets out of your way.</p>
             <div className="signature">fes_naqvi<span className="blink">_</span></div>
           </div>

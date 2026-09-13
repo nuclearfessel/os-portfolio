@@ -135,7 +135,7 @@ button { cursor: pointer; }
 .icons-small .desktop-folder-label { max-width: 66px; font-size: 10px; }
 .desktop-resize-handle { position: absolute; right: 3px; bottom: 3px; width: 17px; height: 17px; cursor: nwse-resize; opacity: .42; background: linear-gradient(135deg, transparent 0 38%, #e4ff5b 39% 46%, transparent 47% 57%, #e4ff5b 58% 65%, transparent 66% 76%, #e4ff5b 77% 84%, transparent 85%); touch-action: none; }
 .desktop-resize-handle:hover, .desktop-resize-handle:focus-visible { opacity: 1; outline: none; }
-.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; padding: 15px; overflow: hidden; color: #c9c6bb; background: rgba(39, 40, 61, .6); border: 1px solid rgba(211,205,160,.2); transform: rotate(3deg); box-shadow: 12px 16px 40px rgba(0,0,0,.17); cursor: grab; touch-action: none; }
+.desktop-note { position: absolute; right: 8%; top: 16%; width: 214px; padding: 15px; overflow: hidden; color: #c9c6bb; background: rgba(39, 40, 61, .9); border: 1px solid rgba(211,205,160,.2); transform: rotate(3deg); box-shadow: 12px 16px 40px rgba(0,0,0,.17); cursor: grab; touch-action: none; }
 .desktop-note:active { cursor: grabbing; }
 .desktop-note::before { content: ''; position: absolute; top: -5px; left: 45%; width: 32px; height: 9px; background: rgba(228,255,91,.4); transform: rotate(-4deg); }
 .note-label { color: #e4ff5b; font: 10px var(--app-font-mono); text-transform: uppercase; }

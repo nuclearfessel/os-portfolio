@@ -757,6 +757,7 @@ function DesktopFolder({
 function Home() {
   const [savedDesktopState] = useState(loadDesktopState);
   const [storageUnavailable, setStorageUnavailable] = useState(storageUnavailableDuringLoad);
+  const [storageHelpOpen, setStorageHelpOpen] = useState(false);
   const [windows, setWindows] = useState<WindowState>(initialWindows);
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
   const [clock, setClock] = useState('');
@@ -1552,8 +1553,24 @@ function Home() {
 
       {storageUnavailable && (
         <aside className="storage-notice" role="status" aria-live="polite" data-testid="notice-storage-unavailable">
-          <strong>Changes won’t be saved.</strong>
-          <span>They’ll work for this session, but reset after you reload.</span>
+          <div className="storage-notice-summary">
+            <strong>Changes won’t be saved.</strong>
+            <span>They’ll work for this session, but reset after you reload.</span>
+            <button
+              type="button"
+              className="storage-help-toggle"
+              aria-expanded={storageHelpOpen}
+              aria-controls="storage-recovery-guidance"
+              onClick={() => setStorageHelpOpen((open) => !open)}
+            >
+              {storageHelpOpen ? 'Hide help' : 'How to restore saving'}
+            </button>
+          </div>
+          {storageHelpOpen && (
+            <p id="storage-recovery-guidance" className="storage-recovery-guidance">
+              Leave private browsing, or allow this site to store site data in your browser settings, then reload this page.
+            </p>
+          )}
         </aside>
       )}
 

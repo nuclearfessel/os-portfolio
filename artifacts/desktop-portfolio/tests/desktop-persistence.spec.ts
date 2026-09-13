@@ -140,6 +140,12 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await expect(storageNotice).toHaveCount(1);
   await expect(storageNotice).toContainText('Changes won’t be saved.');
   await expect(storageNotice).toContainText('They’ll work for this session, but reset after you reload.');
+  const storageHelp = page.getByRole('button', { name: 'How to restore saving' });
+  await expect(storageHelp).toHaveAttribute('aria-expanded', 'false');
+  await storageHelp.click();
+  await expect(page.getByText('Leave private browsing, or allow this site to store site data in your browser settings, then reload this page.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Hide help' })).toHaveAttribute('aria-expanded', 'true');
+  await expect(storageNotice).toHaveCount(1);
   expect(await page.evaluate(() => (
     window as typeof window & { __storageFailureAttempts: { getItem: number } }
   ).__storageFailureAttempts.getItem)).toBeGreaterThan(0);

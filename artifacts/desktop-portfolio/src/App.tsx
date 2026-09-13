@@ -17,6 +17,46 @@ type WindowId = 'about' | 'work' | 'notes' | 'contact' | 'terminal';
 type WindowState = Record<WindowId, boolean>;
 type IconSize = 'large' | 'small';
 type Theme = 'dark' | 'light';
+type FolderPositions = Partial<Record<WindowId, { left: number; top: number }>>;
+
+type SavedDesktopState = {
+  folderPositions: FolderPositions;
+  iconSize: IconSize;
+  snapToGrid: boolean;
+  theme: Theme;
+  showDesktopIcons: boolean;
+};
+
+const DESKTOP_STORAGE_KEY = 'alex-os.desktop.v1';
+const defaultDesktopState: SavedDesktopState = {
+  folderPositions: {},
+  iconSize: 'large',
+  snapToGrid: false,
+  theme: 'dark',
+  showDesktopIcons: true,
+};
+
+function loadDesktopState(): SavedDesktopState {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(DESKTOP_STORAGE_KEY) ?? '{}') as Partial<SavedDesktopState>;
+    const folderPositions = Object.fromEntries(
+      Object.entries(parsed.folderPositions ?? {}).filter((entry): entry is [string, { left: number; top: number }] => {
+        const position = entry[1];
+        return Boolean(position) && Number.isFinite(position.left) && Number.isFinite(position.top);
+      }),
+    ) as FolderPositions;
+
+    return {
+      folderPositions,
+      iconSize: parsed.iconSize === 'small' ? 'small' : defaultDesktopState.iconSize,
+      snapToGrid: typeof parsed.snapToGrid === 'boolean' ? parsed.snapToGrid : defaultDesktopState.snapToGrid,
+      theme: parsed.theme === 'light' ? 'light' : defaultDesktopState.theme,
+      showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
+    };
+  } catch {
+    return defaultDesktopState;
+  }
+}
 
 const projects = [
   { id: '01', name: 'Orbit CRM', desc: 'A calmer command center for customer teams managing complex accounts.', tag: 'PRODUCT / 2024', color: '#e4ff5b' },
@@ -296,18 +336,19 @@ function DesktopFolder({
 }
 
 function Home() {
+  const [savedDesktopState] = useState(loadDesktopState);
   const [windows, setWindows] = useState<WindowState>(initialWindows);
   const [activeWindow, setActiveWindow] = useState<WindowId>('work');
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dragPositions, setDragPositions] = useState<Partial<Record<WindowId | 'sticky', { left: number; top: number }>>>({});
   const [itemSizes, setItemSizes] = useState<Partial<Record<WindowId | 'sticky', { width: number; height: number }>>>({});
-  const [folderPositions, setFolderPositions] = useState<Partial<Record<WindowId, { left: number; top: number }>>>({});
+  const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
-  const [iconSize, setIconSize] = useState<IconSize>('large');
-  const [snapToGrid, setSnapToGrid] = useState(false);
-  const [theme, setTheme] = useState<Theme>('dark');
-  const [showDesktopIcons, setShowDesktopIcons] = useState(true);
+  const [iconSize, setIconSize] = useState<IconSize>(savedDesktopState.iconSize);
+  const [snapToGrid, setSnapToGrid] = useState(savedDesktopState.snapToGrid);
+  const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
+  const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ id: WindowId | 'sticky'; offsetX: number; offsetY: number; moved: boolean } | null>(null);
   const resizeRef = useRef<{ id: WindowId | 'sticky'; startX: number; startY: number; startWidth: number; startHeight: number } | null>(null);
@@ -319,6 +360,15 @@ function Home() {
     const timer = window.setInterval(updateClock, 30000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const desktopState: SavedDesktopState = { folderPositions, iconSize, snapToGrid, theme, showDesktopIcons };
+    try {
+      window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(desktopState));
+    } catch {
+      // The desktop remains usable when storage is unavailable.
+    }
+  }, [folderPositions, iconSize, snapToGrid, theme, showDesktopIcons]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -507,6 +557,20 @@ function Home() {
     });
     setContextMenu(null);
   };
+  const resetDesktop = () => {
+    if (!window.confirm('Reset icon positions and desktop preferences to their original settings?')) return;
+    try {
+      window.localStorage.removeItem(DESKTOP_STORAGE_KEY);
+    } catch {
+      // State still resets for this session when storage is unavailable.
+    }
+    setFolderPositions(defaultDesktopState.folderPositions);
+    setIconSize(defaultDesktopState.iconSize);
+    setSnapToGrid(defaultDesktopState.snapToGrid);
+    setTheme(defaultDesktopState.theme);
+    setShowDesktopIcons(defaultDesktopState.showDesktopIcons);
+    setContextMenu(null);
+  };
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
     onFocus: () => setActiveWindow(id),
@@ -625,6 +689,8 @@ function Home() {
           </div>
           <div className="context-menu-separator" />
           <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
+          <div className="context-menu-separator" />
+          <button type="button" className="context-menu-button context-menu-danger" role="menuitem" onClick={resetDesktop}><span className="context-check" /><span>Reset desktop…</span></button>
         </div>
       )}
 

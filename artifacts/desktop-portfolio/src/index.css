@@ -204,6 +204,8 @@ button { cursor: pointer; }
 .context-menu-row { position: relative; }
 .context-menu-row > button, .context-menu-button, .context-submenu button { width: 100%; min-height: 30px; display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 7px; padding: 5px 8px; color: inherit; background: transparent; border: 0; border-radius: 5px; text-align: left; }
 .context-menu-row > button:hover, .context-menu-row:focus-within > button, .context-menu-button:hover, .context-menu-button:focus-visible, .context-submenu button:hover, .context-submenu button:focus-visible { color: #111326; background: #e4ff5b; outline: none; }
+.context-menu-danger { color: #ff8d79; }
+.context-menu-danger:hover, .context-menu-danger:focus-visible { color: #fff; background: #b63f4d; }
 .context-check { width: 14px; height: 14px; display: grid; place-items: center; }
 .context-menu-separator { height: 1px; margin: 5px 7px; background: rgba(214,221,255,.14); }
 .context-submenu { position: absolute; left: calc(100% - 2px); top: -6px; z-index: 2; width: 174px; display: none; padding: 6px; color: #edf0f8; background: rgba(29,32,54,.98); border: 1px solid rgba(210,218,255,.2); border-radius: 8px; box-shadow: 0 16px 42px rgba(0,0,0,.38); }
@@ -266,6 +268,8 @@ button { cursor: pointer; }
 .theme-light .dock-item span { color: #f4f8f6; background: #24424a; border-color: #49666d; }
 .theme-light .desktop-context-menu, .theme-light .context-submenu { color: #1f3440; background: rgba(247,250,248,.98); border-color: rgba(26,83,91,.22); box-shadow: 0 18px 55px rgba(48,68,71,.24); }
 .theme-light .context-menu-row > button:hover, .theme-light .context-menu-row:focus-within > button, .theme-light .context-menu-button:hover, .theme-light .context-menu-button:focus-visible, .theme-light .context-submenu button:hover, .theme-light .context-submenu button:focus-visible { color: #f7fbf8; background: #0b665d; }
+.theme-light .context-menu-danger { color: #a73543; }
+.theme-light .context-menu-danger:hover, .theme-light .context-menu-danger:focus-visible { color: #fff; background: #a73543; }
 .theme-light .context-menu-separator { background: rgba(26,83,91,.15); }
 @media (max-width: 760px) {
   .system-bar { padding: 0 13px; }.system-left .system-separator, .system-left .system-location { display: none; }.system-right .system-network { display: none; }

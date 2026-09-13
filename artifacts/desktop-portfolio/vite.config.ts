@@ -19,13 +19,9 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    'BASE_PATH environment variable is required but was not provided.',
-  );
-}
+// Relative production assets let the static build run from any FTP directory.
+// Replit preview workflows can still provide an absolute artifact base path.
+const basePath = process.env.BASE_PATH ?? './';
 
 export default defineConfig({
   base: basePath,

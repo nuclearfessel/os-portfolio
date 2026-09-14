@@ -197,6 +197,7 @@ type SavedDesktopState = {
 };
 
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
+const DESKTOP_DEFAULT_STORAGE_KEY = 'fes-os.desktop.default.v1';
 const DESKTOP_GRID_SIZE = 4;
 let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {
@@ -211,10 +212,10 @@ const defaultDesktopState: SavedDesktopState = {
   dockPosition: 'bottom',
 };
 
-function loadDesktopState(): SavedDesktopState {
+function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
   let savedState = '{}';
   try {
-    savedState = window.localStorage.getItem(DESKTOP_STORAGE_KEY) ?? '{}';
+    savedState = window.localStorage.getItem(storageKey) ?? '{}';
   } catch {
     storageUnavailableDuringLoad = true;
     return defaultDesktopState;
@@ -840,6 +841,7 @@ function DesktopFolder({
 
 function Home() {
   const [savedDesktopState] = useState(loadDesktopState);
+  const [resetDesktopState, setResetDesktopState] = useState(() => loadDesktopState(DESKTOP_DEFAULT_STORAGE_KEY));
   const [storageUnavailable, setStorageUnavailable] = useState(storageUnavailableDuringLoad);
   const [storageRestored, setStorageRestored] = useState(false);
   const [storageHelpOpen, setStorageHelpOpen] = useState(false);
@@ -859,6 +861,8 @@ function Home() {
   const [stickyMenu, setStickyMenu] = useState<{ x: number; y: number; id: StickyItemId } | null>(null);
   const [stickyPendingDelete, setStickyPendingDelete] = useState<StickyItemId | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [saveDefaultDialogOpen, setSaveDefaultDialogOpen] = useState(false);
+  const [defaultStateSaved, setDefaultStateSaved] = useState(false);
   const [iconSize, setIconSize] = useState<IconSize>(savedDesktopState.iconSize);
   const [snapToGrid, setSnapToGrid] = useState(savedDesktopState.snapToGrid);
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
@@ -871,8 +875,10 @@ function Home() {
   const previousMenuOpenRef = useRef(false);
   const deleteDialogRef = useRef<HTMLElement>(null);
   const resetDialogRef = useRef<HTMLElement>(null);
+  const saveDefaultDialogRef = useRef<HTMLElement>(null);
   const deleteDialogOpenerRef = useRef<HTMLElement | null>(null);
   const resetDialogOpenerRef = useRef<HTMLElement | null>(null);
+  const saveDefaultDialogOpenerRef = useRef<HTMLElement | null>(null);
   const dockDragRef = useRef<{ active: boolean; startX: number; startY: number; moved: boolean } | null>(null);
   const desktopGeometryRef = useRef({
     dragPositions: savedDesktopState.itemPositions,
@@ -996,6 +1002,10 @@ function Home() {
     setResetDialogOpen(false);
     restoreDialogFocus(resetDialogOpenerRef.current, desktopAreaRef.current);
   };
+  const closeSaveDefaultDialog = () => {
+    setSaveDefaultDialogOpen(false);
+    restoreDialogFocus(saveDefaultDialogOpenerRef.current, desktopAreaRef.current);
+  };
   const trapDialogFocus = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key !== 'Tab') return;
     const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
@@ -1056,11 +1066,11 @@ function Home() {
           '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]',
         )?.focus();
       });
-    } else if (previousMenuOpenRef.current && !resetDialogOpen && !stickyPendingDelete) {
+    } else if (previousMenuOpenRef.current && !resetDialogOpen && !saveDefaultDialogOpen && !stickyPendingDelete) {
       restoreDialogFocus(contextMenuOpenerRef.current, desktopAreaRef.current);
     }
     previousMenuOpenRef.current = menuOpen;
-  }, [contextMenu, resetDialogOpen, stickyMenu, stickyPendingDelete]);
+  }, [contextMenu, resetDialogOpen, saveDefaultDialogOpen, stickyMenu, stickyPendingDelete]);
 
   useEffect(() => {
     const pointerQuery = window.matchMedia('(pointer: coarse)');
@@ -1155,6 +1165,11 @@ function Home() {
     const timeout = window.setTimeout(() => setStorageRestored(false), 4000);
     return () => window.clearTimeout(timeout);
   }, [storageRestored]);
+  useEffect(() => {
+    if (!defaultStateSaved) return;
+    const timeout = window.setTimeout(() => setDefaultStateSaved(false), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [defaultStateSaved]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -1164,6 +1179,7 @@ function Home() {
         setStickyMenu(null);
         if (stickyPendingDelete) closeDeleteDialog();
         if (resetDialogOpen) closeResetDialog();
+        if (saveDefaultDialogOpen) closeSaveDefaultDialog();
       }
       if (event.metaKey || event.ctrlKey) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '`': 'terminal' };
@@ -1717,19 +1733,19 @@ function Home() {
       setStorageUnavailable(true);
     }
     desktopGeometryRef.current = {
-      dragPositions: defaultDesktopState.itemPositions,
-      itemSizes: defaultDesktopState.itemSizes,
-      folderPositions: defaultDesktopState.folderPositions,
+      dragPositions: resetDesktopState.itemPositions,
+      itemSizes: resetDesktopState.itemSizes,
+      folderPositions: resetDesktopState.folderPositions,
     };
-    setFolderPositions(defaultDesktopState.folderPositions);
-    setDragPositions(defaultDesktopState.itemPositions);
-    setItemSizes(defaultDesktopState.itemSizes);
-    setIconSize(defaultDesktopState.iconSize);
-    setSnapToGrid(defaultDesktopState.snapToGrid);
-    setTheme(defaultDesktopState.theme);
-    setShowDesktopIcons(defaultDesktopState.showDesktopIcons);
-    setStickies(defaultDesktopState.stickies);
-    setDockPosition(defaultDesktopState.dockPosition);
+    setFolderPositions(resetDesktopState.folderPositions);
+    setDragPositions(resetDesktopState.itemPositions);
+    setItemSizes(resetDesktopState.itemSizes);
+    setIconSize(resetDesktopState.iconSize);
+    setSnapToGrid(resetDesktopState.snapToGrid);
+    setTheme(resetDesktopState.theme);
+    setShowDesktopIcons(resetDesktopState.showDesktopIcons);
+    setStickies(resetDesktopState.stickies);
+    setDockPosition(resetDesktopState.dockPosition);
     setWindows(initialWindows);
     setActiveWindow('about');
     setMaximizedWindows({});
@@ -1740,6 +1756,19 @@ function Home() {
     setContextMenu(null);
     setStickyMenu(null);
     setResetDialogOpen(false);
+  };
+  const saveCurrentStateAsDefault = () => {
+    const currentState = getCurrentDesktopState();
+    try {
+      window.localStorage.setItem(DESKTOP_DEFAULT_STORAGE_KEY, JSON.stringify(currentState));
+      setResetDesktopState(currentState);
+      setStorageUnavailable(false);
+      setDefaultStateSaved(true);
+    } catch {
+      setStorageUnavailable(true);
+      setDefaultStateSaved(false);
+    }
+    setSaveDefaultDialogOpen(false);
   };
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
@@ -1840,6 +1869,11 @@ function Home() {
       {storageRestored && (
         <div className="storage-restored" role="status" aria-live="polite" data-testid="notice-storage-restored">
           Saving restored. Current desktop changes are saved.
+        </div>
+      )}
+      {defaultStateSaved && (
+        <div className="storage-restored" role="status" aria-live="polite" data-testid="notice-default-state-saved">
+          Current desktop state saved as default.
         </div>
       )}
 
@@ -2018,6 +2052,19 @@ function Home() {
             <>
               <div className="context-menu-separator" />
               <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
+              <button
+                type="button"
+                className="context-menu-button"
+                role="menuitem"
+                onClick={() => {
+                  saveDefaultDialogOpenerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+                  setContextMenu(null);
+                  setSaveDefaultDialogOpen(true);
+                }}
+              >
+                <span className="context-check" />
+                <span>Save state as default</span>
+              </button>
             </>
           )}
           <div className="context-menu-separator" />
@@ -2183,7 +2230,7 @@ function Home() {
           >
             <span className="reset-dialog-eyebrow">desktop settings</span>
             <h2 id="reset-dialog-title">Reset desktop?</h2>
-            <p id="reset-dialog-description">Icon positions, window layouts, stickies, and desktop preferences will return to their original settings.</p>
+            <p id="reset-dialog-description">Icon positions, window layouts, stickies, and desktop preferences will return to the saved default state.</p>
             <div className="reset-dialog-actions">
               <button type="button" autoFocus onClick={closeResetDialog} data-testid="button-cancel-reset">Cancel</button>
               <button
@@ -2196,6 +2243,40 @@ function Home() {
                 data-testid="button-confirm-reset"
               >
                 Reset desktop
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {saveDefaultDialogOpen && (
+        <div className="reset-dialog-backdrop">
+          <section
+            ref={saveDefaultDialogRef}
+            className="reset-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="save-default-dialog-title"
+            aria-describedby="save-default-dialog-description"
+            data-testid="dialog-save-default"
+            tabIndex={-1}
+            onKeyDown={trapDialogFocus}
+          >
+            <span className="reset-dialog-eyebrow">desktop settings</span>
+            <h2 id="save-default-dialog-title">Overwrite current default state?</h2>
+            <p id="save-default-dialog-description">Your current icon positions, window layouts, stickies, and desktop preferences will become the state restored by Reset desktop.</p>
+            <div className="reset-dialog-actions">
+              <button type="button" autoFocus onClick={closeSaveDefaultDialog} data-testid="button-cancel-save-default">Cancel</button>
+              <button
+                type="button"
+                className="reset-dialog-confirm"
+                onClick={() => {
+                  saveCurrentStateAsDefault();
+                  restoreDialogFocus(saveDefaultDialogOpenerRef.current, desktopAreaRef.current);
+                }}
+                data-testid="button-confirm-save-default"
+              >
+                Overwrite
               </button>
             </div>
           </section>

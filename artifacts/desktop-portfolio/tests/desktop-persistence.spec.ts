@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const storageKey = 'fes-os.desktop.v4';
+const defaultStorageKey = 'fes-os.desktop.default.v1';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -48,7 +49,10 @@ async function openDockMenu(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.evaluate((key) => localStorage.removeItem(key), storageKey);
+  await page.evaluate(([currentKey, savedDefaultKey]) => {
+    localStorage.removeItem(currentKey);
+    localStorage.removeItem(savedDefaultKey);
+  }, [storageKey, defaultStorageKey]);
   await page.reload();
 });
 
@@ -986,4 +990,38 @@ test('Reset desktop restores every default after confirmation', async ({ page })
     }],
     dockPosition: 'bottom',
   });
+});
+
+test('saves the current desktop state as the default only after confirmation', async ({ page }) => {
+  await openDesktopMenu(page);
+  await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
+  await page.getByRole('menuitem', { name: 'Save state as default' }).click();
+
+  const dialog = page.getByRole('alertdialog', { name: 'Overwrite current default state?' });
+  const cancel = page.getByTestId('button-cancel-save-default');
+  const overwrite = page.getByTestId('button-confirm-save-default');
+  await expect(dialog).toBeVisible();
+  await expect(cancel).toBeFocused();
+  await expect(cancel).toHaveText('Cancel');
+  await expect(overwrite).toHaveText('Overwrite');
+  await cancel.click();
+  await expect(dialog).toHaveCount(0);
+  await expect.poll(() => page.evaluate((key) => localStorage.getItem(key), defaultStorageKey)).toBeNull();
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Save state as default' }).click();
+  await overwrite.click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByTestId('notice-default-state-saved')).toBeVisible();
+  await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), defaultStorageKey))
+    .toMatchObject({ showDesktopIcons: false });
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
+  await expect(page.getByTestId('button-folder-about')).toBeVisible();
+  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
+  await page.getByTestId('button-confirm-reset').click();
+
+  await openDesktopMenu(page);
+  await expect(page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' })).toHaveAttribute('aria-checked', 'false');
 });

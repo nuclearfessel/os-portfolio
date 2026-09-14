@@ -235,8 +235,8 @@ export function AccessibilityPage() {
                 max={70}
                 step={5}
                 onChange={setTransparencyLevel}
-                guidanceStart="Subtle"
-                guidanceEnd="More transparent"
+                guidanceStart="None"
+                guidanceEnd="Almost full"
                 ariaValueText={`${transparencyLevel}% transparent`}
                 data-testid="a11y-demo-transparency-level"
               />

@@ -253,6 +253,8 @@ test.describe('Transparency effects', () => {
     await expect(page.getByTestId('settings-personalization-window-transparency-slider')).toHaveValue('20');
     await expect(page.getByTestId('settings-personalization-sticky-transparency-slider')).toHaveValue('20');
     await expect(page.getByTestId('settings-personalization-blur-slider')).toHaveValue('12');
+    await expect(page.getByTestId('settings-personalization-window-transparency').locator('.settings-transparency-scale')).toHaveText('NoneAlmost full');
+    await expect(page.getByTestId('settings-personalization-sticky-transparency').locator('.settings-transparency-scale')).toHaveText('NoneAlmost full');
   });
 
   test('window and dock transparency slider updates surfaces without fading icons', async ({ page }) => {
@@ -296,6 +298,27 @@ test.describe('Transparency effects', () => {
       const thumb = getComputedStyle(element, '::after');
       return [rail.height, rail.top, rail.transform, thumb.height, thumb.top, thumb.transform];
     })).toEqual(['4px', '10px', 'matrix(1, 0, 0, 1, 0, -2)', '14px', '10px', 'matrix(1, 0, 0, 1, 0, -7)']);
+  });
+
+  test('None on each transparency slider produces a fully opaque surface', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    await page.getByTestId('settings-personalization-window-transparency-slider').fill('0');
+    await page.getByTestId('settings-personalization-sticky-transparency-slider').fill('0');
+
+    await expect(page.getByTestId('settings-personalization-window-transparency-value')).toHaveText('0%');
+    await expect(page.getByTestId('settings-personalization-sticky-transparency-value')).toHaveText('0%');
+    await expect(page.getByTestId('window-settings')).toHaveCSS('background-color', 'rgb(247, 250, 248)');
+    await expect(page.locator('.dock')).toHaveCSS('background-color', 'rgb(248, 251, 249)');
+    await expect.poll(() => page.getByTestId('sticky-sticky').locator('.desktop-note-surface').evaluate(
+      (element) => {
+        const color = getComputedStyle(element).backgroundColor;
+        const legacyChannels = color.match(/rgba?\(([^)]+)\)/)?.[1].split(',').map((channel) => channel.trim());
+        if (legacyChannels?.length === 4) return Number(legacyChannels[3]);
+        const modernAlpha = color.match(/\/\s*([\d.]+)/)?.[1];
+        return modernAlpha ? Number(modernAlpha) : 1;
+      },
+    )).toBe(1);
   });
 
   test('blur slider updates the level and root CSS variable', async ({ page }) => {
@@ -353,6 +376,37 @@ test.describe('Transparency effects', () => {
       document.documentElement.hasAttribute('data-no-transparency'),
     );
     expect(attrSet).toBe(true);
+  });
+
+  test('turning transparency off makes every participating surface opaque', async ({ page }) => {
+    await openSettings(page);
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-transparency-switch').click();
+
+    const alpha = (color: string) => {
+      const channels = color.match(/rgba?\(([^)]+)\)/)?.[1].split(',').map((channel) => channel.trim());
+      return channels?.length === 4 ? Number(channels[3]) : 1;
+    };
+    const surfaces = [
+      page.getByTestId('window-settings'),
+      page.getByTestId('window-settings').locator('.window-header'),
+      page.getByTestId('window-settings').locator('.settings-nav'),
+      page.locator('.dock'),
+      page.getByTestId('sticky-sticky').locator('.desktop-note-surface'),
+    ];
+    await expect.poll(async () => {
+      const surfaceColors = await Promise.all(
+        surfaces.map((locator) => locator.evaluate((element) => getComputedStyle(element).backgroundColor)),
+      );
+      return surfaceColors.map(alpha);
+    }).toEqual([1, 1, 1, 1, 1]);
+
+    await closeSettings(page);
+    await openContextMenu(page);
+    const menuColor = await page.getByRole('menu', { name: 'Desktop options' }).evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    expect(alpha(menuColor)).toBe(1);
   });
 
   test('turning transparency back on removes data-no-transparency', async ({ page }) => {

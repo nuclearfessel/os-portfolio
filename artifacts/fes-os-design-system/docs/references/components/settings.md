@@ -104,8 +104,8 @@ import { SettingsSliderGroup } from '@workspace/fes-os-design-system/components/
       max={70}
       step={5}
       onChange={(v) => updatePrefs({ transparencyLevel: v })}
-      guidanceStart="Subtle"
-      guidanceEnd="More transparent"
+      guidanceStart="None"
+      guidanceEnd="Almost full"
     />
     {prefs.blurEffects && (
       <SettingsSliderGroup
@@ -129,8 +129,8 @@ import { SettingsSliderGroup } from '@workspace/fes-os-design-system/components/
       max={70}
       step={5}
       onChange={(v) => updatePrefs({ stickyTransparencyLevel: v })}
-      guidanceStart="Subtle"
-      guidanceEnd="More transparent"
+      guidanceStart="None"
+      guidanceEnd="Almost full"
     />
   </>
 )}
@@ -153,6 +153,9 @@ document.documentElement.style.setProperty(
 document.documentElement.setAttribute('data-transparency-enabled', '');
 document.documentElement.style.setProperty('--surface-blur', `${prefs.blurLevel}px`);
 ```
+
+At value `0`, participating surfaces must be fully opaque. The “None” guidance
+label means no transparency; it must not map to a nonzero minimum effect.
 
 Only surfaces carrying the `.fes-surface-translucent` package class (defined in
 `src/index.css`) respond to this variable.

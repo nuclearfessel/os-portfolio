@@ -18,7 +18,7 @@ A range slider with a live value readout and optional guidance labels. Used for 
 ┌─────────────────────────────────────────────┐
 │  Label text               [35%] ← <output> │
 │  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ (range)   │
-│  Subtle                  More transparent   │
+│  None                       Almost full     │
 └─────────────────────────────────────────────┘
 ```
 
@@ -35,8 +35,8 @@ A range slider with a live value readout and optional guidance labels. Used for 
 | `max` | `number` | `100` | Maximum value |
 | `step` | `number` | `1` | Step increment |
 | `onChange` | `(value: number) => void` | — | Called with the new numeric value |
-| `guidanceStart` | `string` | — | Left guidance label (e.g. `"Subtle"`) |
-| `guidanceEnd` | `string` | — | Right guidance label (e.g. `"More transparent"`) |
+| `guidanceStart` | `string` | — | Left guidance label (e.g. `"None"`) |
+| `guidanceEnd` | `string` | — | Right guidance label (e.g. `"Almost full"`) |
 | `unit` | `string` | `'%'` | Unit appended to the `<output>` display |
 | `ariaValueText` | `string` | `"${value}${unit}"` | Human-readable value announcement |
 | `data-testid` | `string` | — | Applied to root, input (`-slider`), and output (`-value`) |
@@ -67,8 +67,8 @@ Show each `SettingsSliderGroup` only when its parent toggle is on. In a large de
     value={prefs.transparencyLevel}
     min={0} max={70} step={5}
     onChange={(v) => updatePrefs({ transparencyLevel: v })}
-    guidanceStart="Subtle"
-    guidanceEnd="More transparent"
+    guidanceStart="None"
+    guidanceEnd="Almost full"
     ariaValueText={`${prefs.transparencyLevel}% transparent`}
   />
 )}
@@ -100,5 +100,9 @@ document.documentElement.style.setProperty(
   `${prefs.blurLevel}px`
 );
 ```
+
+For transparency controls, `0` must produce a fully opaque surface. “None”
+means no transparency, not a subtle minimum effect. The upper bound remains
+below 100%, so “Almost full” accurately describes the maximum.
 
 See → [State contracts](../../references/components/settings.md#state-contracts)

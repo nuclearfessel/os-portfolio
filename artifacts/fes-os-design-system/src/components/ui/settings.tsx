@@ -282,8 +282,8 @@ export type SettingsSliderGroupProps = {
  *     max={70}
  *     step={5}
  *     onChange={(v) => updatePrefs({ transparencyLevel: v })}
- *     guidanceStart="Subtle"
- *     guidanceEnd="More transparent"
+ *     guidanceStart="None"
+ *     guidanceEnd="Almost full"
  *   />
  * )}
  * ```

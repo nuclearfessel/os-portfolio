@@ -20,8 +20,8 @@ export function SettingsSliderGroupDemo() {
             max={70}
             step={5}
             onChange={setLevel}
-            guidanceStart="Subtle"
-            guidanceEnd="More transparent"
+            guidanceStart="None"
+            guidanceEnd="Almost full"
           />
         </div>
 
@@ -52,8 +52,8 @@ export function SettingsSliderGroupDemo() {
               max={70}
               step={5}
               onChange={() => {}}
-              guidanceStart="Subtle"
-              guidanceEnd="More transparent"
+              guidanceStart="None"
+              guidanceEnd="Almost full"
             />
             <SettingsSliderGroup
               id="ref-mid"
@@ -63,8 +63,8 @@ export function SettingsSliderGroupDemo() {
               max={70}
               step={5}
               onChange={() => {}}
-              guidanceStart="Subtle"
-              guidanceEnd="More transparent"
+              guidanceStart="None"
+              guidanceEnd="Almost full"
             />
             <SettingsSliderGroup
               id="ref-high"
@@ -74,8 +74,8 @@ export function SettingsSliderGroupDemo() {
               max={70}
               step={5}
               onChange={() => {}}
-              guidanceStart="Subtle"
-              guidanceEnd="More transparent"
+              guidanceStart="None"
+              guidanceEnd="Almost full"
             />
           </div>
         </div>

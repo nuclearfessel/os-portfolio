@@ -2088,6 +2088,12 @@ button { cursor: pointer; }
   background: rgba(18, 20, 38, 1) !important;
 }
 
+[data-no-transparency] .desktop-context-menu,
+[data-no-transparency] .context-menu-surface,
+[data-no-transparency] .context-submenu {
+  background: rgba(20, 22, 42, 1) !important;
+}
+
 [data-no-transparency] .theme-light .window {
   background: rgba(247, 250, 248, 1) !important;
 }
@@ -2104,6 +2110,12 @@ button { cursor: pointer; }
 
 [data-no-transparency] .theme-light .settings-nav {
   background: rgba(218, 232, 228, 1) !important;
+}
+
+[data-no-transparency] .theme-light .desktop-context-menu,
+[data-no-transparency] .theme-light .context-menu-surface,
+[data-no-transparency] .theme-light .context-submenu {
+  background: rgba(247, 250, 248, 1) !important;
 }
 
 /* --- Adjustable transparency (Standard theme only) --- */

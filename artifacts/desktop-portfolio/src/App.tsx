@@ -191,9 +191,9 @@ const stickyPalette = [
   { id: 'orange', label: 'Orange', background: '#ffb84d', foreground: 'dark', handle: '#9f5700' },
   { id: 'coral', label: 'Coral', background: '#ffaaa3', foreground: 'dark', handle: '#9d4648' },
   { id: 'cream', label: 'Cream', background: '#fff0d2', foreground: 'dark', handle: '#a88655' },
-  { id: 'teal', label: 'Teal', background: 'rgba(0, 100, 86, .82)', foreground: 'light', handle: '#76dccb' },
-  { id: 'blue', label: 'Blue', background: 'rgba(13, 86, 179, .82)', foreground: 'light', handle: '#8ac4ff' },
-  { id: 'purple', label: 'Purple', background: 'rgba(102, 72, 184, .82)', foreground: 'light', handle: '#c8b3ff' },
+  { id: 'teal', label: 'Teal', background: '#006456', foreground: 'light', handle: '#76dccb' },
+  { id: 'blue', label: 'Blue', background: '#0d56b3', foreground: 'light', handle: '#8ac4ff' },
+  { id: 'purple', label: 'Purple', background: '#6648b8', foreground: 'light', handle: '#c8b3ff' },
   { id: 'berry', label: 'Berry', background: '#a93570', foreground: 'light', handle: '#ffb2d5' },
   { id: 'forest', label: 'Forest', background: '#1e603d', foreground: 'light', handle: '#91d6aa' },
   { id: 'charcoal', label: 'Charcoal', background: '#343b4f', foreground: 'light', handle: '#b8c2dd' },
@@ -762,8 +762,8 @@ function EffectSlider({
   max = 70,
   step = 5,
   unit = '%',
-  guidanceStart = 'Subtle',
-  guidanceEnd = 'More transparent',
+  guidanceStart = 'None',
+  guidanceEnd = 'Almost full',
   ariaValueText = `${value}${unit}`,
 }: {
   id: string;

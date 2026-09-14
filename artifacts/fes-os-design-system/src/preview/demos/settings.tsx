@@ -174,8 +174,8 @@ export function SettingsDemo() {
                         max={70}
                         step={5}
                         onChange={setTransparencyLevel}
-                        guidanceStart="Subtle"
-                        guidanceEnd="More transparent"
+                        guidanceStart="None"
+                        guidanceEnd="Almost full"
                       />
                       <SettingsSliderGroup
                         id="demo-sticky-transparency"
@@ -185,8 +185,8 @@ export function SettingsDemo() {
                         max={70}
                         step={5}
                         onChange={setStickyTransparencyLevel}
-                        guidanceStart="Subtle"
-                        guidanceEnd="More transparent"
+                        guidanceStart="None"
+                        guidanceEnd="Almost full"
                       />
                     </>
                   )}
@@ -322,8 +322,8 @@ export function SettingsDemo() {
               max={70}
               step={5}
               onChange={() => {}}
-              guidanceStart="Subtle"
-              guidanceEnd="More transparent"
+              guidanceStart="None"
+              guidanceEnd="Almost full"
             />
           </div>
         </Surface>

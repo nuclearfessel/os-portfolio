@@ -60,6 +60,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - Do not add pathname-based client routing or a backend dependency.
 - Preserve custom context menus while suppressing browser-native context menus.
 - Every resizable window with side navigation must use a window-container breakpoint to smoothly transform the side navigation into a horizontal sub-navigation toolbar directly below the window toolbar. Preserve order, active state, keyboard order, and content geometry.
+- A selected solid wallpaper color follows its light or dark theme into tablet and mobile layouts. Picture wallpapers remain desktop-only, and contrast modes may override the visual background without changing the saved wallpaper choice.
 
 ## Release files
 

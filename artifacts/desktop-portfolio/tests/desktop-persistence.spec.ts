@@ -85,6 +85,9 @@ test('keeps keyboard focus predictable in desktop, dock, and sticky context menu
   const desktop = page.locator('.desktop-area');
   await desktop.focus();
   await openDesktopMenu(page);
+  await expect(page.getByRole('menu', { name: 'Desktop options' })).toBeFocused();
+  await expect(page.getByRole('menu', { name: 'Icon size' })).not.toBeVisible();
+  await page.keyboard.press('ArrowDown');
   await expect(page.getByRole('menuitem', { name: 'View' })).toBeFocused();
   await page.keyboard.press('ArrowDown');
   await expect(page.getByRole('menuitemcheckbox', { name: 'Snap to grid' })).toBeFocused();
@@ -96,6 +99,8 @@ test('keeps keyboard focus predictable in desktop, dock, and sticky context menu
 
   const dock = page.locator('.dock');
   await openDockMenu(page);
+  await expect(page.getByRole('menu', { name: 'Dock options' })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
   await expect(page.getByRole('menuitemradio', { name: 'Top' })).toBeFocused();
   await page.keyboard.press('ArrowDown');
   await expect(page.getByRole('menuitemradio', { name: 'Right' })).toBeFocused();
@@ -106,6 +111,8 @@ test('keeps keyboard focus predictable in desktop, dock, and sticky context menu
   const stickyText = page.getByTestId('sticky-sticky').getByRole('textbox', { name: 'Sticky note 1 text' });
   await stickyText.focus();
   await openStickyMenu(page);
+  await expect(page.getByRole('menu', { name: 'Sticky options' })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
   await expect(page.getByRole('menuitemradio', { name: 'Lemon' })).toBeFocused();
   await page.keyboard.press('End');
   await expect(page.getByRole('menuitem', { name: 'Reset rotation' })).toBeFocused();

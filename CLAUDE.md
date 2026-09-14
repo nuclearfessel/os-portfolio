@@ -4,7 +4,7 @@ This repository contains a React and Vite portfolio styled as a desktop operatin
 
 ## Start here
 
-Read `.claude/skills/desktop-portfolio/SKILL.md` before changing the portfolio. Read `.claude/skills/ftp-release/SKILL.md` before preparing or uploading a release.
+Read `.claude/skills/branch-first-development/SKILL.md` before making any repository change. Read `.claude/skills/desktop-portfolio/SKILL.md` before changing the portfolio. Read `.claude/skills/ftp-release/SKILL.md` before preparing or uploading a release.
 
 ## Common commands
 
@@ -28,6 +28,9 @@ pnpm --filter @workspace/desktop-portfolio run build
 
 ## Non-negotiable constraints
 
+- Perform all work on a dedicated branch. Never develop directly on `main`.
+- Leave completed work uncommitted while the user validates it.
+- Commit, merge into `main`, and push only after the user gives explicit approval.
 - Preserve saved desktop positions and sizes when temporarily entering tablet or mobile layouts.
 - Keep launcher positions separate from the positions of their corresponding windows.
 - Stickies and Terminal are desktop-only.

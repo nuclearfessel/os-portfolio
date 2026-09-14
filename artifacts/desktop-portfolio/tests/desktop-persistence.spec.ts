@@ -63,6 +63,36 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
+test('layers stickies above desktop content and below every window', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+
+  const sticky = page.getByTestId('sticky-sticky');
+  const intro = page.locator('.desktop-intro');
+  const launcherLayerContainer = page.locator('.desktop-folders');
+  const aboutWindow = page.getByTestId('window-about');
+
+  await expect(sticky).toBeVisible();
+  await expect(aboutWindow).toBeVisible();
+
+  const layers = await Promise.all(
+    [intro, launcherLayerContainer, sticky, aboutWindow].map((locator) =>
+      locator.evaluate((element) => Number.parseInt(getComputedStyle(element).zIndex, 10)),
+    ),
+  );
+  const [introLayer, launcherLayer, stickyLayer, windowLayer] = layers;
+
+  expect(stickyLayer).toBeGreaterThan(introLayer);
+  expect(stickyLayer).toBeGreaterThan(launcherLayer);
+  expect(windowLayer).toBeGreaterThan(stickyLayer);
+
+  await sticky.click();
+  const activeStickyLayer = await sticky.evaluate(
+    (element) => Number.parseInt(getComputedStyle(element).zIndex, 10),
+  );
+  expect(activeStickyLayer).toBeGreaterThan(stickyLayer);
+  expect(windowLayer).toBeGreaterThan(activeStickyLayer);
+});
+
 test('suppresses native context menus at every responsive breakpoint', async ({ page }) => {
   for (const viewport of [
     { width: 390, height: 844 },
@@ -351,7 +381,7 @@ test('About and Selected Work use distinct saturated application icons instead o
     return { background: style.backgroundImage, border: style.borderColor, color: style.color };
   });
   expect(stickiesDockStyle).toEqual(stickiesLauncherStyle);
-  expect(stickiesLauncherStyle.color).toBe('rgb(75, 35, 122)');
+  expect(stickiesLauncherStyle.color).toBe('rgb(87, 61, 114)');
   await expect(about).toHaveClass(/desktop-app/);
   await expect(work).toHaveClass(/desktop-app/);
   await expect(about.locator('.desktop-app-icon')).toBeVisible();

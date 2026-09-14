@@ -98,7 +98,7 @@ import { SettingsSliderGroup } from '@workspace/fes-os-design-system/components/
   <>
     <SettingsSliderGroup
       id="personalization-window-transparency"
-      label="Window transparency"
+      label="Window & dock transparency"
       value={prefs.transparencyLevel}
       min={0}
       max={70}

@@ -53,6 +53,11 @@ Apply this class to any surface that should respond to the transparency preferen
 
 The `fes-surface-translucent` class overrides the surface's `background-color` to use an alpha derived from `--accessibility-transparency`. Do not also set an opaque `bg-card` on the same element — the class handles background color.
 
+Apply the window transparency level to every Dock container used at responsive
+breakpoints, including desktop, tablet-menu, and mobile-menu surfaces. Change
+the surface background alpha rather than the container's `opacity`; Dock items,
+desktop launcher tiles, glyphs, and labels must remain fully opaque.
+
 ---
 
 ## Consumer responsibility
@@ -115,6 +120,8 @@ document.documentElement.style.removeProperty('--surface-blur');
 - [ ] The transparency preference can be toggled and its effect is immediate.
 - [ ] Transparency and blur can be toggled independently without discarding either saved level.
 - [ ] When `data-no-blur` is set, no backdrop blur appears on any `.fes-surface-translucent` element.
+- [ ] Desktop, tablet, and mobile Dock surfaces all respond to the window transparency level.
+- [ ] Dock items and desktop launcher icons remain fully opaque at every transparency level.
 
 ---
 
@@ -126,3 +133,4 @@ document.documentElement.style.removeProperty('--surface-blur');
 | Disable transparency when a contrast theme is active | Allow blur + high contrast simultaneously |
 | Test readability on the desktop background color | Only test translucency on a white or black background |
 | Use the CSS variable approach for alpha | Set a hardcoded `rgba()` background on translucent surfaces |
+| Change surface background alpha while keeping children opaque | Set `opacity` on a Dock or launcher container |

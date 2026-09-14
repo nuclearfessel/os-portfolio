@@ -53,6 +53,11 @@ The Fes OS desktop presents multiple floating windows simultaneously — each wi
 
 `WindowSurface` has no internal state — it is purely visual.
 
+On freeform desktops, reserve the window stack above wallpaper, desktop
+content, launchers, and the complete sticky-note layer. Reordering active
+windows changes order only within the window layer; even the lowest open window
+must remain above the highest active sticky.
+
 ---
 
 ## Responsive transformation
@@ -86,6 +91,7 @@ When `data-transparency-enabled` + `--accessibility-transparency` are set by the
 - [ ] Keyboard focus is trapped inside the active window when it is modal.
 - [ ] Focus returns to the launcher button when a window closes.
 - [ ] Resize handles have accessible names and keyboard support.
+- [ ] Every open window remains above every sticky note, including the active sticky.
 
 ---
 

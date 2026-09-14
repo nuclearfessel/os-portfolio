@@ -255,16 +255,25 @@ test.describe('Transparency effects', () => {
     await expect(page.getByTestId('settings-personalization-blur-slider')).toHaveValue('12');
   });
 
-  test('window transparency slider updates the level and root CSS variable', async ({ page }) => {
+  test('window and dock transparency slider updates surfaces without fading icons', async ({ page }) => {
     await openSettings(page);
     await goToPersonalization(page);
     const slider = page.getByTestId('settings-personalization-window-transparency-slider');
+    const iconBackgroundBefore = await page.getByTestId('button-dock-about').evaluate(
+      (element) => getComputedStyle(element).backgroundImage,
+    );
     await slider.fill('55');
     await expect(page.getByTestId('settings-personalization-window-transparency-value')).toHaveText('55%');
     await expect(slider).toHaveAttribute('aria-valuetext', '55% transparent');
     expect(await page.evaluate(() =>
       document.documentElement.style.getPropertyValue('--accessibility-transparency'),
     )).toBe('55%');
+    await expect(page.locator('.dock')).toHaveCSS('background-color', 'rgba(248, 251, 249, 0.45)');
+    await expect(page.getByTestId('button-dock-about')).toHaveCSS('opacity', '1');
+    await expect(page.getByTestId('button-folder-about').locator('.desktop-app-icon')).toHaveCSS('opacity', '1');
+    expect(await page.getByTestId('button-dock-about').evaluate(
+      (element) => getComputedStyle(element).backgroundImage,
+    )).toBe(iconBackgroundBefore);
     await expect.poll(() => page.getByTestId('settings-personalization-window-transparency-track').evaluate((element) => {
       const rail = getComputedStyle(element, '::before');
       const thumb = getComputedStyle(element, '::after');

@@ -993,6 +993,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
 });
 
 test('saves the current desktop state as the default only after confirmation', async ({ page }) => {
+  await page.getByTestId('window-work').dispatchEvent('mousedown');
   await openDesktopMenu(page);
   await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
   await page.getByRole('menuitem', { name: 'Save state as default' }).click();
@@ -1014,8 +1015,12 @@ test('saves the current desktop state as the default only after confirmation', a
   await expect(dialog).toHaveCount(0);
   await expect(page.getByTestId('notice-default-state-saved')).toBeVisible();
   await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), defaultStorageKey))
-    .toMatchObject({ showDesktopIcons: false });
+    .toMatchObject({
+      showDesktopIcons: false,
+      windowStack: ['about', 'contact', 'terminal', 'work'],
+    });
 
+  await page.getByTestId('window-about').dispatchEvent('mousedown');
   await openDesktopMenu(page);
   await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
@@ -1024,4 +1029,10 @@ test('saves the current desktop state as the default only after confirmation', a
 
   await openDesktopMenu(page);
   await expect(page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' })).toHaveAttribute('aria-checked', 'false');
+  await page.keyboard.press('Escape');
+  const restoredStack = await page.locator('[data-testid^="window-"]').evaluateAll((windows) => Object.fromEntries(
+    windows.map((window) => [window.getAttribute('data-testid'), Number(window.getAttribute('style')?.match(/z-index:\s*(\d+)/)?.[1] ?? 0)]),
+  ));
+  expect(restoredStack['window-work']).toBeGreaterThan(restoredStack['window-about']);
+  await expect(page.getByTestId('window-work')).toHaveClass(/is-active/);
 });

@@ -194,6 +194,7 @@ type SavedDesktopState = {
   showDesktopIcons: boolean;
   stickies: StickyData[];
   dockPosition: DockPosition;
+  windowStack?: WindowId[];
 };
 
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
@@ -210,6 +211,7 @@ const defaultDesktopState: SavedDesktopState = {
   showDesktopIcons: true,
   stickies: [defaultSticky, defaultSecondSticky],
   dockPosition: 'bottom',
+  windowStack: ['work', 'about', 'contact', 'terminal'],
 };
 
 function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
@@ -280,6 +282,16 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
           ? parsed.stickyColor as StickyColorId
           : defaultSticky.color,
       }];
+    const savedWindowStack = Array.isArray(parsed.windowStack)
+      ? parsed.windowStack.filter((id, index, ids): id is WindowId => (
+        ['about', 'work', 'contact', 'terminal'].includes(id)
+        && ids.indexOf(id) === index
+      ))
+      : [];
+    const windowStack = [
+      ...savedWindowStack,
+      ...(['work', 'about', 'contact', 'terminal'] as WindowId[]).filter((id) => !savedWindowStack.includes(id)),
+    ];
 
     return {
       folderPositions,
@@ -291,6 +303,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
       stickies: Array.isArray(parsed.stickies) ? stickies : defaultDesktopState.stickies,
       dockPosition: ['bottom', 'top', 'left', 'right'].includes(parsed.dockPosition as string) ? (parsed.dockPosition as DockPosition) : defaultDesktopState.dockPosition,
+      windowStack,
     };
   } catch {
     return defaultDesktopState;
@@ -847,6 +860,7 @@ function Home() {
   const [storageHelpOpen, setStorageHelpOpen] = useState(false);
   const [windows, setWindows] = useState<WindowState>(initialWindows);
   const [activeWindow, setActiveWindow] = useState<WindowId>('about');
+  const [windowStack, setWindowStack] = useState<WindowId[]>(savedDesktopState.windowStack ?? defaultDesktopState.windowStack ?? []);
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [stickyVisible, setStickyVisible] = useState(true);
@@ -1195,6 +1209,7 @@ function Home() {
     if (id === 'terminal' && workspaceMode !== 'desktop') return;
     setWindows((current) => ({ ...current, [id]: true }));
     setActiveWindow(id);
+    setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
     setStickyOnTop(false);
     setMobileOpen(false);
   };
@@ -1727,6 +1742,7 @@ function Home() {
     setContextMenu(null);
   };
   const resetDesktop = () => {
+    const restoredWindowStack = resetDesktopState.windowStack ?? defaultDesktopState.windowStack ?? [];
     try {
       window.localStorage.removeItem(DESKTOP_STORAGE_KEY);
     } catch {
@@ -1747,7 +1763,8 @@ function Home() {
     setStickies(resetDesktopState.stickies);
     setDockPosition(resetDesktopState.dockPosition);
     setWindows(initialWindows);
-    setActiveWindow('about');
+    setActiveWindow([...restoredWindowStack].reverse().find((id) => initialWindows[id]) ?? 'about');
+    setWindowStack(restoredWindowStack);
     setMaximizedWindows({});
     setStickyVisible(true);
     setStickyOnTop(false);
@@ -1758,7 +1775,10 @@ function Home() {
     setResetDialogOpen(false);
   };
   const saveCurrentStateAsDefault = () => {
-    const currentState = getCurrentDesktopState();
+    const currentState: SavedDesktopState = {
+      ...getCurrentDesktopState(),
+      windowStack,
+    };
     try {
       window.localStorage.setItem(DESKTOP_DEFAULT_STORAGE_KEY, JSON.stringify(currentState));
       setResetDesktopState(currentState);
@@ -1775,23 +1795,27 @@ function Home() {
     maximized: Boolean(maximizedWindows[id]),
     onFocus: () => {
       setActiveWindow(id);
+      setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
       setStickyOnTop(false);
     },
     onClose: () => closeWindow(id),
     onMinimize: () => minimizeWindow(id),
     onMaximize: () => {
       setActiveWindow(id);
+      setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
       setStickyOnTop(false);
       setMaximizedWindows((current) => ({ ...current, [id]: !current[id] }));
     },
     onHeaderDoubleClick: (event: ReactMouseEvent<HTMLElement>) => {
       if (deviceMode !== 'desktop' || (event.target as HTMLElement).closest('.traffic-lights')) return;
       setActiveWindow(id);
+      setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
       setStickyOnTop(false);
       setMaximizedWindows((current) => ({ ...current, [id]: !current[id] }));
     },
     onPointerDown: (event: ReactPointerEvent<HTMLElement>) => {
       setActiveWindow(id);
+      setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
       setStickyOnTop(false);
       if (!maximizedWindows[id]) startDrag(id, event);
     },
@@ -1812,8 +1836,9 @@ function Home() {
         bottom: dockPosition === 'bottom' ? 82 : 12,
         width: 'auto',
         height: 'auto',
+        zIndex: 4 + windowStack.indexOf(id),
       }
-      : itemStyle(id),
+      : { ...itemStyle(id), zIndex: 4 + windowStack.indexOf(id) },
   });
 
   return (

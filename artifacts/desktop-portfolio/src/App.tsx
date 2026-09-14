@@ -8,6 +8,7 @@ import {
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@workspace/fes-os-design-system/components/ui/toaster';
 import { TooltipProvider } from '@workspace/fes-os-design-system/components/ui/tooltip';
+import { Separator } from '@workspace/fes-os-design-system/components/ui/separator';
 import {
   ActionButton,
   ContextMenuSurface,
@@ -472,16 +473,17 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
         <SectionLabel className="section-kicker">readme.md</SectionLabel>
         <h2>Interfaces with a pulse.</h2>
         <div className="about-grid">
-          <div>
+          <div className="about-bio" data-testid="about-bio">
             <p>I’m Fes Naqvi, a product-minded design based in Seattle. I build the connective tissue between a good idea and a product people want to keep using.</p>
             <p>My favorite work lives where interaction design, resilient systems, and a sharp point of view overlap. I care about the small delays, the useful defaults, and the moment software gets out of your way.</p>
             <div className="signature">fes_naqvi<span className="blink">_</span></div>
           </div>
-          <div className="fact-list">
+          <div className="fact-list" data-testid="about-facts">
             <div className="fact"><label>currently</label><span>Independent / open to select teams</span></div>
             <div className="fact"><label>timezone</label><span>PT · UTC−08:00</span></div>
             <div className="fact"><label>outside the screen</label><span>Star gazing, family time and time on the water</span></div>
           </div>
+          <Separator className="about-separator" data-testid="about-separator" />
         </div>
       </div>
     </WindowFrame>

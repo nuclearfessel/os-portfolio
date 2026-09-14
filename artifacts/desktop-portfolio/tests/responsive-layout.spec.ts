@@ -19,6 +19,37 @@ async function openDesktopMenu(page: Page) {
   });
 }
 
+test('about content reflows with biography first when its window becomes narrow', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await resetStorage(page);
+
+  const aboutWindow = page.getByTestId('window-about');
+  const facts = page.getByTestId('about-facts');
+  const separator = page.getByTestId('about-separator');
+  const bio = page.getByTestId('about-bio');
+
+  const [wideFacts, wideBio] = await Promise.all([facts.boundingBox(), bio.boundingBox()]);
+  expect(wideFacts).not.toBeNull();
+  expect(wideBio).not.toBeNull();
+  expect(wideBio!.x).toBeLessThan(wideFacts!.x);
+  await expect(separator).toBeHidden();
+
+  await aboutWindow.evaluate((element) => {
+    element.style.width = '480px';
+  });
+
+  const [narrowFacts, narrowSeparator, narrowBio] = await Promise.all([
+    facts.boundingBox(),
+    separator.boundingBox(),
+    bio.boundingBox(),
+  ]);
+  expect(narrowFacts).not.toBeNull();
+  expect(narrowSeparator).not.toBeNull();
+  expect(narrowBio).not.toBeNull();
+  expect(narrowBio!.y).toBeLessThan(narrowSeparator!.y);
+  expect(narrowSeparator!.y).toBeLessThan(narrowFacts!.y);
+});
+
 test('desktop-only apps disappear outside desktop mode', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await resetStorage(page);

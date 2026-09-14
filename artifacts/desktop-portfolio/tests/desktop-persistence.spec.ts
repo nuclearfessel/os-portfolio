@@ -243,9 +243,11 @@ test('renders dock labels with the same surface as folder and toolbar tooltips',
   expect(dockSurface).toEqual(folderSurface);
 });
 
-test('uses a text cursor only for terminal and sticky text editing', async ({ page }) => {
+test('uses intentional cursors while allowing text selection only in stickies', async ({ page }) => {
   const cursorFor = (selector: ReturnType<typeof page.locator>) =>
     selector.evaluate((element) => window.getComputedStyle(element).cursor);
+  const selectionFor = (selector: ReturnType<typeof page.locator>) =>
+    selector.evaluate((element) => window.getComputedStyle(element).userSelect);
 
   await expect(page.getByTestId('window-about')).toBeVisible();
   await expect(page.getByTestId('window-work')).toBeVisible();
@@ -256,6 +258,11 @@ test('uses a text cursor only for terminal and sticky text editing', async ({ pa
   expect(await cursorFor(page.getByTestId('window-terminal').locator('.terminal-body'))).toBe('text');
   expect(await cursorFor(page.getByTestId('input-terminal-command'))).toBe('text');
   expect(await cursorFor(page.getByTestId('sticky-sticky').locator('.sticky-text'))).toBe('text');
+  expect(await selectionFor(page.getByTestId('window-about').locator('.window-body p').first())).toBe('none');
+  expect(await selectionFor(page.getByTestId('window-work').locator('.project-copy h3').first())).toBe('none');
+  expect(await selectionFor(page.getByTestId('window-terminal').locator('.terminal-body'))).toBe('none');
+  expect(await selectionFor(page.getByTestId('input-terminal-command'))).toBe('none');
+  expect(await selectionFor(page.getByTestId('sticky-sticky').locator('.sticky-text'))).toBe('text');
 
   expect(await cursorFor(page.getByTestId('window-work').locator('.project-link').first())).toBe('pointer');
   expect(await cursorFor(page.getByTestId('window-about').locator('.window-resize-se'))).toBe('nwse-resize');

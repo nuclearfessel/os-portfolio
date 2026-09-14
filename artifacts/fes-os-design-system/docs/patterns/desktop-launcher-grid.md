@@ -41,6 +41,9 @@ Mirror primary app identity in the Dock: use the same icon glyph and saturated
 color family for About, Selected Work, and Contact across desktop and managed
 workspace navigation.
 
+Selected Work uses a muted slate-indigo treatment rather than a high-saturation
+electric blue.
+
 Contact uses Remix Icon's filled mail-send glyph in saturated red-orange on a
 warm-ivory tile with a matching red-orange border. Keep the same inverted
 palette and glyph between the desktop launcher and Dock.
@@ -51,9 +54,11 @@ treatment.
 
 Stickies uses Bootstrap Icons' filled sticky glyph in both the desktop launcher
 and Dock. Its Dock item mirrors the desktop icon's color, border, and background
-treatment.
+treatment. Use a deep violet glyph against the golden-yellow tile for
+complementary color contrast.
 
-About uses Keyline's `CircleUser` glyph in both the desktop launcher and Dock.
+About uses Keyline's filled `CircleUser` glyph in both the desktop launcher and
+Dock.
 
 ---
 

@@ -1113,48 +1113,6 @@ function SettingsWindow({
                   </div>
                   </SettingsAccordionSection>
 
-                  <SettingsAccordionSection
-                    value="desktop-text"
-                    label="Desktop text personalization"
-                    description={<>Edit the three desktop text elements and set separate colors for the {theme} theme.</>}
-                  >
-                  <div className="settings-intro-editor">
-                    {(['primary', 'accent', 'body'] as const).map((key) => (
-                      <label className="settings-intro-field" key={key}>
-                        <span>{introLabels[key]}</span>
-                        <span className="settings-intro-input-row">
-                          {key === 'body' ? (
-                            <textarea
-                              value={introCustomization.text[key]}
-                              maxLength={240}
-                              rows={3}
-                              onChange={(event) => updateIntroText(key, event.currentTarget.value)}
-                              data-testid={`settings-intro-${key}-text`}
-                            />
-                          ) : (
-                            <input
-                              value={introCustomization.text[key]}
-                              maxLength={80}
-                              onChange={(event) => updateIntroText(key, event.currentTarget.value)}
-                              data-testid={`settings-intro-${key}-text`}
-                            />
-                          )}
-                          <button
-                            type="button"
-                            className="settings-intro-color-button"
-                            aria-label={`Choose ${introLabels[key].toLowerCase()} color for ${theme} theme`}
-                            onClick={() => setTextColorTarget(key)}
-                            data-testid={`settings-intro-${key}-color`}
-                          >
-                            <span style={{ backgroundColor: introCustomization.colors[theme][key] }} aria-hidden="true" />
-                            {introCustomization.colors[theme][key].toUpperCase()}
-                          </button>
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                  </SettingsAccordionSection>
-
                   {/* Wallpaper row */}
                   <SettingsAccordionSection
                     value="wallpaper"
@@ -1241,6 +1199,48 @@ function SettingsWindow({
                       )}
                     </>
                   )}
+                  </SettingsAccordionSection>
+
+                  <SettingsAccordionSection
+                    value="desktop-text"
+                    label="Desktop text personalization"
+                    description={<>Edit the three desktop text elements and set separate colors for the {theme} theme.</>}
+                  >
+                  <div className="settings-intro-editor">
+                    {(['primary', 'accent', 'body'] as const).map((key) => (
+                      <label className="settings-intro-field" key={key}>
+                        <span>{introLabels[key]}</span>
+                        <span className="settings-intro-input-row">
+                          {key === 'body' ? (
+                            <textarea
+                              value={introCustomization.text[key]}
+                              maxLength={240}
+                              rows={3}
+                              onChange={(event) => updateIntroText(key, event.currentTarget.value)}
+                              data-testid={`settings-intro-${key}-text`}
+                            />
+                          ) : (
+                            <input
+                              value={introCustomization.text[key]}
+                              maxLength={80}
+                              onChange={(event) => updateIntroText(key, event.currentTarget.value)}
+                              data-testid={`settings-intro-${key}-text`}
+                            />
+                          )}
+                          <button
+                            type="button"
+                            className="settings-intro-color-button"
+                            aria-label={`Choose ${introLabels[key].toLowerCase()} color for ${theme} theme`}
+                            onClick={() => setTextColorTarget(key)}
+                            data-testid={`settings-intro-${key}-color`}
+                          >
+                            <span style={{ backgroundColor: introCustomization.colors[theme][key] }} aria-hidden="true" />
+                            {introCustomization.colors[theme][key].toUpperCase()}
+                          </button>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                   </SettingsAccordionSection>
 
                   <SettingsAccordionSection

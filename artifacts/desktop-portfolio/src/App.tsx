@@ -252,6 +252,7 @@ type SavedDesktopState = {
   showDesktopIcons: boolean;
   stickies: StickyData[];
   dockPosition: DockPosition;
+  systemBarPosition: DockPosition;
   windowStack?: WindowId[];
   windows?: WindowState;
   activeWindow?: WindowId;
@@ -297,6 +298,7 @@ const defaultDesktopState: SavedDesktopState = {
   showDesktopIcons: true,
   stickies: [defaultSticky, defaultSecondSticky],
   dockPosition: 'bottom',
+  systemBarPosition: 'top',
   windowStack: ['work', 'about', 'contact', 'terminal', 'settings'],
   windows: { about: true, work: true, contact: false, terminal: false, settings: false },
   activeWindow: 'about',
@@ -484,6 +486,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
       stickies: Array.isArray(parsed.stickies) ? stickies : defaultDesktopState.stickies,
       dockPosition: ['bottom', 'top', 'left', 'right'].includes(parsed.dockPosition as string) ? (parsed.dockPosition as DockPosition) : defaultDesktopState.dockPosition,
+      systemBarPosition: ['bottom', 'top', 'left', 'right'].includes(parsed.systemBarPosition as string) ? (parsed.systemBarPosition as DockPosition) : defaultDesktopState.systemBarPosition,
       windowStack,
       windows,
       activeWindow,
@@ -1876,7 +1879,7 @@ function Home() {
   const [dragPositions, setDragPositions] = useState<ItemPositions>(savedDesktopState.itemPositions);
   const [itemSizes, setItemSizes] = useState<ItemSizes>(savedDesktopState.itemSizes);
   const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; target: 'desktop' | 'dock' } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; target: 'desktop' | 'dock' | 'system-bar' } | null>(null);
   const [stickyMenu, setStickyMenu] = useState<{ x: number; y: number; id: StickyItemId } | null>(null);
   const [stickyPendingDelete, setStickyPendingDelete] = useState<StickyItemId | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
@@ -1887,6 +1890,7 @@ function Home() {
   const [theme, setTheme] = useState<Theme>(savedDesktopState.theme);
   const [showDesktopIcons, setShowDesktopIcons] = useState(savedDesktopState.showDesktopIcons);
   const [dockPosition, setDockPosition] = useState<DockPosition>(savedDesktopState.dockPosition);
+  const [systemBarPosition, setSystemBarPosition] = useState<DockPosition>(savedDesktopState.systemBarPosition);
   const [viewportProfile, setViewportProfile] = useState<ViewportProfile>(readViewportProfile);
   const [coarsePointer, setCoarsePointer] = useState(() => window.matchMedia('(pointer: coarse)').matches);
   const [wallpaperLight, setWallpaperLight] = useState<WallpaperConfig>(savedDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
@@ -1904,6 +1908,7 @@ function Home() {
   const resetDialogOpenerRef = useRef<HTMLElement | null>(null);
   const saveDefaultDialogOpenerRef = useRef<HTMLElement | null>(null);
   const dockDragRef = useRef<{ active: boolean; startX: number; startY: number; moved: boolean } | null>(null);
+  const systemBarDragRef = useRef<{ active: boolean; startX: number; startY: number; moved: boolean } | null>(null);
   const desktopGeometryRef = useRef({
     dragPositions: savedDesktopState.itemPositions,
     itemSizes: savedDesktopState.itemSizes,
@@ -1913,6 +1918,7 @@ function Home() {
   const previousWorkspaceModeRef = useRef(workspaceMode);
   const managedLayout = workspaceMode === 'managed';
   const effectiveDockPosition: DockPosition = workspaceMode === 'desktop' && !coarsePointer ? dockPosition : 'bottom';
+  const effectiveSystemBarPosition: DockPosition = workspaceMode === 'desktop' && !coarsePointer ? systemBarPosition : 'top';
   const singleTapLaunch = workspaceMode !== 'desktop' || coarsePointer;
 
   useEffect(() => {
@@ -1989,6 +1995,7 @@ function Home() {
     showDesktopIcons,
     stickies,
     dockPosition,
+    systemBarPosition,
     wallpaperLight,
     wallpaperDark,
     accessibility,
@@ -2037,6 +2044,34 @@ function Home() {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
     setTimeout(() => { dockDragRef.current = null; }, 50);
+  };
+  const startSystemBarDrag = (event: React.PointerEvent<HTMLElement>) => {
+    if (event.button !== 0 || workspaceMode !== 'desktop' || coarsePointer) return;
+    systemBarDragRef.current = { active: true, startX: event.clientX, startY: event.clientY, moved: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const moveSystemBarDrag = (event: React.PointerEvent<HTMLElement>) => {
+    if (!systemBarDragRef.current?.active) return;
+    const { startX, startY } = systemBarDragRef.current;
+    if (Math.abs(event.clientX - startX) <= 10 && Math.abs(event.clientY - startY) <= 10) return;
+    systemBarDragRef.current.moved = true;
+    const distances: Record<DockPosition, number> = {
+      top: event.clientY,
+      bottom: window.innerHeight - event.clientY,
+      left: event.clientX,
+      right: window.innerWidth - event.clientX,
+    };
+    const nextPosition = (Object.keys(distances) as DockPosition[])
+      .reduce((nearest, position) => distances[position] < distances[nearest] ? position : nearest, systemBarPosition);
+    if (nextPosition !== systemBarPosition) setSystemBarPosition(nextPosition);
+  };
+  const endSystemBarDrag = (event: React.PointerEvent<HTMLElement>) => {
+    if (!systemBarDragRef.current?.active) return;
+    systemBarDragRef.current.active = false;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    setTimeout(() => { systemBarDragRef.current = null; }, 50);
   };
   const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean; currentLeft: number; currentTop: number } | null>(null);
   const resizeRef = useRef<{
@@ -2241,7 +2276,7 @@ function Home() {
       setStorageUnavailable(true);
       setStorageRestored(false);
     }
-  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode, wallpaperLight, wallpaperDark, accessibility, introCustomization]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, systemBarPosition, workspaceMode, wallpaperLight, wallpaperDark, accessibility, introCustomization]);
 
   useEffect(() => {
     if (!storageRestored) return;
@@ -2843,6 +2878,7 @@ function Home() {
     setShowDesktopIcons(resetDesktopState.showDesktopIcons);
     setStickies(resetDesktopState.stickies);
     setDockPosition(resetDesktopState.dockPosition);
+    setSystemBarPosition(resetDesktopState.systemBarPosition);
     setWallpaperLight(resetDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
     setWallpaperDark(resetDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
     setAccessibility(resetDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
@@ -2921,10 +2957,10 @@ function Home() {
       ? undefined
       : maximizedWindows[id]
       ? {
-        left: dockPosition === 'left' ? 82 : 12,
-        top: dockPosition === 'top' ? 82 : 12,
-        right: dockPosition === 'right' ? 82 : 12,
-        bottom: dockPosition === 'bottom' ? 82 : 12,
+        left: dockPosition === 'left' ? 82 : systemBarPosition === 'left' ? 54 : 12,
+        top: dockPosition === 'top' ? 82 : systemBarPosition === 'top' ? 54 : 12,
+        right: dockPosition === 'right' ? 82 : systemBarPosition === 'right' ? 54 : 12,
+        bottom: dockPosition === 'bottom' ? 82 : systemBarPosition === 'bottom' ? 54 : 12,
         width: 'auto',
         height: 'auto',
         zIndex: 10 + windowStack.indexOf(id),
@@ -2948,12 +2984,40 @@ function Home() {
 
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
+      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} system-bar-at-${effectiveSystemBarPosition} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
       style={currentWallpaperStyle}
     >
-      <header className="system-bar">
+      <header
+        className={`system-bar system-bar-${effectiveSystemBarPosition}`}
+        aria-label={workspaceMode === 'desktop' ? 'System bar. Drag to a screen edge or right-click to choose its position.' : 'System bar'}
+        data-testid="system-bar"
+        onPointerDown={(event) => {
+          if ((event.target as HTMLElement).closest('button')) return;
+          startSystemBarDrag(event);
+        }}
+        onPointerMove={moveSystemBarDrag}
+        onPointerUp={endSystemBarDrag}
+        onPointerCancel={endSystemBarDrag}
+        onClickCapture={(event) => {
+          if (systemBarDragRef.current?.moved && !(event.target as HTMLElement).closest('button')) {
+            event.stopPropagation();
+            event.preventDefault();
+          }
+        }}
+        onContextMenu={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (workspaceMode !== 'desktop') return;
+          contextMenuOpenerRef.current = event.currentTarget;
+          setContextMenu({
+            x: Math.max(8, Math.min(event.clientX, window.innerWidth - 220)),
+            y: Math.max(8, Math.min(event.clientY, window.innerHeight - 250)),
+            target: 'system-bar',
+          });
+        }}
+      >
         <div className="system-left">
           <Apple className="system-logo" size={14} strokeWidth={1.8} aria-hidden="true" />
           <span className="system-mark">PORTFOLIO.OS</span>
@@ -3009,7 +3073,7 @@ function Home() {
       )}
 
       <div
-        className={`desktop-area dock-space-${dockPosition}`}
+        className={`desktop-area dock-space-${dockPosition} system-bar-space-${systemBarPosition}`}
         ref={desktopAreaRef}
         tabIndex={-1}
         onContextMenu={openDesktopContextMenu}
@@ -3251,6 +3315,36 @@ function Home() {
               onClick={() => { setDockPosition(position); setContextMenu(null); }}
             >
               <span className="context-check">{dockPosition === position && <Check size={12} />}</span>
+              <span>{position[0].toUpperCase() + position.slice(1)}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {contextMenu?.target === 'system-bar' && (
+        <div
+          className="desktop-context-menu"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onPointerDown={(event) => event.stopPropagation()}
+          onContextMenu={(event) => event.preventDefault()}
+          onKeyDown={handleContextMenuKeyDown}
+          tabIndex={-1}
+          role="menu"
+          aria-label="System bar options"
+          data-active-context-menu
+          data-testid="menu-system-bar-context"
+        >
+          <div className="sticky-color-menu-title dock-menu-title">System bar position</div>
+          {(['top', 'right', 'bottom', 'left'] as DockPosition[]).map((position) => (
+            <button
+              type="button"
+              key={position}
+              className="context-menu-button"
+              role="menuitemradio"
+              aria-checked={systemBarPosition === position}
+              onClick={() => { setSystemBarPosition(position); setContextMenu(null); }}
+            >
+              <span className="context-check">{systemBarPosition === position && <Check size={12} />}</span>
               <span>{position[0].toUpperCase() + position.slice(1)}</span>
             </button>
           ))}

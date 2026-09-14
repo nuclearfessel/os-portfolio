@@ -9,3 +9,4 @@
 - [Saved desktop defaults](saved-desktop-defaults.md) — overwriting the reset baseline must capture the complete workspace snapshot, not geometry alone.
 - [Wallpaper selection across themes](wallpaper-selection-across-themes.md) — picture versus solid color remains selected when switching light and dark themes.
 - [Color picker keyboard isolation](color-picker-keyboard-isolation.md) — numeric entry must never trigger the desktop’s numbered Dock shortcuts.
+- [Accessibility contrast wallpapers](accessibility-contrast-wallpapers.md) — contrast themes replace wallpaper visually without discarding the user’s saved wallpaper choice.

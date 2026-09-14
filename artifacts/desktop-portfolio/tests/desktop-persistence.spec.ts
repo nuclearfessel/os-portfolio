@@ -54,6 +54,19 @@ async function openDockMenu(page: Page) {
   await expect(page.getByRole('menu', { name: 'Dock options' })).toBeVisible();
 }
 
+async function openSystemBarMenu(page: Page) {
+  await page.locator('.system-bar').evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    element.dispatchEvent(new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: bounds.left + bounds.width / 2,
+      clientY: bounds.top + bounds.height / 2,
+    }));
+  });
+  await expect(page.getByRole('menu', { name: 'System bar options' })).toBeVisible();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await page.evaluate(([currentKey, savedDefaultKey]) => {
@@ -195,6 +208,61 @@ test('desktop context menu keeps its intended surface styling in light and dark 
 
     await page.keyboard.press('Escape');
   }
+});
+
+test('system bar repositions like the Dock and preserves its desktop edge', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const systemBar = page.getByTestId('system-bar');
+
+  await openSystemBarMenu(page);
+  await page.getByRole('menuitemradio', { name: 'Right' }).click();
+  await expect(systemBar).toHaveClass(/system-bar-right/);
+  await expect(page.locator('.desktop-area')).toHaveClass(/system-bar-space-right/);
+
+  await expect.poll(async () => page.evaluate((key) => (
+    JSON.parse(localStorage.getItem(key) ?? '{}').systemBarPosition
+  ), storageKey)).toBe('right');
+
+  await page.reload();
+  await expect(systemBar).toHaveClass(/system-bar-right/);
+  const rightEdgeGeometry = await page.evaluate(() => {
+    const readLeft = (selector: string) => document.querySelector(selector)!.getBoundingClientRect().left;
+    return {
+      intro: readLeft('.desktop-intro'),
+      window: readLeft('[data-testid="window-about"]'),
+      sticky: readLeft('[data-testid="sticky-sticky"]'),
+    };
+  });
+
+  const bounds = await systemBar.boundingBox();
+  expect(bounds).not.toBeNull();
+  await page.mouse.move(bounds!.x + bounds!.width / 2, bounds!.y + bounds!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(4, 400, { steps: 8 });
+  await page.mouse.up();
+  await expect(systemBar).toHaveClass(/system-bar-left/);
+  const leftEdgeGeometry = await page.evaluate(() => {
+    const readLeft = (selector: string) => document.querySelector(selector)!.getBoundingClientRect().left;
+    return {
+      barRight: document.querySelector('.system-bar')!.getBoundingClientRect().right,
+      intro: readLeft('.desktop-intro'),
+      window: readLeft('[data-testid="window-about"]'),
+      sticky: readLeft('[data-testid="sticky-sticky"]'),
+    };
+  });
+  expect(leftEdgeGeometry.intro).toBeGreaterThanOrEqual(leftEdgeGeometry.barRight);
+  expect(leftEdgeGeometry.intro - rightEdgeGeometry.intro).toBeCloseTo(42, 0);
+  expect(leftEdgeGeometry.window - rightEdgeGeometry.window).toBeCloseTo(42, 0);
+  expect(leftEdgeGeometry.sticky - rightEdgeGeometry.sticky).toBeCloseTo(42, 0);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(systemBar).toHaveClass(/system-bar-top/);
+  expect(await page.evaluate((key) => (
+    JSON.parse(localStorage.getItem(key) ?? '{}').systemBarPosition
+  ), storageKey)).toBe('left');
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await expect(systemBar).toHaveClass(/system-bar-left/);
 });
 
 test('keeps keyboard focus predictable in desktop, dock, and sticky context menus', async ({ page }) => {

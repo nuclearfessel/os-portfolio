@@ -85,7 +85,7 @@ The consuming product controls this switch based on viewport state or a CSS medi
 |---|---|
 | Default | Border + background from consumer classes |
 | Active | Full-tile contrast ring plus a 16–26px directional pill on the nearest Dock edge; never rely on a tiny dot alone |
-| Hover | Branded apps retain their icon foreground and tile fill; use a flat contrast-safe outline and border change for feedback |
+| Hover | Inactive items only: branded apps retain their icon foreground and tile fill; use a flat contrast-safe outline and border change |
 | Focus-visible | Matches the hover treatment and adds a clearly visible theme-appropriate outline |
 
 Treat branded app items and neutral utility controls as separate state systems.
@@ -96,7 +96,8 @@ WCAG AA contrast in both light and dark themes.
 The active state must remain distinguishable without hover. Use both a full-tile
 ring and a directional edge pill so the signal remains clear against branded
 tiles, neutral controls, and changing wallpaper. On mobile and tablet, keep the
-pill visible beneath the inline label.
+pill visible beneath the inline label. Do not apply hover styling to active
+items; their selected treatment remains unchanged under the pointer.
 
 ---
 
@@ -123,6 +124,7 @@ pill visible beneath the inline label.
 | Keep Dock icons in a fixed footprint across states | Resize the icon on hover/active |
 | Combine a full-tile ring with a substantial edge pill for active items | Use a 4px dot as the only active indicator |
 | Preserve branded tile and glyph colors and use a flat outline on hover/focus | Move, brighten, emboss, or recolor branded tiles on hover |
+| Apply hover feedback only to inactive items | Layer hover styling on top of the active treatment |
 | Change utility foreground and background as a tested pair | Change only the foreground and assume contrast remains sufficient |
 
 ---

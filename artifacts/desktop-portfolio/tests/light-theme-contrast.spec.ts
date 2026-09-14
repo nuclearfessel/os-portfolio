@@ -207,20 +207,33 @@ test('Dock active states use a clear ring and substantial edge pill in every the
 
   const expectClearActiveState = async (item: Locator, minimumPillWidth = 16) => {
     await expect(item).toHaveClass(/active/);
-    const state = await item.evaluate((element) => {
+    await item.evaluate(async (element) => {
+      await Promise.all(element.getAnimations().map((animation) => animation.finished));
+    });
+    const readState = () => item.evaluate((element) => {
       const tile = getComputedStyle(element);
       const badge = getComputedStyle(element, '::after');
       return {
+        color: tile.color,
+        background: tile.background,
+        borderColor: tile.borderColor,
         boxShadow: tile.boxShadow,
+        outlineStyle: tile.outlineStyle,
         badgeDisplay: badge.display,
         badgeWidth: Number.parseFloat(badge.width),
         badgeHeight: Number.parseFloat(badge.height),
       };
     });
+    const state = await readState();
     expect(state.boxShadow).not.toBe('none');
     expect(state.badgeDisplay).not.toBe('none');
     expect(state.badgeWidth).toBeGreaterThanOrEqual(minimumPillWidth);
     expect(state.badgeHeight).toBeGreaterThanOrEqual(3);
+    await item.hover();
+    await item.evaluate(async (element) => {
+      await Promise.all(element.getAnimations().map((animation) => animation.finished));
+    });
+    await expect.poll(readState).toEqual(state);
   };
 
   for (const theme of ['dark', 'light'] as const) {

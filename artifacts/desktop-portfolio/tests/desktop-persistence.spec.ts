@@ -1189,11 +1189,18 @@ test('Settings wallpaper mode: color removes background image and applies solid 
   // Switch to color mode for the light theme — default color is #e8f0ec
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
 
-  // Verify the default color hex is shown in the UI
-  await expect(page.locator('.settings-color-hex').first()).toContainText('#E8F0EC');
+  // Color picker should appear
+  await expect(page.getByTestId('color-picker')).toBeVisible();
 
-  await page.getByTestId('settings-wallpaper-color-light').fill('#345678');
-  await expect(page.locator('.settings-color-hex').first()).toContainText('#345678');
+  // Verify the default color hex is shown in the HEX field of the picker
+  await page.getByTestId('cp-format-hex').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('E8F0EC');
+
+  // Enter a new color via the HEX field
+  await page.getByTestId('cp-field-hex').click({ clickCount: 3 });
+  await page.getByTestId('cp-field-hex').fill('345678');
+  await page.getByTestId('cp-field-hex').press('Enter');
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('345678');
 
   await page.getByTestId('button-close-settings').click();
 
@@ -1218,11 +1225,12 @@ test('wallpaper choice persists across page reload', async ({ page }) => {
   await expect(page.getByTestId('window-settings')).toBeVisible();
 
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
-  await page.getByTestId('settings-wallpaper-color-light').fill('#345678');
+  await page.getByTestId('cp-field-hex').fill('345678');
+  await page.getByTestId('cp-field-hex').press('Enter');
 
   await page.getByTestId('settings-theme-dark').click();
   await expect(page.getByTestId('settings-wallpaper-mode-color-dark')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('settings-wallpaper-color-dark')).toHaveValue('#345678');
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('345678');
   await expect(page.locator('main.os-shell')).toHaveCSS('background-color', 'rgb(52, 86, 120)');
 
   await page.getByTestId('button-close-settings').click();

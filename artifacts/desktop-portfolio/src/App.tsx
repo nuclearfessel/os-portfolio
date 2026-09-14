@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { ColorPicker } from '@/components/color-picker';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
@@ -740,24 +741,12 @@ function SettingsWindow({
                 </div>
               ) : (
                 <div className="settings-wallpaper-color-row">
-                  <div className="settings-color-preview" style={{ background: currentWallpaper.color }} aria-hidden="true" />
-                  <div className="settings-color-picker-wrap">
-                    <label className="settings-label" htmlFor={`wallpaper-color-${theme}`}>
-                      Custom solid color
-                    </label>
-                    <div className="settings-color-input-row">
-                      <input
-                        id={`wallpaper-color-${theme}`}
-                        type="color"
-                        className="settings-color-wheel"
-                        value={currentWallpaper.color}
-                        onChange={(e) => setCurrentWallpaper({ ...currentWallpaper, color: e.target.value })}
-                        data-testid={`settings-wallpaper-color-${theme}`}
-                        aria-label={`Choose ${theme} wallpaper color`}
-                      />
-                      <span className="settings-color-hex">{currentWallpaper.color.toUpperCase()}</span>
-                    </div>
-                  </div>
+                  <ColorPicker
+                    id={`wallpaper-color-${theme}`}
+                    value={currentWallpaper.color}
+                    onChange={(hex) => setCurrentWallpaper({ ...currentWallpaper, color: hex })}
+                    theme={theme}
+                  />
                 </div>
               )}
             </div>
@@ -1466,6 +1455,9 @@ function Home() {
         if (saveDefaultDialogOpen) closeSaveDefaultDialog();
       }
       if (event.metaKey || event.ctrlKey) return;
+      const target = event.target;
+      const isColorValueField = target instanceof HTMLElement && Boolean(target.closest('.cp-field'));
+      if (isColorValueField && ['1', '2', '3'].includes(event.key)) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '`': 'terminal' };
       const id = shortcuts[event.key];
       if (id === 'terminal' && workspaceMode !== 'desktop') return;

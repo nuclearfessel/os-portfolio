@@ -10,7 +10,9 @@ import {
 } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { Separator } from '../components/ui/separator';
 import { Switch } from '../components/ui/switch';
+import { SectionLabel } from '../components/ui/fes-os';
 import { CanonicalSpec } from './md-renderer';
 import {
   mdFoundationColor,
@@ -68,9 +70,45 @@ function Swatch({
   );
 }
 
+// Portfolio-scoped public counts
+// Components: 11 Fes OS primitives + 9 Settings primitives + 14 generic = 34
+const PUBLIC_COUNTS = {
+  foundations: 5,
+  components: 34,
+  patterns: 12,
+} as const;
+
 export function OverviewPage() {
   return (
     <div className="space-y-4">
+      {/* Scope notice */}
+      <section className="rounded-xl border bg-card p-5 text-card-foreground">
+        <SectionLabel>portfolio-scoped</SectionLabel>
+        <h2 className="mt-2 text-lg font-semibold tracking-tight">
+          Live documentation for the Fes OS desktop portfolio
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          This browser surfaces the foundations, components, and patterns
+          actively used by the desktop portfolio. The package ships a full
+          component catalog — additional surfaces are registered, documented,
+          and deep-linkable by known hash, but are not surfaced here.
+        </p>
+        <Separator className="my-4" />
+        <div className="grid grid-cols-3 gap-4 sm:grid-cols-3">
+          {[
+            { label: 'Foundations', count: PUBLIC_COUNTS.foundations },
+            { label: 'Components', count: PUBLIC_COUNTS.components },
+            { label: 'Patterns', count: PUBLIC_COUNTS.patterns },
+          ].map(({ label, count }) => (
+            <div key={label} className="space-y-1">
+              <p className="text-2xl font-semibold tabular-nums">{count}</p>
+              <p className="text-xs text-muted-foreground">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Core palette */}
       <section className="rounded-xl border bg-card p-5 text-card-foreground">
         <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Core palette
@@ -128,7 +166,7 @@ export function OverviewPage() {
 
       <section className="space-y-4 rounded-xl border bg-card p-5 text-card-foreground">
         <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Components
+          Portfolio components
         </h2>
         <div className="flex flex-wrap items-center gap-3">
           <Button>Primary</Button>

@@ -319,6 +319,68 @@ test('lists work files with names that match the selected projects', async ({ pa
   await expect(output).not.toContainText('orbit-crm');
 });
 
+test('About and Selected Work use distinct saturated application icons instead of folders', async ({ page }) => {
+  const about = page.getByTestId('button-folder-about');
+  const work = page.getByTestId('button-folder-work');
+  const terminal = page.getByTestId('button-folder-terminal');
+
+  await expect(about).toHaveClass(/desktop-app/);
+  await expect(work).toHaveClass(/desktop-app/);
+  await expect(about.locator('.desktop-app-icon')).toBeVisible();
+  await expect(work.locator('.desktop-app-icon')).toBeVisible();
+  await expect(about.locator('.desktop-folder-icon')).toHaveCount(0);
+  await expect(work.locator('.desktop-folder-icon')).toHaveCount(0);
+  await expect(about).toHaveAttribute('aria-label', /application$/);
+  await expect(work).toHaveAttribute('aria-label', /application$/);
+
+  const backgrounds = await Promise.all(
+    [about, work, terminal].map((launcher) => launcher.locator('.desktop-app-icon').evaluate(
+      (element) => getComputedStyle(element).backgroundImage,
+    )),
+  );
+  expect(new Set(backgrounds).size).toBe(3);
+});
+
+test('Contact uses a filled Keyline icon with its own saturated app treatment', async ({ page }) => {
+  const contact = page.getByTestId('button-folder-contact');
+  const contactIcon = contact.locator('.desktop-app-icon');
+
+  await expect(contact.getByTestId('icon-contact-mail-fill')).toBeVisible();
+  await expect(contact.getByTestId('icon-contact-mail-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
+  await expect(contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-layer')).toHaveCount(2);
+  await expect(contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-status')).toBeVisible();
+  const layerColors = await contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-layer').evaluateAll(
+    (layers) => layers.map((layer) => getComputedStyle(layer).color),
+  );
+  expect(new Set(layerColors).size).toBe(2);
+  const contactBackground = await contactIcon.evaluate((element) => getComputedStyle(element).backgroundImage);
+  const otherBackgrounds = await Promise.all(
+    ['about', 'work', 'terminal', 'stickies-app'].map((id) => page.getByTestId(`button-folder-${id}`).locator('.desktop-app-icon').evaluate(
+      (element) => getComputedStyle(element).backgroundImage,
+    )),
+  );
+  expect(contactBackground).toContain('linear-gradient');
+  expect(otherBackgrounds).not.toContain(contactBackground);
+});
+
+test('Dock mirrors the saturated About, Selected Work, and filled Contact app identities', async ({ page }) => {
+  const dockLaunchers = [
+    page.getByTestId('button-dock-about'),
+    page.getByTestId('button-dock-work'),
+    page.getByTestId('button-dock-contact'),
+  ];
+
+  await expect(page.getByTestId('icon-dock-contact-mail-fill')).toBeVisible();
+  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
+  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('.contact-mail-layer')).toHaveCount(2);
+  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('.contact-mail-status')).toBeVisible();
+  const backgrounds = await Promise.all(dockLaunchers.map((launcher) => launcher.evaluate(
+    (element) => getComputedStyle(element).backgroundImage,
+  )));
+  expect(backgrounds.every((background) => background.includes('linear-gradient'))).toBe(true);
+  expect(new Set(backgrounds).size).toBe(3);
+});
+
 test('keeps mobile and tablet dock labels free of desktop tooltip effects', async ({ page }) => {
   for (const viewport of [
     { width: 390, height: 844 },

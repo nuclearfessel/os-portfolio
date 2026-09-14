@@ -32,6 +32,20 @@ About          Work           Contact
 ↑ Position is product-managed (inline style or CSS grid)
 ```
 
+About and Selected Work are application launchers rather than folder
+representations. Give primary portfolio apps distinctive, saturated icon
+treatments while preserving the shared `DesktopLauncher` interaction and
+accessibility contract.
+
+Mirror primary app identity in the Dock: use the same icon glyph and saturated
+color family for About, Selected Work, and Contact across desktop and managed
+workspace navigation.
+
+Contact uses a restrained two-tone filled-mail glyph with a small status accent,
+so color identity exists inside the icon itself without fragmenting the
+silhouette. Keep the same internal palette and geometry between the desktop
+launcher and Dock.
+
 ---
 
 ## State ownership

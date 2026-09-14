@@ -31,8 +31,9 @@ pnpm --filter @workspace/desktop-portfolio run build
 - Perform all work on a dedicated branch. Never develop directly on `main`.
 - Leave completed work uncommitted while the user validates it.
 - Commit, merge into `main`, and push only after the user gives explicit approval.
-- Preserve the GitHub Actions website ZIP workflow for every push to `main` and every other branch.
+- Preserve the GitHub Releases website ZIP workflow for every push to `main` and every other branch.
 - Website ZIPs must contain the deployable contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
+- Website ZIPs must use the `site-package-vMM.NN.zip` naming scheme; branch builds are prereleases and `main` builds are standard releases.
 - Preserve saved desktop positions and sizes when temporarily entering tablet or mobile layouts.
 - Keep launcher positions separate from the positions of their corresponding windows.
 - Stickies and Terminal are desktop-only.

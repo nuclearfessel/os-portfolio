@@ -2637,23 +2637,26 @@ function Home() {
       : { ...itemStyle(id), zIndex: 4 + windowStack.indexOf(id) },
   });
 
-  // Compute wallpaper background for desktop area
-  const currentWallpaperStyle = workspaceMode === 'desktop'
-    ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
-    : {};
-
-  // For picture wallpaper: the os-shell base gradient should be suppressed;
-  // we handle that via a CSS class on the shell.
   const wallpaperConfig = theme === 'light' ? wallpaperLight : wallpaperDark;
+  // Picture wallpapers stay desktop-only, while the selected solid color follows
+  // its theme into tablet and mobile. Contrast modes continue to own the managed
+  // workspace background.
+  const appliesSelectedWallpaper = workspaceMode === 'desktop'
+    || (wallpaperConfig.mode === 'color' && accessibility.contrastTheme === 'none');
+  const currentWallpaperStyle = appliesSelectedWallpaper
+    ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
+    : undefined;
+
+  // When a wallpaper is applied, suppress the shell's default gradient.
   // In contrast mode the class is always 'wallpaper-color' for override styling
   const wallpaperClass = accessibility.contrastTheme !== 'none' ? 'wallpaper-color' : `wallpaper-${wallpaperConfig.mode}`;
 
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${workspaceMode === 'desktop' ? wallpaperClass : ''}`}
+      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
-      style={workspaceMode === 'desktop' ? currentWallpaperStyle : undefined}
+      style={currentWallpaperStyle}
     >
       <header className="system-bar">
         <div className="system-left">

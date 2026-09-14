@@ -13,6 +13,8 @@ import { SectionLabel } from '../components/ui/fes-os';
 import {
   ALL_ENTRIES,
   DESIGN_SYSTEM,
+  FES_OS_DETAIL_IDS,
+  NAV_GROUPS,
   PUBLIC_ALL_ENTRIES,
   PUBLIC_NAV_GROUPS,
   PUBLIC_VISIBILITY_MAP,
@@ -143,22 +145,24 @@ export function DesignSystemBrowser() {
   const active =
     ALL_ENTRIES.find((entry) => entry.id === selectedId) ?? OVERVIEW_ENTRY;
 
-  // For header breadcrumb group label, search public groups first then all
+  // For header breadcrumb group label, search public groups first, then full registry
   const activeGroup =
     PUBLIC_NAV_GROUPS.find((group) =>
       group.entries.some((entry) => entry.id === active.id),
     ) ??
-    // fallback: hidden page may still belong to a group
-    (() => {
-      for (const group of PUBLIC_NAV_GROUPS) {
-        if (group.entries.some((e) => e.id === active.id)) return group;
-      }
-      return undefined;
-    })();
+    // fallback: detail page or hidden page may only appear in the full NAV_GROUPS
+    NAV_GROUPS.find((group) =>
+      group.entries.some((e) => e.id === active.id),
+    );
 
+  // A page is "hidden" only if it is not in public nav AND is not a known
+  // public detail page (i.e. a Fes OS primitive or family overview that is
+  // intentionally omitted from sidebar but is still a public-facing document).
+  const isPublicDetailPage = FES_OS_DETAIL_IDS.has(active.id);
   const isHiddenPage =
     active.id !== OVERVIEW_ENTRY.id &&
-    PUBLIC_VISIBILITY_MAP[active.id] !== true;
+    PUBLIC_VISIBILITY_MAP[active.id] !== true &&
+    !isPublicDetailPage;
 
   const ActivePage = active.Page;
 

@@ -14,3 +14,5 @@ The living documentation browser must consume the design system it describes. It
 **Why:** The user requires the documentation to demonstrate the same visual language and interactions as the portfolio, without presenting unused catalog items as part of the public system.
 
 Determine public usage semantically from rendered portfolio behavior, including local wrappers and composed implementations—not only direct package imports. Used primitives need individual pages as well as references in applicable pattern pages.
+
+Keep the 18 Fes OS and Settings primitive details accessible through one compact “Fes OS primitives” directory entry; do not flatten all detail links into the sidebar.

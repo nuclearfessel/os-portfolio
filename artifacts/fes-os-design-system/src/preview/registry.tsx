@@ -218,6 +218,11 @@ const FesOsContextMenuSurfaceDemo = lazyPage(() =>
   import('./demos/fes-os-context-menu-surface').then(({ FesOsContextMenuSurfaceDemo }) => FesOsContextMenuSurfaceDemo),
 );
 
+// ── Fes OS primitives directory ────────────────────────────────────────────
+const FesOsPrimitivesPage = lazyPage(() =>
+  import('./demos/fes-os-primitives').then(({ FesOsPrimitivesPage }) => FesOsPrimitivesPage),
+);
+
 // ── Individual Settings primitive pages ────────────────────────────────────
 const SettingsNavDemo = lazyPage(() =>
   import('./demos/settings-nav').then(({ SettingsNavDemo }) => SettingsNavDemo),
@@ -305,29 +310,32 @@ const PatternSavedStateOwnership = lazyPage(() =>
 export type PublicVisibility = boolean;
 
 export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
-  // ── Fes OS family overview ───────────────────────────────────────────────────
-  'fes-os-pilot': true,
-  'fes-os-settings': true,
-  // ── Fes OS individual primitives ─────────────────────────────────────────────
-  'action-button': true,
-  'section-label': true,
-  'status-indicator': true,
-  'surface': true,
-  'project-card': true,
-  'window-surface': true,
-  'dock-item': true,
-  'desktop-launcher': true,
-  'sticky-note-surface': true,
-  'context-menu-surface': true,
-  // ── Settings individual primitives ───────────────────────────────────────────
-  'settings-nav': true,
-  'settings-toggle-row': true,
-  'settings-slider-group': true,
-  'settings-segmented-choice': true,
-  'settings-contrast-card': true,
-  'settings-color-preset': true,
-  'settings-divider': true,
-  'settings-section-header': true,
+  // ── Fes OS unified directory — single public nav entry ───────────────────────
+  'fes-os-primitives': true,
+  // ── Fes OS family overviews — deep-linkable but not in sidebar/search ────────
+  'fes-os-pilot': false,
+  'fes-os-settings': false,
+  // ── Fes OS individual primitives — detail pages, public but not in sidebar ───
+  // Deep-linkable via #page=<id>; reachable from the fes-os-primitives directory.
+  'action-button': false,
+  'section-label': false,
+  'status-indicator': false,
+  'surface': false,
+  'project-card': false,
+  'window-surface': false,
+  'dock-item': false,
+  'desktop-launcher': false,
+  'sticky-note-surface': false,
+  'context-menu-surface': false,
+  // ── Settings individual primitives — same treatment as above ─────────────────
+  'settings-nav': false,
+  'settings-toggle-row': false,
+  'settings-slider-group': false,
+  'settings-segmented-choice': false,
+  'settings-contrast-card': false,
+  'settings-color-preset': false,
+  'settings-divider': false,
+  'settings-section-header': false,
   // ── Foundations ─────────────────────────────────────────────────────────────
   'color-roles': true,
   'type-scale': true,
@@ -444,12 +452,27 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     name: 'Fes OS',
     entries: [
+      // ── Single public directory entry ──────────────────────────────────────
+      {
+        id: 'fes-os-primitives',
+        name: 'Fes OS primitives',
+        description: 'Directory of all 18 Fes OS design primitives — desktop surfaces, actions, dock, launchers, and settings controls. Grouped into Desktop primitives (10) and Settings primitives (8). Each links to its dedicated spec page.',
+        Page: FesOsPrimitivesPage,
+      },
+      // ── Family overviews — hidden from sidebar; deep-linkable by hash ──────
       {
         id: 'fes-os-pilot',
         name: 'Portfolio primitives',
         description: 'Family overview: actions, labels, status, surfaces, and project cards used by the portfolio.',
         Page: FesOsDemo,
       },
+      {
+        id: 'fes-os-settings',
+        name: 'Settings primitives',
+        description: 'Family overview: settings sidebar nav, accessible toggle rows, sliders, segmented choices, contrast cards, and color presets.',
+        Page: SettingsDemo,
+      },
+      // ── Desktop primitive detail pages — hidden from sidebar; deep-linkable ─
       {
         id: 'action-button',
         name: 'ActionButton',
@@ -510,12 +533,7 @@ export const NAV_GROUPS: NavGroup[] = [
         description: 'Surface shell for custom-positioned desktop context menus — popover background, border, and shadow.',
         Page: FesOsContextMenuSurfaceDemo,
       },
-      {
-        id: 'fes-os-settings',
-        name: 'Settings primitives',
-        description: 'Family overview: settings sidebar nav, accessible toggle rows, sliders, segmented choices, contrast cards, and color presets.',
-        Page: SettingsDemo,
-      },
+      // ── Settings primitive detail pages — hidden from sidebar; deep-linkable ─
       {
         id: 'settings-nav',
         name: 'SettingsNav',
@@ -1041,6 +1059,21 @@ export const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
+// ── Fes OS detail IDs — public pages not listed in sidebar/search ─────────────
+// These 18 IDs are deep-linkable public detail pages reachable from the
+// fes-os-primitives directory. They are excluded from sidebar and search but are
+// NOT "internal" pages — the "Internal" banner must not appear for them.
+export const FES_OS_DETAIL_IDS: ReadonlySet<string> = new Set([
+  'action-button', 'section-label', 'status-indicator', 'surface',
+  'project-card', 'window-surface', 'dock-item', 'desktop-launcher',
+  'sticky-note-surface', 'context-menu-surface',
+  'settings-nav', 'settings-toggle-row', 'settings-slider-group',
+  'settings-segmented-choice', 'settings-contrast-card',
+  'settings-color-preset', 'settings-divider', 'settings-section-header',
+  // Family overviews — also linked from directory; also public detail pages.
+  'fes-os-pilot', 'fes-os-settings',
+]);
+
 // ── Full flat list — ALL entries (including hidden) ───────────────────────────
 // Used for: deep-link resolution, DOC_COVERAGE_MAP audit, duplicate-id guard.
 export const ALL_ENTRIES: PreviewEntry[] = [
@@ -1088,6 +1121,8 @@ if (duplicateIds.length > 0) {
 export type DocCoverage = 'interactive+inline' | 'interactive+canonical' | 'canonical-only' | 'uncovered';
 
 export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
+  // ── Fes OS unified directory ─────────────────────────────────────────────────
+  'fes-os-primitives': 'interactive+canonical',
   // ── Fes OS family overview ───────────────────────────────────────────────────
   'fes-os-pilot': 'interactive+canonical',
   'fes-os-settings': 'interactive+canonical',
@@ -1234,5 +1269,27 @@ if (import.meta.env.DEV) {
       `[design-system] Orphaned visibility entries — ${orphanedVisibility.length} id(s) in PUBLIC_VISIBILITY_MAP have no registry entry:\n` +
       orphanedVisibility.map((id) => `  • ${id}`).join('\n'),
     );
+  }
+
+  // Assert: all 18 Fes OS + Settings detail IDs are registered in ALL_ENTRIES
+  // and documented, so the fes-os-primitives directory can deep-link to them.
+  const EXPECTED_FES_OS_DETAIL_IDS = [
+    'action-button', 'section-label', 'status-indicator', 'surface',
+    'project-card', 'window-surface', 'dock-item', 'desktop-launcher',
+    'sticky-note-surface', 'context-menu-surface',
+    'settings-nav', 'settings-toggle-row', 'settings-slider-group',
+    'settings-segmented-choice', 'settings-contrast-card',
+    'settings-color-preset', 'settings-divider', 'settings-section-header',
+  ] as const;
+
+  const missingDetailIds = EXPECTED_FES_OS_DETAIL_IDS.filter((id) => !allIds.has(id));
+  if (missingDetailIds.length > 0) {
+    console.error(
+      `[design-system] fes-os-primitives directory: ${missingDetailIds.length} detail page(s) not registered in ALL_ENTRIES:\n` +
+      missingDetailIds.map((id) => `  • ${id}`).join('\n') +
+      '\n  These must remain in NAV_GROUPS to be deep-linkable.',
+    );
+  } else if (EXPECTED_FES_OS_DETAIL_IDS.length !== 18) {
+    console.error('[design-system] Expected 18 Fes OS detail IDs, assertion list is wrong.');
   }
 }

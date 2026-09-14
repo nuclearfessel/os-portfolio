@@ -15,4 +15,4 @@ The living documentation browser must consume the design system it describes. It
 
 Determine public usage semantically from rendered portfolio behavior, including local wrappers and composed implementations—not only direct package imports. Used primitives need individual pages as well as references in applicable pattern pages.
 
-Keep the 18 Fes OS and Settings primitive details accessible through one compact “Fes OS primitives” directory entry; do not flatten all detail links into the sidebar.
+Keep the 18 Fes OS and Settings primitive details accessible through one compact “Fes OS primitives” directory entry under Patterns; do not flatten detail links into the sidebar. Detail pages must link back to the directory.

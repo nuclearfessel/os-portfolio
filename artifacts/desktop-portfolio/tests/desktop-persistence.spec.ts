@@ -323,7 +323,32 @@ test('About and Selected Work use distinct saturated application icons instead o
   const about = page.getByTestId('button-folder-about');
   const work = page.getByTestId('button-folder-work');
   const terminal = page.getByTestId('button-folder-terminal');
+  const stickies = page.getByTestId('button-folder-stickies-app');
 
+  await expect(about.getByTestId('icon-about-circle-user')).toBeVisible();
+  await expect(page.getByTestId('icon-dock-about-circle-user')).toBeVisible();
+  await expect(page.getByTestId('icon-stickies-bootstrap-fill')).toBeVisible();
+  await expect(page.getByTestId('icon-dock-stickies-bootstrap-fill')).toBeVisible();
+  await expect(terminal.getByTestId('icon-terminal-square')).toBeVisible();
+  await expect(page.getByTestId('icon-dock-terminal-square')).toBeVisible();
+  const terminalLauncherStyle = await terminal.locator('.desktop-app-icon').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { background: style.backgroundImage, border: style.borderColor, color: style.color };
+  });
+  const terminalDockStyle = await page.getByTestId('button-dock-terminal').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { background: style.backgroundImage, border: style.borderColor, color: style.color };
+  });
+  expect(terminalDockStyle).toEqual(terminalLauncherStyle);
+  const stickiesLauncherStyle = await stickies.locator('.desktop-app-icon').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { background: style.backgroundImage, border: style.borderColor, color: style.color };
+  });
+  const stickiesDockStyle = await page.getByTestId('button-dock-stickies').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { background: style.backgroundImage, border: style.borderColor, color: style.color };
+  });
+  expect(stickiesDockStyle).toEqual(stickiesLauncherStyle);
   await expect(about).toHaveClass(/desktop-app/);
   await expect(work).toHaveClass(/desktop-app/);
   await expect(about.locator('.desktop-app-icon')).toBeVisible();

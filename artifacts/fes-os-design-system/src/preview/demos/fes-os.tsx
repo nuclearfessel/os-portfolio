@@ -95,16 +95,29 @@ export function FesOsDemo() {
         <DesktopLauncher className="rounded-md border border-border p-3 text-sm" open>About launcher</DesktopLauncher>
         <div className="space-y-2">
           <SectionLabel>desktop / tooltip label</SectionLabel>
-          <DockItem className="size-14 bg-secondary" active aria-label="Active desktop Dock item">
-            01
-            <DockItemLabel presentation="tooltip" className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 opacity-100">
-              Work &middot; 2
-            </DockItemLabel>
-          </DockItem>
+          <div className="inline-flex gap-2 rounded-xl border border-border bg-card p-2">
+            <DockItem
+              className="size-14 border-accent bg-secondary ring-[3px] ring-primary after:absolute after:-bottom-2 after:left-1/2 after:h-1 after:w-[18px] after:-translate-x-1/2 after:rounded-full after:bg-primary after:content-['']"
+              active
+              aria-label="Active desktop Dock item"
+              aria-current="true"
+            >
+              01
+              <DockItemLabel presentation="tooltip" className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 opacity-100">
+                Work &middot; 2
+              </DockItemLabel>
+            </DockItem>
+            <DockItem
+              className="size-14 border-accent bg-secondary hover:outline-2 hover:outline-offset-2 hover:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              aria-label="Inactive desktop Dock item"
+            >
+              02
+            </DockItem>
+          </div>
         </div>
         <div className="space-y-2">
           <SectionLabel>mobile + tablet / inline label</SectionLabel>
-          <DockItem className="flex h-14 w-20 flex-col gap-1 bg-secondary" active aria-label="Active responsive Dock item">
+          <DockItem className="flex h-14 w-20 flex-col gap-1 border-accent bg-secondary ring-[3px] ring-primary after:absolute after:-bottom-2 after:left-1/2 after:h-1 after:w-[26px] after:-translate-x-1/2 after:rounded-full after:bg-primary after:content-['']" active aria-label="Active responsive Dock item" aria-current="true">
             01
             <DockItemLabel presentation="inline">Work</DockItemLabel>
           </DockItem>

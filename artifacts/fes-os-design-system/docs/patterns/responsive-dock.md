@@ -88,6 +88,17 @@ The inline label sits as a child in the `DockItem`'s flex column:
 
 Mobile navigation must remain fixed at the bottom — do not hide it or make it scrollable.
 
+### Desktop spacing
+
+| Measurement | Value |
+|---|---|
+| Gap between Dock items | 8px |
+| Dock padding, all edges | 8px |
+| Inactive item border | 1px solid, one shared color per theme |
+
+Use the spacing pair together. Do not independently tighten the edge padding or
+increase the gaps between items.
+
 ---
 
 ## Accessibility checklist
@@ -102,12 +113,13 @@ Mobile navigation must remain fixed at the bottom — do not hide it or make it 
 - [ ] Active items use a full-tile ring and a substantial edge pill, not a small dot alone.
 - [ ] The active pill remains visible beneath mobile and tablet inline labels.
 - [ ] Hover styling applies only to inactive items; active items remain unchanged under the pointer.
+- [ ] All inactive items use the same 1px border color within a theme.
 
 ---
 
 ## Tokens
 
-`bg-secondary`, `border-border`, `bg-primary` (active fill), `text-primary-foreground`, `rounded-lg`, `bg-popover`, `border-border`, `font-mono`, `shadow`
+`bg-secondary`, `border-accent` (shared inactive border), `ring-primary` (active ring and pill), `text-primary-foreground`, `rounded-lg`, `gap-2`, `p-2`, `bg-popover`, `border-border`, `font-mono`
 
 ---
 
@@ -119,9 +131,10 @@ Mobile navigation must remain fixed at the bottom — do not hide it or make it 
 | Give every DockItem an `aria-label` | Rely on DockItemLabel text as the accessible name |
 | Keep the Dock fixed at the bottom on mobile | Make the Dock scroll horizontally on small screens |
 | Use `active` prop to reflect current section | Manage active state only via CSS |
-| Use a flat outline and border change for branded app feedback | Move, brighten, emboss, or recolor Dock items on hover |
+| Use a flat outline while preserving the shared inactive border | Move, brighten, emboss, recolor, or change Dock item borders on hover |
 | Keep the active ring and edge pill visible in every theme and breakpoint | Hide the active indicator on mobile or rely on color alone |
 | Keep active items visually stable on hover | Add a second hover treatment on top of active styling |
+| Standardize inactive items on one 1px border color | Use unrelated border colors for each inactive app tile |
 
 ---
 
@@ -137,7 +150,7 @@ function NavDock({ section, setSection, isDesktop }) {
   ];
 
   return (
-    <nav aria-label="Main navigation" className="flex gap-2">
+    <nav aria-label="Main navigation" className="flex gap-2 rounded-xl border border-border bg-card p-2">
       {items.map((item) => (
         <DockItem
           key={item.id}
@@ -146,9 +159,13 @@ function NavDock({ section, setSection, isDesktop }) {
           aria-current={section === item.id ? 'true' : undefined}
           onClick={() => setSection(item.id)}
           className={
-            isDesktop
-              ? 'relative size-14 border-border bg-secondary'
-              : 'relative flex h-14 w-20 flex-col items-center gap-1 border-border bg-secondary'
+            section === item.id
+              ? isDesktop
+                ? "relative size-14 border-accent bg-secondary ring-[3px] ring-primary after:absolute after:-bottom-2 after:left-1/2 after:h-1 after:w-[18px] after:-translate-x-1/2 after:rounded-full after:bg-primary after:content-['']"
+                : "relative flex h-14 w-20 flex-col items-center gap-1 border-accent bg-secondary ring-[3px] ring-primary after:absolute after:-bottom-2 after:left-1/2 after:h-1 after:w-[26px] after:-translate-x-1/2 after:rounded-full after:bg-primary after:content-['']"
+              : isDesktop
+                ? 'relative size-14 border-accent bg-secondary hover:outline-2 hover:outline-offset-2 hover:outline-ring'
+                : 'relative flex h-14 w-20 flex-col items-center gap-1 border-accent bg-secondary hover:outline-2 hover:outline-offset-2 hover:outline-ring'
           }
         >
           {item.icon}

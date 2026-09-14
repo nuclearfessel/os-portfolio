@@ -169,6 +169,23 @@ test('Dock hover and focus preserve app identity and keep utility controls legib
       await page.getByTestId('button-close-settings').click();
     }
 
+    const inactiveItems = page.locator('.dock:not(.dock-mobile-menu):not(.dock-tablet-menu) .dock-item:not(.active)');
+    await inactiveItems.evaluateAll(async (items) => {
+      await Promise.all(items.flatMap((item) => item.getAnimations().map((animation) => animation.finished)));
+    });
+    const inactiveBorders = await inactiveItems.evaluateAll((items) => (
+      items.map((item) => {
+        const style = getComputedStyle(item);
+        return {
+          color: style.borderTopColor,
+          width: style.borderTopWidth,
+          style: style.borderTopStyle,
+        };
+      })
+    ));
+    expect(new Set(inactiveBorders.map((border) => border.color)).size).toBe(1);
+    expect(inactiveBorders.every((border) => border.width === '1px' && border.style === 'solid')).toBe(true);
+
     for (const id of appIds) {
       const item = page.getByTestId(`button-dock-${id}`);
       const before = await item.evaluate((element) => {

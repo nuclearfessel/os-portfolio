@@ -165,6 +165,26 @@ test.describe('Window transparency toggle', () => {
     await goToAccessibility(page);
     const switchEl = page.getByTestId('settings-a11y-transparency-switch');
     await expect(switchEl).toHaveAttribute('aria-checked', 'true');
+    await expect(page.getByTestId('settings-a11y-transparency-slider')).toHaveValue('20');
+  });
+
+  test('transparency slider updates the level and root CSS variable', async ({ page }) => {
+    await openSettings(page);
+    await goToAccessibility(page);
+    const slider = page.getByTestId('settings-a11y-transparency-slider');
+    await slider.fill('55');
+    await expect(page.getByTestId('settings-a11y-transparency-value')).toHaveText('55%');
+    await expect(slider).toHaveAttribute('aria-valuetext', '55% transparent');
+    expect(await page.evaluate(() =>
+      document.documentElement.style.getPropertyValue('--accessibility-transparency'),
+    )).toBe('55%');
+  });
+
+  test('turning transparency off hides the level slider', async ({ page }) => {
+    await openSettings(page);
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-transparency-switch').click();
+    await expect(page.getByTestId('settings-a11y-transparency-group')).not.toBeVisible();
   });
 
   test('turning transparency off sets data-no-transparency on <html>', async ({ page }) => {
@@ -441,6 +461,18 @@ test.describe('Accessibility prefs persist across reload', () => {
       document.documentElement.hasAttribute('data-no-transparency'),
     );
     expect(attrSet).toBe(true);
+  });
+
+  test('transparency level survives reload', async ({ page }) => {
+    await openSettings(page);
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-transparency-slider').fill('45');
+    await closeSettings(page);
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await openSettings(page);
+    await goToAccessibility(page);
+    await expect(page.getByTestId('settings-a11y-transparency-slider')).toHaveValue('45');
   });
 
   test('animations-off pref survives reload', async ({ page }) => {

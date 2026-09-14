@@ -57,6 +57,7 @@ type ContrastTheme = 'none' | 'low' | 'high';
 type AccessibilityPrefs = {
   alwaysShowScrollbars: boolean;
   windowTransparency: boolean;
+  transparencyLevel: number;
   uiAnimations: boolean;
   animationSpeed: AnimationSpeed;
   contrastTheme: ContrastTheme;
@@ -65,6 +66,7 @@ type AccessibilityPrefs = {
 const DEFAULT_ACCESSIBILITY_PREFS: AccessibilityPrefs = {
   alwaysShowScrollbars: false,
   windowTransparency: true,
+  transparencyLevel: 20,
   uiAnimations: true,
   animationSpeed: 'default',
   contrastTheme: 'none',
@@ -287,6 +289,9 @@ function parseAccessibilityPrefs(raw: unknown): AccessibilityPrefs {
   return {
     alwaysShowScrollbars: typeof a.alwaysShowScrollbars === 'boolean' ? a.alwaysShowScrollbars : DEFAULT_ACCESSIBILITY_PREFS.alwaysShowScrollbars,
     windowTransparency: typeof a.windowTransparency === 'boolean' ? a.windowTransparency : DEFAULT_ACCESSIBILITY_PREFS.windowTransparency,
+    transparencyLevel: typeof a.transparencyLevel === 'number' && Number.isFinite(a.transparencyLevel)
+      ? Math.max(0, Math.min(70, Math.round(a.transparencyLevel)))
+      : DEFAULT_ACCESSIBILITY_PREFS.transparencyLevel,
     uiAnimations: typeof a.uiAnimations === 'boolean' ? a.uiAnimations : DEFAULT_ACCESSIBILITY_PREFS.uiAnimations,
     animationSpeed: (['less', 'default', 'more'] as AnimationSpeed[]).includes(a.animationSpeed as AnimationSpeed)
       ? a.animationSpeed as AnimationSpeed
@@ -916,6 +921,38 @@ function SettingsWindow({
                     onChange={(v) => updateAccessibility({ windowTransparency: v })}
                     data-testid="settings-a11y-transparency"
                   />
+
+                  {accessibility.windowTransparency && (
+                    <div className="settings-transparency-group" data-testid="settings-a11y-transparency-group">
+                      <div className="settings-transparency-heading">
+                        <span className="settings-label">Transparency level</span>
+                        <output
+                          className="settings-transparency-value"
+                          htmlFor="a11y-transparency-level"
+                          data-testid="settings-a11y-transparency-value"
+                        >
+                          {accessibility.transparencyLevel}%
+                        </output>
+                      </div>
+                      <input
+                        id="a11y-transparency-level"
+                        className="settings-transparency-slider"
+                        type="range"
+                        min="0"
+                        max="70"
+                        step="5"
+                        value={accessibility.transparencyLevel}
+                        onChange={(event) => updateAccessibility({ transparencyLevel: Number(event.currentTarget.value) })}
+                        aria-label="Window transparency level"
+                        aria-valuetext={`${accessibility.transparencyLevel}% transparent`}
+                        data-testid="settings-a11y-transparency-slider"
+                      />
+                      <div className="settings-transparency-scale" aria-hidden="true">
+                        <span>Subtle</span>
+                        <span>More transparent</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="settings-divider" />
@@ -1467,8 +1504,12 @@ function Home() {
     // Transparency
     if (!accessibility.windowTransparency) {
       root.setAttribute('data-no-transparency', '');
+      root.removeAttribute('data-transparency-enabled');
+      root.style.removeProperty('--accessibility-transparency');
     } else {
       root.removeAttribute('data-no-transparency');
+      root.setAttribute('data-transparency-enabled', '');
+      root.style.setProperty('--accessibility-transparency', `${accessibility.transparencyLevel}%`);
     }
     // Animations
     if (!accessibility.uiAnimations) {

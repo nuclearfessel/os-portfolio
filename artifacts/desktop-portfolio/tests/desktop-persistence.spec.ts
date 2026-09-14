@@ -1220,6 +1220,101 @@ test('Settings wallpaper mode: color removes background image and applies solid 
   expect(saved.wallpaperLight.color).toBe('#345678');
 });
 
+test('selected light and dark solid wallpaper colors persist in tablet and mobile layouts', async ({ page }) => {
+  const shell = page.locator('main.os-shell');
+
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await page.getByTestId('cp-field-hex').fill('345678');
+  await page.getByTestId('cp-field-hex').press('Enter');
+  await page.getByTestId('button-close-settings').click();
+
+  for (const viewport of [
+    { width: 1024, height: 768, workspaceClass: /workspace-tablet-landscape/ },
+    { width: 390, height: 844, workspaceClass: /workspace-managed/ },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(shell).toHaveClass(viewport.workspaceClass);
+    await expect(shell).toHaveClass(/wallpaper-color/);
+    await expect(shell).toHaveCSS('background-color', 'rgb(52, 86, 120)');
+    await expect(shell).toHaveCSS('background-image', 'none');
+  }
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('cp-field-hex').fill('654321');
+  await page.getByTestId('cp-field-hex').press('Enter');
+  await page.getByTestId('button-close-settings').click();
+
+  for (const viewport of [
+    { width: 1024, height: 768, workspaceClass: /workspace-tablet-landscape/ },
+    { width: 390, height: 844, workspaceClass: /workspace-managed/ },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(shell).toHaveClass(viewport.workspaceClass);
+    await expect(shell).toHaveClass(/theme-dark/);
+    await expect(shell).toHaveClass(/wallpaper-color/);
+    await expect(shell).toHaveCSS('background-color', 'rgb(101, 67, 33)');
+    await expect(shell).toHaveCSS('background-image', 'none');
+  }
+});
+
+test('desktop text personalization and theme-specific colors can be edited and persist', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  const settingsWindow = page.getByTestId('window-settings');
+  const editor = settingsWindow.locator('.settings-intro-editor');
+  await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(3);
+
+  const settingsBox = await settingsWindow.boundingBox();
+  const resizeHandle = settingsWindow.locator('.window-resize-e');
+  const resizeBox = await resizeHandle.boundingBox();
+  expect(settingsBox).not.toBeNull();
+  expect(resizeBox).not.toBeNull();
+  await page.mouse.move(resizeBox!.x + resizeBox!.width / 2, resizeBox!.y + resizeBox!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(settingsBox!.x + 540, resizeBox!.y + resizeBox!.height / 2);
+  await page.mouse.up();
+  await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
+
+  const primaryInput = page.getByTestId('settings-intro-primary-text');
+  await primaryInput.fill('Interfaces with intent.');
+
+  await page.getByTestId('settings-intro-primary-color').click();
+  const colorDialog = page.getByRole('dialog', { name: 'Primary headline color' });
+  await expect(colorDialog).toBeVisible();
+  await expect(page.locator('.text-color-dialog-overlay')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await colorDialog.getByTestId('cp-field-hex').fill('123456');
+  await colorDialog.getByTestId('cp-field-hex').press('Enter');
+  await page.keyboard.press('Escape');
+
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('settings-intro-primary-color').click();
+  await expect(page.getByRole('dialog', { name: 'Primary headline color' })).toBeVisible();
+  await page.getByRole('dialog', { name: 'Primary headline color' }).getByTestId('cp-field-hex').fill('FEDCBA');
+  await page.getByRole('dialog', { name: 'Primary headline color' }).getByTestId('cp-field-hex').press('Enter');
+  await page.keyboard.press('Escape');
+  await page.getByTestId('button-close-settings').click();
+
+  const primaryHeadline = page.locator('.desktop-intro h1 > span');
+  await expect(primaryHeadline).toHaveText('Interfaces with intent.');
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(254, 220, 186)');
+
+  await page.reload();
+  await expect(primaryHeadline).toHaveText('Interfaces with intent.');
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(254, 220, 186)');
+
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-theme-light').click();
+  await page.getByTestId('button-close-settings').click();
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(18, 52, 86)');
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+  expect(saved.introCustomization.text.primary).toBe('Interfaces with intent.');
+  expect(saved.introCustomization.colors.light.primary).toBe('#123456');
+  expect(saved.introCustomization.colors.dark.primary).toBe('#fedcba');
+});
+
 test('solid color mode offers the original light and dark default color blocks', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   await page.getByTestId('settings-wallpaper-mode-color-light').click();

@@ -57,6 +57,7 @@ Grid: `gridTemplateColumns: '160px 1fr'`. Sidebar uses `bg-sidebar border-r bord
 |---|---|
 | Active section | Product state → `active` + `aria-current` on `SettingsNavItem` |
 | Preference values | Product state (localStorage, URL, in-memory) |
+| Editable display copy | Product state; copy is shared across themes while each element's color is stored per theme |
 | DOM attribute writes | Product (see [State contracts](../references/components/settings.md#state-contracts)) |
 | "Save as Default" / "Reset" | Product — not design system behavior |
 | Window position / open state | Product |
@@ -87,6 +88,8 @@ This is the reference implementation of the universal Fes OS side-navigation win
 - [ ] `SettingsSegmentedChoice` uses `role="radiogroup"` and `role="radio"`.
 - [ ] `SettingsContrastCard` parent has `role="radiogroup"`.
 - [ ] `SettingsColorPreset` uses `aria-pressed`.
+- [ ] Full color pickers open in a named modal dialog and restore focus to their trigger on close.
+- [ ] Three-item Personalization groups use three equal columns at `620px` and wider, then one full-width row per item below that container width.
 
 ---
 
@@ -104,6 +107,7 @@ This is the reference implementation of the universal Fes OS side-navigation win
 | Use `SettingsDivider` between major setting groups | Use generic `Separator` inside settings pane |
 | Keep all state in the consuming product | Add localStorage logic to design system components |
 | Show `SettingsSliderGroup` conditionally (when parent toggle is on) | Always render the slider regardless of toggle state |
+| Put the full color picker in a floating `Dialog` with a transparent overlay | Expand a complex color picker inline or add a warning-style scrim |
 
 ---
 

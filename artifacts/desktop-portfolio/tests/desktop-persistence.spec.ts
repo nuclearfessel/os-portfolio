@@ -319,6 +319,68 @@ test('lists work files with names that match the selected projects', async ({ pa
   await expect(output).not.toContainText('orbit-crm');
 });
 
+test('About and Selected Work use distinct saturated application icons instead of folders', async ({ page }) => {
+  const about = page.getByTestId('button-folder-about');
+  const work = page.getByTestId('button-folder-work');
+  const terminal = page.getByTestId('button-folder-terminal');
+
+  await expect(about).toHaveClass(/desktop-app/);
+  await expect(work).toHaveClass(/desktop-app/);
+  await expect(about.locator('.desktop-app-icon')).toBeVisible();
+  await expect(work.locator('.desktop-app-icon')).toBeVisible();
+  await expect(about.locator('.desktop-folder-icon')).toHaveCount(0);
+  await expect(work.locator('.desktop-folder-icon')).toHaveCount(0);
+  await expect(about).toHaveAttribute('aria-label', /application$/);
+  await expect(work).toHaveAttribute('aria-label', /application$/);
+
+  const backgrounds = await Promise.all(
+    [about, work, terminal].map((launcher) => launcher.locator('.desktop-app-icon').evaluate(
+      (element) => getComputedStyle(element).backgroundImage,
+    )),
+  );
+  expect(new Set(backgrounds).size).toBe(3);
+});
+
+test('Contact uses a filled Keyline icon with its own saturated app treatment', async ({ page }) => {
+  const contact = page.getByTestId('button-folder-contact');
+  const contactIcon = contact.locator('.desktop-app-icon');
+
+  await expect(contact.getByTestId('icon-contact-mail-fill')).toBeVisible();
+  await expect(contact.getByTestId('icon-contact-mail-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
+  await expect(contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-layer')).toHaveCount(2);
+  await expect(contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-status')).toBeVisible();
+  const layerColors = await contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-layer').evaluateAll(
+    (layers) => layers.map((layer) => getComputedStyle(layer).color),
+  );
+  expect(new Set(layerColors).size).toBe(2);
+  const contactBackground = await contactIcon.evaluate((element) => getComputedStyle(element).backgroundImage);
+  const otherBackgrounds = await Promise.all(
+    ['about', 'work', 'terminal', 'stickies-app'].map((id) => page.getByTestId(`button-folder-${id}`).locator('.desktop-app-icon').evaluate(
+      (element) => getComputedStyle(element).backgroundImage,
+    )),
+  );
+  expect(contactBackground).toContain('linear-gradient');
+  expect(otherBackgrounds).not.toContain(contactBackground);
+});
+
+test('Dock mirrors the saturated About, Selected Work, and filled Contact app identities', async ({ page }) => {
+  const dockLaunchers = [
+    page.getByTestId('button-dock-about'),
+    page.getByTestId('button-dock-work'),
+    page.getByTestId('button-dock-contact'),
+  ];
+
+  await expect(page.getByTestId('icon-dock-contact-mail-fill')).toBeVisible();
+  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
+  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('.contact-mail-layer')).toHaveCount(2);
+  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('.contact-mail-status')).toBeVisible();
+  const backgrounds = await Promise.all(dockLaunchers.map((launcher) => launcher.evaluate(
+    (element) => getComputedStyle(element).backgroundImage,
+  )));
+  expect(backgrounds.every((background) => background.includes('linear-gradient'))).toBe(true);
+  expect(new Set(backgrounds).size).toBe(3);
+});
+
 test('keeps mobile and tablet dock labels free of desktop tooltip effects', async ({ page }) => {
   for (const viewport of [
     { width: 390, height: 844 },
@@ -1218,6 +1280,110 @@ test('Settings wallpaper mode: color removes background image and applies solid 
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
   expect(saved.wallpaperLight.mode).toBe('color');
   expect(saved.wallpaperLight.color).toBe('#345678');
+});
+
+test('selected light and dark solid wallpaper colors persist in tablet and mobile layouts', async ({ page }) => {
+  const shell = page.locator('main.os-shell');
+
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await page.getByTestId('cp-field-hex').fill('345678');
+  await page.getByTestId('cp-field-hex').press('Enter');
+  await page.getByTestId('button-close-settings').click();
+
+  for (const viewport of [
+    { width: 1024, height: 768, workspaceClass: /workspace-tablet-landscape/ },
+    { width: 390, height: 844, workspaceClass: /workspace-managed/ },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(shell).toHaveClass(viewport.workspaceClass);
+    await expect(shell).toHaveClass(/wallpaper-color/);
+    await expect(shell).toHaveCSS('background-color', 'rgb(52, 86, 120)');
+    await expect(shell).toHaveCSS('background-image', 'none');
+  }
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('cp-field-hex').fill('654321');
+  await page.getByTestId('cp-field-hex').press('Enter');
+  await page.getByTestId('button-close-settings').click();
+
+  for (const viewport of [
+    { width: 1024, height: 768, workspaceClass: /workspace-tablet-landscape/ },
+    { width: 390, height: 844, workspaceClass: /workspace-managed/ },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(shell).toHaveClass(viewport.workspaceClass);
+    await expect(shell).toHaveClass(/theme-dark/);
+    await expect(shell).toHaveClass(/wallpaper-color/);
+    await expect(shell).toHaveCSS('background-color', 'rgb(101, 67, 33)');
+    await expect(shell).toHaveCSS('background-image', 'none');
+  }
+});
+
+test('desktop text personalization and theme-specific colors can be edited and persist', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  const settingsWindow = page.getByTestId('window-settings');
+  const editor = settingsWindow.locator('.settings-intro-editor');
+  const itemHeights = () => editor.locator('.settings-intro-field').evaluateAll(
+    (items) => items.map((item) => item.getBoundingClientRect().height),
+  );
+  const expectEqualItemHeights = async () => {
+    const heights = await itemHeights();
+    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
+  };
+  await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(3);
+  await expectEqualItemHeights();
+
+  const settingsBox = await settingsWindow.boundingBox();
+  const resizeHandle = settingsWindow.locator('.window-resize-e');
+  const resizeBox = await resizeHandle.boundingBox();
+  expect(settingsBox).not.toBeNull();
+  expect(resizeBox).not.toBeNull();
+  await page.mouse.move(resizeBox!.x + resizeBox!.width / 2, resizeBox!.y + resizeBox!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(settingsBox!.x + 540, resizeBox!.y + resizeBox!.height / 2);
+  await page.mouse.up();
+  await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
+  await expectEqualItemHeights();
+
+  const primaryInput = page.getByTestId('settings-intro-primary-text');
+  await primaryInput.fill('Interfaces with intent.');
+
+  await page.getByTestId('settings-intro-primary-color').click();
+  const colorDialog = page.getByRole('dialog', { name: 'Primary headline color' });
+  await expect(colorDialog).toBeVisible();
+  await expect(page.locator('.text-color-dialog-overlay')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await colorDialog.getByTestId('cp-field-hex').fill('123456');
+  await colorDialog.getByTestId('cp-field-hex').press('Enter');
+  await page.keyboard.press('Escape');
+
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('settings-intro-primary-color').click();
+  await expect(page.getByRole('dialog', { name: 'Primary headline color' })).toBeVisible();
+  await page.getByRole('dialog', { name: 'Primary headline color' }).getByTestId('cp-field-hex').fill('FEDCBA');
+  await page.getByRole('dialog', { name: 'Primary headline color' }).getByTestId('cp-field-hex').press('Enter');
+  await page.keyboard.press('Escape');
+  await page.getByTestId('button-close-settings').click();
+
+  const primaryHeadline = page.locator('.desktop-intro h1 > span');
+  await expect(primaryHeadline).toHaveText('Interfaces with intent.');
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(254, 220, 186)');
+
+  await page.reload();
+  await expect(primaryHeadline).toHaveText('Interfaces with intent.');
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(254, 220, 186)');
+
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-theme-light').click();
+  await page.getByTestId('button-close-settings').click();
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(18, 52, 86)');
+
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+  expect(saved.introCustomization.text.primary).toBe('Interfaces with intent.');
+  expect(saved.introCustomization.colors.light.primary).toBe('#123456');
+  expect(saved.introCustomization.colors.dark.primary).toBe('#fedcba');
 });
 
 test('solid color mode offers the original light and dark default color blocks', async ({ page }) => {

@@ -6,10 +6,14 @@ import {
   Check, FileText as StickyNote, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
   Moon, Plus, Settings, Sun, Terminal, CircleUser as UserRound, Wifi, Eye, X,
 } from '@keyline-icons/react';
+import { Mail as MailFill } from '@keyline-icons/react/fill';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@workspace/fes-os-design-system/components/ui/toaster';
 import { TooltipProvider } from '@workspace/fes-os-design-system/components/ui/tooltip';
 import { Separator } from '@workspace/fes-os-design-system/components/ui/separator';
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
+} from '@workspace/fes-os-design-system/components/ui/dialog';
 import {
   ActionButton,
   ContextMenuSurface,
@@ -39,6 +43,11 @@ type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
 type DockPosition = 'top' | 'right' | 'bottom' | 'left';
+type IntroTextKey = 'primary' | 'accent' | 'body';
+type IntroCustomization = {
+  text: Record<IntroTextKey, string>;
+  colors: Record<Theme, Record<IntroTextKey, string>>;
+};
 type Position = { left: number; top: number };
 type Size = { width: number; height: number };
 type WorkspaceBounds = { left: number; top: number; right: number; bottom: number };
@@ -245,11 +254,23 @@ type SavedDesktopState = {
   wallpaperLight?: WallpaperConfig;
   wallpaperDark?: WallpaperConfig;
   accessibility?: AccessibilityPrefs;
+  introCustomization?: IntroCustomization;
 };
 
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
 const DESKTOP_DEFAULT_STORAGE_KEY = 'fes-os.desktop.default.v1';
 const DESKTOP_GRID_SIZE = 8;
+const DEFAULT_INTRO_CUSTOMIZATION: IntroCustomization = {
+  text: {
+    primary: 'Thoughtful interfaces.',
+    accent: 'Fast systems.',
+    body: 'Fes Naqvi is a product-minded designer making things feel clear, capable, and a little more human.',
+  },
+  colors: {
+    light: { primary: '#17213b', accent: '#0b665d', body: '#586878' },
+    dark: { primary: '#f0f0e0', accent: '#e4ff5b', body: '#aeb2cb' },
+  },
+};
 
 function snapWithinDesktopGrid(value: number, min: number, max: number) {
   const firstGridLine = Math.ceil(min / DESKTOP_GRID_SIZE) * DESKTOP_GRID_SIZE;
@@ -278,6 +299,7 @@ const defaultDesktopState: SavedDesktopState = {
   wallpaperLight: DEFAULT_WALLPAPER_LIGHT,
   wallpaperDark: DEFAULT_WALLPAPER_DARK,
   accessibility: DEFAULT_ACCESSIBILITY_PREFS,
+  introCustomization: DEFAULT_INTRO_CUSTOMIZATION,
 };
 
 function parseWallpaperConfig(raw: unknown): WallpaperConfig | undefined {
@@ -287,6 +309,26 @@ function parseWallpaperConfig(raw: unknown): WallpaperConfig | undefined {
   if (!mode) return undefined;
   const color = typeof config.color === 'string' && /^#[0-9a-f]{6}$/i.test(config.color) ? config.color : '#111326';
   return { mode, color };
+}
+
+function parseIntroCustomization(raw: unknown): IntroCustomization {
+  if (!raw || typeof raw !== 'object') return DEFAULT_INTRO_CUSTOMIZATION;
+  const value = raw as Partial<IntroCustomization>;
+  const parseText = (key: IntroTextKey) => {
+    const candidate = value.text?.[key];
+    return typeof candidate === 'string' && candidate.trim() ? candidate.slice(0, key === 'body' ? 240 : 80) : DEFAULT_INTRO_CUSTOMIZATION.text[key];
+  };
+  const parseColor = (theme: Theme, key: IntroTextKey) => {
+    const candidate = value.colors?.[theme]?.[key];
+    return typeof candidate === 'string' && /^#[0-9a-f]{6}$/i.test(candidate) ? candidate : DEFAULT_INTRO_CUSTOMIZATION.colors[theme][key];
+  };
+  return {
+    text: { primary: parseText('primary'), accent: parseText('accent'), body: parseText('body') },
+    colors: {
+      light: { primary: parseColor('light', 'primary'), accent: parseColor('light', 'accent'), body: parseColor('light', 'body') },
+      dark: { primary: parseColor('dark', 'primary'), accent: parseColor('dark', 'accent'), body: parseColor('dark', 'body') },
+    },
+  };
 }
 
 function parseAccessibilityPrefs(raw: unknown): AccessibilityPrefs {
@@ -438,6 +480,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       wallpaperLight: parseWallpaperConfig(parsed.wallpaperLight) ?? DEFAULT_WALLPAPER_LIGHT,
       wallpaperDark: parseWallpaperConfig(parsed.wallpaperDark) ?? DEFAULT_WALLPAPER_DARK,
       accessibility: parseAccessibilityPrefs(parsed.accessibility),
+      introCustomization: parseIntroCustomization(parsed.introCustomization),
     };
   } catch {
     return defaultDesktopState;
@@ -788,6 +831,8 @@ function SettingsWindow({
   onSetWallpaperDark,
   accessibility,
   onSetAccessibility,
+  introCustomization,
+  onSetIntroCustomization,
   ...props
 }: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
   theme: Theme;
@@ -798,8 +843,11 @@ function SettingsWindow({
   onSetWallpaperDark: (config: WallpaperConfig) => void;
   accessibility: AccessibilityPrefs;
   onSetAccessibility: (prefs: AccessibilityPrefs) => void;
+  introCustomization: IntroCustomization;
+  onSetIntroCustomization: (value: IntroCustomization) => void;
 }) {
   const [activeSection, setActiveSection] = useState<SettingsSection>('personalization');
+  const [textColorTarget, setTextColorTarget] = useState<IntroTextKey | null>(null);
 
   const currentWallpaper = theme === 'light' ? wallpaperLight : wallpaperDark;
   const setWallpaperMode = (mode: WallpaperMode) => {
@@ -822,6 +870,23 @@ function SettingsWindow({
 
   const handleContrastThemeChange = (ct: ContrastTheme) => {
     updateAccessibility({ contrastTheme: ct });
+  };
+  const introLabels: Record<IntroTextKey, string> = {
+    primary: 'Primary headline',
+    accent: 'Accent headline',
+    body: 'Body paragraph',
+  };
+  const updateIntroText = (key: IntroTextKey, value: string) => {
+    onSetIntroCustomization({ ...introCustomization, text: { ...introCustomization.text, [key]: value } });
+  };
+  const updateIntroColor = (key: IntroTextKey, color: string) => {
+    onSetIntroCustomization({
+      ...introCustomization,
+      colors: {
+        ...introCustomization.colors,
+        [theme]: { ...introCustomization.colors[theme], [key]: color },
+      },
+    });
   };
 
   return (
@@ -902,6 +967,50 @@ function SettingsWindow({
                         Dark
                       </span>
                     </button>
+                  </div>
+                </div>
+
+                <div className="settings-divider" />
+
+                <div className="settings-section">
+                  <div className="settings-section-header">
+                    <span className="settings-label">Desktop text personalization</span>
+                    <span className="settings-description">Edit the three desktop text elements and set separate colors for the {theme} theme.</span>
+                  </div>
+                  <div className="settings-intro-editor">
+                    {(['primary', 'accent', 'body'] as const).map((key) => (
+                      <label className="settings-intro-field" key={key}>
+                        <span>{introLabels[key]}</span>
+                        <span className="settings-intro-input-row">
+                          {key === 'body' ? (
+                            <textarea
+                              value={introCustomization.text[key]}
+                              maxLength={240}
+                              rows={3}
+                              onChange={(event) => updateIntroText(key, event.currentTarget.value)}
+                              data-testid={`settings-intro-${key}-text`}
+                            />
+                          ) : (
+                            <input
+                              value={introCustomization.text[key]}
+                              maxLength={80}
+                              onChange={(event) => updateIntroText(key, event.currentTarget.value)}
+                              data-testid={`settings-intro-${key}-text`}
+                            />
+                          )}
+                          <button
+                            type="button"
+                            className="settings-intro-color-button"
+                            aria-label={`Choose ${introLabels[key].toLowerCase()} color for ${theme} theme`}
+                            onClick={() => setTextColorTarget(key)}
+                            data-testid={`settings-intro-${key}-color`}
+                          >
+                            <span style={{ backgroundColor: introCustomization.colors[theme][key] }} aria-hidden="true" />
+                            {introCustomization.colors[theme][key].toUpperCase()}
+                          </button>
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
@@ -1210,6 +1319,26 @@ function SettingsWindow({
           </div>
         </div>
       </div>
+      <Dialog open={textColorTarget !== null} onOpenChange={(open) => { if (!open) setTextColorTarget(null); }}>
+        <DialogContent
+          className={`text-color-dialog theme-${theme}`}
+          overlayClassName="text-color-dialog-overlay"
+          data-testid="text-color-dialog"
+        >
+          <DialogHeader>
+            <DialogTitle>{textColorTarget ? `${introLabels[textColorTarget]} color` : 'Text color'}</DialogTitle>
+            <DialogDescription>Editing the {theme}-theme color. The other theme keeps its own value.</DialogDescription>
+          </DialogHeader>
+          {textColorTarget && (
+            <ColorPicker
+              id={`intro-${textColorTarget}-${theme}`}
+              value={introCustomization.colors[theme][textColorTarget]}
+              onChange={(color) => updateIntroColor(textColorTarget, color)}
+              theme={theme}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </WindowFrame>
   );
 }
@@ -1542,6 +1671,21 @@ function DesktopFolder({
   );
 }
 
+function ContactMailIcon({ size, testId }: { size: number; testId: string }) {
+  return (
+    <span
+      className="contact-mail-icon"
+      style={{ width: size, height: size }}
+      data-testid={testId}
+      aria-hidden="true"
+    >
+      <MailFill className="contact-mail-layer contact-mail-base" size={size} />
+      <MailFill className="contact-mail-layer contact-mail-coral" size={size} />
+      <span className="contact-mail-status" />
+    </span>
+  );
+}
+
 // Compute desktop wallpaper background style
 function desktopBackground(theme: Theme, wallpaperLight: WallpaperConfig, wallpaperDark: WallpaperConfig, contrastTheme: ContrastTheme): React.CSSProperties {
   // Contrast themes override wallpaper
@@ -1600,6 +1744,7 @@ function Home() {
   const [wallpaperLight, setWallpaperLight] = useState<WallpaperConfig>(savedDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
   const [wallpaperDark, setWallpaperDark] = useState<WallpaperConfig>(savedDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
   const [accessibility, setAccessibility] = useState<AccessibilityPrefs>(savedDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
+  const [introCustomization, setIntroCustomization] = useState<IntroCustomization>(savedDesktopState.introCustomization ?? DEFAULT_INTRO_CUSTOMIZATION);
 
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const contextMenuOpenerRef = useRef<HTMLElement | null>(null);
@@ -1699,6 +1844,7 @@ function Home() {
     wallpaperLight,
     wallpaperDark,
     accessibility,
+    introCustomization,
   });
 
   const retryDesktopSave = () => {
@@ -1947,7 +2093,7 @@ function Home() {
       setStorageUnavailable(true);
       setStorageRestored(false);
     }
-  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode, wallpaperLight, wallpaperDark, accessibility]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode, wallpaperLight, wallpaperDark, accessibility, introCustomization]);
 
   useEffect(() => {
     if (!storageRestored) return;
@@ -2552,6 +2698,7 @@ function Home() {
     setWallpaperLight(resetDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
     setWallpaperDark(resetDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
     setAccessibility(resetDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
+    setIntroCustomization(resetDesktopState.introCustomization ?? DEFAULT_INTRO_CUSTOMIZATION);
     setWindows(restoredWindows);
     setActiveWindow(restoredActiveWindow);
     setWindowStack(restoredWindowStack);
@@ -2637,23 +2784,26 @@ function Home() {
       : { ...itemStyle(id), zIndex: 4 + windowStack.indexOf(id) },
   });
 
-  // Compute wallpaper background for desktop area
-  const currentWallpaperStyle = workspaceMode === 'desktop'
-    ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
-    : {};
-
-  // For picture wallpaper: the os-shell base gradient should be suppressed;
-  // we handle that via a CSS class on the shell.
   const wallpaperConfig = theme === 'light' ? wallpaperLight : wallpaperDark;
+  // Picture wallpapers stay desktop-only, while the selected solid color follows
+  // its theme into tablet and mobile. Contrast modes continue to own the managed
+  // workspace background.
+  const appliesSelectedWallpaper = workspaceMode === 'desktop'
+    || (wallpaperConfig.mode === 'color' && accessibility.contrastTheme === 'none');
+  const currentWallpaperStyle = appliesSelectedWallpaper
+    ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
+    : undefined;
+
+  // When a wallpaper is applied, suppress the shell's default gradient.
   // In contrast mode the class is always 'wallpaper-color' for override styling
   const wallpaperClass = accessibility.contrastTheme !== 'none' ? 'wallpaper-color' : `wallpaper-${wallpaperConfig.mode}`;
 
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${workspaceMode === 'desktop' ? wallpaperClass : ''}`}
+      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
-      style={workspaceMode === 'desktop' ? currentWallpaperStyle : undefined}
+      style={currentWallpaperStyle}
     >
       <header className="system-bar">
         <div className="system-left">
@@ -2718,8 +2868,12 @@ function Home() {
       >
         <div className="desktop-intro">
           <SectionLabel className="eyebrow">personal workspace / v1.0</SectionLabel>
-          <h1>Thoughtful interfaces.<br /><em>Fast systems.</em></h1>
-          <p>Fes Naqvi is a product-minded designer making things feel clear, capable, and a little more human.</p>
+          <h1>
+            <span style={{ color: introCustomization.colors[theme].primary }}>{introCustomization.text.primary}</span>
+            <br />
+            <em style={{ color: introCustomization.colors[theme].accent }}>{introCustomization.text.accent}</em>
+          </h1>
+          <p style={{ color: introCustomization.colors[theme].body }}>{introCustomization.text.body}</p>
           <div className="quick-actions">
             <ActionButton className="quick-button primary" variant="primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></ActionButton>
             <ActionButton className="quick-button" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></ActionButton>
@@ -2728,10 +2882,10 @@ function Home() {
 
         {showDesktopIcons && workspaceMode === 'desktop' && (
           <div className="desktop-folders" aria-label="Desktop applications and folders">
-            <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} />
-            <DesktopFolder singleTap={singleTapLaunch} id="work" label="selected work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} />
+            <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} appIcon={<UserRound size={31} strokeWidth={1.8} />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="work" label="selected work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} appIcon={<FolderGit2 size={31} strokeWidth={1.8} />} />
             <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
-            <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<Mail size={30} strokeWidth={1.7} />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<ContactMailIcon size={30} testId="icon-contact-mail-fill" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<StickyNote size={30} strokeWidth={1.7} />} />
           </div>
         )}
@@ -2857,6 +3011,8 @@ function Home() {
             onSetWallpaperDark={setWallpaperDark}
             accessibility={accessibility}
             onSetAccessibility={setAccessibility}
+            introCustomization={introCustomization}
+            onSetIntroCustomization={setIntroCustomization}
           />
         )}
       </div>
@@ -3154,9 +3310,9 @@ function Home() {
           });
         }}
       >
-        <DockItem className="dock-item" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open selected work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Selected work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
-        <DockItem className="dock-item" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
-        <DockItem className="dock-item" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-work" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open selected work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Selected work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-about" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-contact" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><ContactMailIcon size={20} testId="icon-dock-contact-mail-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
         {workspaceMode !== 'desktop' && (
             <DockItem
               className={`dock-item dock-mode-toggle mode-${theme}`}

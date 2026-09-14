@@ -2233,8 +2233,15 @@ button { cursor: pointer; }
 
 :root[data-transparency-enabled]:not([data-contrast]) .settings-nav,
 :root[data-transparency-enabled]:not([data-contrast]) .desktop-context-menu,
-:root[data-transparency-enabled]:not([data-contrast]) .context-menu-surface {
+:root[data-transparency-enabled]:not([data-contrast]) .context-menu-surface,
+:root[data-transparency-enabled]:not([data-contrast]) .context-submenu {
   background: rgb(20 22 42 / calc(100% - var(--accessibility-transparency))) !important;
+}
+
+:root[data-transparency-enabled]:not([data-contrast]) .desktop-context-menu,
+:root[data-transparency-enabled]:not([data-contrast]) .context-menu-surface,
+:root[data-transparency-enabled]:not([data-contrast]) .context-submenu {
+  background: rgb(29 32 54 / calc(100% - var(--accessibility-transparency))) !important;
 }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .window {
@@ -2244,6 +2251,12 @@ button { cursor: pointer; }
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .window-header,
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .settings-nav {
   background: rgb(218 232 228 / calc(100% - var(--accessibility-transparency))) !important;
+}
+
+:root[data-transparency-enabled]:not([data-contrast]) .theme-light .desktop-context-menu,
+:root[data-transparency-enabled]:not([data-contrast]) .theme-light .context-menu-surface,
+:root[data-transparency-enabled]:not([data-contrast]) .theme-light .context-submenu {
+  background: rgb(247 250 248 / calc(100% - var(--accessibility-transparency))) !important;
 }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .dock,

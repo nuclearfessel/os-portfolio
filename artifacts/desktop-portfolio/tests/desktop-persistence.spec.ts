@@ -172,6 +172,31 @@ test('suppresses native context menus at every responsive breakpoint', async ({ 
   }
 });
 
+test('desktop context menu keeps its intended surface styling in light and dark themes', async ({ page }) => {
+  const expectedBackgrounds = {
+    light: 'rgba(247, 250, 248, 0.8)',
+    dark: 'rgba(29, 32, 54, 0.8)',
+  } as const;
+
+  for (const theme of ['light', 'dark'] as const) {
+    await page.evaluate(([key, selectedTheme]) => {
+      localStorage.setItem(key, JSON.stringify({ theme: selectedTheme }));
+    }, [storageKey, theme]);
+    await page.reload();
+    await openDesktopMenu(page);
+
+    const menu = page.getByTestId('menu-desktop-context');
+    await expect(menu).toHaveCSS('background-color', expectedBackgrounds[theme]);
+
+    await page.getByRole('menuitem', { name: 'View' }).hover();
+    const submenu = page.getByRole('menu', { name: 'Icon size' });
+    await expect(submenu).toBeVisible();
+    await expect(submenu).toHaveCSS('background-color', expectedBackgrounds[theme]);
+
+    await page.keyboard.press('Escape');
+  }
+});
+
 test('keeps keyboard focus predictable in desktop, dock, and sticky context menus', async ({ page }) => {
   const desktop = page.locator('.desktop-area');
   await desktop.focus();

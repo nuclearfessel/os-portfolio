@@ -83,6 +83,10 @@ pnpm run build
 pnpm --filter @workspace/desktop-portfolio run test:e2e
 ```
 
+### Approved branch checklist
+
+Before an approved branch is committed and merged, review whether its changes require corresponding updates to this README, Claude instructions or skills, package metadata or exports, and package documentation. Update only the applicable surfaces.
+
 ## Automated website releases
 
 Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, packages the contents of `artifacts/desktop-portfolio/dist/public/`, and publishes a deployable ZIP such as `site-package-v01.01.zip` under the repository’s **Releases** section.

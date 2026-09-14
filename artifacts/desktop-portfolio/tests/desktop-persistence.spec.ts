@@ -1560,6 +1560,29 @@ test('settings sections collapse independently and allow multiple sections to st
   await expect(motion).toHaveAttribute('aria-expanded', 'true');
 });
 
+test('switching settings pages resets the content pane to the top', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  const content = page.getByTestId('window-settings').locator('.settings-content');
+
+  for (const section of ['theme', 'desktop-text', 'wallpaper', 'surface-effects']) {
+    await page.getByTestId(`settings-section-trigger-${section}`).click();
+  }
+  await content.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+
+  await page.getByTestId('settings-nav-accessibility').click();
+  await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBe(0);
+
+  for (const section of ['display', 'motion', 'contrast']) {
+    await page.getByTestId(`settings-section-trigger-${section}`).click();
+  }
+  await content.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+
+  await page.getByTestId('settings-nav-personalization').click();
+  await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBe(0);
+});
+
 test('solid color mode offers the original light and dark default color blocks', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   await page.getByTestId('settings-wallpaper-mode-color-light').click();

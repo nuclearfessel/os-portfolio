@@ -83,6 +83,12 @@ pnpm run build
 pnpm --filter @workspace/desktop-portfolio run test:e2e
 ```
 
+## Automated website ZIPs
+
+Every push to `main` or any other branch runs the **Build website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, packages the contents of `artifacts/desktop-portfolio/dist/public/`, and uploads a deployable ZIP named with the branch and commit.
+
+Download a build from the corresponding workflow run under the repository’s **Actions** tab. Website ZIP artifacts are retained for 30 days.
+
 ## Design-system development
 
 Design tokens are defined in `artifacts/fes-os-design-system/tokens.json` and generated before design-system builds and type checks.

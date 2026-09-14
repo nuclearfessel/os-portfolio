@@ -1577,6 +1577,14 @@ button { cursor: pointer; }
   accent-color: #e4ff5b;
 }
 
+.settings-transparency-slider::-webkit-slider-runnable-track {
+  height: 4px;
+}
+
+.settings-transparency-slider::-moz-range-track {
+  height: 4px;
+}
+
 .theme-light .settings-transparency-slider {
   accent-color: #0b665d;
 }
@@ -1892,7 +1900,7 @@ button { cursor: pointer; }
 }
 
 .fes-scrollbar-window *::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
   height: 4px;
 }
 
@@ -1920,7 +1928,9 @@ button { cursor: pointer; }
 
 .fes-scrollbar-window *::-webkit-scrollbar-thumb {
   background-color: var(--fes-scrollbar-thumb);
+  border-right: 2px solid transparent;
   border-radius: 9999px;
+  background-clip: padding-box;
   transition: background-color 180ms ease;
 }
 

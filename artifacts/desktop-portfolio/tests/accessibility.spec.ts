@@ -162,7 +162,11 @@ test.describe('Always show scrollbars toggle', () => {
     )).toBe('rgba(0, 0, 0, 0)');
     await expect.poll(() => settingsContent.evaluate((element) =>
       getComputedStyle(element, '::-webkit-scrollbar').width,
-    )).toBe('4px');
+    )).toBe('6px');
+    await expect.poll(() => settingsContent.evaluate((element) => {
+      const thumb = getComputedStyle(element, '::-webkit-scrollbar-thumb');
+      return [thumb.borderRightWidth, thumb.backgroundClip];
+    })).toEqual(['2px', 'padding-box']);
     await expect.poll(() => settingsContent.evaluate((element) =>
       getComputedStyle(element, '::-webkit-scrollbar-button').display,
     )).toBe('none');
@@ -224,6 +228,9 @@ test.describe('Transparency effects', () => {
     expect(await page.evaluate(() =>
       document.documentElement.style.getPropertyValue('--accessibility-transparency'),
     )).toBe('55%');
+    await expect.poll(() => slider.evaluate((element) =>
+      getComputedStyle(element, '::-webkit-slider-runnable-track').height,
+    )).toBe('4px');
   });
 
   test('sticky transparency slider updates the level and root CSS variable', async ({ page }) => {
@@ -236,6 +243,9 @@ test.describe('Transparency effects', () => {
     expect(await page.evaluate(() =>
       document.documentElement.style.getPropertyValue('--sticky-transparency'),
     )).toBe('45%');
+    await expect.poll(() => slider.evaluate((element) =>
+      getComputedStyle(element, '::-webkit-slider-runnable-track').height,
+    )).toBe('4px');
   });
 
   test('transparency sliders sit side by side in a large window and stack when narrowed', async ({ page }) => {

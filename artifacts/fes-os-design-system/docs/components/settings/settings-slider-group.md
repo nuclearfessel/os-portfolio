@@ -55,6 +55,8 @@ A range slider with a live value readout and optional guidance labels. Used for 
 
 ## Behavior contract
 
+The slider track is 4px high. Keep the thumb and input hit area larger so the control remains easy to drag.
+
 Show `SettingsSliderGroup` only when its parent toggle is on:
 
 ```tsx

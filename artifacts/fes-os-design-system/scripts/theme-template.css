@@ -339,7 +339,7 @@
   }
 }
 .fes-scrollbar-window *::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
   height: 4px;
 }
 .fes-scrollbar-window *::-webkit-scrollbar-button,
@@ -364,11 +364,21 @@
 }
 .fes-scrollbar-window *::-webkit-scrollbar-thumb {
   background-color: var(--fes-scrollbar-thumb);
+  border-right: 2px solid transparent;
   border-radius: 9999px;
+  background-clip: padding-box;
   transition: background-color 180ms ease;
 }
 .fes-scrollbar-window *::-webkit-scrollbar-thumb:hover {
   background-color: var(--fes-scrollbar-thumb-hover);
+}
+
+.fes-settings-slider::-webkit-slider-runnable-track {
+  height: 4px;
+}
+
+.fes-settings-slider::-moz-range-track {
+  height: 4px;
 }
 
 /* --------------------------------------------------------------------------

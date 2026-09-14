@@ -135,7 +135,7 @@ button { cursor: pointer; }
 .desktop-folder:nth-child(5) { left: 430px; bottom: 150px; }
 .desktop-folder:hover, .desktop-folder:focus-visible { color: #fff; outline: none; }
 .desktop-folder:active { cursor: grabbing; }
-.desktop-folder-icon { position: relative; display: block; width: 58px; height: 43px; border-radius: 5px 7px 7px 7px; background: linear-gradient(180deg, #81c7f4 0%, #4c9ee3 52%, #347fca 100%); box-shadow: 0 6px 12px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.42); transition: filter .1s, transform .14s ease; }
+.desktop-folder-icon { position: relative; display: block; width: 58px; height: 43px; border-radius: 5px 7px 7px 7px; background: linear-gradient(180deg, #81c7f4 0%, #4c9ee3 52%, #347fca 100%); box-shadow: 0 6px 12px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.42); transition: filter .1s, transform .07s ease; }
 .desktop-folder-icon::before { content: ''; position: absolute; left: 4px; top: -6px; width: 25px; height: 10px; border-radius: 5px 5px 0 0; background: #68b4ea; box-shadow: inset 0 1px 0 rgba(255,255,255,.28); }
 .desktop-folder-icon::after { content: ''; position: absolute; inset: 5px 4px auto; height: 1px; background: rgba(255,255,255,.32); }
 .desktop-launcher-work .desktop-folder-icon { background: linear-gradient(180deg, #f49a83 0%, #d75b64 52%, #a83850 100%); }

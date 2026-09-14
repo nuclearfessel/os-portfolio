@@ -10,3 +10,4 @@
 - [Wallpaper selection across themes](wallpaper-selection-across-themes.md) — picture versus solid color remains selected when switching light and dark themes.
 - [Color picker keyboard isolation](color-picker-keyboard-isolation.md) — numeric entry must never trigger the desktop’s numbered Dock shortcuts.
 - [Accessibility contrast wallpapers](accessibility-contrast-wallpapers.md) — contrast themes replace wallpaper visually without discarding the user’s saved wallpaper choice.
+- [GitHub push authentication](github-push-authentication.md) — connected GitHub integrations may still require browser-based CLI authentication for shell pushes.

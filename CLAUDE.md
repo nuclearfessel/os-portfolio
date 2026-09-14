@@ -14,8 +14,9 @@ Run commands from the repository root:
 pnpm install
 PORT=5173 pnpm --filter @workspace/desktop-portfolio run dev
 pnpm --filter @workspace/desktop-portfolio run typecheck
+pnpm --filter @workspace/desktop-portfolio run test:e2e:persistence
 pnpm --filter @workspace/desktop-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
-PORT=3000 pnpm --filter @workspace/desktop-portfolio run build
+pnpm --filter @workspace/desktop-portfolio run build
 ```
 
 ## Main files
@@ -36,7 +37,16 @@ PORT=3000 pnpm --filter @workspace/desktop-portfolio run build
 - Do not reintroduce pathname-based client routing; it caused blank pages under nested FTP paths.
 - Do not add a backend dependency. This portfolio is a static site.
 - Maintain keyboard focus states and accessible labels when modifying controls.
+- Keep desktop context-menu submenus collapsed on open. Arrow Down starts keyboard navigation.
+- `Save state as default` must overwrite the complete reset snapshot, including open/maximized windows, active window, stacking order, stickies, geometry, Dock, and preferences.
 
 ## Completion checks
 
-Run the smallest relevant test during development. Before handing off a release, run typecheck, the responsive tests when responsive behavior changed, and the production build. Do not include `node_modules`, `dist`, Playwright reports, test results, or `*.tsbuildinfo` in source archives.
+Run the smallest relevant test during development. Before handing off a release, run typecheck, the persistence suite when desktop state changed, responsive tests when responsive behavior changed, and the production build.
+
+## Generated files
+
+- Upload-ready build: `artifacts/desktop-portfolio/dist/public/`
+- Downloadable source bundle: `claude-desktop-portfolio-source.zip`
+- The ZIP also contains a top-level `public/` copy of the latest production build and `DEPLOYMENT.md`.
+- Source portions of the ZIP exclude `node_modules`, package `dist` folders, Playwright reports/results, caches, environment files, and `*.tsbuildinfo`.

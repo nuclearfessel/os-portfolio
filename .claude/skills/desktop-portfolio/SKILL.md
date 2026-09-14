@@ -23,6 +23,8 @@ The site simulates a desktop OS on large screens and becomes a managed app inter
 4. Use separate persisted identities for launchers and windows. Moving the About launcher must not move the About window.
 5. Keep theme, icon size, snap-to-grid, Dock position, sticky state, and desktop geometry persistent.
 6. Handle blocked or unavailable local storage explicitly; do not silently pretend saving succeeded.
+7. `Save state as default` must atomically replace the complete reset snapshot: geometry, window visibility, active/maximized windows, full bottom-to-top window stack, sticky collection/visibility/active sticky, Dock, theme, icons, and preferences.
+8. `Reset desktop…` must restore the latest saved default, not a mixture of the custom snapshot and built-in initial state.
 
 ## Responsive rules
 
@@ -45,6 +47,8 @@ The site simulates a desktop OS on large screens and becomes a managed app inter
 - Exclude traffic-light buttons from toolbar double-click behavior.
 - Suppress native pressed artifacts on invisible sticky rotation handles while retaining keyboard-only focus indication.
 - Mobile/tablet app selection must focus the selected open window.
+- Context menus receive initial focus as containers so their first submenu stays collapsed. Arrow Down focuses the first item; hover or keyboard focus may then reveal a submenu.
+- Browser-native context menus and iOS touch callouts remain disabled while custom desktop, Dock, and sticky menus remain usable.
 
 ## Visual rules
 
@@ -53,6 +57,7 @@ The site simulates a desktop OS on large screens and becomes a managed app inter
 - Avoid emoji interface icons.
 - Keep mobile navigation icons and labels inside stable footprints so state changes do not shift layout.
 - Preserve solid managed-window surfaces for readability.
+- Current motion timings are intentionally quick: windows `0.07s`, folder transforms `0.07s`, mode opacity `0.12s`, and mode transform `0.17s`.
 
 ## Editing workflow
 

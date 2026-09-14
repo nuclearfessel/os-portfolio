@@ -195,6 +195,12 @@ type SavedDesktopState = {
   stickies: StickyData[];
   dockPosition: DockPosition;
   windowStack?: WindowId[];
+  windows?: WindowState;
+  activeWindow?: WindowId;
+  maximizedWindows?: Partial<Record<WindowId, boolean>>;
+  stickyVisible?: boolean;
+  stickyOnTop?: boolean;
+  activeStickyId?: StickyItemId;
 };
 
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
@@ -212,6 +218,12 @@ const defaultDesktopState: SavedDesktopState = {
   stickies: [defaultSticky, defaultSecondSticky],
   dockPosition: 'bottom',
   windowStack: ['work', 'about', 'contact', 'terminal'],
+  windows: { about: true, work: true, contact: false, terminal: false },
+  activeWindow: 'about',
+  maximizedWindows: {},
+  stickyVisible: true,
+  stickyOnTop: false,
+  activeStickyId: 'sticky',
 };
 
 function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
@@ -292,6 +304,29 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       ...savedWindowStack,
       ...(['work', 'about', 'contact', 'terminal'] as WindowId[]).filter((id) => !savedWindowStack.includes(id)),
     ];
+    const windows = Object.fromEntries((['about', 'work', 'contact', 'terminal'] as WindowId[]).map((id) => [
+      id,
+      typeof parsed.windows?.[id] === 'boolean'
+        ? parsed.windows[id]
+        : defaultDesktopState.windows?.[id] ?? false,
+    ])) as WindowState;
+    const activeWindow = ['about', 'work', 'contact', 'terminal'].includes(parsed.activeWindow as string)
+      ? parsed.activeWindow as WindowId
+      : defaultDesktopState.activeWindow ?? 'about';
+    const maximizedWindows = Object.fromEntries(
+      Object.entries(parsed.maximizedWindows ?? {}).filter(
+        (entry): entry is [WindowId, boolean] => (
+          ['about', 'work', 'contact', 'terminal'].includes(entry[0])
+          && typeof entry[1] === 'boolean'
+        ),
+      ),
+    );
+    const activeStickyId = (
+      typeof parsed.activeStickyId === 'string'
+      && stickies.some((sticky) => sticky.id === parsed.activeStickyId)
+    )
+      ? parsed.activeStickyId as StickyItemId
+      : stickies[0]?.id ?? 'sticky';
 
     return {
       folderPositions,
@@ -304,6 +339,12 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       stickies: Array.isArray(parsed.stickies) ? stickies : defaultDesktopState.stickies,
       dockPosition: ['bottom', 'top', 'left', 'right'].includes(parsed.dockPosition as string) ? (parsed.dockPosition as DockPosition) : defaultDesktopState.dockPosition,
       windowStack,
+      windows,
+      activeWindow,
+      maximizedWindows,
+      stickyVisible: typeof parsed.stickyVisible === 'boolean' ? parsed.stickyVisible : defaultDesktopState.stickyVisible,
+      stickyOnTop: typeof parsed.stickyOnTop === 'boolean' ? parsed.stickyOnTop : defaultDesktopState.stickyOnTop,
+      activeStickyId,
     };
   } catch {
     return defaultDesktopState;
@@ -1743,6 +1784,13 @@ function Home() {
   };
   const resetDesktop = () => {
     const restoredWindowStack = resetDesktopState.windowStack ?? defaultDesktopState.windowStack ?? [];
+    const restoredWindows = resetDesktopState.windows ?? initialWindows;
+    const restoredActiveWindow = (
+      resetDesktopState.activeWindow
+      && restoredWindows[resetDesktopState.activeWindow]
+    )
+      ? resetDesktopState.activeWindow
+      : [...restoredWindowStack].reverse().find((id) => restoredWindows[id]) ?? 'about';
     try {
       window.localStorage.removeItem(DESKTOP_STORAGE_KEY);
     } catch {
@@ -1762,14 +1810,14 @@ function Home() {
     setShowDesktopIcons(resetDesktopState.showDesktopIcons);
     setStickies(resetDesktopState.stickies);
     setDockPosition(resetDesktopState.dockPosition);
-    setWindows(initialWindows);
-    setActiveWindow([...restoredWindowStack].reverse().find((id) => initialWindows[id]) ?? 'about');
+    setWindows(restoredWindows);
+    setActiveWindow(restoredActiveWindow);
     setWindowStack(restoredWindowStack);
-    setMaximizedWindows({});
-    setStickyVisible(true);
-    setStickyOnTop(false);
+    setMaximizedWindows(resetDesktopState.maximizedWindows ?? {});
+    setStickyVisible(resetDesktopState.stickyVisible ?? true);
+    setStickyOnTop(resetDesktopState.stickyOnTop ?? false);
     setMobileOpen(false);
-    setActiveStickyId('sticky');
+    setActiveStickyId(resetDesktopState.activeStickyId ?? resetDesktopState.stickies[0]?.id ?? 'sticky');
     setContextMenu(null);
     setStickyMenu(null);
     setResetDialogOpen(false);
@@ -1778,6 +1826,12 @@ function Home() {
     const currentState: SavedDesktopState = {
       ...getCurrentDesktopState(),
       windowStack,
+      windows,
+      activeWindow,
+      maximizedWindows,
+      stickyVisible,
+      stickyOnTop,
+      activeStickyId,
     };
     try {
       window.localStorage.setItem(DESKTOP_DEFAULT_STORAGE_KEY, JSON.stringify(currentState));
@@ -1923,7 +1977,7 @@ function Home() {
             <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} />
             <DesktopFolder singleTap={singleTapLaunch} id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} />
             <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
-            <DesktopFolder singleTap={singleTapLaunch} id="contact" label="Contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<Mail size={30} strokeWidth={1.7} />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<Mail size={30} strokeWidth={1.7} />} />
             <DesktopFolder singleTap={singleTapLaunch} id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<StickyNote size={30} strokeWidth={1.7} />} />
           </div>
         )}

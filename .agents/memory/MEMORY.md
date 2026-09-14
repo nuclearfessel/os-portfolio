@@ -7,3 +7,4 @@
 - [Responsive Dock labels](responsive-dock-labels.md) — desktop labels use tooltip surfaces; mobile and tablet labels remain plain inline text.
 - [TypeScript upgrade ceiling](typescript-upgrade-ceiling.md) — keep TypeScript on the newest Orval-compatible release until TypeDoc accepts the next major.
 - [Saved desktop defaults](saved-desktop-defaults.md) — overwriting the reset baseline must capture the complete workspace snapshot, not geometry alone.
+- [Wallpaper selection across themes](wallpaper-selection-across-themes.md) — picture versus solid color remains selected when switching light and dark themes.

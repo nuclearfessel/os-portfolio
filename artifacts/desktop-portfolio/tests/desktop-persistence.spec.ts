@@ -1217,12 +1217,13 @@ test('wallpaper choice persists across page reload', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   await expect(page.getByTestId('window-settings')).toBeVisible();
 
-  // Switch light theme to color mode
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await page.getByTestId('settings-wallpaper-color-light').fill('#345678');
 
-  // Switch to dark theme and set it to color mode too
   await page.getByTestId('settings-theme-dark').click();
-  await page.getByTestId('settings-wallpaper-mode-color-dark').click();
+  await expect(page.getByTestId('settings-wallpaper-mode-color-dark')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('settings-wallpaper-color-dark')).toHaveValue('#345678');
+  await expect(page.locator('main.os-shell')).toHaveCSS('background-color', 'rgb(52, 86, 120)');
 
   await page.getByTestId('button-close-settings').click();
 

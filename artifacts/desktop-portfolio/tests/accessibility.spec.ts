@@ -216,6 +216,7 @@ test.describe('Transparency effects', () => {
     await goToPersonalization(page);
     await expect(page.getByTestId('settings-personalization-window-transparency-slider')).toHaveValue('20');
     await expect(page.getByTestId('settings-personalization-sticky-transparency-slider')).toHaveValue('20');
+    await expect(page.getByTestId('settings-personalization-blur-slider')).toHaveValue('12');
   });
 
   test('window transparency slider updates the level and root CSS variable', async ({ page }) => {
@@ -252,7 +253,19 @@ test.describe('Transparency effects', () => {
     })).toEqual(['4px', '10px', 'matrix(1, 0, 0, 1, 0, -2)', '14px', '10px', 'matrix(1, 0, 0, 1, 0, -7)']);
   });
 
-  test('transparency sliders sit side by side in a large window and stack when narrowed', async ({ page }) => {
+  test('blur slider updates the level and root CSS variable', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    const slider = page.getByTestId('settings-personalization-blur-slider');
+    await slider.fill('20');
+    await expect(page.getByTestId('settings-personalization-blur-value')).toHaveText('20px');
+    await expect(slider).toHaveAttribute('aria-valuetext', '20 pixels of blur');
+    expect(await page.evaluate(() =>
+      document.documentElement.style.getPropertyValue('--surface-blur'),
+    )).toBe('20px');
+  });
+
+  test('all three effect sliders share one row in a large window and stack when narrowed', async ({ page }) => {
     await openSettings(page);
     await goToPersonalization(page);
     const settingsWindow = page.getByTestId('window-settings');
@@ -260,7 +273,7 @@ test.describe('Transparency effects', () => {
 
     await expect.poll(() => sliderGrid.evaluate((element) =>
       getComputedStyle(element).gridTemplateColumns.split(' ').length,
-    )).toBe(2);
+    )).toBe(3);
 
     await settingsWindow.evaluate((element) => {
       element.style.width = '560px';
@@ -271,13 +284,19 @@ test.describe('Transparency effects', () => {
     )).toBe(1);
   });
 
-  test('turning transparency off replaces both level sliders with guidance', async ({ page }) => {
+  test('transparency and blur toggles independently control their level sliders', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
     await page.getByTestId('settings-a11y-transparency-switch').click();
     await goToPersonalization(page);
     await expect(page.getByTestId('settings-personalization-window-transparency')).not.toBeVisible();
     await expect(page.getByTestId('settings-personalization-sticky-transparency')).not.toBeVisible();
+    await expect(page.getByTestId('settings-personalization-blur')).toBeVisible();
+
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-blur-switch').click();
+    await goToPersonalization(page);
+    await expect(page.getByTestId('settings-personalization-blur')).not.toBeVisible();
     await expect(page.getByTestId('settings-transparency-disabled-notice')).toBeVisible();
   });
 
@@ -302,6 +321,16 @@ test.describe('Transparency effects', () => {
       document.documentElement.hasAttribute('data-no-transparency'),
     );
     expect(attrSet).toBe(false);
+  });
+
+  test('turning blur effects off removes backdrop blur without changing transparency', async ({ page }) => {
+    await openSettings(page);
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-blur-switch').click();
+    expect(await page.evaluate(() => ({
+      noBlur: document.documentElement.hasAttribute('data-no-blur'),
+      transparencyEnabled: document.documentElement.hasAttribute('data-transparency-enabled'),
+    }))).toEqual({ noBlur: true, transparencyEnabled: true });
   });
 });
 
@@ -574,6 +603,22 @@ test.describe('Accessibility prefs persist across reload', () => {
     expect(attrSet).toBe(true);
   });
 
+  test('blur preference and level survive reload', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    await page.getByTestId('settings-personalization-blur-slider').fill('20');
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-blur-switch').click();
+    await closeSettings(page);
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    expect(await page.evaluate((key) => ({
+      noBlur: document.documentElement.hasAttribute('data-no-blur'),
+      blurLevel: JSON.parse(localStorage.getItem(key) ?? '{}').accessibility?.blurLevel,
+    }), storageKey)).toEqual({ noBlur: true, blurLevel: 20 });
+  });
+
   test('window transparency level survives reload', async ({ page }) => {
     await openSettings(page);
     await goToPersonalization(page);
@@ -641,6 +686,7 @@ test.describe('Accessibility prefs persist across reload', () => {
     await openSettings(page);
     await goToAccessibility(page);
     await page.getByTestId('settings-a11y-scrollbars-switch').click();
+    await page.getByTestId('settings-a11y-blur-switch').click();
     await page.getByTestId('settings-a11y-speed-more').click();
     await page.getByTestId('settings-a11y-animations-switch').click();
 
@@ -655,6 +701,7 @@ test.describe('Accessibility prefs persist across reload', () => {
 
     expect(stored).not.toBeNull();
     expect(stored.alwaysShowScrollbars).toBe(true);
+    expect(stored.blurEffects).toBe(false);
   });
 });
 

@@ -96,6 +96,20 @@ import { SettingsSliderGroup } from '@workspace/fes-os-design-system/components/
       guidanceStart="Subtle"
       guidanceEnd="More transparent"
     />
+    {prefs.blurEffects && (
+      <SettingsSliderGroup
+        id="personalization-blur"
+        label="Blur"
+        value={prefs.blurLevel}
+        min={0}
+        max={24}
+        step={2}
+        unit="px"
+        onChange={(v) => updatePrefs({ blurLevel: v })}
+        guidanceStart="Sharp"
+        guidanceEnd="More blurred"
+      />
+    )}
     <SettingsSliderGroup
       id="personalization-sticky-transparency"
       label="Sticky transparency"
@@ -126,6 +140,7 @@ document.documentElement.style.setProperty(
   String(prefs.transparencyLevel / 100)   // unitless alpha, range 0–0.7
 );
 document.documentElement.setAttribute('data-transparency-enabled', '');
+document.documentElement.style.setProperty('--surface-blur', `${prefs.blurLevel}px`);
 ```
 
 Only surfaces carrying the `.fes-surface-translucent` package class (defined in

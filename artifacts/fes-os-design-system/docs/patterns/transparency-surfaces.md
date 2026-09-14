@@ -6,7 +6,7 @@
 
 ## Intent
 
-Windows, the Dock, menus, and stickies can carry translucency that shows desktop content beneath. Accessibility owns the system-wide Transparency effects switch; Personalization owns separate window and sticky levels. The design system provides the primitives that respond to these preferences, while the consuming product applies them to relevant surfaces.
+Windows, the Dock, menus, and stickies can carry translucency and backdrop blur. Accessibility owns independent system-wide Transparency effects and Blur effects switches; Personalization owns separate window and sticky transparency levels plus one shared blur level. The design system provides the primitives that respond to these preferences, while the consuming product applies them to relevant surfaces.
 
 ---
 
@@ -24,9 +24,10 @@ Apply this class to any surface that should respond to the transparency preferen
 
 | Shell state | What the CSS does |
 |---|---|
-| No attribute (default) | Moderate translucency with backdrop-filter blur(12px) + `--accessibility-transparency: 0.2` |
-| `data-transparency-enabled` + `--accessibility-transparency` | Uses the variable value (0–0.7) for background alpha; keeps backdrop-filter |
-| `data-no-transparency` | Forces fully opaque background; removes backdrop-filter |
+| No attribute (default) | Moderate translucency with `--accessibility-transparency: 0.2` and `--surface-blur: 12px` fallbacks |
+| `data-transparency-enabled` + `--accessibility-transparency` | Uses the variable value (0–0.7) for background alpha |
+| `data-no-transparency` | Forces fully opaque background without changing the blur preference |
+| `data-no-blur` | Removes backdrop blur without changing transparency |
 | `data-contrast="low"` or `data-contrast="high"` | Forces fully opaque (same as `data-no-transparency`) |
 
 ---
@@ -66,6 +67,11 @@ document.documentElement.style.setProperty(
   String(prefs.transparencyLevel / 100)
 );
 document.documentElement.style.setProperty(
+  '--surface-blur',
+  `${prefs.blurLevel}px`
+);
+document.documentElement.setAttribute('data-blur-enabled', '');
+document.documentElement.style.setProperty(
   '--sticky-transparency',
   String(prefs.stickyTransparencyLevel / 100)
 );
@@ -74,6 +80,10 @@ document.documentElement.style.setProperty(
 document.documentElement.setAttribute('data-no-transparency', '');
 document.documentElement.style.removeProperty('--accessibility-transparency');
 document.documentElement.removeAttribute('data-transparency-enabled');
+
+// Disable blur independently
+document.documentElement.setAttribute('data-no-blur', '');
+document.documentElement.style.removeProperty('--surface-blur');
 ```
 
 ---
@@ -86,6 +96,8 @@ document.documentElement.removeAttribute('data-transparency-enabled');
 | `data-transparency-enabled` attribute | Consuming product |
 | `--accessibility-transparency` CSS variable | Consuming product |
 | `data-no-transparency` attribute | Consuming product |
+| `data-no-blur` attribute | Consuming product |
+| `--surface-blur` CSS variable | Consuming product |
 | When contrast theme forces opaque | Package CSS (automatic) |
 
 ---
@@ -101,7 +113,8 @@ document.documentElement.removeAttribute('data-transparency-enabled');
 - [ ] Translucent surfaces maintain readable text contrast against the backdrop.
 - [ ] Transparency is disabled when any contrast theme is active (automatic via package CSS).
 - [ ] The transparency preference can be toggled and its effect is immediate.
-- [ ] When `data-no-transparency` is set, no backdrop blur appears on any `.fes-surface-translucent` element.
+- [ ] Transparency and blur can be toggled independently without discarding either saved level.
+- [ ] When `data-no-blur` is set, no backdrop blur appears on any `.fes-surface-translucent` element.
 
 ---
 

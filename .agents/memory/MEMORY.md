@@ -12,3 +12,5 @@
 - [Accessibility contrast wallpapers](accessibility-contrast-wallpapers.md) — contrast themes replace wallpaper visually without discarding the user’s saved wallpaper choice.
 - [GitHub push authentication](github-push-authentication.md) — connected GitHub integrations may still require browser-based CLI authentication for shell pushes.
 - [UI geometry stability](ui-geometry-stability.md) — resizing or aligning any UI element must not misalign itself or disturb surrounding layout.
+- [Main-only release packages](main-only-release-packages.md) — main releases contain a versioned site ZIP and unversioned claude-src-pack.zip; branches publish nothing.
+- [Approved branch documentation sync](approved-branch-documentation-sync.md) — before merging approved work, update README, Claude files, and package surfaces when applicable.

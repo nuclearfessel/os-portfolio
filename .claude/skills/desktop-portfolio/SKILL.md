@@ -59,6 +59,7 @@ The site simulates a desktop OS on large screens and becomes a managed app inter
 - Avoid emoji interface icons.
 - Keep mobile navigation icons and labels inside stable footprints so state changes do not shift layout.
 - Preserve solid managed-window surfaces for readability.
+- Keep desktop text personalization copy shared between themes, but persist each element's light and dark colors independently. Open the shared color picker in a modal floating dialog from Personalization.
 - Current motion timings are intentionally quick: windows `0.07s`, folder transforms `0.07s`, mode opacity `0.12s`, and mode transform `0.17s`.
 
 ## Editing workflow

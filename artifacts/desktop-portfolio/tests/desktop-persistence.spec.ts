@@ -184,7 +184,7 @@ test('persists moved icons and every desktop preference across reloads', async (
   expect(restoredStyle).toEqual(movedStyle);
 });
 
-test('snaps desktop launchers to a 4px grid', async ({ page }) => {
+test('snaps desktop launchers to an 8px grid', async ({ page }) => {
   await openDesktopMenu(page);
   await page.getByRole('menuitemcheckbox', { name: 'Snap to grid' }).click();
 
@@ -201,8 +201,8 @@ test('snaps desktop launchers to a 4px grid', async ({ page }) => {
     left: Number.parseFloat(element.style.left),
     top: Number.parseFloat(element.style.top),
   }));
-  expect(position.left % 4).toBeCloseTo(0, 5);
-  expect(position.top % 4).toBeCloseTo(0, 5);
+  expect(position.left % 8).toBeCloseTo(0, 5);
+  expect(position.top % 8).toBeCloseTo(0, 5);
 });
 
 test('keeps long desktop icon tooltips evenly padded without overflow', async ({ page }) => {

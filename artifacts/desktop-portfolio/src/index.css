@@ -176,7 +176,7 @@ button { cursor: pointer; }
 .desktop-note[data-testid="sticky-sticky-1"] { left: 77%; top: 8%; width: 220px; height: 156px; }
 .desktop-note:active { cursor: grabbing; }
 .desktop-note::before { content: ''; position: absolute; top: -9px; left: 50%; z-index: 2; width: 64px; height: 18px; background: rgba(245,232,193,.68); border: 1px solid rgba(122,105,69,.16); box-shadow: 0 1px 2px rgba(54,45,27,.12), inset 0 1px rgba(255,255,255,.42); transform: translateX(-50%) rotate(-3deg); pointer-events: none; }
-.desktop-note-surface { position: relative; width: 100%; height: 100%; min-height: inherit; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 7px; box-sizing: border-box; padding: 15px; overflow: hidden; color: var(--sticky-text, #1d2430); background: var(--sticky-bg, rgba(255,216,77,.9)); border: 1px solid var(--sticky-border, rgba(29,36,48,.25)); border-radius: inherit; box-shadow: 12px 16px 40px rgba(0,0,0,.17); }
+.desktop-note-surface { position: relative; width: 100%; height: 100%; min-height: inherit; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 7px; box-sizing: border-box; padding: 15px; overflow: hidden; color: var(--sticky-text, #1d2430); background: color-mix(in srgb, var(--sticky-bg, #ffd84d) calc(100% - var(--sticky-transparency, 20%)), transparent); border: 1px solid var(--sticky-border, rgba(29,36,48,.25)); border-radius: inherit; box-shadow: 12px 16px 40px rgba(0,0,0,.17); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
 .note-label { color: var(--sticky-accent, #1d2430); font: 10px var(--app-font-mono); text-transform: uppercase; }
 .sticky-add-button { position: absolute; top: 4px; right: 4px; z-index: 2; width: 32px; height: 32px; display: grid; place-items: center; padding: 0; color: var(--sticky-text, #1d2430); background: transparent; border: 0; border-radius: 6px; cursor: pointer; }
 .sticky-add-button:hover, .sticky-add-button:active { color: var(--sticky-text, #1d2430); background: transparent; transform: none; }
@@ -379,6 +379,8 @@ button { cursor: pointer; }
   width: min(680px, calc(100vw - 80px));
   height: min(520px, calc(100dvh - 180px));
   overflow: hidden;
+  container-type: inline-size;
+  container-name: settings-window;
 }
 
 .settings-body {
@@ -1521,6 +1523,18 @@ button { cursor: pointer; }
 }
 
 /* Transparency level */
+.settings-transparency-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+@container settings-window (min-width: 620px) {
+  .settings-transparency-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .settings-transparency-group {
   display: grid;
   gap: 8px;
@@ -1910,6 +1924,10 @@ button { cursor: pointer; }
   -webkit-backdrop-filter: none !important;
 }
 
+[data-no-transparency] .desktop-note-surface {
+  background: var(--sticky-bg, #ffd84d) !important;
+}
+
 /* Window backgrounds — opaque when transparency is off */
 [data-no-transparency] .window {
   background: rgba(22, 24, 44, 1) !important;
@@ -1973,6 +1991,10 @@ button { cursor: pointer; }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .dock {
   background: rgb(248 251 249 / calc(100% - var(--accessibility-transparency))) !important;
+}
+
+:root[data-transparency-enabled]:not([data-contrast]) .desktop-note-surface {
+  background: color-mix(in srgb, var(--sticky-bg, #ffd84d) calc(100% - var(--sticky-transparency)), transparent) !important;
 }
 
 /* --- No animations (disable all transitions, keyframes, and animations) --- */

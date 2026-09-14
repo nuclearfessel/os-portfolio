@@ -41,8 +41,9 @@ Mirror primary app identity in the Dock: use the same icon glyph and saturated
 color family for About, Selected Work, and Contact across desktop and managed
 workspace navigation.
 
-Contact uses Remix Icon's filled mail-send glyph on a saturated red-orange tile.
-Keep the same palette and glyph between the desktop launcher and Dock.
+Contact uses Remix Icon's filled mail-send glyph in saturated red-orange on a
+warm-ivory tile with a matching red-orange border. Keep the same inverted
+palette and glyph between the desktop launcher and Dock.
 
 ---
 

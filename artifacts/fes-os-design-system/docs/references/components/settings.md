@@ -314,7 +314,8 @@ react automatically.
 
 | Attribute / class / variable | What the consuming app does | What the package CSS does |
 | --- | --- | --- |
-| `data-always-scrollbars` | Set on shell when `alwaysShowScrollbars === true` | `scrollbar-width: thin` + always-visible WebKit tracks/thumbs on all descendants |
+| `.fes-scrollbar-window` | Add to each window shell | Keeps tracks transparent and fades styled thumbs in while the window is hovered or contains focus |
+| `data-always-scrollbars` | Set on shell when `alwaysShowScrollbars === true` | Keeps the same `.fes-scrollbar-window` thumbs visible without changing their style or adding a gray track |
 | `.fes-surface-translucent` | Add to window/dock/menu elements | Applies `backdrop-filter: blur(12px)` and uses `--accessibility-transparency` for background alpha |
 | `data-no-transparency` | Set on shell when the global transparency switch is false | Removes `backdrop-filter` and forces opaque backgrounds on all participating surfaces |
 | `data-transparency-enabled` + `--accessibility-transparency` (0–0.7) | Set attribute + window CSS var on `:root` when the global transparency switch is true | Window, Dock, and menu surfaces use the window alpha |

@@ -230,7 +230,6 @@ button { cursor: pointer; }
 .window-title { min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--app-font-mono); color: #aeb2cb; }
 .window-title strong { color: #e4ff5b; font-weight: 400; }
 .window-body { height: calc(100% - 44px); overflow: auto; padding: 24px; }
-.window-body::-webkit-scrollbar { width: 6px; }.window-body::-webkit-scrollbar-thumb { background: #3d4160; border-radius: 9px; }
 .section-kicker { color: #e4ff5b; font: 10px var(--app-font-mono); text-transform: uppercase; letter-spacing: .12em; }
 .window-body h2 { font-size: 32px; line-height: 1; letter-spacing: -.05em; margin: 10px 0 18px; }
 .window-body h3 { margin: 0; color: #f1f0e8; font-size: 17px; }
@@ -452,10 +451,6 @@ button { cursor: pointer; }
   padding: 22px 24px;
   overflow-y: auto;
 }
-
-.settings-content::-webkit-scrollbar { width: 6px; }
-.settings-content::-webkit-scrollbar-thumb { background: #3d4160; border-radius: 9px; }
-.theme-light .settings-content::-webkit-scrollbar-thumb { background: #aebfba; }
 
 .settings-heading {
   font-size: 24px;
@@ -1163,7 +1158,15 @@ button { cursor: pointer; }
 .theme-light .traffic-lights button:hover, .theme-light .traffic-lights button:focus-visible { color: #173847; background: rgba(22,72,78,.1); }
 .theme-light .traffic-lights .close:hover, .theme-light .traffic-lights .close:focus-visible { color: #fff; background: #a73543; }
 .theme-light .window-body h2, .theme-light .window-body h3, .theme-light .fact span { color: #17213b; }
-.theme-light .window-body::-webkit-scrollbar-thumb { background: #aebfba; }
+.window {
+  --fes-scrollbar-thumb-visible: #3d4160;
+  --fes-scrollbar-thumb-hover: #565c80;
+}
+
+.theme-light .window {
+  --fes-scrollbar-thumb-visible: #aebfba;
+  --fes-scrollbar-thumb-hover: #879d97;
+}
 .theme-light .fact-list { border-left-color: #c4d2ce; }
 .theme-light .about-separator { background: #c4d2ce; }
 .theme-light .fact label, .theme-light .project-tag { color: #526660; }
@@ -1869,41 +1872,58 @@ button { cursor: pointer; }
    Global Accessibility Overrides
    ========================================================= */
 
-/* --- Always show scrollbars --- */
-[data-always-scrollbars] * {
+/* --- Contextual window scrollbars --- */
+.fes-scrollbar-window {
+  --fes-scrollbar-thumb: transparent;
+}
+
+.fes-scrollbar-window:hover,
+.fes-scrollbar-window:focus-within,
+[data-always-scrollbars] .fes-scrollbar-window {
+  --fes-scrollbar-thumb: var(--fes-scrollbar-thumb-visible);
+}
+
+.fes-scrollbar-window,
+.fes-scrollbar-window * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(160, 165, 195, .5) rgba(32, 35, 61, .4);
+  scrollbar-color: var(--fes-scrollbar-thumb) transparent;
 }
 
-[data-always-scrollbars] *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.fes-scrollbar-window *::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
 
-[data-always-scrollbars] *::-webkit-scrollbar-track {
-  background: rgba(32, 35, 61, .4);
-  border-radius: 8px;
+.fes-scrollbar-window *::-webkit-scrollbar-button,
+.fes-scrollbar-window *::-webkit-scrollbar-button:single-button,
+.fes-scrollbar-window *::-webkit-scrollbar-button:vertical:decrement,
+.fes-scrollbar-window *::-webkit-scrollbar-button:vertical:increment,
+.fes-scrollbar-window *::-webkit-scrollbar-button:horizontal:decrement,
+.fes-scrollbar-window *::-webkit-scrollbar-button:horizontal:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-[data-always-scrollbars] *::-webkit-scrollbar-thumb {
-  background: rgba(160, 165, 195, .5);
-  border-radius: 8px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
+.fes-scrollbar-window *::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 9999px;
 }
 
-[data-always-scrollbars] *::-webkit-scrollbar-thumb:hover {
-  background: rgba(180, 185, 215, .7);
-  background-clip: padding-box;
+.fes-scrollbar-window *::-webkit-scrollbar-thumb {
+  background-color: var(--fes-scrollbar-thumb);
+  border-radius: 9999px;
+  transition: background-color 180ms ease;
 }
 
-[data-always-scrollbars] .theme-light *::-webkit-scrollbar-track {
-  background: rgba(218, 232, 228, .5);
-}
-
-[data-always-scrollbars] .theme-light *::-webkit-scrollbar-thumb {
-  background: rgba(80, 120, 115, .4);
-  background-clip: padding-box;
+.fes-scrollbar-window *::-webkit-scrollbar-thumb:hover {
+  background-color: var(--fes-scrollbar-thumb-hover);
 }
 
 /* --- No transparency (remove backdrop filters, force opaque) --- */

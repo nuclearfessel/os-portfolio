@@ -1545,6 +1545,7 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await page.getByTestId('button-dock-settings').click();
   await page.getByTestId('settings-section-trigger-theme').click();
   await page.getByTestId('settings-section-trigger-desktop-text').click();
+  await page.getByTestId('settings-automatic-text-contrast-switch').click();
   const settingsWindow = page.getByTestId('window-settings');
   const editor = settingsWindow.locator('.settings-intro-editor');
   const capsuleSpacing = () => editor.locator('.settings-intro-field').evaluateAll(
@@ -1619,6 +1620,66 @@ test('desktop text personalization and theme-specific colors can be edited and p
   expect(saved.introCustomization.text.primary).toBe('Interfaces with intent.');
   expect(saved.introCustomization.colors.light.primary).toBe('#123456');
   expect(saved.introCustomization.colors.dark.primary).toBe('#fedcba');
+});
+
+test('automatic desktop text contrast samples picture wallpaper and preserves personalized colors', async ({ page }) => {
+  await page.evaluate((key) => {
+    localStorage.setItem(key, JSON.stringify({
+      theme: 'light',
+      introCustomization: {
+        automaticContrast: true,
+        colors: {
+          light: { primary: '#ff00ff' },
+          dark: { primary: '#ff00ff' },
+        },
+      },
+    }));
+  }, storageKey);
+  await page.reload();
+
+  const primaryHeadline = page.locator('.desktop-intro h1 > span');
+  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', /^#(?:111326|f7faf8)$/);
+  await expect.poll(() => primaryHeadline.evaluate((element) => getComputedStyle(element).color))
+    .toMatch(/^rgb\((?:17, 19, 38|247, 250, 248)\)$/);
+  await expect(primaryHeadline).not.toHaveCSS('color', 'rgb(255, 0, 255)');
+
+  await page.evaluate((key) => {
+    const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
+    localStorage.setItem(key, JSON.stringify({ ...saved, theme: 'dark' }));
+  }, storageKey);
+  await page.reload();
+  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', /^#(?:111326|f7faf8)$/);
+  await expect(primaryHeadline).not.toHaveCSS('color', 'rgb(255, 0, 255)');
+
+  await page.evaluate((key) => {
+    const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
+    localStorage.setItem(key, JSON.stringify({ ...saved, theme: 'light' }));
+  }, storageKey);
+  await page.reload();
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-section-trigger-wallpaper').click();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await page.getByTestId('button-close-settings').click();
+  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', '#111326');
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(17, 19, 38)');
+
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-section-trigger-wallpaper').click();
+  await page.getByTestId('settings-wallpaper-mode-picture-light').click();
+  await page.getByTestId('settings-section-trigger-desktop-text').click();
+  const automaticContrast = page.getByTestId('settings-automatic-text-contrast-switch');
+  await expect(automaticContrast).toHaveAttribute('aria-checked', 'true');
+  await automaticContrast.click();
+  await expect(automaticContrast).toHaveAttribute('aria-checked', 'false');
+  await page.getByTestId('button-close-settings').click();
+
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(255, 0, 255)');
+  await expect(primaryHeadline).not.toHaveAttribute('data-auto-contrast-color');
+  await page.reload();
+  await expect(primaryHeadline).toHaveCSS('color', 'rgb(255, 0, 255)');
+  expect(await page.evaluate((key) => (
+    JSON.parse(localStorage.getItem(key) ?? '{}').introCustomization.automaticContrast
+  ), storageKey)).toBe(false);
 });
 
 test('settings sections collapse independently and allow multiple sections to stay open', async ({ page }) => {

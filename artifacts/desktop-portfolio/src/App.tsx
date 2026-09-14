@@ -55,6 +55,7 @@ type IntroTextKey = 'primary' | 'accent' | 'body';
 type IntroCustomization = {
   text: Record<IntroTextKey, string>;
   colors: Record<Theme, Record<IntroTextKey, string>>;
+  automaticContrast: boolean;
 };
 type Position = { left: number; top: number };
 type Size = { width: number; height: number };
@@ -279,6 +280,7 @@ const DEFAULT_INTRO_CUSTOMIZATION: IntroCustomization = {
     light: { primary: '#17213b', accent: '#0b665d', body: '#586878' },
     dark: { primary: '#f0f0e0', accent: '#e4ff5b', body: '#aeb2cb' },
   },
+  automaticContrast: true,
 };
 
 function snapWithinDesktopGrid(value: number, min: number, max: number) {
@@ -344,6 +346,9 @@ function parseIntroCustomization(raw: unknown): IntroCustomization {
       light: { primary: parseColor('light', 'primary'), accent: parseColor('light', 'accent'), body: parseColor('light', 'body') },
       dark: { primary: parseColor('dark', 'primary'), accent: parseColor('dark', 'accent'), body: parseColor('dark', 'body') },
     },
+    automaticContrast: typeof value.automaticContrast === 'boolean'
+      ? value.automaticContrast
+      : DEFAULT_INTRO_CUSTOMIZATION.automaticContrast,
   };
 }
 
@@ -1209,6 +1214,14 @@ function SettingsWindow({
                     label="Desktop text personalization"
                     description={<>Edit the three desktop text elements and set separate colors for the {theme} theme.</>}
                   >
+                  <SettingsToggle
+                    id="automatic-text-contrast"
+                    label="Automatic text contrast"
+                    description="Automatically use light or dark desktop text based on the wallpaper behind each element."
+                    checked={introCustomization.automaticContrast}
+                    onChange={(automaticContrast) => onSetIntroCustomization({ ...introCustomization, automaticContrast })}
+                    data-testid="settings-automatic-text-contrast"
+                  />
                   <div className="settings-intro-editor">
                     {(['primary', 'accent', 'body'] as const).map((key) => (
                       <label className="settings-intro-field" key={key}>
@@ -1897,8 +1910,12 @@ function Home() {
   const [wallpaperDark, setWallpaperDark] = useState<WallpaperConfig>(savedDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
   const [accessibility, setAccessibility] = useState<AccessibilityPrefs>(savedDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
   const [introCustomization, setIntroCustomization] = useState<IntroCustomization>(savedDesktopState.introCustomization ?? DEFAULT_INTRO_CUSTOMIZATION);
+  const [automaticIntroColors, setAutomaticIntroColors] = useState<Partial<Record<IntroTextKey, string>>>({});
 
   const desktopAreaRef = useRef<HTMLDivElement>(null);
+  const introPrimaryRef = useRef<HTMLSpanElement>(null);
+  const introAccentRef = useRef<HTMLElement>(null);
+  const introBodyRef = useRef<HTMLParagraphElement>(null);
   const contextMenuOpenerRef = useRef<HTMLElement | null>(null);
   const previousMenuOpenRef = useRef(false);
   const deleteDialogRef = useRef<HTMLElement>(null);
@@ -1984,6 +2001,133 @@ function Home() {
       root.setAttribute('data-contrast', accessibility.contrastTheme);
     }
   }, [accessibility]);
+
+  useEffect(() => {
+    const wallpaper = theme === 'light' ? wallpaperLight : wallpaperDark;
+    const enabled = introCustomization.automaticContrast;
+    if (!enabled) {
+      setAutomaticIntroColors({});
+      return;
+    }
+
+    const image = new Image();
+    let cancelled = false;
+    let frame = 0;
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    const elements: Record<IntroTextKey, React.RefObject<HTMLElement | null>> = {
+      primary: introPrimaryRef,
+      accent: introAccentRef,
+      body: introBodyRef,
+    };
+
+    const luminance = (red: number, green: number, blue: number) => {
+      const linear = [red, green, blue].map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    };
+    const contrast = (first: number, second: number) => (
+      (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05)
+    );
+    const candidates = [
+      { color: '#111326', luminance: luminance(17, 19, 38) },
+      { color: '#f7faf8', luminance: luminance(247, 250, 248) },
+    ];
+    const solidBackground = accessibility.contrastTheme === 'high'
+      ? '#000000'
+      : accessibility.contrastTheme === 'low'
+        ? '#282a38'
+        : wallpaper.mode === 'color'
+          ? wallpaper.color
+          : null;
+    if (solidBackground) {
+      const channels = solidBackground.match(/[0-9a-f]{2}/gi)?.map((channel) => Number.parseInt(channel, 16));
+      const backgroundLuminance = luminance(channels?.[0] ?? 0, channels?.[1] ?? 0, channels?.[2] ?? 0);
+      const selected = candidates.reduce((best, candidate) => (
+        contrast(candidate.luminance, backgroundLuminance) > contrast(best.luminance, backgroundLuminance)
+          ? candidate
+          : best
+      ));
+      setAutomaticIntroColors({ primary: selected.color, accent: selected.color, body: selected.color });
+      return;
+    }
+
+    const analyze = () => {
+      if (cancelled || !context || !image.naturalWidth || !image.naturalHeight) return;
+      const shell = document.querySelector<HTMLElement>('.os-shell');
+      if (!shell) return;
+      const shellRect = shell.getBoundingClientRect();
+      const scale = Math.max(shellRect.width / image.naturalWidth, shellRect.height / image.naturalHeight);
+      const renderedWidth = image.naturalWidth * scale;
+      const renderedHeight = image.naturalHeight * scale;
+      const offsetX = shellRect.left + (shellRect.width - renderedWidth) / 2;
+      const offsetY = shellRect.top + (shellRect.height - renderedHeight) / 2;
+      const next: Partial<Record<IntroTextKey, string>> = {};
+
+      (Object.keys(elements) as IntroTextKey[]).forEach((key) => {
+        const element = elements[key].current;
+        if (!element) return;
+        const rect = element.getBoundingClientRect();
+        const backgroundLuminances: number[] = [];
+        for (let row = 0; row < 5; row += 1) {
+          for (let column = 0; column < 5; column += 1) {
+            const viewportX = rect.left + rect.width * ((column + 0.5) / 5);
+            const viewportY = rect.top + rect.height * ((row + 0.5) / 5);
+            const sourceX = Math.max(0, Math.min(image.naturalWidth - 1, Math.floor((viewportX - offsetX) / scale)));
+            const sourceY = Math.max(0, Math.min(image.naturalHeight - 1, Math.floor((viewportY - offsetY) / scale)));
+            const pixel = context.getImageData(sourceX, sourceY, 1, 1).data;
+            backgroundLuminances.push(luminance(pixel[0], pixel[1], pixel[2]));
+          }
+        }
+        const ranked = candidates.map((candidate) => {
+          const ratios = backgroundLuminances
+            .map((background) => contrast(candidate.luminance, background))
+            .sort((a, b) => a - b);
+          return { color: candidate.color, score: ratios[Math.floor(ratios.length * 0.2)] ?? 0 };
+        });
+        next[key] = ranked[1].score > ranked[0].score ? ranked[1].color : ranked[0].color;
+      });
+      setAutomaticIntroColors(next);
+    };
+    const scheduleAnalysis = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(analyze);
+    };
+
+    image.onload = () => {
+      if (cancelled || !context) return;
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      context.drawImage(image, 0, 0);
+      scheduleAnalysis();
+    };
+    image.src = theme === 'light' ? './wallpaper-light.jpg' : './wallpaper-dark.jpg';
+    window.addEventListener('resize', scheduleAnalysis);
+    const observer = new ResizeObserver(scheduleAnalysis);
+    Object.values(elements).forEach((ref) => {
+      if (ref.current) observer.observe(ref.current);
+    });
+    if (desktopAreaRef.current) observer.observe(desktopAreaRef.current);
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', scheduleAnalysis);
+      observer.disconnect();
+      image.onload = null;
+    };
+  }, [
+    accessibility.contrastTheme,
+    introCustomization.automaticContrast,
+    introCustomization.text,
+    systemBarPosition,
+    theme,
+    wallpaperDark,
+    wallpaperLight,
+    workspaceMode,
+  ]);
 
   const getCurrentDesktopState = (): SavedDesktopState => ({
     folderPositions: workspaceMode === 'desktop' ? folderPositions : desktopGeometryRef.current.folderPositions,
@@ -2977,6 +3121,20 @@ function Home() {
   const currentWallpaperStyle = appliesSelectedWallpaper
     ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
     : undefined;
+  const automaticContrastActive = (
+    introCustomization.automaticContrast
+  );
+  const introTextStyle = (key: IntroTextKey): React.CSSProperties => {
+    const automaticColor = automaticContrastActive ? automaticIntroColors[key] : undefined;
+    return {
+      color: automaticColor ?? introCustomization.colors[theme][key],
+      textShadow: automaticColor
+        ? automaticColor === '#111326'
+          ? '0 1px 2px rgba(255, 255, 255, .58)'
+          : '0 1px 3px rgba(0, 0, 0, .72)'
+        : undefined,
+    };
+  };
 
   // When a wallpaper is applied, suppress the shell's default gradient.
   // In contrast mode the class is always 'wallpaper-color' for override styling
@@ -3078,14 +3236,32 @@ function Home() {
         tabIndex={-1}
         onContextMenu={openDesktopContextMenu}
       >
-        <div className="desktop-intro">
+        <div className="desktop-intro" data-automatic-contrast={automaticContrastActive || undefined}>
           <SectionLabel className="eyebrow">personal workspace / v1.0</SectionLabel>
           <h1>
-            <span style={{ color: introCustomization.colors[theme].primary }}>{introCustomization.text.primary}</span>
+            <span
+              ref={introPrimaryRef}
+              style={introTextStyle('primary')}
+              data-auto-contrast-color={automaticIntroColors.primary}
+            >
+              {introCustomization.text.primary}
+            </span>
             <br />
-            <em style={{ color: introCustomization.colors[theme].accent }}>{introCustomization.text.accent}</em>
+            <em
+              ref={introAccentRef}
+              style={introTextStyle('accent')}
+              data-auto-contrast-color={automaticIntroColors.accent}
+            >
+              {introCustomization.text.accent}
+            </em>
           </h1>
-          <p style={{ color: introCustomization.colors[theme].body }}>{introCustomization.text.body}</p>
+          <p
+            ref={introBodyRef}
+            style={introTextStyle('body')}
+            data-auto-contrast-color={automaticIntroColors.body}
+          >
+            {introCustomization.text.body}
+          </p>
           <div className="quick-actions">
             <ActionButton className="quick-button primary" variant="primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></ActionButton>
             <ActionButton className="quick-button" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></ActionButton>

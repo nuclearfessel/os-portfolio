@@ -326,6 +326,8 @@ button { cursor: pointer; }
 .dock-item.dock-app-about { color: #fff4fb; background: linear-gradient(145deg, #ff3d9a, #b80064 72%); border-color: #ff8dc5; }
 .dock-item.dock-app-work { color: #f5f4ff; background: linear-gradient(145deg, #5b5cff, #3122c7 72%); border-color: #9c9dff; }
 .dock-item.dock-app-contact { color: #e4481d; background: linear-gradient(145deg, #fffaf2, #f3e7da 72%); border-color: #e4481d; }
+.dock-item.dock-app-terminal { color: #e4ff5b; background: linear-gradient(145deg, #252a43, #111420); border-color: #4b526d; }
+.dock-item.dock-app-stickies { color: #392600; background: linear-gradient(145deg, #ffd96a, #d99520); border-color: #ffe39a; }
 .dock-item.dock-app-about:hover,
 .dock-item.dock-app-work:hover,
 .dock-item.dock-app-contact:hover { color: #fff; filter: brightness(1.1); }
@@ -1257,6 +1259,8 @@ button { cursor: pointer; }
 .theme-light .dock-item.dock-app-about { color: #fff7fc; background: linear-gradient(145deg, #ff2f95, #c00068 72%); border-color: #a60059; }
 .theme-light .dock-item.dock-app-work { color: #fff; background: linear-gradient(145deg, #5758ff, #3021c9 72%); border-color: #2418a5; }
 .theme-light .dock-item.dock-app-contact { color: #d83a12; background: linear-gradient(145deg, #fffaf2, #f1e3d5 72%); border-color: #d83a12; }
+.theme-light .dock-item.dock-app-terminal { color: #f3ffbe; background: linear-gradient(145deg, #365761, #19343c); border-color: #5d7d84; }
+.theme-light .dock-item.dock-app-stickies { color: #352300; background: linear-gradient(145deg, #ffd85d, #e3a22d); border-color: #b47711; }
 .theme-light .dock-item:hover { color: #0b665d; border-color: rgba(11,102,93,.45); }
 .theme-light .dock-item.active::after { background: #0b665d; }
 .theme-light .mobile-shortcut-menu { color: #1f3440; background: rgba(247,250,248,.98); border-color: rgba(26,83,91,.28); box-shadow: 0 18px 50px rgba(48,68,71,.24); }

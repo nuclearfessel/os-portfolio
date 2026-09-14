@@ -45,6 +45,16 @@ Contact uses Remix Icon's filled mail-send glyph in saturated red-orange on a
 warm-ivory tile with a matching red-orange border. Keep the same inverted
 palette and glyph between the desktop launcher and Dock.
 
+Terminal uses Keyline's `SquareTerminal` glyph in both the desktop launcher and
+Dock. The Dock mirrors the desktop icon's color, border, and background
+treatment.
+
+Stickies uses Bootstrap Icons' filled sticky glyph in both the desktop launcher
+and Dock. Its Dock item mirrors the desktop icon's color, border, and background
+treatment.
+
+About uses Keyline's `CircleUser` glyph in both the desktop launcher and Dock.
+
 ---
 
 ## State ownership

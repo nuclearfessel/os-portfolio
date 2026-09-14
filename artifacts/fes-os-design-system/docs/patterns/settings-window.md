@@ -90,6 +90,7 @@ This is the reference implementation of the universal Fes OS side-navigation win
 - [ ] `SettingsColorPreset` uses `aria-pressed`.
 - [ ] Full color pickers open in a named modal dialog and restore focus to their trigger on close.
 - [ ] Three-item Personalization groups use three equal columns at `620px` and wider, then one full-width row per item below that container width.
+- [ ] Items in the same three-item Personalization group remain equal height in both wide and stacked layouts, including when one item contains a multiline field.
 
 ---
 

@@ -2287,8 +2287,8 @@ button { cursor: pointer; }
 /* Desktop background override applied inline via desktopBackground() */
 
 /* Desktop text personalization */
-.settings-intro-editor { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
-.settings-intro-field { min-width: 0; display: grid; align-content: start; gap: 6px; padding: 12px; color: #c8ccdd; background: rgba(32,35,61,.4); border: 1px solid rgba(214,221,255,.1); border-radius: 8px; font: 11px var(--app-font-mono); }
+.settings-intro-editor { display: grid; grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; gap: 12px; }
+.settings-intro-field { min-width: 0; height: 100%; display: grid; align-content: start; gap: 6px; padding: 12px; color: #c8ccdd; background: rgba(32,35,61,.4); border: 1px solid rgba(214,221,255,.1); border-radius: 8px; font: 11px var(--app-font-mono); }
 .settings-intro-input-row { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 8px; }
 .settings-intro-input-row input,
 .settings-intro-input-row textarea { width: 100%; min-width: 0; padding: 9px 10px; resize: vertical; color: #edf0f8; background: rgba(12,14,28,.55); border: 1px solid rgba(214,221,255,.16); border-radius: 6px; outline: none; font: 12px/1.45 var(--app-font-sans); }

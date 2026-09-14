@@ -1264,7 +1264,15 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await page.getByTestId('button-dock-settings').click();
   const settingsWindow = page.getByTestId('window-settings');
   const editor = settingsWindow.locator('.settings-intro-editor');
+  const itemHeights = () => editor.locator('.settings-intro-field').evaluateAll(
+    (items) => items.map((item) => item.getBoundingClientRect().height),
+  );
+  const expectEqualItemHeights = async () => {
+    const heights = await itemHeights();
+    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
+  };
   await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(3);
+  await expectEqualItemHeights();
 
   const settingsBox = await settingsWindow.boundingBox();
   const resizeHandle = settingsWindow.locator('.window-resize-e');
@@ -1276,6 +1284,7 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await page.mouse.move(settingsBox!.x + 540, resizeBox!.y + resizeBox!.height / 2);
   await page.mouse.up();
   await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
+  await expectEqualItemHeights();
 
   const primaryInput = page.getByTestId('settings-intro-primary-text');
   await primaryInput.fill('Interfaces with intent.');

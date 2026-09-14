@@ -9,6 +9,8 @@ import {
   SettingsToggleRow,
   type ContrastVariant,
 } from '../components/ui/settings';
+import { CanonicalSpec } from './md-renderer';
+import { mdFoundationAccessibility } from './docs-map';
 
 const RULES = [
   {
@@ -623,6 +625,8 @@ export function AccessibilityPage() {
           </p>
         </Surface>
       </section>
+
+      <CanonicalSpec md={mdFoundationAccessibility} />
     </div>
   );
 }

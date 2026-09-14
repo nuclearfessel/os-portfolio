@@ -186,6 +186,44 @@ const SettingsDemo = lazyPage(() =>
   import('./demos/settings').then(({ SettingsDemo }) => SettingsDemo),
 );
 
+// ── Pattern pages ──────────────────────────────────────────────────────────
+const PatternDesktopWindowWorkspace = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternDesktopWindowWorkspace }) => PatternDesktopWindowWorkspace),
+);
+const PatternResponsiveDock = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternResponsiveDock }) => PatternResponsiveDock),
+);
+const PatternDesktopLauncherGrid = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternDesktopLauncherGrid }) => PatternDesktopLauncherGrid),
+);
+const PatternStickyNotes = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternStickyNotes }) => PatternStickyNotes),
+);
+const PatternContextMenus = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternContextMenus }) => PatternContextMenus),
+);
+const PatternProjectCardList = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternProjectCardList }) => PatternProjectCardList),
+);
+const PatternSettingsWindow = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternSettingsWindow }) => PatternSettingsWindow),
+);
+const PatternPersonalizationColors = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternPersonalizationColors }) => PatternPersonalizationColors),
+);
+const PatternAccessibilityPanel = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternAccessibilityPanel }) => PatternAccessibilityPanel),
+);
+const PatternContrastOverride = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternContrastOverride }) => PatternContrastOverride),
+);
+const PatternTransparencySurfaces = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternTransparencySurfaces }) => PatternTransparencySurfaces),
+);
+const PatternSavedStateOwnership = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternSavedStateOwnership }) => PatternSavedStateOwnership),
+);
+
 export type PreviewEntry = {
   // Globally unique across every group — it is the deep-link slug (`#page=<id>`)
   // and the active-page key. Group-qualify names that repeat across groups
@@ -326,7 +364,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'checkbox',
         name: 'Checkbox',
-        description: 'Checked, unchecked, and disabled options.',
+        description: 'Checked, unchecked, indeterminate group state, and disabled options.',
         Page: CheckboxDemo,
       },
       {
@@ -356,7 +394,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'calendar',
         name: 'Calendar',
-        description: 'A deterministic single-date calendar.',
+        description: 'Date picker supporting single, range, and multi-date modes.',
         Page: CalendarDemo,
       },
       {
@@ -628,6 +666,83 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   { name: 'Motion', entries: [] },
   { name: 'Applied examples', entries: [] },
+  {
+    name: 'Patterns',
+    entries: [
+      {
+        id: 'pattern-desktop-window',
+        name: 'Desktop window workspace',
+        description: 'Floating windows, geometry management, drag/resize, and transparency.',
+        Page: PatternDesktopWindowWorkspace,
+      },
+      {
+        id: 'pattern-responsive-dock',
+        name: 'Responsive Dock navigation',
+        description: 'DockItem label switching between tooltip (desktop) and inline (mobile/tablet).',
+        Page: PatternResponsiveDock,
+      },
+      {
+        id: 'pattern-launcher-grid',
+        name: 'Desktop launcher grid',
+        description: 'User-arranged launcher icons that open/focus windows.',
+        Page: PatternDesktopLauncherGrid,
+      },
+      {
+        id: 'pattern-sticky-notes',
+        name: 'Sticky notes',
+        description: 'Free-floating rotatable note surfaces on the desktop canvas.',
+        Page: PatternStickyNotes,
+      },
+      {
+        id: 'pattern-context-menus',
+        name: 'Context menus',
+        description: 'Two-tier context menu implementation: Radix and custom-positioned.',
+        Page: PatternContextMenus,
+      },
+      {
+        id: 'pattern-project-card-list',
+        name: 'Project-card list',
+        description: 'Portfolio project list with indexed cards, accents, and actions.',
+        Page: PatternProjectCardList,
+      },
+      {
+        id: 'pattern-settings-window',
+        name: 'Settings window & sidebar',
+        description: 'Two-pane settings layout with nav sidebar and preference controls.',
+        Page: PatternSettingsWindow,
+      },
+      {
+        id: 'pattern-personalization-colors',
+        name: 'Personalization color presets',
+        description: 'Wallpaper color swatch presets with custom picker exclusion logic.',
+        Page: PatternPersonalizationColors,
+      },
+      {
+        id: 'pattern-accessibility-panel',
+        name: 'Accessibility preference panel',
+        description: 'Display, motion, and contrast preference controls with dependency rules.',
+        Page: PatternAccessibilityPanel,
+      },
+      {
+        id: 'pattern-contrast-override',
+        name: 'Contrast override behavior',
+        description: 'How data-contrast re-maps semantic tokens to fixed low/high-contrast palettes.',
+        Page: PatternContrastOverride,
+      },
+      {
+        id: 'pattern-transparency-surfaces',
+        name: 'Transparency surfaces',
+        description: 'fes-surface-translucent: frosted-glass backdrop-filter with preference integration.',
+        Page: PatternTransparencySurfaces,
+      },
+      {
+        id: 'pattern-saved-state',
+        name: 'Saved-state ownership',
+        description: 'What the design system provides vs. what the consuming product must own.',
+        Page: PatternSavedStateOwnership,
+      },
+    ],
+  },
 ];
 
 export const ALL_ENTRIES: PreviewEntry[] = [
@@ -635,8 +750,9 @@ export const ALL_ENTRIES: PreviewEntry[] = [
   ...NAV_GROUPS.flatMap((group) => group.entries),
 ];
 
-// A duplicate id would make one page unreachable (its deep link and highlight
-// resolve to the first match), so fail loudly instead of shipping a dead page.
+// ── Duplicate-id guard ────────────────────────────────────────────────────────
+// A duplicate id makes one page unreachable; fail loudly rather than shipping
+// a dead deep-link.
 const duplicateIds = ALL_ENTRIES.map((entry) => entry.id).filter(
   (id, index, ids) => ids.indexOf(id) !== index,
 );
@@ -646,4 +762,122 @@ if (duplicateIds.length > 0) {
       ', ',
     )}. Every page id must be unique across all nav groups.`,
   );
+}
+
+// ── Documentation coverage classification ─────────────────────────────────────
+// Every non-overview registry entry must be explicitly classified here.
+// Missing entries are surfaced as a console warning in development.
+//
+// Classifications:
+//   "interactive+inline" — demo has hand-written DocSpec section (Button, Calendar)
+//   "interactive+canonical" — demo appends CanonicalSpec from docs/?raw imports
+//   "canonical-only" — documentation-only page rendering canonical Markdown (Patterns, Foundations)
+//   "uncovered" — no spec section yet (should be empty)
+
+export type DocCoverage = 'interactive+inline' | 'interactive+canonical' | 'canonical-only' | 'uncovered';
+
+export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
+  // ── Fes OS ──────────────────────────────────────────────────────────────────
+  'fes-os-pilot': 'interactive+canonical',
+  'fes-os-settings': 'interactive+canonical',
+  // ── Foundations ─────────────────────────────────────────────────────────────
+  'color-roles': 'interactive+canonical',
+  'type-scale': 'interactive+canonical',
+  'spacing-radius': 'interactive+canonical',
+  'fes-os-guidelines': 'interactive+canonical',
+  'accessibility': 'interactive+canonical',
+  // ── Actions ─────────────────────────────────────────────────────────────────
+  'button': 'interactive+inline',
+  'button-group': 'interactive+canonical',
+  'toggle': 'interactive+canonical',
+  'toggle-group': 'interactive+canonical',
+  // ── Forms & inputs ──────────────────────────────────────────────────────────
+  'input': 'interactive+canonical',
+  'input-group': 'interactive+canonical',
+  'input-otp': 'interactive+canonical',
+  'textarea': 'interactive+canonical',
+  'checkbox': 'interactive+canonical',
+  'radio-group': 'interactive+canonical',
+  'select': 'interactive+canonical',
+  'slider': 'interactive+canonical',
+  'switch': 'interactive+canonical',
+  'calendar': 'interactive+inline',
+  'field': 'interactive+canonical',
+  'form': 'interactive+canonical',
+  // ── Overlays ─────────────────────────────────────────────────────────────────
+  'dialog': 'interactive+canonical',
+  'alert-dialog': 'interactive+canonical',
+  'sheet': 'interactive+canonical',
+  'drawer': 'interactive+canonical',
+  'popover': 'interactive+canonical',
+  'hover-card': 'interactive+canonical',
+  'tooltip': 'interactive+canonical',
+  'command': 'interactive+canonical',
+  // ── Menus & navigation ───────────────────────────────────────────────────────
+  'dropdown-menu': 'interactive+canonical',
+  'context-menu': 'interactive+canonical',
+  'menubar': 'interactive+canonical',
+  'navigation-menu': 'interactive+canonical',
+  'breadcrumb': 'interactive+canonical',
+  'pagination': 'interactive+canonical',
+  'tabs': 'interactive+canonical',
+  'sidebar': 'interactive+canonical',
+  // ── Data display ─────────────────────────────────────────────────────────────
+  'avatar': 'interactive+canonical',
+  'badge': 'interactive+canonical',
+  'card': 'interactive+canonical',
+  'table': 'interactive+canonical',
+  'accordion': 'interactive+canonical',
+  'collapsible': 'interactive+canonical',
+  'carousel': 'interactive+canonical',
+  'item': 'interactive+canonical',
+  'empty': 'interactive+canonical',
+  'kbd': 'interactive+canonical',
+  'aspect-ratio': 'interactive+canonical',
+  // ── Feedback ─────────────────────────────────────────────────────────────────
+  'alert': 'interactive+canonical',
+  'progress': 'interactive+canonical',
+  'skeleton': 'interactive+canonical',
+  'spinner': 'interactive+canonical',
+  'toast': 'interactive+canonical',
+  'sonner': 'interactive+canonical',
+  // ── Structure ────────────────────────────────────────────────────────────────
+  'separator': 'interactive+canonical',
+  'scroll-area': 'interactive+canonical',
+  'resizable': 'interactive+canonical',
+  // ── Charts ───────────────────────────────────────────────────────────────────
+  'chart': 'interactive+canonical',
+  // ── Patterns ─────────────────────────────────────────────────────────────────
+  'pattern-desktop-window': 'canonical-only',
+  'pattern-responsive-dock': 'canonical-only',
+  'pattern-launcher-grid': 'canonical-only',
+  'pattern-sticky-notes': 'canonical-only',
+  'pattern-context-menus': 'canonical-only',
+  'pattern-project-card-list': 'canonical-only',
+  'pattern-settings-window': 'canonical-only',
+  'pattern-personalization-colors': 'canonical-only',
+  'pattern-accessibility-panel': 'canonical-only',
+  'pattern-contrast-override': 'canonical-only',
+  'pattern-transparency-surfaces': 'canonical-only',
+  'pattern-saved-state': 'canonical-only',
+};
+
+// Development-time coverage audit
+if (import.meta.env.DEV) {
+  const nonOverviewIds = ALL_ENTRIES
+    .filter(e => e.id !== 'overview')
+    .map(e => e.id);
+
+  const uncovered = nonOverviewIds.filter(id => {
+    const classification = DOC_COVERAGE_MAP[id];
+    return !classification || classification === 'uncovered';
+  });
+
+  if (uncovered.length > 0) {
+    console.warn(
+      `[design-system] Documentation coverage gap — ${uncovered.length} page(s) have no doc classification:\n` +
+      uncovered.map(id => `  • ${id}`).join('\n') +
+      '\n  Add them to DOC_COVERAGE_MAP in registry.tsx.',
+    );
+  }
 }

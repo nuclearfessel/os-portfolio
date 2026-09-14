@@ -10,6 +10,10 @@ import {
   FormMessage,
 } from '../../components/ui/form';
 import { Input } from '../../components/ui/input';
+import { CanonicalSpec, extractSection } from '../md-renderer';
+import { mdFormsFamily } from '../docs-map';
+
+const specMd = extractSection(mdFormsFamily, 'Form');
 
 type ProfileForm = {
   username: string;
@@ -21,30 +25,33 @@ export function FormDemo() {
   });
 
   return (
-    <div className="max-w-md rounded-xl border bg-card p-6">
-      <Form {...form}>
-        <form
-          className="space-y-4"
-          onSubmit={form.handleSubmit(() => undefined)}
-        >
-          <FormField
-            control={form.control}
-            name="username"
-            rules={{ required: 'Enter a username.' }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="fes" {...field} />
-                </FormControl>
-                <FormDescription>Your public display name.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Save profile</Button>
-        </form>
-      </Form>
+    <div className="space-y-8">
+      <div className="max-w-md rounded-xl border bg-card p-6">
+        <Form {...form}>
+          <form
+            className="space-y-4"
+            onSubmit={form.handleSubmit(() => undefined)}
+          >
+            <FormField
+              control={form.control}
+              name="username"
+              rules={{ required: 'Enter a username.' }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="fes" {...field} />
+                  </FormControl>
+                  <FormDescription>Your public display name.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">Save profile</Button>
+          </form>
+        </Form>
+      </div>
+      <CanonicalSpec md={specMd} />
     </div>
   );
 }

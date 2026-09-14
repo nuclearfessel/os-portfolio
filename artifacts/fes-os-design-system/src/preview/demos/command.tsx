@@ -9,31 +9,38 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from '../../components/ui/command';
+import { CanonicalSpec, extractSection } from '../md-renderer';
+import { mdOverlaysFamily } from '../docs-map';
+
+const specMd = extractSection(mdOverlaysFamily, 'Command');
 
 export function CommandDemo() {
   return (
-    <div className="max-w-md overflow-hidden rounded-xl border bg-card shadow-sm">
-      <Command>
-        <CommandInput placeholder="Type a command" />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
-            <CommandItem>
-              <FileText /> New document
-              <CommandShortcut>Cmd N</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <User /> View profile
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Settings">
-            <CommandItem disabled>
-              <Settings /> Team settings
-            </CommandItem>
-          </CommandGroup>
-        </CommandList>
-      </Command>
+    <div className="space-y-8">
+      <div className="max-w-md overflow-hidden rounded-xl border bg-card shadow-sm">
+        <Command>
+          <CommandInput placeholder="Type a command" />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Suggestions">
+              <CommandItem>
+                <FileText /> New document
+                <CommandShortcut>Cmd N</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <User /> View profile
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Settings">
+              <CommandItem disabled>
+                <Settings /> Team settings
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </div>
+      <CanonicalSpec md={specMd} />
     </div>
   );
 }

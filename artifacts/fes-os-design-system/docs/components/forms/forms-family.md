@@ -107,8 +107,15 @@ import { Checkbox } from '@workspace/fes-os-design-system/components/ui/checkbox
 <label htmlFor="terms">Accept terms</label>
 ```
 
-States: unchecked, checked (`bg-primary`), indeterminate, disabled.
+States: unchecked, checked (`bg-primary` with a check icon), indeterminate (`bg-primary` with a minus icon), and disabled. The control remains a compact square in every state; do not use a circular checkbox.
 ARIA: `role="checkbox"` + `aria-checked` managed by Radix.
+
+For checkbox groups, a parent “Select all” checkbox is:
+- checked when every child is checked;
+- unchecked when no children are checked;
+- indeterminate when only some children are checked.
+
+The indeterminate state communicates a mixed child selection. It is not a third persisted value for an individual binary setting.
 
 ---
 

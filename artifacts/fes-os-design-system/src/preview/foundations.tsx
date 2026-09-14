@@ -11,6 +11,12 @@ import {
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Switch } from '../components/ui/switch';
+import { CanonicalSpec } from './md-renderer';
+import {
+  mdFoundationColor,
+  mdFoundationTypography,
+  mdFoundationSpacingRadius,
+} from './docs-map';
 
 const CORE_SWATCHES = [
   { name: 'Primary', className: 'bg-primary' },
@@ -140,34 +146,37 @@ export function OverviewPage() {
 
 export function ColorsPage() {
   return (
-    <div className="space-y-8 rounded-xl border bg-card p-6 text-card-foreground">
-      <section className="space-y-4">
-        <div>
-          <h2 className="font-semibold">Brand colors</h2>
-          <p className="text-sm text-muted-foreground">
-            The core roles used for emphasis, supporting actions, and accents.
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {CORE_SWATCHES.map((swatch) => (
-            <Swatch key={swatch.name} {...swatch} />
-          ))}
-        </div>
-      </section>
+    <div className="space-y-8">
+      <div className="space-y-8 rounded-xl border bg-card p-6 text-card-foreground">
+        <section className="space-y-4">
+          <div>
+            <h2 className="font-semibold">Brand colors</h2>
+            <p className="text-sm text-muted-foreground">
+              The core roles used for emphasis, supporting actions, and accents.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {CORE_SWATCHES.map((swatch) => (
+              <Swatch key={swatch.name} {...swatch} />
+            ))}
+          </div>
+        </section>
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="font-semibold">Semantic and surface colors</h2>
-          <p className="text-sm text-muted-foreground">
-            Roles for text, backgrounds, borders, muted content, and danger.
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
-          {SUPPORTING_SWATCHES.map((swatch) => (
-            <Swatch key={swatch.name} {...swatch} />
-          ))}
-        </div>
-      </section>
+        <section className="space-y-4">
+          <div>
+            <h2 className="font-semibold">Semantic and surface colors</h2>
+            <p className="text-sm text-muted-foreground">
+              Roles for text, backgrounds, borders, muted content, and danger.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
+            {SUPPORTING_SWATCHES.map((swatch) => (
+              <Swatch key={swatch.name} {...swatch} />
+            ))}
+          </div>
+        </section>
+      </div>
+      <CanonicalSpec md={mdFoundationColor} />
     </div>
   );
 }
@@ -245,51 +254,55 @@ export function FontsPage() {
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Body text never drops below 13px. Do not use tracking below −0.04em, and avoid uppercase for sentences.</p>
         </div>
       </section>
+      <CanonicalSpec md={mdFoundationTypography} />
     </div>
   );
 }
 
 export function LayoutPage() {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <section className="rounded-xl border bg-card p-6 text-card-foreground">
-        <h2 className="font-semibold">Spacing</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          The spacing scale, derived from the base spacing token.
-        </p>
-        <div className="mt-6 space-y-4">
-          {SPACING_SCALE.map((space) => (
-            <div key={space.label} className="flex items-center gap-4">
-              <span className="w-8 text-xs text-muted-foreground">
-                {space.label}
-              </span>
-              <div className={`h-3 rounded-full bg-primary ${space.className}`} />
-            </div>
-          ))}
-        </div>
-      </section>
+    <div className="space-y-8">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <section className="rounded-xl border bg-card p-6 text-card-foreground">
+          <h2 className="font-semibold">Spacing</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            The spacing scale, derived from the base spacing token.
+          </p>
+          <div className="mt-6 space-y-4">
+            {SPACING_SCALE.map((space) => (
+              <div key={space.label} className="flex items-center gap-4">
+                <span className="w-8 text-xs text-muted-foreground">
+                  {space.label}
+                </span>
+                <div className={`h-3 rounded-full bg-primary ${space.className}`} />
+              </div>
+            ))}
+          </div>
+        </section>
 
-      <section className="rounded-xl border bg-card p-6 text-card-foreground">
-        <h2 className="font-semibold">Radius</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Corner treatments derive from the base radius token.
-        </p>
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          {[
-            { label: 'Small', className: 'rounded-sm' },
-            { label: 'Medium', className: 'rounded-md' },
-            { label: 'Large', className: 'rounded-lg' },
-            { label: 'Extra large', className: 'rounded-xl' },
-          ].map((radius) => (
-            <div
-              key={radius.label}
-              className={`flex h-24 items-end border bg-muted p-3 ${radius.className}`}
-            >
-              <span className="text-xs font-medium">{radius.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+        <section className="rounded-xl border bg-card p-6 text-card-foreground">
+          <h2 className="font-semibold">Radius</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Corner treatments derive from the base radius token.
+          </p>
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            {[
+              { label: 'Small', className: 'rounded-sm' },
+              { label: 'Medium', className: 'rounded-md' },
+              { label: 'Large', className: 'rounded-lg' },
+              { label: 'Extra large', className: 'rounded-xl' },
+            ].map((radius) => (
+              <div
+                key={radius.label}
+                className={`flex h-24 items-end border bg-muted p-3 ${radius.className}`}
+              >
+                <span className="text-xs font-medium">{radius.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+      <CanonicalSpec md={mdFoundationSpacingRadius} />
     </div>
   );
 }

@@ -10,27 +10,34 @@ import {
   AlertDialogTrigger,
 } from '../../components/ui/alert-dialog';
 import { Button } from '../../components/ui/button';
+import { CanonicalSpec, extractSection } from '../md-renderer';
+import { mdOverlaysFamily } from '../docs-map';
+
+const specMd = extractSection(mdOverlaysFamily, 'AlertDialog');
 
 export function AlertDialogDemo() {
   return (
-    <div className="rounded-xl border bg-card p-6">
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive">Delete project</Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this project?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone and removes all project data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction>Delete project</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+    <div className="space-y-8">
+      <div className="rounded-xl border bg-card p-6">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">Delete project</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this project?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone and removes all project data.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction>Delete project</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+      <CanonicalSpec md={specMd} />
     </div>
   );
 }

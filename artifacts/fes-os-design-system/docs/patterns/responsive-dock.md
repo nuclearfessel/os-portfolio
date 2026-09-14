@@ -101,6 +101,7 @@ Mobile navigation must remain fixed at the bottom — do not hide it or make it 
 - [ ] Neutral utility hover/focus foreground and background pairs meet WCAG AA in both themes.
 - [ ] Active items use a full-tile ring and a substantial edge pill, not a small dot alone.
 - [ ] The active pill remains visible beneath mobile and tablet inline labels.
+- [ ] Hover styling applies only to inactive items; active items remain unchanged under the pointer.
 
 ---
 
@@ -120,6 +121,7 @@ Mobile navigation must remain fixed at the bottom — do not hide it or make it 
 | Use `active` prop to reflect current section | Manage active state only via CSS |
 | Use a flat outline and border change for branded app feedback | Move, brighten, emboss, or recolor Dock items on hover |
 | Keep the active ring and edge pill visible in every theme and breakpoint | Hide the active indicator on mobile or rely on color alone |
+| Keep active items visually stable on hover | Add a second hover treatment on top of active styling |
 
 ---
 

@@ -71,7 +71,8 @@ function Swatch({
 }
 
 // Portfolio-scoped public counts
-// Components: 11 Fes OS primitives + 9 Settings primitives + 14 generic = 34
+// Components: 10 Desktop primitives + 8 Settings primitives + 14 generic + 2 family overviews = 34
+// The fes-os-primitives directory is the single sidebar entry for all 18 primitives.
 const PUBLIC_COUNTS = {
   foundations: 5,
   components: 34,

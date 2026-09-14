@@ -206,7 +206,7 @@ type SavedDesktopState = {
 
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
 const DESKTOP_DEFAULT_STORAGE_KEY = 'fes-os.desktop.default.v1';
-const DESKTOP_GRID_SIZE = 4;
+const DESKTOP_GRID_SIZE = 8;
 let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {
   folderPositions: {},

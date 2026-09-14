@@ -982,6 +982,7 @@ function SettingsWindow({
 }) {
   const [activeSection, setActiveSection] = useState<SettingsSection>('personalization');
   const [textColorTarget, setTextColorTarget] = useState<IntroTextKey | null>(null);
+  const settingsContentRef = useRef<HTMLDivElement>(null);
 
   const currentWallpaper = theme === 'light' ? wallpaperLight : wallpaperDark;
   const setWallpaperMode = (mode: WallpaperMode) => {
@@ -1004,6 +1005,10 @@ function SettingsWindow({
 
   const handleContrastThemeChange = (ct: ContrastTheme) => {
     updateAccessibility({ contrastTheme: ct });
+  };
+  const selectSettingsSection = (section: SettingsSection) => {
+    setActiveSection(section);
+    if (settingsContentRef.current) settingsContentRef.current.scrollTop = 0;
   };
   const introLabels: Record<IntroTextKey, string> = {
     primary: 'Primary headline',
@@ -1033,7 +1038,7 @@ function SettingsWindow({
               type="button"
               className={`settings-nav-item${activeSection === 'personalization' ? ' settings-nav-item-active' : ''}`}
               aria-current={activeSection === 'personalization' ? 'page' : undefined}
-              onClick={() => setActiveSection('personalization')}
+              onClick={() => selectSettingsSection('personalization')}
               data-testid="settings-nav-personalization"
             >
               <span className="settings-nav-icon" aria-hidden="true">
@@ -1045,7 +1050,7 @@ function SettingsWindow({
               type="button"
               className={`settings-nav-item${activeSection === 'accessibility' ? ' settings-nav-item-active' : ''}`}
               aria-current={activeSection === 'accessibility' ? 'page' : undefined}
-              onClick={() => setActiveSection('accessibility')}
+              onClick={() => selectSettingsSection('accessibility')}
               data-testid="settings-nav-accessibility"
             >
               <span className="settings-nav-icon" aria-hidden="true">
@@ -1056,7 +1061,7 @@ function SettingsWindow({
           </nav>
 
           {/* Content */}
-          <div className="settings-content">
+          <div ref={settingsContentRef} className="settings-content">
             {activeSection === 'personalization' && (
               <>
                 <SectionLabel className="section-kicker">personalization</SectionLabel>

@@ -1,11 +1,11 @@
 ---
 name: website-zip-action
-description: Maintains the GitHub workflow that publishes a versioned deployable portfolio ZIP to GitHub Releases after every branch push. Use before changing CI, production builds, output paths, or release packaging.
+description: Maintains the GitHub workflow that publishes a versioned deployable portfolio ZIP to GitHub Releases from main only. Use before changing CI, production builds, output paths, or release packaging.
 ---
 
 # Website ZIP action
 
-The repository must publish a fresh, versioned deployable website ZIP to GitHub Releases after every push to `main` or any other branch.
+The repository must publish a fresh, versioned deployable website ZIP to GitHub Releases after pushes to `main` only. Feature and maintenance branches must never publish packages or prereleases.
 
 ## Source of truth
 
@@ -18,8 +18,8 @@ The repository must publish a fresh, versioned deployable website ZIP to GitHub 
 
 The workflow must:
 
-1. Trigger on pushes to every branch.
-2. Allow manual `workflow_dispatch` runs.
+1. Trigger automatically only on pushes to `main`.
+2. Allow manual `workflow_dispatch` runs, but guard the release job so it runs only when the selected ref is `main`.
 3. Install dependencies with the repository’s locked pnpm version and frozen lockfile.
 4. Typecheck `@workspace/desktop-portfolio`.
 5. Build `@workspace/desktop-portfolio`.
@@ -27,7 +27,7 @@ The workflow must:
 7. Put `index.html`, `assets/`, wallpapers, and other deployable files at the archive root.
 8. Name each ZIP `site-package-vMM.NN.zip`, using the workflow run number to increment from `v01.01` through `v01.99`, then roll over to `v02.01`.
 9. Fail when the build or ZIP is missing.
-10. Publish branch builds as GitHub prereleases.
+10. Never create prereleases.
 11. Publish `main` builds as standard GitHub releases.
 12. Replace the ZIP asset safely when rerunning the same workflow run.
 

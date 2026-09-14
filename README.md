@@ -85,9 +85,9 @@ pnpm --filter @workspace/desktop-portfolio run test:e2e
 
 ## Automated website releases
 
-Every push to `main` or any other branch runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, packages the contents of `artifacts/desktop-portfolio/dist/public/`, and publishes a deployable ZIP such as `site-package-v01.01.zip` under the repository’s **Releases** section.
+Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, packages the contents of `artifacts/desktop-portfolio/dist/public/`, and publishes a deployable ZIP such as `site-package-v01.01.zip` under the repository’s **Releases** section.
 
-Branch builds are marked as prereleases. Builds from `main` are published as standard releases.
+Feature and maintenance branch pushes never create release packages or prereleases. Only `main` publishes standard releases.
 
 ## Design-system development
 

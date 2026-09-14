@@ -522,16 +522,16 @@ const shellFiles: Record<string, ShellNode> = {
   '/home/fes/about/bio.txt': { type: 'file', content: 'Frontend engineer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
   '/home/fes/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
   '/home/fes/work': { type: 'directory' },
-  '/home/fes/work/orbit-crm.md': { type: 'file', content: 'Intuitive Surgical Design System\nLead production, documentation and library management as adoption grew from 1 to 25 product teams.\nMar 2022 - Aug 2026' },
-  '/home/fes/work/orbit-crm-02.md': { type: 'file', content: 'SimNow 2.0 — da Vinci Simulator UI update\nUnified the da Vinci console and Inuitive Digital design systems for surgeon training simulator UI.\nMar 2022 - Jan 2025' },
-  '/home/fes/work/orbit-crm-03.md': { type: 'file', content: "Cedar — REI's Design System\nLibrary and tooling contributions to Cedar, REI's open-source design system\nJune 2019 – June 2020" },
-  '/home/fes/work/orbit-crm-04.md': { type: 'file', content: "Microsoft Windows 10 Language Installer\nRedesigned Windows 10's language pack installer flow as a clearer, focused modal-dialog experience\n2017–2018" },
+  '/home/fes/work/intuitive-surgical-design-system.md': { type: 'file', content: 'Intuitive Surgical Design System\nLead production, documentation and library management as adoption grew from 1 to 25 product teams.\nMar 2022 - Aug 2026' },
+  '/home/fes/work/simnow-2-da-vinci-simulator.md': { type: 'file', content: 'SimNow 2.0 — da Vinci Simulator UI update\nUnified the da Vinci console and Inuitive Digital design systems for surgeon training simulator UI.\nMar 2022 - Jan 2025' },
+  '/home/fes/work/cedar-rei-design-system.md': { type: 'file', content: "Cedar — REI's Design System\nLibrary and tooling contributions to Cedar, REI's open-source design system\nJune 2019 – June 2020" },
+  '/home/fes/work/windows-10-language-installer.md': { type: 'file', content: "Microsoft Windows 10 Language Installer\nRedesigned Windows 10's language pack installer flow as a clearer, focused modal-dialog experience\n2017–2018" },
   '/home/fes/contact': { type: 'directory' },
   '/home/fes/contact/contact.txt': { type: 'file', content: 'Email: hello@fesnaqvi.dev\nStatus: Open to thoughtful product partnerships.' },
 };
 
 const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd work', 'cat ~/work/orbit-crm.md', 'open work', 'theme light', 'history', 'clear'];
+const shellExamples = ['ls', 'cd work', 'cat ~/work/intuitive-surgical-design-system.md', 'open work', 'theme light', 'history', 'clear'];
 
 function normalizeShellPath(cwd: string, target = '~') {
   const home = '/home/fes';

@@ -174,8 +174,8 @@ test('suppresses native context menus at every responsive breakpoint', async ({ 
 
 test('desktop context menu keeps its intended surface styling in light and dark themes', async ({ page }) => {
   const expectedBackgrounds = {
-    light: 'rgba(247, 250, 248, 0.8)',
-    dark: 'rgba(29, 32, 54, 0.8)',
+    light: 'rgba(247, 250, 248, 0.9)',
+    dark: 'rgba(29, 32, 54, 0.9)',
   } as const;
 
   for (const theme of ['light', 'dark'] as const) {

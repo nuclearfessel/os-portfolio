@@ -32,6 +32,7 @@ The site simulates a desktop OS on large screens and becomes a managed app inter
 - Hide desktop launchers outside desktop mode.
 - Keep tablet/mobile navigation fixed at the bottom with visible labels.
 - Every resizable window with side navigation must respond to its own container width. At narrow widths, smoothly transform the sidebar into a horizontal sub-navigation toolbar directly below the window toolbar while preserving DOM and keyboard order, active state, and non-overlapping content geometry.
+- When solid-color wallpaper mode is selected, carry the active theme's saved solid color into tablet and mobile layouts. Keep picture wallpapers desktop-only, and let contrast modes override wallpaper presentation without discarding the saved selection.
 - The non-desktop Mode item toggles light/dark theme using Keyline `Sun` and `Moon` icons.
 - Managed windows stay 8px below the system bar.
 - Tablet portrait and mobile windows are fully opaque.
@@ -58,6 +59,7 @@ The site simulates a desktop OS on large screens and becomes a managed app inter
 - Avoid emoji interface icons.
 - Keep mobile navigation icons and labels inside stable footprints so state changes do not shift layout.
 - Preserve solid managed-window surfaces for readability.
+- Keep desktop text personalization copy shared between themes, but persist each element's light and dark colors independently. Open the shared color picker in a modal floating dialog from Personalization.
 - Current motion timings are intentionally quick: windows `0.07s`, folder transforms `0.07s`, mode opacity `0.12s`, and mode transform `0.17s`.
 
 ## Editing workflow

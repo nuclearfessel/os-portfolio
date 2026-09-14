@@ -11,6 +11,17 @@ consuming app**: localStorage persistence, wallpaper updates, desktop
 orchestration, and "Save State as Default" / "Reset Desktop" belong there, not
 here.
 
+### Theme-specific text color editing
+
+When Personalization exposes editable display copy, keep the copy value shared
+across themes while storing separate light- and dark-theme colors. Open the
+existing `ColorPicker` inside a modal `Dialog` for the selected text element;
+do not expand the full picker inline in the Settings pane. The dialog title must
+name the element, its description must name the active theme, and closing it
+must restore focus to the triggering color button. Use a transparent dialog
+overlay for color pickers so the desktop remains visually unobscured; warning
+and confirmation dialogs retain their scrims.
+
 ---
 
 ## Component reference

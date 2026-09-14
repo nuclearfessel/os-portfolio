@@ -2286,6 +2286,33 @@ button { cursor: pointer; }
 
 /* Desktop background override applied inline via desktopBackground() */
 
+/* Desktop text personalization */
+.settings-intro-editor { display: grid; grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; gap: 12px; }
+.settings-intro-field { min-width: 0; height: 100%; display: grid; align-content: start; gap: 6px; padding: 12px; color: #c8ccdd; background: rgba(32,35,61,.4); border: 1px solid rgba(214,221,255,.1); border-radius: 8px; font: 11px var(--app-font-mono); }
+.settings-intro-input-row { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 8px; }
+.settings-intro-input-row input,
+.settings-intro-input-row textarea { width: 100%; min-width: 0; padding: 9px 10px; resize: vertical; color: #edf0f8; background: rgba(12,14,28,.55); border: 1px solid rgba(214,221,255,.16); border-radius: 6px; outline: none; font: 12px/1.45 var(--app-font-sans); }
+.settings-intro-input-row input:focus,
+.settings-intro-input-row textarea:focus { border-color: #e4ff5b; box-shadow: 0 0 0 2px rgba(228,255,91,.12); }
+.settings-intro-color-button { min-width: 104px; display: inline-flex; align-items: center; gap: 7px; padding: 8px 9px; color: #c8ccdd; background: rgba(32,35,61,.72); border: 1px solid rgba(214,221,255,.16); border-radius: 6px; font: 10px var(--app-font-mono); }
+.settings-intro-color-button > span { width: 18px; height: 18px; flex: 0 0 18px; border: 1px solid rgba(255,255,255,.28); border-radius: 4px; }
+.theme-light .settings-intro-field,
+.theme-light .settings-intro-color-button { color: #4f6070; }
+.theme-light .settings-intro-field { background: rgba(232,240,236,.64); border-color: rgba(26,83,91,.14); }
+.theme-light .settings-intro-input-row input,
+.theme-light .settings-intro-input-row textarea { color: #17213b; background: rgba(247,250,248,.82); border-color: rgba(26,83,91,.2); }
+.theme-light .settings-intro-input-row input:focus,
+.theme-light .settings-intro-input-row textarea:focus { border-color: #0b665d; box-shadow: 0 0 0 2px rgba(11,102,93,.12); }
+.theme-light .settings-intro-color-button { background: rgba(232,240,236,.9); border-color: rgba(26,83,91,.2); }
+.text-color-dialog { width: min(420px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; color: #edf0f8; background: #17192d; border-color: rgba(214,221,255,.2); border-radius: 10px; }
+.text-color-dialog-overlay { background: transparent; }
+.text-color-dialog.theme-light { color: #17213b; background: #f7faf8; border-color: rgba(26,83,91,.25); }
+
+@container settings-window (min-width: 620px) {
+  .settings-intro-editor { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .settings-intro-color-button { width: 100%; }
+}
+
 /* --- High Contrast --- */
 /* Maximum black/white separation, vivid focus/selection indicators */
 [data-contrast="high"] {

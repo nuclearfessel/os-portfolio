@@ -1,10 +1,21 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { ScrollArea } from '../components/ui/scroll-area';
+import { Separator } from '../components/ui/separator';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../components/ui/tooltip';
+import { SectionLabel } from '../components/ui/fes-os';
 import {
   ALL_ENTRIES,
   DESIGN_SYSTEM,
-  NAV_GROUPS,
+  PUBLIC_ALL_ENTRIES,
+  PUBLIC_NAV_GROUPS,
+  PUBLIC_VISIBILITY_MAP,
   OVERVIEW_ENTRY,
   type NavGroup,
 } from './registry';
@@ -14,6 +25,7 @@ function readHashId(): string {
   if (!id) {
     return OVERVIEW_ENTRY.id;
   }
+  // Allow any registered entry (including hidden ones) via direct deep-link
   return ALL_ENTRIES.some((entry) => entry.id === id)
     ? id
     : OVERVIEW_ENTRY.id;
@@ -55,8 +67,8 @@ function NavigationItems({
         <button
           type="button"
           onClick={() => select(OVERVIEW_ENTRY.id)}
-          aria-current={OVERVIEW_ENTRY.id === activeId}
-          className="block w-full rounded-md px-2 py-2 text-left text-sm font-medium transition-colors hover:bg-muted aria-[current=true]:bg-primary aria-[current=true]:text-primary-foreground"
+          aria-current={OVERVIEW_ENTRY.id === activeId ? 'page' : undefined}
+          className="block w-full rounded-md px-2 py-2 text-left text-sm font-medium transition-colors hover:bg-muted aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground"
         >
           {OVERVIEW_ENTRY.name}
         </button>
@@ -73,8 +85,8 @@ function NavigationItems({
                 key={entry.id}
                 type="button"
                 onClick={() => select(entry.id)}
-                aria-current={entry.id === activeId}
-                className="block w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted aria-[current=true]:bg-primary aria-[current=true]:text-primary-foreground"
+                aria-current={entry.id === activeId ? 'page' : undefined}
+                className="block w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground"
               >
                 {entry.name}
               </button>
@@ -85,7 +97,7 @@ function NavigationItems({
 
       {!showOverview && groups.length === 0 ? (
         <p className="px-2 py-4 text-sm text-muted-foreground">
-          No sections match “{query}”.
+          No sections match &ldquo;{query}&rdquo;.
         </p>
       ) : null}
     </nav>
@@ -102,9 +114,10 @@ export function DesignSystemBrowser() {
   const mobileNavSummary = useRef<HTMLElement>(null);
   const normalizedQuery = query.trim().toLowerCase();
 
+  // Navigation and search operate only on public entries
   const filteredGroups = useMemo(
     () =>
-      NAV_GROUPS.map((group) => {
+      PUBLIC_NAV_GROUPS.map((group) => {
         const matchingEntries = group.name.toLowerCase().includes(normalizedQuery)
           ? group.entries
           : group.entries.filter((entry) =>
@@ -126,11 +139,27 @@ export function DesignSystemBrowser() {
     [normalizedQuery],
   );
 
+  // Active entry may be a hidden page (deep-linked) — resolve against ALL_ENTRIES
   const active =
     ALL_ENTRIES.find((entry) => entry.id === selectedId) ?? OVERVIEW_ENTRY;
-  const activeGroup = NAV_GROUPS.find((group) =>
-    group.entries.some((entry) => entry.id === active.id),
-  );
+
+  // For header breadcrumb group label, search public groups first then all
+  const activeGroup =
+    PUBLIC_NAV_GROUPS.find((group) =>
+      group.entries.some((entry) => entry.id === active.id),
+    ) ??
+    // fallback: hidden page may still belong to a group
+    (() => {
+      for (const group of PUBLIC_NAV_GROUPS) {
+        if (group.entries.some((e) => e.id === active.id)) return group;
+      }
+      return undefined;
+    })();
+
+  const isHiddenPage =
+    active.id !== OVERVIEW_ENTRY.id &&
+    PUBLIC_VISIBILITY_MAP[active.id] !== true;
+
   const ActivePage = active.Page;
 
   useEffect(() => {
@@ -145,6 +174,7 @@ export function DesignSystemBrowser() {
   const showOverview = `${OVERVIEW_ENTRY.name} ${OVERVIEW_ENTRY.description}`
     .toLowerCase()
     .includes(normalizedQuery);
+
   const selectPage = (id: string) => {
     select(id);
     if (mobileNav.current?.open) {
@@ -153,49 +183,55 @@ export function DesignSystemBrowser() {
     }
   };
 
+  const nextTheme = theme === 'light' ? 'dark' : 'light';
+
   return (
-    <div className="min-h-screen bg-background text-foreground md:grid md:grid-cols-[260px_minmax(0,1fr)]">
-      <aside className="border-b bg-muted/20 md:sticky md:top-0 md:flex md:h-screen md:flex-col md:border-b-0 md:border-r">
-        <div className="border-b px-5 py-5">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold">{DESIGN_SYSTEM.title}</p>
-            <button
-              type="button"
-              onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')}
-              className="rounded-md border bg-card px-2 py-1 font-mono text-[10px] uppercase tracking-wide transition-colors hover:border-primary hover:text-primary"
-              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-            >
-              {theme}
-            </button>
+    <TooltipProvider delayDuration={400}>
+      <div className="min-h-[100dvh] bg-background text-foreground md:grid md:grid-cols-[260px_minmax(0,1fr)]">
+        {/* ── Sidebar ─────────────────────────────────────────────────── */}
+        <aside className="border-b bg-muted/20 md:sticky md:top-0 md:flex md:h-screen md:flex-col md:border-b-0 md:border-r">
+          {/* Sidebar header */}
+          <div className="px-5 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{DESIGN_SYSTEM.title}</p>
+                <SectionLabel className="mt-0.5 block text-muted-foreground">
+                  portfolio-scoped
+                </SectionLabel>
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setTheme(nextTheme)}
+                    aria-label={`Switch to ${nextTheme} theme`}
+                    className="shrink-0 font-mono text-[10px] uppercase tracking-wide"
+                  >
+                    {theme}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Switch to {nextTheme} theme
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Browse both themes</p>
-        </div>
-        <div className="p-4 pb-2">
-          <Input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            aria-label="Search design system"
-            placeholder="Search design system…"
-          />
-        </div>
-        <ScrollArea className="hidden min-h-0 flex-1 px-4 pb-4 md:block">
-          <NavigationItems
-            showOverview={showOverview}
-            groups={filteredGroups}
-            activeId={active.id}
-            query={query}
-            select={selectPage}
-          />
-        </ScrollArea>
-        <details ref={mobileNav} className="border-t px-4 py-3 md:hidden">
-          <summary
-            ref={mobileNavSummary}
-            className="cursor-pointer text-sm font-medium"
-          >
-            Browse sections:{' '}
-            <span className="text-muted-foreground">{active.name}</span>
-          </summary>
-          <ScrollArea className="mt-3 h-64 pb-2">
+
+          <Separator />
+
+          {/* Search */}
+          <div className="p-4 pb-2">
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              aria-label="Search design system"
+              placeholder="Search…"
+            />
+          </div>
+
+          {/* Desktop nav */}
+          <ScrollArea className="hidden min-h-0 flex-1 px-4 pb-4 md:block">
             <NavigationItems
               showOverview={showOverview}
               groups={filteredGroups}
@@ -204,50 +240,83 @@ export function DesignSystemBrowser() {
               select={selectPage}
             />
           </ScrollArea>
-        </details>
-      </aside>
 
-      <main className="min-w-0 px-6 py-10 sm:px-10 lg:px-14">
-        <div className="mx-auto max-w-5xl">
-          <header className="border-b pb-8">
-            {active.id === OVERVIEW_ENTRY.id ? (
-              <>
-                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                  {DESIGN_SYSTEM.title}
-                </h1>
-                <p className="mt-3 max-w-2xl text-muted-foreground">
-                  {DESIGN_SYSTEM.description}
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {activeGroup?.name}
-                </p>
-                <h1 className="mt-2 text-2xl font-semibold">{active.name}</h1>
-                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                  {active.description}
-                </p>
-              </>
-            )}
-          </header>
-
-          <div className="pt-8">
-            <Suspense
-              fallback={
-                <div
-                  role="status"
-                  className="rounded-xl border bg-card p-6 text-sm text-muted-foreground"
-                >
-                  Loading preview…
-                </div>
-              }
+          {/* Mobile nav */}
+          <details ref={mobileNav} className="border-t px-4 py-3 md:hidden">
+            <summary
+              ref={mobileNavSummary as React.RefObject<HTMLElement>}
+              className="cursor-pointer text-sm font-medium"
             >
-              <ActivePage />
-            </Suspense>
+              Browse:{' '}
+              <span className="text-muted-foreground">{active.name}</span>
+            </summary>
+            <ScrollArea className="mt-3 h-64 pb-2">
+              <NavigationItems
+                showOverview={showOverview}
+                groups={filteredGroups}
+                activeId={active.id}
+                query={query}
+                select={selectPage}
+              />
+            </ScrollArea>
+          </details>
+        </aside>
+
+        {/* ── Main content ─────────────────────────────────────────────── */}
+        <main className="min-w-0 px-6 py-10 sm:px-10 lg:px-14">
+          <div className="mx-auto max-w-5xl">
+            {/* Hidden-page notice — subtle, accessible, not obtrusive */}
+            {isHiddenPage && (
+              <aside
+                aria-label="Internal page notice"
+                className="mb-6 rounded-md border border-muted bg-muted/40 px-4 py-2.5"
+              >
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                  Internal — not surfaced in public navigation
+                </p>
+              </aside>
+            )}
+
+            <header className="border-b pb-8">
+              {active.id === OVERVIEW_ENTRY.id ? (
+                <>
+                  <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                    {DESIGN_SYSTEM.title}
+                  </h1>
+                  <p className="mt-3 max-w-2xl text-muted-foreground">
+                    {DESIGN_SYSTEM.description}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    {activeGroup?.name}
+                  </p>
+                  <h1 className="mt-2 text-2xl font-semibold">{active.name}</h1>
+                  <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                    {active.description}
+                  </p>
+                </>
+              )}
+            </header>
+
+            <div className="pt-8">
+              <Suspense
+                fallback={
+                  <div
+                    role="status"
+                    className="rounded-xl border bg-card p-6 text-sm text-muted-foreground"
+                  >
+                    Loading preview…
+                  </div>
+                }
+              >
+                <ActivePage />
+              </Suspense>
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </TooltipProvider>
   );
 }

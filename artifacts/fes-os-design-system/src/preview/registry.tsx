@@ -186,6 +186,64 @@ const SettingsDemo = lazyPage(() =>
   import('./demos/settings').then(({ SettingsDemo }) => SettingsDemo),
 );
 
+// ── Individual Fes OS primitive pages ──────────────────────────────────────
+const FesOsActionButtonDemo = lazyPage(() =>
+  import('./demos/fes-os-action-button').then(({ FesOsActionButtonDemo }) => FesOsActionButtonDemo),
+);
+const FesOsSectionLabelDemo = lazyPage(() =>
+  import('./demos/fes-os-section-label').then(({ FesOsSectionLabelDemo }) => FesOsSectionLabelDemo),
+);
+const FesOsStatusIndicatorDemo = lazyPage(() =>
+  import('./demos/fes-os-status-indicator').then(({ FesOsStatusIndicatorDemo }) => FesOsStatusIndicatorDemo),
+);
+const FesOsSurfaceDemo = lazyPage(() =>
+  import('./demos/fes-os-surface').then(({ FesOsSurfaceDemo }) => FesOsSurfaceDemo),
+);
+const FesOsProjectCardDemo = lazyPage(() =>
+  import('./demos/fes-os-project-card').then(({ FesOsProjectCardDemo }) => FesOsProjectCardDemo),
+);
+const FesOsWindowSurfaceDemo = lazyPage(() =>
+  import('./demos/fes-os-window-surface').then(({ FesOsWindowSurfaceDemo }) => FesOsWindowSurfaceDemo),
+);
+const FesOsDockItemDemo = lazyPage(() =>
+  import('./demos/fes-os-dock-item').then(({ FesOsDockItemDemo }) => FesOsDockItemDemo),
+);
+const FesOsDesktopLauncherDemo = lazyPage(() =>
+  import('./demos/fes-os-desktop-launcher').then(({ FesOsDesktopLauncherDemo }) => FesOsDesktopLauncherDemo),
+);
+const FesOsStickyNoteDemo = lazyPage(() =>
+  import('./demos/fes-os-sticky-note').then(({ FesOsStickyNoteDemo }) => FesOsStickyNoteDemo),
+);
+const FesOsContextMenuSurfaceDemo = lazyPage(() =>
+  import('./demos/fes-os-context-menu-surface').then(({ FesOsContextMenuSurfaceDemo }) => FesOsContextMenuSurfaceDemo),
+);
+
+// ── Individual Settings primitive pages ────────────────────────────────────
+const SettingsNavDemo = lazyPage(() =>
+  import('./demos/settings-nav').then(({ SettingsNavDemo }) => SettingsNavDemo),
+);
+const SettingsToggleRowDemo = lazyPage(() =>
+  import('./demos/settings-toggle-row').then(({ SettingsToggleRowDemo }) => SettingsToggleRowDemo),
+);
+const SettingsSliderGroupDemo = lazyPage(() =>
+  import('./demos/settings-slider-group').then(({ SettingsSliderGroupDemo }) => SettingsSliderGroupDemo),
+);
+const SettingsSegmentedChoiceDemo = lazyPage(() =>
+  import('./demos/settings-segmented-choice').then(({ SettingsSegmentedChoiceDemo }) => SettingsSegmentedChoiceDemo),
+);
+const SettingsContrastCardDemo = lazyPage(() =>
+  import('./demos/settings-contrast-card').then(({ SettingsContrastCardDemo }) => SettingsContrastCardDemo),
+);
+const SettingsColorPresetDemo = lazyPage(() =>
+  import('./demos/settings-color-preset').then(({ SettingsColorPresetDemo }) => SettingsColorPresetDemo),
+);
+const SettingsDividerDemo = lazyPage(() =>
+  import('./demos/settings-divider').then(({ SettingsDividerDemo }) => SettingsDividerDemo),
+);
+const SettingsSectionHeaderDemo = lazyPage(() =>
+  import('./demos/settings-section-header').then(({ SettingsSectionHeaderDemo }) => SettingsSectionHeaderDemo),
+);
+
 // ── Pattern pages ──────────────────────────────────────────────────────────
 const PatternDesktopWindowWorkspace = lazyPage(() =>
   import('./demos/patterns').then(({ PatternDesktopWindowWorkspace }) => PatternDesktopWindowWorkspace),
@@ -224,6 +282,134 @@ const PatternSavedStateOwnership = lazyPage(() =>
   import('./demos/patterns').then(({ PatternSavedStateOwnership }) => PatternSavedStateOwnership),
 );
 
+// ── Public visibility classification ──────────────────────────────────────
+// Determines whether an entry appears in navigation and search.
+// true  → surfaced in nav/search (portfolio-scoped public pages)
+// false → registered, documented, buildable, deep-linkable by known hash,
+//         but hidden from nav/search
+//
+// Spec:
+//   Public generic components:  alert-dialog, button, card, context-menu, dialog,
+//     input, menubar, radio-group, separator, slider, switch, tabs, toast, tooltip
+//   Public Fes OS primitives (individual): action-button, section-label,
+//     status-indicator, surface, project-card, window-surface, dock-item,
+//     desktop-launcher, sticky-note-surface, context-menu-surface
+//   Public Fes OS family overview: fes-os-pilot
+//   Public Settings primitives (individual): settings-nav, settings-toggle-row,
+//     settings-slider-group, settings-segmented-choice, settings-contrast-card,
+//     settings-color-preset, settings-divider, settings-section-header
+//   Public Settings family overview: fes-os-settings
+//   Public foundations: all 5 foundation pages
+//   Public patterns:    all 12 pattern pages
+//   Everything else:    hidden (false)
+export type PublicVisibility = boolean;
+
+export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
+  // ── Fes OS family overview ───────────────────────────────────────────────────
+  'fes-os-pilot': true,
+  'fes-os-settings': true,
+  // ── Fes OS individual primitives ─────────────────────────────────────────────
+  'action-button': true,
+  'section-label': true,
+  'status-indicator': true,
+  'surface': true,
+  'project-card': true,
+  'window-surface': true,
+  'dock-item': true,
+  'desktop-launcher': true,
+  'sticky-note-surface': true,
+  'context-menu-surface': true,
+  // ── Settings individual primitives ───────────────────────────────────────────
+  'settings-nav': true,
+  'settings-toggle-row': true,
+  'settings-slider-group': true,
+  'settings-segmented-choice': true,
+  'settings-contrast-card': true,
+  'settings-color-preset': true,
+  'settings-divider': true,
+  'settings-section-header': true,
+  // ── Foundations ─────────────────────────────────────────────────────────────
+  'color-roles': true,
+  'type-scale': true,
+  'spacing-radius': true,
+  'fes-os-guidelines': true,
+  'accessibility': true,
+  // ── Actions ─────────────────────────────────────────────────────────────────
+  'button': true,
+  'button-group': false,
+  'toggle': false,
+  'toggle-group': false,
+  // ── Forms & inputs ──────────────────────────────────────────────────────────
+  'input': true,
+  'input-group': false,
+  'input-otp': false,
+  'textarea': false,
+  'checkbox': false,
+  'radio-group': true,
+  'select': false,
+  'slider': true,
+  'switch': true,
+  'calendar': false,
+  'field': false,
+  'form': false,
+  // ── Overlays ─────────────────────────────────────────────────────────────────
+  'dialog': true,
+  'alert-dialog': true,
+  'sheet': false,
+  'drawer': false,
+  'popover': false,
+  'hover-card': false,
+  'tooltip': true,
+  'command': false,
+  // ── Menus & navigation ───────────────────────────────────────────────────────
+  'dropdown-menu': false,
+  'context-menu': true,
+  'menubar': true,
+  'navigation-menu': false,
+  'breadcrumb': false,
+  'pagination': false,
+  'tabs': true,
+  'sidebar': false,
+  // ── Data display ─────────────────────────────────────────────────────────────
+  'avatar': false,
+  'badge': false,
+  'card': true,
+  'table': false,
+  'accordion': false,
+  'collapsible': false,
+  'carousel': false,
+  'item': false,
+  'empty': false,
+  'kbd': false,
+  'aspect-ratio': false,
+  // ── Feedback ─────────────────────────────────────────────────────────────────
+  'alert': false,
+  'progress': false,
+  'skeleton': false,
+  'spinner': false,
+  'toast': true,
+  'sonner': false,
+  // ── Structure ────────────────────────────────────────────────────────────────
+  'separator': true,
+  'scroll-area': false,
+  'resizable': false,
+  // ── Charts ───────────────────────────────────────────────────────────────────
+  'chart': false,
+  // ── Patterns ─────────────────────────────────────────────────────────────────
+  'pattern-desktop-window': true,
+  'pattern-responsive-dock': true,
+  'pattern-launcher-grid': true,
+  'pattern-sticky-notes': true,
+  'pattern-context-menus': true,
+  'pattern-project-card-list': true,
+  'pattern-settings-window': true,
+  'pattern-personalization-colors': true,
+  'pattern-accessibility-panel': true,
+  'pattern-contrast-override': true,
+  'pattern-transparency-surfaces': true,
+  'pattern-saved-state': true,
+};
+
 export type PreviewEntry = {
   // Globally unique across every group — it is the deep-link slug (`#page=<id>`)
   // and the active-page key. Group-qualify names that repeat across groups
@@ -242,7 +428,7 @@ export type NavGroup = {
 export const DESIGN_SYSTEM = {
   title: 'Fes OS Design System',
   description:
-    'Foundations, components, and responsive interaction patterns for the Fes Naqvi desktop portfolio in light and dark themes.',
+    'Foundations, components, and interaction patterns for the Fes Naqvi desktop portfolio — portfolio-scoped public view. The package retains the full component catalog; only portfolio-used surfaces are surfaced here.',
 } as const;
 
 export const OVERVIEW_ENTRY: PreviewEntry = {
@@ -252,6 +438,8 @@ export const OVERVIEW_ENTRY: PreviewEntry = {
   Page: OverviewPage,
 };
 
+// ── Full registry — ALL entries, including hidden ones ────────────────────
+// This is the source of truth. Do not delete entries; set public: false instead.
 export const NAV_GROUPS: NavGroup[] = [
   {
     name: 'Fes OS',
@@ -259,14 +447,122 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'fes-os-pilot',
         name: 'Portfolio primitives',
-        description: 'Actions, labels, status, surfaces, and project cards used by the portfolio.',
+        description: 'Family overview: actions, labels, status, surfaces, and project cards used by the portfolio.',
         Page: FesOsDemo,
+      },
+      {
+        id: 'action-button',
+        name: 'ActionButton',
+        description: 'Compact action primitive for window quick-actions, project links, and calls to action. Primary, secondary, and danger variants.',
+        Page: FesOsActionButtonDemo,
+      },
+      {
+        id: 'section-label',
+        name: 'SectionLabel',
+        description: 'Compact mono kicker label used above headings, as breadcrumb-style namespaces, and as category annotations.',
+        Page: FesOsSectionLabelDemo,
+      },
+      {
+        id: 'status-indicator',
+        name: 'StatusIndicator',
+        description: 'Dot-and-text presence indicator with online, idle, and danger tones for the desktop menubar.',
+        Page: FesOsStatusIndicatorDemo,
+      },
+      {
+        id: 'surface',
+        name: 'Surface',
+        description: 'Semantic surface container with three elevation levels — flat, raised, and floating.',
+        Page: FesOsSurfaceDemo,
+      },
+      {
+        id: 'project-card',
+        name: 'ProjectCard',
+        description: 'Indexed portfolio project card with accent color, metadata tag, and an optional action slot.',
+        Page: FesOsProjectCardDemo,
+      },
+      {
+        id: 'window-surface',
+        name: 'WindowSurface',
+        description: 'Visual shell of a desktop application window — border, background, rounded corners, and large shadow.',
+        Page: FesOsWindowSurfaceDemo,
+      },
+      {
+        id: 'dock-item',
+        name: 'DockItem / DockItemLabel',
+        description: 'Individual dock button with tooltip (desktop) or inline (mobile/tablet) label presentation modes.',
+        Page: FesOsDockItemDemo,
+      },
+      {
+        id: 'desktop-launcher',
+        name: 'DesktopLauncher',
+        description: 'Draggable desktop icon that opens or focuses a window. Applies is-open class when the target window is active.',
+        Page: FesOsDesktopLauncherDemo,
+      },
+      {
+        id: 'sticky-note-surface',
+        name: 'StickyNoteSurface',
+        description: 'Surface shell for free-floating rotatable sticky notes on the desktop canvas.',
+        Page: FesOsStickyNoteDemo,
+      },
+      {
+        id: 'context-menu-surface',
+        name: 'ContextMenuSurface',
+        description: 'Surface shell for custom-positioned desktop context menus — popover background, border, and shadow.',
+        Page: FesOsContextMenuSurfaceDemo,
       },
       {
         id: 'fes-os-settings',
         name: 'Settings primitives',
-        description: 'Settings sidebar nav, accessible toggle rows, sliders, segmented choices, contrast cards, and color presets.',
+        description: 'Family overview: settings sidebar nav, accessible toggle rows, sliders, segmented choices, contrast cards, and color presets.',
         Page: SettingsDemo,
+      },
+      {
+        id: 'settings-nav',
+        name: 'SettingsNav',
+        description: 'Sidebar navigation for a settings window — SettingsNavSection landmark and SettingsNavItem buttons with active state.',
+        Page: SettingsNavDemo,
+      },
+      {
+        id: 'settings-toggle-row',
+        name: 'SettingsToggleRow',
+        description: 'Accessible settings preference row with label, description, and a pill switch using role="switch" and aria-checked.',
+        Page: SettingsToggleRowDemo,
+      },
+      {
+        id: 'settings-slider-group',
+        name: 'SettingsSliderGroup',
+        description: 'Range slider group with live percentage output, guidance labels, and a live-region output element.',
+        Page: SettingsSliderGroupDemo,
+      },
+      {
+        id: 'settings-segmented-choice',
+        name: 'SettingsSegmentedChoice',
+        description: 'Segmented radio pill group for exclusive choices — Less, Default, More or any set of options.',
+        Page: SettingsSegmentedChoiceDemo,
+      },
+      {
+        id: 'settings-contrast-card',
+        name: 'SettingsContrastCard',
+        description: 'Selectable contrast theme card — Standard, Low, and High contrast — with visual preview miniature.',
+        Page: SettingsContrastCardDemo,
+      },
+      {
+        id: 'settings-color-preset',
+        name: 'SettingsColorPreset',
+        description: 'Selectable solid-color swatch for wallpaper and background personalization with selected state and focus ring.',
+        Page: SettingsColorPresetDemo,
+      },
+      {
+        id: 'settings-divider',
+        name: 'SettingsDivider',
+        description: 'Horizontal rule separating settings sections with consistent vertical rhythm.',
+        Page: SettingsDividerDemo,
+      },
+      {
+        id: 'settings-section-header',
+        name: 'SettingsSectionHeader',
+        description: 'Label and optional description header block for settings sub-sections.',
+        Page: SettingsSectionHeaderDemo,
       },
     ],
   },
@@ -672,82 +968,97 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'pattern-desktop-window',
         name: 'Desktop window workspace',
-        description: 'Floating windows, geometry management, drag/resize, and transparency.',
+        description: 'Floating windows, geometry management, drag/resize, and transparency. Uses: WindowSurface, Surface, ActionButton, SectionLabel.',
         Page: PatternDesktopWindowWorkspace,
       },
       {
         id: 'pattern-responsive-dock',
         name: 'Responsive Dock navigation',
-        description: 'DockItem label switching between tooltip (desktop) and inline (mobile/tablet).',
+        description: 'DockItem label switching between tooltip (desktop) and inline (mobile/tablet). Uses: DockItem, DockItemLabel, Tooltip.',
         Page: PatternResponsiveDock,
       },
       {
         id: 'pattern-launcher-grid',
         name: 'Desktop launcher grid',
-        description: 'User-arranged launcher icons that open/focus windows.',
+        description: 'User-arranged launcher icons that open/focus windows. Uses: DesktopLauncher, Surface.',
         Page: PatternDesktopLauncherGrid,
       },
       {
         id: 'pattern-sticky-notes',
         name: 'Sticky notes',
-        description: 'Free-floating rotatable note surfaces on the desktop canvas.',
+        description: 'Free-floating rotatable note surfaces on the desktop canvas. Uses: StickyNoteSurface, SectionLabel, ActionButton.',
         Page: PatternStickyNotes,
       },
       {
         id: 'pattern-context-menus',
         name: 'Context menus',
-        description: 'Two-tier context menu implementation: Radix and custom-positioned.',
+        description: 'Two-tier context menu implementation: Radix ContextMenu and ContextMenuSurface for custom-positioned menus.',
         Page: PatternContextMenus,
       },
       {
         id: 'pattern-project-card-list',
         name: 'Project-card list',
-        description: 'Portfolio project list with indexed cards, accents, and actions.',
+        description: 'Portfolio project list with indexed ProjectCards, accents, and ActionButton actions.',
         Page: PatternProjectCardList,
       },
       {
         id: 'pattern-settings-window',
         name: 'Settings window & sidebar',
-        description: 'Two-pane settings layout with nav sidebar and preference controls.',
+        description: 'Two-pane settings layout. Uses: WindowSurface, SettingsNavSection, SettingsNavItem, SettingsToggleRow, SettingsSliderGroup, SettingsSegmentedChoice, SettingsContrastCard, SettingsDivider, SettingsSectionHeader.',
         Page: PatternSettingsWindow,
       },
       {
         id: 'pattern-personalization-colors',
         name: 'Personalization color presets',
-        description: 'Wallpaper color swatch presets with custom picker exclusion logic.',
+        description: 'Wallpaper color swatch presets with custom picker exclusion logic. Uses: SettingsColorPreset, SettingsSectionHeader.',
         Page: PatternPersonalizationColors,
       },
       {
         id: 'pattern-accessibility-panel',
         name: 'Accessibility preference panel',
-        description: 'Display, motion, and contrast preference controls with dependency rules.',
+        description: 'Display, motion, and contrast controls with dependency rules. Uses: SettingsToggleRow, SettingsSliderGroup, SettingsSegmentedChoice, SettingsContrastCard, SettingsDivider, SettingsSectionHeader.',
         Page: PatternAccessibilityPanel,
       },
       {
         id: 'pattern-contrast-override',
         name: 'Contrast override behavior',
-        description: 'How data-contrast re-maps semantic tokens to fixed low/high-contrast palettes.',
+        description: 'How data-contrast re-maps semantic tokens to fixed low/high-contrast palettes. Uses: Surface, SettingsContrastCard.',
         Page: PatternContrastOverride,
       },
       {
         id: 'pattern-transparency-surfaces',
         name: 'Transparency surfaces',
-        description: 'fes-surface-translucent: frosted-glass backdrop-filter with preference integration.',
+        description: 'fes-surface-translucent: frosted-glass backdrop-filter with preference integration. Uses: Surface, WindowSurface, Switch, Slider.',
         Page: PatternTransparencySurfaces,
       },
       {
         id: 'pattern-saved-state',
         name: 'Saved-state ownership',
-        description: 'What the design system provides vs. what the consuming product must own.',
+        description: 'What the design system provides vs. what the consuming product must own. Uses: Surface, ActionButton, StatusIndicator.',
         Page: PatternSavedStateOwnership,
       },
     ],
   },
 ];
 
+// ── Full flat list — ALL entries (including hidden) ───────────────────────────
+// Used for: deep-link resolution, DOC_COVERAGE_MAP audit, duplicate-id guard.
 export const ALL_ENTRIES: PreviewEntry[] = [
   OVERVIEW_ENTRY,
   ...NAV_GROUPS.flatMap((group) => group.entries),
+];
+
+// ── Public entries — derived from visibility map ──────────────────────────────
+// Used by navigation, search, and the overview page counts.
+// Never delete entries to hide them — set PUBLIC_VISIBILITY_MAP[id] = false.
+export const PUBLIC_NAV_GROUPS: NavGroup[] = NAV_GROUPS.map((group) => ({
+  ...group,
+  entries: group.entries.filter((entry) => PUBLIC_VISIBILITY_MAP[entry.id] === true),
+})).filter((group) => group.entries.length > 0);
+
+export const PUBLIC_ALL_ENTRIES: PreviewEntry[] = [
+  OVERVIEW_ENTRY,
+  ...PUBLIC_NAV_GROUPS.flatMap((group) => group.entries),
 ];
 
 // ── Duplicate-id guard ────────────────────────────────────────────────────────
@@ -777,9 +1088,29 @@ if (duplicateIds.length > 0) {
 export type DocCoverage = 'interactive+inline' | 'interactive+canonical' | 'canonical-only' | 'uncovered';
 
 export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
-  // ── Fes OS ──────────────────────────────────────────────────────────────────
+  // ── Fes OS family overview ───────────────────────────────────────────────────
   'fes-os-pilot': 'interactive+canonical',
   'fes-os-settings': 'interactive+canonical',
+  // ── Fes OS individual primitives ─────────────────────────────────────────────
+  'action-button': 'interactive+canonical',
+  'section-label': 'interactive+canonical',
+  'status-indicator': 'interactive+canonical',
+  'surface': 'interactive+canonical',
+  'project-card': 'interactive+canonical',
+  'window-surface': 'interactive+canonical',
+  'dock-item': 'interactive+canonical',
+  'desktop-launcher': 'interactive+canonical',
+  'sticky-note-surface': 'interactive+canonical',
+  'context-menu-surface': 'interactive+canonical',
+  // ── Settings individual primitives ───────────────────────────────────────────
+  'settings-nav': 'interactive+canonical',
+  'settings-toggle-row': 'interactive+canonical',
+  'settings-slider-group': 'interactive+canonical',
+  'settings-segmented-choice': 'interactive+canonical',
+  'settings-contrast-card': 'interactive+canonical',
+  'settings-color-preset': 'interactive+canonical',
+  'settings-divider': 'interactive+canonical',
+  'settings-section-header': 'interactive+canonical',
   // ── Foundations ─────────────────────────────────────────────────────────────
   'color-roles': 'interactive+canonical',
   'type-scale': 'interactive+canonical',
@@ -862,22 +1193,46 @@ export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
   'pattern-saved-state': 'canonical-only',
 };
 
-// Development-time coverage audit
+// ── Development-time assertions ───────────────────────────────────────────────
 if (import.meta.env.DEV) {
   const nonOverviewIds = ALL_ENTRIES
-    .filter(e => e.id !== 'overview')
-    .map(e => e.id);
+    .filter((e) => e.id !== 'overview')
+    .map((e) => e.id);
 
-  const uncovered = nonOverviewIds.filter(id => {
+  // Assert: every entry has a doc coverage classification
+  const uncovered = nonOverviewIds.filter((id) => {
     const classification = DOC_COVERAGE_MAP[id];
     return !classification || classification === 'uncovered';
   });
-
   if (uncovered.length > 0) {
     console.warn(
       `[design-system] Documentation coverage gap — ${uncovered.length} page(s) have no doc classification:\n` +
-      uncovered.map(id => `  • ${id}`).join('\n') +
+      uncovered.map((id) => `  • ${id}`).join('\n') +
       '\n  Add them to DOC_COVERAGE_MAP in registry.tsx.',
+    );
+  }
+
+  // Assert: every entry has an explicit public visibility classification
+  const missingVisibility = nonOverviewIds.filter(
+    (id) => PUBLIC_VISIBILITY_MAP[id] === undefined,
+  );
+  if (missingVisibility.length > 0) {
+    console.warn(
+      `[design-system] Public visibility gap — ${missingVisibility.length} page(s) have no visibility classification:\n` +
+      missingVisibility.map((id) => `  • ${id}`).join('\n') +
+      '\n  Add them to PUBLIC_VISIBILITY_MAP in registry.tsx.',
+    );
+  }
+
+  // Assert: public entries listed in PUBLIC_VISIBILITY_MAP that are not in ALL_ENTRIES
+  const allIds = new Set(ALL_ENTRIES.map((e) => e.id));
+  const orphanedVisibility = Object.keys(PUBLIC_VISIBILITY_MAP).filter(
+    (id) => !allIds.has(id),
+  );
+  if (orphanedVisibility.length > 0) {
+    console.warn(
+      `[design-system] Orphaned visibility entries — ${orphanedVisibility.length} id(s) in PUBLIC_VISIBILITY_MAP have no registry entry:\n` +
+      orphanedVisibility.map((id) => `  • ${id}`).join('\n'),
     );
   }
 }

@@ -13,6 +13,11 @@
 import { useState, type ReactNode } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { cn } from '../lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../components/ui/tooltip';
 
 // ─── Section wrapper ─────────────────────────────────────────────────────────
 
@@ -109,19 +114,25 @@ export function CodeSourceBlock({
         <span className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
           {language}
         </span>
-        <button
-          type="button"
-          onClick={() => void copySource()}
-          className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label={copyState === 'copied' ? 'Code copied' : 'Copy code'}
-          title={copyState === 'copied' ? 'Copied' : 'Copy code'}
-        >
-          {copyState === 'copied' ? (
-            <Check className="size-4" aria-hidden="true" />
-          ) : (
-            <Copy className="size-4" aria-hidden="true" />
-          )}
-        </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={() => void copySource()}
+              className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={copyState === 'copied' ? 'Code copied' : 'Copy code'}
+            >
+              {copyState === 'copied' ? (
+                <Check className="size-4" aria-hidden="true" />
+              ) : (
+                <Copy className="size-4" aria-hidden="true" />
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            {copyState === 'copied' ? 'Copied' : 'Copy code'}
+          </TooltipContent>
+        </Tooltip>
       </div>
       <pre className="whitespace-pre-wrap break-words p-4 text-xs leading-6">
         <code className="font-mono text-foreground">{source}</code>

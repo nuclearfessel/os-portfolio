@@ -620,7 +620,10 @@ function SettingsWindow({
   onSetWallpaperDark: (config: WallpaperConfig) => void;
 }) {
   const currentWallpaper = theme === 'light' ? wallpaperLight : wallpaperDark;
-  const setCurrentWallpaper = theme === 'light' ? onSetWallpaperLight : onSetWallpaperDark;
+  const setCurrentWallpaper = (config: WallpaperConfig) => {
+    onSetWallpaperLight(config);
+    onSetWallpaperDark(config);
+  };
 
   const wallpaperPictureSrc = theme === 'light' ? './wallpaper-light.jpg' : './wallpaper-dark.jpg';
 
@@ -692,7 +695,7 @@ function SettingsWindow({
               <div className="settings-section-header">
                 <span className="settings-label">Desktop wallpaper</span>
                 <span className="settings-description">
-                  Applies to the {theme === 'light' ? 'light' : 'dark'} theme. Switch theme above to configure the other.
+                  Your wallpaper choice stays selected when switching themes.
                 </span>
               </div>
 

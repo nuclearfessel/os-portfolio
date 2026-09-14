@@ -6,7 +6,7 @@
 
 ## Intent
 
-A dedicated settings pane where users control visual accessibility preferences — scrollbar visibility, window transparency, UI animations, animation speed, and contrast theme. All controls are visual-only; the consuming product applies their effects to the DOM.
+A dedicated settings pane where users control visual accessibility preferences — scrollbar visibility, the system-wide transparency master switch, UI animations, animation speed, and contrast theme. Transparency levels belong in Personalization. All controls are visual-only; the consuming product applies their effects to the DOM.
 
 ---
 
@@ -17,7 +17,6 @@ A dedicated settings pane where users control visual accessibility preferences �
 | `SettingsSectionHeader` | `settings.tsx` | Group heading + description |
 | `SettingsDivider` | `settings.tsx` | Section separator |
 | `SettingsToggleRow` | `settings.tsx` | Boolean preference (on/off) |
-| `SettingsSliderGroup` | `settings.tsx` | Range slider for transparency level |
 | `SettingsSegmentedChoice` | `settings.tsx` | Exclusive speed selection |
 | `SettingsContrastCard` | `settings.tsx` | Contrast theme selector |
 
@@ -32,12 +31,7 @@ Display
   │ Always show scrollbars          [○────] │  ← SettingsToggleRow
   └─────────────────────────────────────────┘
   ┌─────────────────────────────────────────┐
-  │ Window transparency effects     [●────] │  ← SettingsToggleRow
-  └─────────────────────────────────────────┘
-  ┌─────────────────────────────────────────┐  ← conditional (only when transparency on)
-  │ Transparency level         [35%]        │
-  │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━      │  ← SettingsSliderGroup
-  │ Subtle              More transparent    │
+  │ Transparency effects            [●────] │  ← SettingsToggleRow
   └─────────────────────────────────────────┘
 
 Motion
@@ -61,8 +55,7 @@ All preference values are owned by the consuming product. The panel only reflect
 | Preference | Component | Product effect |
 |---|---|---|
 | Always show scrollbars | `SettingsToggleRow` | Set/remove `data-always-scrollbars` on shell |
-| Window transparency on | `SettingsToggleRow` | Set/remove `data-transparency-enabled` on `:root`; disable when contrast active |
-| Transparency level | `SettingsSliderGroup` | Set `--accessibility-transparency` on `:root` |
+| Transparency effects on | `SettingsToggleRow` | Set/remove `data-transparency-enabled` on `:root`; applies to all translucent system surfaces |
 | UI animations on | `SettingsToggleRow` | Set/remove `data-no-animations` on shell |
 | Animation speed | `SettingsSegmentedChoice` | Set/remove `data-anim-speed` on shell |
 | Contrast theme | `SettingsContrastCard` | Set/remove `data-contrast` on `:root`; forces transparency off |
@@ -75,7 +68,7 @@ See → [State contracts](../references/components/settings.md#state-contracts)
 
 1. **Transparency is disabled when any contrast theme is active.** Pass `disabled` to the transparency `SettingsToggleRow` when `contrastTheme !== 'none'`.
 2. **Animation speed is hidden/disabled when animations are off.** Only show `SettingsSegmentedChoice` when `uiAnimations === true`.
-3. **Transparency slider is conditional.** Only show `SettingsSliderGroup` when `windowTransparency === true`.
+3. **Transparency levels belong in Personalization.** Show window and sticky level controls there only when the global transparency switch is on.
 
 ---
 
@@ -85,7 +78,6 @@ See → [State contracts](../references/components/settings.md#state-contracts)
 - [ ] Disabled toggles have `disabled` prop — visible but inert (not hidden).
 - [ ] `SettingsSegmentedChoice` has `groupLabel` set to "Animation speed".
 - [ ] `SettingsContrastCard` parent has `role="radiogroup" aria-label="Contrast theme"`.
-- [ ] `SettingsSliderGroup` `<output>` announces value changes via `aria-live="polite"`.
 
 ---
 

@@ -6,7 +6,7 @@
 
 ## Intent
 
-Windows, the Dock, and menus can carry frosted-glass translucency — a backdrop blur that shows the desktop content beneath. The user controls this via the accessibility preferences. The design system provides the CSS class that responds to user preferences; the consuming product applies that class to relevant surfaces.
+Windows, the Dock, menus, and stickies can carry translucency that shows desktop content beneath. Accessibility owns the system-wide Transparency effects switch; Personalization owns separate window and sticky levels. The design system provides the primitives that respond to these preferences, while the consuming product applies them to relevant surfaces.
 
 ---
 
@@ -64,6 +64,10 @@ document.documentElement.setAttribute('data-transparency-enabled', '');
 document.documentElement.style.setProperty(
   '--accessibility-transparency',
   String(prefs.transparencyLevel / 100)
+);
+document.documentElement.style.setProperty(
+  '--sticky-transparency',
+  String(prefs.stickyTransparencyLevel / 100)
 );
 
 // Disable

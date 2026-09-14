@@ -65,6 +65,7 @@ export function SettingsDemo() {
   const [alwaysScrollbars, setAlwaysScrollbars] = useState(false);
   const [transparency, setTransparency] = useState(true);
   const [transparencyLevel, setTransparencyLevel] = useState(20);
+  const [stickyTransparencyLevel, setStickyTransparencyLevel] = useState(20);
   const [animations, setAnimations] = useState(true);
   const [animationSpeed, setAnimationSpeed] = useState<AnimSpeed>('default');
   const [contrastTheme, setContrastTheme] = useState<ContrastTheme>('none');
@@ -155,6 +156,41 @@ export function SettingsDemo() {
                     </button>
                   </div>
                 </div>
+
+                <SettingsDivider />
+
+                <div className="space-y-3">
+                  <SettingsSectionHeader
+                    label="Transparency levels"
+                    description="Fine-tune translucent surfaces while Transparency effects is enabled."
+                  />
+                  {transparency && (
+                    <>
+                      <SettingsSliderGroup
+                        id="demo-window-transparency"
+                        label="Window transparency"
+                        value={transparencyLevel}
+                        min={0}
+                        max={70}
+                        step={5}
+                        onChange={setTransparencyLevel}
+                        guidanceStart="Subtle"
+                        guidanceEnd="More transparent"
+                      />
+                      <SettingsSliderGroup
+                        id="demo-sticky-transparency"
+                        label="Sticky transparency"
+                        value={stickyTransparencyLevel}
+                        min={0}
+                        max={70}
+                        step={5}
+                        onChange={setStickyTransparencyLevel}
+                        guidanceStart="Subtle"
+                        guidanceEnd="More transparent"
+                      />
+                    </>
+                  )}
+                </div>
               </>
             )}
 
@@ -181,27 +217,13 @@ export function SettingsDemo() {
 
                   <SettingsToggleRow
                     id="demo-transparency"
-                    label="Window transparency effects"
-                    description="Enables blur and translucency on windows, the dock, and menus."
+                    label="Transparency effects"
+                    description="Enables transparency across windows, the dock, menus, and stickies."
                     checked={transparency}
                     onChange={setTransparency}
                     data-testid="demo-toggle-transparency"
                   />
 
-                  {transparency && (
-                    <SettingsSliderGroup
-                      id="demo-transparency-level"
-                      label="Transparency level"
-                      value={transparencyLevel}
-                      min={0}
-                      max={70}
-                      step={5}
-                      onChange={setTransparencyLevel}
-                      guidanceStart="Subtle"
-                      guidanceEnd="More transparent"
-                      data-testid="demo-slider-transparency"
-                    />
-                  )}
                 </div>
 
                 <SettingsDivider />
@@ -283,7 +305,7 @@ export function SettingsDemo() {
           <SectionLabel>settings-toggle-row</SectionLabel>
           <div className="space-y-2">
             <SettingsToggleRow id="ref-off" label="Always show scrollbars" description="Keeps scrollbar tracks permanently visible." checked={false} onChange={() => {}} />
-            <SettingsToggleRow id="ref-on" label="Window transparency effects" description="Enables blur and translucency." checked={true} onChange={() => {}} />
+            <SettingsToggleRow id="ref-on" label="Transparency effects" description="Enables transparency across system surfaces." checked={true} onChange={() => {}} />
             <SettingsToggleRow id="ref-disabled" label="Feature unavailable" description="Disabled when contrast theme is active." checked={false} onChange={() => {}} disabled />
           </div>
         </Surface>

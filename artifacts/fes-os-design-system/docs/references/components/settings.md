@@ -58,8 +58,8 @@ import { SettingsToggleRow } from '@workspace/fes-os-design-system/components/ui
 
 <SettingsToggleRow
   id="a11y-transparency"
-  label="Window transparency effects"
-  description="Enables blur and translucency on windows, the dock, and menus."
+  label="Transparency effects"
+  description="Enables transparency across windows, the dock, menus, and stickies."
   checked={prefs.windowTransparency}
   onChange={(v) => updatePrefs({ windowTransparency: v })}
   data-testid="settings-a11y-transparency"
@@ -82,21 +82,32 @@ Conditional range slider with a live percentage output.
 ```tsx
 import { SettingsSliderGroup } from '@workspace/fes-os-design-system/components/ui/settings';
 
-// Only render when the parent toggle is on:
+// Render level controls in Personalization when the master toggle is on:
 {prefs.windowTransparency && (
-  <SettingsSliderGroup
-    id="a11y-transparency-level"
-    label="Transparency level"
-    value={prefs.transparencyLevel}
-    min={0}
-    max={70}
-    step={5}
-    onChange={(v) => updatePrefs({ transparencyLevel: v })}
-    guidanceStart="Subtle"
-    guidanceEnd="More transparent"
-    ariaValueText={`${prefs.transparencyLevel}% transparent`}
-    data-testid="settings-a11y-transparency-slider"
-  />
+  <>
+    <SettingsSliderGroup
+      id="personalization-window-transparency"
+      label="Window transparency"
+      value={prefs.transparencyLevel}
+      min={0}
+      max={70}
+      step={5}
+      onChange={(v) => updatePrefs({ transparencyLevel: v })}
+      guidanceStart="Subtle"
+      guidanceEnd="More transparent"
+    />
+    <SettingsSliderGroup
+      id="personalization-sticky-transparency"
+      label="Sticky transparency"
+      value={prefs.stickyTransparencyLevel}
+      min={0}
+      max={70}
+      step={5}
+      onChange={(v) => updatePrefs({ stickyTransparencyLevel: v })}
+      guidanceStart="Subtle"
+      guidanceEnd="More transparent"
+    />
+  </>
 )}
 ```
 
@@ -305,8 +316,9 @@ react automatically.
 | --- | --- | --- |
 | `data-always-scrollbars` | Set on shell when `alwaysShowScrollbars === true` | `scrollbar-width: thin` + always-visible WebKit tracks/thumbs on all descendants |
 | `.fes-surface-translucent` | Add to window/dock/menu elements | Applies `backdrop-filter: blur(12px)` and uses `--accessibility-transparency` for background alpha |
-| `data-no-transparency` | Set on shell when `windowTransparency === false` | Removes `backdrop-filter` and forces opaque background on all `.fes-surface-translucent` surfaces |
-| `data-transparency-enabled` + `--accessibility-transparency` (0–0.7) | Set attribute + CSS var on `:root` when `windowTransparency === true` | `.fes-surface-translucent` surfaces use the variable for background alpha |
+| `data-no-transparency` | Set on shell when the global transparency switch is false | Removes `backdrop-filter` and forces opaque backgrounds on all participating surfaces |
+| `data-transparency-enabled` + `--accessibility-transparency` (0–0.7) | Set attribute + window CSS var on `:root` when the global transparency switch is true | Window, Dock, and menu surfaces use the window alpha |
+| `--sticky-transparency` (0–0.7) | Set the sticky CSS var on `:root` from the Personalization slider | Sticky surfaces use an independent background alpha |
 | `data-no-animations` | Set on shell when `uiAnimations === false` | Collapses animation/transition durations to `0.001ms`, `animation-iteration-count: 1` on all descendants |
 | `data-fast-ui` | Set on shell for maximum motion reduction | `animation: none`, `transition: none`, `transition-delay: 0s`, `scroll-behavior: auto` on all descendants |
 | `data-anim-speed="less"` | Set when animations on + speed = 'less' | `animation-duration: 2s`, `transition-duration: 0.6s` on all descendants |

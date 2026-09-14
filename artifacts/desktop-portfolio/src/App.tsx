@@ -58,6 +58,7 @@ type AccessibilityPrefs = {
   alwaysShowScrollbars: boolean;
   windowTransparency: boolean;
   transparencyLevel: number;
+  stickyTransparencyLevel: number;
   uiAnimations: boolean;
   animationSpeed: AnimationSpeed;
   contrastTheme: ContrastTheme;
@@ -67,6 +68,7 @@ const DEFAULT_ACCESSIBILITY_PREFS: AccessibilityPrefs = {
   alwaysShowScrollbars: false,
   windowTransparency: true,
   transparencyLevel: 20,
+  stickyTransparencyLevel: 20,
   uiAnimations: true,
   animationSpeed: 'default',
   contrastTheme: 'none',
@@ -170,16 +172,16 @@ function fitStickySize(size: Size, rotation: number, workspace: WorkspaceBounds)
 }
 
 const stickyPalette = [
-  { id: 'lemon', label: 'Lemon', background: 'rgba(255, 216, 77, .82)', foreground: 'dark', handle: '#8f6900' },
-  { id: 'orange', label: 'Orange', background: 'rgba(255, 184, 77, .82)', foreground: 'dark', handle: '#9f5700' },
-  { id: 'coral', label: 'Coral', background: 'rgba(255, 170, 163, .82)', foreground: 'dark', handle: '#9d4648' },
-  { id: 'cream', label: 'Cream', background: 'rgba(255, 240, 210, .82)', foreground: 'dark', handle: '#a88655' },
+  { id: 'lemon', label: 'Lemon', background: '#ffd84d', foreground: 'dark', handle: '#8f6900' },
+  { id: 'orange', label: 'Orange', background: '#ffb84d', foreground: 'dark', handle: '#9f5700' },
+  { id: 'coral', label: 'Coral', background: '#ffaaa3', foreground: 'dark', handle: '#9d4648' },
+  { id: 'cream', label: 'Cream', background: '#fff0d2', foreground: 'dark', handle: '#a88655' },
   { id: 'teal', label: 'Teal', background: 'rgba(0, 100, 86, .82)', foreground: 'light', handle: '#76dccb' },
   { id: 'blue', label: 'Blue', background: 'rgba(13, 86, 179, .82)', foreground: 'light', handle: '#8ac4ff' },
   { id: 'purple', label: 'Purple', background: 'rgba(102, 72, 184, .82)', foreground: 'light', handle: '#c8b3ff' },
-  { id: 'berry', label: 'Berry', background: 'rgba(169, 53, 112, .82)', foreground: 'light', handle: '#ffb2d5' },
-  { id: 'forest', label: 'Forest', background: 'rgba(30, 96, 61, .82)', foreground: 'light', handle: '#91d6aa' },
-  { id: 'charcoal', label: 'Charcoal', background: 'rgba(52, 59, 79, .82)', foreground: 'light', handle: '#b8c2dd' },
+  { id: 'berry', label: 'Berry', background: '#a93570', foreground: 'light', handle: '#ffb2d5' },
+  { id: 'forest', label: 'Forest', background: '#1e603d', foreground: 'light', handle: '#91d6aa' },
+  { id: 'charcoal', label: 'Charcoal', background: '#343b4f', foreground: 'light', handle: '#b8c2dd' },
 ] as const;
 type StickyColorId = typeof stickyPalette[number]['id'];
 type StickyData = {
@@ -292,6 +294,9 @@ function parseAccessibilityPrefs(raw: unknown): AccessibilityPrefs {
     transparencyLevel: typeof a.transparencyLevel === 'number' && Number.isFinite(a.transparencyLevel)
       ? Math.max(0, Math.min(70, Math.round(a.transparencyLevel)))
       : DEFAULT_ACCESSIBILITY_PREFS.transparencyLevel,
+    stickyTransparencyLevel: typeof a.stickyTransparencyLevel === 'number' && Number.isFinite(a.stickyTransparencyLevel)
+      ? Math.max(0, Math.min(70, Math.round(a.stickyTransparencyLevel)))
+      : DEFAULT_ACCESSIBILITY_PREFS.stickyTransparencyLevel,
     uiAnimations: typeof a.uiAnimations === 'boolean' ? a.uiAnimations : DEFAULT_ACCESSIBILITY_PREFS.uiAnimations,
     animationSpeed: (['less', 'default', 'more'] as AnimationSpeed[]).includes(a.animationSpeed as AnimationSpeed)
       ? a.animationSpeed as AnimationSpeed
@@ -695,6 +700,53 @@ function SettingsToggle({
   );
 }
 
+function TransparencySlider({
+  id,
+  label,
+  value,
+  onChange,
+  testId,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  testId: string;
+}) {
+  return (
+    <div className="settings-transparency-group" data-testid={testId}>
+      <div className="settings-transparency-heading">
+        <span className="settings-label" id={`${id}-label`}>{label}</span>
+        <output
+          className="settings-transparency-value"
+          htmlFor={id}
+          aria-live="polite"
+          data-testid={`${testId}-value`}
+        >
+          {value}%
+        </output>
+      </div>
+      <input
+        id={id}
+        className="settings-transparency-slider"
+        type="range"
+        min="0"
+        max="70"
+        step="5"
+        value={value}
+        onChange={(event) => onChange(Number(event.currentTarget.value))}
+        aria-labelledby={`${id}-label`}
+        aria-valuetext={`${value}% transparent`}
+        data-testid={`${testId}-slider`}
+      />
+      <div className="settings-transparency-scale" aria-hidden="true">
+        <span>Subtle</span>
+        <span>More transparent</span>
+      </div>
+    </div>
+  );
+}
+
 // Settings Window
 function SettingsWindow({
   theme,
@@ -914,6 +966,40 @@ function SettingsWindow({
                     </>
                   )}
                 </div>
+
+                <div className="settings-divider" />
+
+                <div className="settings-section">
+                  <div className="settings-section-header">
+                    <span className="settings-label">Transparency levels</span>
+                    <span className="settings-description">
+                      Fine-tune translucent surfaces. The global Transparency effects switch remains in Accessibility.
+                    </span>
+                  </div>
+
+                  {accessibility.windowTransparency ? (
+                    <div className="settings-transparency-grid" data-testid="settings-transparency-grid">
+                      <TransparencySlider
+                        id="personalization-window-transparency"
+                        label="Window transparency"
+                        value={accessibility.transparencyLevel}
+                        onChange={(value) => updateAccessibility({ transparencyLevel: value })}
+                        testId="settings-personalization-window-transparency"
+                      />
+                      <TransparencySlider
+                        id="personalization-sticky-transparency"
+                        label="Sticky transparency"
+                        value={accessibility.stickyTransparencyLevel}
+                        onChange={(value) => updateAccessibility({ stickyTransparencyLevel: value })}
+                        testId="settings-personalization-sticky-transparency"
+                      />
+                    </div>
+                  ) : (
+                    <div className="settings-wallpaper-disabled-notice" data-testid="settings-transparency-disabled-notice">
+                      Turn on Transparency effects in Accessibility to adjust these levels.
+                    </div>
+                  )}
+                </div>
               </>
             )}
 
@@ -940,44 +1026,12 @@ function SettingsWindow({
 
                   <SettingsToggle
                     id="a11y-transparency"
-                    label="Window transparency effects"
-                    description="Enables blur and translucency on windows, the dock, and menus. Turn off for opaque solid surfaces."
+                    label="Transparency effects"
+                    description="Enables transparency across windows, the dock, menus, and stickies. Turn off for opaque solid surfaces."
                     checked={accessibility.windowTransparency}
                     onChange={(v) => updateAccessibility({ windowTransparency: v })}
                     data-testid="settings-a11y-transparency"
                   />
-
-                  {accessibility.windowTransparency && (
-                    <div className="settings-transparency-group" data-testid="settings-a11y-transparency-group">
-                      <div className="settings-transparency-heading">
-                        <span className="settings-label">Transparency level</span>
-                        <output
-                          className="settings-transparency-value"
-                          htmlFor="a11y-transparency-level"
-                          data-testid="settings-a11y-transparency-value"
-                        >
-                          {accessibility.transparencyLevel}%
-                        </output>
-                      </div>
-                      <input
-                        id="a11y-transparency-level"
-                        className="settings-transparency-slider"
-                        type="range"
-                        min="0"
-                        max="70"
-                        step="5"
-                        value={accessibility.transparencyLevel}
-                        onChange={(event) => updateAccessibility({ transparencyLevel: Number(event.currentTarget.value) })}
-                        aria-label="Window transparency level"
-                        aria-valuetext={`${accessibility.transparencyLevel}% transparent`}
-                        data-testid="settings-a11y-transparency-slider"
-                      />
-                      <div className="settings-transparency-scale" aria-hidden="true">
-                        <span>Subtle</span>
-                        <span>More transparent</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 <div className="settings-divider" />
@@ -1531,10 +1585,12 @@ function Home() {
       root.setAttribute('data-no-transparency', '');
       root.removeAttribute('data-transparency-enabled');
       root.style.removeProperty('--accessibility-transparency');
+      root.style.removeProperty('--sticky-transparency');
     } else {
       root.removeAttribute('data-no-transparency');
       root.setAttribute('data-transparency-enabled', '');
       root.style.setProperty('--accessibility-transparency', `${accessibility.transparencyLevel}%`);
+      root.style.setProperty('--sticky-transparency', `${accessibility.stickyTransparencyLevel}%`);
     }
     // Animations
     if (!accessibility.uiAnimations) {

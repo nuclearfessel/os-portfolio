@@ -8,7 +8,7 @@
 
 ## Purpose
 
-A range slider with a live value readout and optional guidance labels. Used for the transparency level control — shown conditionally when the parent transparency toggle is on.
+A range slider with a live value readout and optional guidance labels. Used for transparency and blur levels, shown conditionally when the corresponding Accessibility toggle is on.
 
 ---
 
@@ -57,7 +57,7 @@ A range slider with a live value readout and optional guidance labels. Used for 
 
 The custom rail and filled range are 4px high and vertically centered in a 20px control. The 14px visual handle has independent geometry and shares the rail's centerline, so changing track thickness must never move the handle. A transparent native range input remains layered above both visuals for interaction.
 
-Show `SettingsSliderGroup` only when its parent toggle is on:
+Show each `SettingsSliderGroup` only when its parent toggle is on. In a large desktop Settings window, window transparency, sticky transparency, and blur form one three-column row. Below the product's wide-window breakpoint, each occupies its own row.
 
 ```tsx
 {prefs.windowTransparency && (
@@ -72,6 +72,20 @@ Show `SettingsSliderGroup` only when its parent toggle is on:
     ariaValueText={`${prefs.transparencyLevel}% transparent`}
   />
 )}
+
+{prefs.blurEffects && (
+  <SettingsSliderGroup
+    id="personalization-blur"
+    label="Blur"
+    value={prefs.blurLevel}
+    min={0} max={24} step={2}
+    onChange={(v) => updatePrefs({ blurLevel: v })}
+    guidanceStart="Sharp"
+    guidanceEnd="More blurred"
+    unit="px"
+    ariaValueText={`${prefs.blurLevel} pixels of blur`}
+  />
+)}
 ```
 
 The consuming app converts the numeric value to the `--accessibility-transparency` CSS variable:
@@ -80,6 +94,10 @@ The consuming app converts the numeric value to the `--accessibility-transparenc
 document.documentElement.style.setProperty(
   '--accessibility-transparency',
   String(prefs.transparencyLevel / 100)  // unitless 0–0.7
+);
+document.documentElement.style.setProperty(
+  '--surface-blur',
+  `${prefs.blurLevel}px`
 );
 ```
 

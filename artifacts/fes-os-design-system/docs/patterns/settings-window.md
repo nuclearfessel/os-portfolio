@@ -6,7 +6,7 @@
 
 ## Intent
 
-The settings window is a two-pane layout: a fixed-width sidebar for section navigation, and a main content area for the active section's controls. It floats as a desktop window using `WindowSurface`.
+The settings window uses a fixed-width sidebar beside the active section at large widths. When the window itself narrows, the same navigation smoothly becomes a horizontal sub-navigation toolbar directly below the window title bar. It floats as a desktop window using `WindowSurface`.
 
 ---
 
@@ -65,9 +65,12 @@ Grid: `gridTemplateColumns: '160px 1fr'`. Sidebar uses `bg-sidebar border-r bord
 
 ## Responsive transformation
 
+This is the reference implementation of the universal Fes OS side-navigation window contract. Apply the same transformation to every resizable window that has side navigation; it is not specific to Settings.
+
 | Breakpoint | Layout |
 |---|---|
-| Desktop | Floating `WindowSurface`, two-pane sidebar + content |
+| Wide desktop window | Floating `WindowSurface`, two-pane sidebar + content |
+| Narrow desktop window | Sidebar smoothly becomes a two-item sub-navigation toolbar below the title bar; content remains in the row below |
 | Tablet | Modal `Sheet` or `Dialog`; sidebar collapses to top tabs or Select |
 | Mobile | Full-screen; sidebar becomes a `Select` or inline tabs |
 
@@ -78,6 +81,7 @@ Grid: `gridTemplateColumns: '160px 1fr'`. Sidebar uses `bg-sidebar border-r bord
 - [ ] `WindowSurface` has `aria-label="Settings"` or `aria-labelledby`.
 - [ ] `SettingsNavSection` has descriptive `label` prop.
 - [ ] Active nav item has `aria-current="page"`.
+- [ ] Narrow-window sub-navigation remains the same named `<nav>` landmark and does not overlap the title bar or content.
 - [ ] All preference controls have `id` + linked `label`.
 - [ ] `SettingsToggleRow` uses `role="switch"` and `aria-checked`.
 - [ ] `SettingsSegmentedChoice` uses `role="radiogroup"` and `role="radio"`.

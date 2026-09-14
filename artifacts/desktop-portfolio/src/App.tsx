@@ -1117,9 +1117,7 @@ function Home() {
     const menuOpen = Boolean(contextMenu || stickyMenu);
     if (menuOpen) {
       window.requestAnimationFrame(() => {
-        document.querySelector<HTMLElement>('[data-active-context-menu]')?.querySelector<HTMLElement>(
-          '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]',
-        )?.focus();
+        document.querySelector<HTMLElement>('[data-active-context-menu]')?.focus();
       });
     } else if (previousMenuOpenRef.current && !resetDialogOpen && !saveDefaultDialogOpen && !stickyPendingDelete) {
       restoreDialogFocus(contextMenuOpenerRef.current, desktopAreaRef.current);
@@ -2101,6 +2099,7 @@ function Home() {
           onPointerDown={(event) => event.stopPropagation()}
           onContextMenu={(event) => event.preventDefault()}
           onKeyDown={handleContextMenuKeyDown}
+          tabIndex={-1}
           role="menu"
           aria-label="Desktop options"
           data-active-context-menu
@@ -2170,6 +2169,7 @@ function Home() {
           onPointerDown={(event) => event.stopPropagation()}
           onContextMenu={(event) => event.preventDefault()}
           onKeyDown={handleContextMenuKeyDown}
+          tabIndex={-1}
           role="menu"
           aria-label="Dock options"
           data-active-context-menu
@@ -2199,6 +2199,7 @@ function Home() {
           onPointerDown={(event) => event.stopPropagation()}
           onContextMenu={(event) => event.preventDefault()}
           onKeyDown={handleContextMenuKeyDown}
+          tabIndex={-1}
           role="menu"
           aria-label="Sticky options"
           data-active-context-menu

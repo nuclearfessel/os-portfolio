@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
   Check, FileText as StickyNote, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
-  Moon, Plus, Sun, Terminal, CircleUser as UserRound, Wifi, X,
+  Moon, Plus, Settings, Sun, Terminal, CircleUser as UserRound, Wifi, X,
 } from '@keyline-icons/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@workspace/fes-os-design-system/components/ui/toaster';
@@ -25,11 +25,11 @@ import {
 
 const queryClient = new QueryClient();
 
-type WindowId = 'about' | 'work' | 'contact' | 'terminal';
+type WindowId = 'about' | 'work' | 'contact' | 'terminal' | 'settings';
 type WindowState = Record<WindowId, boolean>;
 type IconSize = 'large' | 'small';
 type Theme = 'dark' | 'light';
-type DesktopLauncherId = WindowId | 'stickies-app';
+type DesktopLauncherId = Exclude<WindowId, 'settings'> | 'stickies-app';
 type FolderPositions = Partial<Record<DesktopLauncherId, { left: number; top: number }>>;
 type StickyItemId = 'sticky' | `sticky-${number}`;
 type DesktopLauncherDragId = `desktop-${DesktopLauncherId}`;
@@ -41,6 +41,17 @@ type DockPosition = 'top' | 'right' | 'bottom' | 'left';
 type Position = { left: number; top: number };
 type Size = { width: number; height: number };
 type WorkspaceBounds = { left: number; top: number; right: number; bottom: number };
+
+// Wallpaper types
+type WallpaperMode = 'picture' | 'color';
+type WallpaperConfig = {
+  mode: WallpaperMode;
+  color: string; // hex string, used when mode === 'color'
+};
+
+const DEFAULT_WALLPAPER_LIGHT: WallpaperConfig = { mode: 'picture', color: '#e8f0ec' };
+const DEFAULT_WALLPAPER_DARK: WallpaperConfig = { mode: 'picture', color: '#111326' };
+
 const DEFAULT_STICKY_SIZE: Size = { width: 214, height: 138 };
 const MIN_STICKY_SIZE: Size = { width: 140, height: 100 };
 type WorkspaceMode = 'desktop' | 'tablet-landscape' | 'managed';
@@ -160,7 +171,7 @@ type StickyData = {
 const defaultSticky: StickyData = {
   id: 'sticky',
   color: 'purple',
-  text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
+  text: "The best interfaces don\u2019t ask for attention. They earn trust, one tiny response at a time.",
   rotation: -9,
   author: 'fes',
   createdAt: '09:42',
@@ -202,6 +213,8 @@ type SavedDesktopState = {
   stickyVisible?: boolean;
   stickyOnTop?: boolean;
   activeStickyId?: StickyItemId;
+  wallpaperLight?: WallpaperConfig;
+  wallpaperDark?: WallpaperConfig;
 };
 
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
@@ -225,14 +238,25 @@ const defaultDesktopState: SavedDesktopState = {
   showDesktopIcons: true,
   stickies: [defaultSticky, defaultSecondSticky],
   dockPosition: 'bottom',
-  windowStack: ['work', 'about', 'contact', 'terminal'],
-  windows: { about: true, work: true, contact: false, terminal: false },
+  windowStack: ['work', 'about', 'contact', 'terminal', 'settings'],
+  windows: { about: true, work: true, contact: false, terminal: false, settings: false },
   activeWindow: 'about',
   maximizedWindows: {},
   stickyVisible: true,
   stickyOnTop: false,
   activeStickyId: 'sticky',
+  wallpaperLight: DEFAULT_WALLPAPER_LIGHT,
+  wallpaperDark: DEFAULT_WALLPAPER_DARK,
 };
+
+function parseWallpaperConfig(raw: unknown): WallpaperConfig | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const config = raw as Record<string, unknown>;
+  const mode = config.mode === 'picture' || config.mode === 'color' ? config.mode : undefined;
+  if (!mode) return undefined;
+  const color = typeof config.color === 'string' && /^#[0-9a-f]{6}$/i.test(config.color) ? config.color : '#111326';
+  return { mode, color };
+}
 
 function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
   let savedState = '{}';
@@ -270,7 +294,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
         id,
         {
           ...position,
-          top: ['about', 'work', 'contact', 'terminal'].includes(id) ? Math.max(0, position.top) : position.top,
+          top: ['about', 'work', 'contact', 'terminal', 'settings'].includes(id) ? Math.max(0, position.top) : position.top,
         },
       ]),
     ) as ItemPositions;
@@ -302,29 +326,30 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
           ? parsed.stickyColor as StickyColorId
           : defaultSticky.color,
       }];
+    const allWindowIds: WindowId[] = ['about', 'work', 'contact', 'terminal', 'settings'];
     const savedWindowStack = Array.isArray(parsed.windowStack)
       ? parsed.windowStack.filter((id, index, ids): id is WindowId => (
-        ['about', 'work', 'contact', 'terminal'].includes(id)
+        allWindowIds.includes(id as WindowId)
         && ids.indexOf(id) === index
       ))
       : [];
     const windowStack = [
       ...savedWindowStack,
-      ...(['work', 'about', 'contact', 'terminal'] as WindowId[]).filter((id) => !savedWindowStack.includes(id)),
+      ...allWindowIds.filter((id) => !savedWindowStack.includes(id)),
     ];
-    const windows = Object.fromEntries((['about', 'work', 'contact', 'terminal'] as WindowId[]).map((id) => [
+    const windows = Object.fromEntries(allWindowIds.map((id) => [
       id,
       typeof parsed.windows?.[id] === 'boolean'
         ? parsed.windows[id]
         : defaultDesktopState.windows?.[id] ?? false,
     ])) as WindowState;
-    const activeWindow = ['about', 'work', 'contact', 'terminal'].includes(parsed.activeWindow as string)
+    const activeWindow = allWindowIds.includes(parsed.activeWindow as WindowId)
       ? parsed.activeWindow as WindowId
       : defaultDesktopState.activeWindow ?? 'about';
     const maximizedWindows = Object.fromEntries(
       Object.entries(parsed.maximizedWindows ?? {}).filter(
         (entry): entry is [WindowId, boolean] => (
-          ['about', 'work', 'contact', 'terminal'].includes(entry[0])
+          allWindowIds.includes(entry[0] as WindowId)
           && typeof entry[1] === 'boolean'
         ),
       ),
@@ -353,6 +378,8 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       stickyVisible: typeof parsed.stickyVisible === 'boolean' ? parsed.stickyVisible : defaultDesktopState.stickyVisible,
       stickyOnTop: typeof parsed.stickyOnTop === 'boolean' ? parsed.stickyOnTop : defaultDesktopState.stickyOnTop,
       activeStickyId,
+      wallpaperLight: parseWallpaperConfig(parsed.wallpaperLight) ?? DEFAULT_WALLPAPER_LIGHT,
+      wallpaperDark: parseWallpaperConfig(parsed.wallpaperDark) ?? DEFAULT_WALLPAPER_DARK,
     };
   } catch {
     return defaultDesktopState;
@@ -395,6 +422,7 @@ const initialWindows: WindowState = {
   work: true,
   contact: false,
   terminal: false,
+  settings: false,
 };
 
 function WindowFrame({
@@ -481,7 +509,7 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
         <h2>Interfaces with a pulse.</h2>
         <div className="about-grid">
           <div className="about-bio" data-testid="about-bio">
-            <p>I’m Fes Naqvi, a product-minded design based in Seattle. I build the connective tissue between a good idea and a product people want to keep using.</p>
+            <p>I'm Fes Naqvi, a product-minded design based in Seattle. I build the connective tissue between a good idea and a product people want to keep using.</p>
             <p>My favorite work lives where interaction design, resilient systems, and a sharp point of view overlap. I care about the small delays, the useful defaults, and the moment software gets out of your way.</p>
             <div className="signature">fes_naqvi<span className="blink">_</span></div>
           </div>
@@ -530,14 +558,14 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
           </div>
           <div className="case-study-sections">
             <section><span>01 / challenge</span><h3>Important signals were buried.</h3><p>Account teams were jumping between six tools to understand customer health. Reviews were slow, risk was found late, and every manager used a different process.</p></section>
-            <section><span>02 / approach</span><h3>Design around decisions, not data.</h3><p>I worked with success leads to map the few decisions that changed an account’s trajectory, then built a focused workspace that grouped signals, history, and next actions together.</p></section>
+            <section><span>02 / approach</span><h3>Design around decisions, not data.</h3><p>I worked with success leads to map the few decisions that changed an account's trajectory, then built a focused workspace that grouped signals, history, and next actions together.</p></section>
             <section><span>03 / outcome</span><h3>One shared operating rhythm.</h3><p>The new workflow made weekly reviews faster and more consistent. Teams caught risk sooner, reduced handoff gaps, and spent more time acting instead of assembling reports.</p></section>
           </div>
         </div>
       ) : (
         <div className="window-body">
           <SectionLabel className="section-kicker">projects / selected</SectionLabel>
-          <h2>Things I’ve shipped.</h2>
+          <h2>Things I've shipped.</h2>
           <div className="project-list">
             {projects.map((project) => (
               <ProjectCard
@@ -566,9 +594,172 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
       <div className="window-body contact-copy">
         <SectionLabel className="section-kicker">contact.txt</SectionLabel>
         <h2>Have a hard problem?</h2>
-        <p>Tell me what you’re making, where it’s stuck, and what “better” would feel like. I’ll get back to you with a considered reply, usually within a couple of days.</p>
+        <p>Tell me what you're making, where it's stuck, and what "better" would feel like. I'll get back to you with a considered reply, usually within a couple of days.</p>
         <a className="contact-button" href="mailto:hello@fesnaqvi.dev" data-testid="link-email-fes">email Fes <Mail size={16} /></a>
         <p style={{ fontFamily: 'var(--app-font-mono)', fontSize: 10, marginTop: 18 }}>hello@fesnaqvi.dev</p>
+      </div>
+    </WindowFrame>
+  );
+}
+
+// Settings Window
+function SettingsWindow({
+  theme,
+  onSetTheme,
+  wallpaperLight,
+  wallpaperDark,
+  onSetWallpaperLight,
+  onSetWallpaperDark,
+  ...props
+}: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
+  theme: Theme;
+  onSetTheme: (theme: Theme) => void;
+  wallpaperLight: WallpaperConfig;
+  wallpaperDark: WallpaperConfig;
+  onSetWallpaperLight: (config: WallpaperConfig) => void;
+  onSetWallpaperDark: (config: WallpaperConfig) => void;
+}) {
+  const currentWallpaper = theme === 'light' ? wallpaperLight : wallpaperDark;
+  const setCurrentWallpaper = theme === 'light' ? onSetWallpaperLight : onSetWallpaperDark;
+
+  const wallpaperPictureSrc = theme === 'light' ? './wallpaper-light.jpg' : './wallpaper-dark.jpg';
+
+  return (
+    <WindowFrame {...props} id="settings" title="Settings">
+      <div className="window-body settings-body">
+        <div className="settings-layout">
+          {/* Sidebar */}
+          <nav className="settings-nav" aria-label="Settings sections">
+            <div className="settings-nav-item settings-nav-item-active" aria-current="page">
+              <span className="settings-nav-icon" aria-hidden="true">
+                <Sun size={14} strokeWidth={1.8} />
+              </span>
+              Personalization
+            </div>
+          </nav>
+
+          {/* Content */}
+          <div className="settings-content">
+            <SectionLabel className="section-kicker">personalization</SectionLabel>
+            <h2 className="settings-heading">Appearance</h2>
+
+            {/* Theme row */}
+            <div className="settings-section">
+              <div className="settings-section-header">
+                <span className="settings-label">Theme</span>
+                <span className="settings-description">Controls the overall color scheme of the desktop.</span>
+              </div>
+              <div className="settings-theme-row">
+                <button
+                  type="button"
+                  className={`settings-theme-option ${theme === 'light' ? 'is-selected' : ''}`}
+                  aria-pressed={theme === 'light'}
+                  onClick={() => onSetTheme('light')}
+                  data-testid="settings-theme-light"
+                >
+                  <div className="settings-theme-preview settings-theme-preview-light" aria-hidden="true">
+                    <div className="settings-theme-preview-bar" />
+                    <div className="settings-theme-preview-content" />
+                  </div>
+                  <span className="settings-theme-label">
+                    {theme === 'light' && <Check size={11} strokeWidth={2.5} />}
+                    Light
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className={`settings-theme-option ${theme === 'dark' ? 'is-selected' : ''}`}
+                  aria-pressed={theme === 'dark'}
+                  onClick={() => onSetTheme('dark')}
+                  data-testid="settings-theme-dark"
+                >
+                  <div className="settings-theme-preview settings-theme-preview-dark" aria-hidden="true">
+                    <div className="settings-theme-preview-bar" />
+                    <div className="settings-theme-preview-content" />
+                  </div>
+                  <span className="settings-theme-label">
+                    {theme === 'dark' && <Check size={11} strokeWidth={2.5} />}
+                    Dark
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div className="settings-divider" />
+
+            {/* Wallpaper row */}
+            <div className="settings-section">
+              <div className="settings-section-header">
+                <span className="settings-label">Desktop wallpaper</span>
+                <span className="settings-description">
+                  Applies to the {theme === 'light' ? 'light' : 'dark'} theme. Switch theme above to configure the other.
+                </span>
+              </div>
+
+              {/* Mode toggle: picture vs color */}
+              <div className="settings-wallpaper-mode-row">
+                <button
+                  type="button"
+                  className={`settings-mode-chip ${currentWallpaper.mode === 'picture' ? 'is-selected' : ''}`}
+                  aria-pressed={currentWallpaper.mode === 'picture'}
+                  onClick={() => setCurrentWallpaper({ ...currentWallpaper, mode: 'picture' })}
+                  data-testid={`settings-wallpaper-mode-picture-${theme}`}
+                >
+                  Picture
+                </button>
+                <button
+                  type="button"
+                  className={`settings-mode-chip ${currentWallpaper.mode === 'color' ? 'is-selected' : ''}`}
+                  aria-pressed={currentWallpaper.mode === 'color'}
+                  onClick={() => setCurrentWallpaper({ ...currentWallpaper, mode: 'color' })}
+                  data-testid={`settings-wallpaper-mode-color-${theme}`}
+                >
+                  Solid color
+                </button>
+              </div>
+
+              {currentWallpaper.mode === 'picture' ? (
+                <div className="settings-wallpaper-picture-row">
+                  <div
+                    className="settings-wallpaper-thumb settings-wallpaper-thumb-selected"
+                    aria-label={`Default ${theme} wallpaper, selected`}
+                    data-testid={`settings-wallpaper-picture-${theme}`}
+                    style={{ backgroundImage: `url(${wallpaperPictureSrc})` }}
+                  >
+                    <span className="settings-wallpaper-check" aria-hidden="true">
+                      <Check size={14} strokeWidth={2.5} />
+                    </span>
+                  </div>
+                  <div className="settings-wallpaper-picture-label">
+                    <span className="settings-label">Default {theme} wallpaper</span>
+                    <span className="settings-description">The provided default for {theme} mode.</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="settings-wallpaper-color-row">
+                  <div className="settings-color-preview" style={{ background: currentWallpaper.color }} aria-hidden="true" />
+                  <div className="settings-color-picker-wrap">
+                    <label className="settings-label" htmlFor={`wallpaper-color-${theme}`}>
+                      Custom solid color
+                    </label>
+                    <div className="settings-color-input-row">
+                      <input
+                        id={`wallpaper-color-${theme}`}
+                        type="color"
+                        className="settings-color-wheel"
+                        value={currentWallpaper.color}
+                        onChange={(e) => setCurrentWallpaper({ ...currentWallpaper, color: e.target.value })}
+                        data-testid={`settings-wallpaper-color-${theme}`}
+                        aria-label={`Choose ${theme} wallpaper color`}
+                      />
+                      <span className="settings-color-hex">{currentWallpaper.color.toUpperCase()}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </WindowFrame>
   );
@@ -830,7 +1021,7 @@ function TerminalWindow({
       <div ref={bodyRef} className="window-body terminal-body" onClick={() => inputRef.current?.focus()}>
         <div className="terminal-line"><span className="terminal-prompt">fes@studio:~$</span><span className="terminal-command">whoami</span></div>
         <div className="terminal-output">fes naqvi / product-minded frontend engineer{'\n'}building thoughtful interfaces and fast systems.</div>
-        <div className="terminal-output terminal-hint">type “help” to explore. use ↑/↓ for history and Tab to complete.</div>
+        <div className="terminal-output terminal-hint">type "help" to explore. use ↑/↓ for history and Tab to complete.</div>
         {entries.map((entry) => (
           <div className="terminal-entry" key={entry.id}>
             <div className="terminal-line"><span className="terminal-prompt">fes@studio:{displayShellPath(entry.cwd)}$</span><span className="terminal-command">{entry.command}</span></div>
@@ -902,6 +1093,25 @@ function DesktopFolder({
   );
 }
 
+// Compute desktop wallpaper background style
+function desktopBackground(theme: Theme, wallpaperLight: WallpaperConfig, wallpaperDark: WallpaperConfig): React.CSSProperties {
+  const config = theme === 'light' ? wallpaperLight : wallpaperDark;
+  if (config.mode === 'color') {
+    return {
+      backgroundColor: config.color,
+      backgroundImage: 'none',
+    };
+  }
+  const src = theme === 'light' ? './wallpaper-light.jpg' : './wallpaper-dark.jpg';
+  return {
+    backgroundColor: 'transparent',
+    backgroundImage: `url(${src})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+}
+
 function Home() {
   const [savedDesktopState] = useState(loadDesktopState);
   const [resetDesktopState, setResetDesktopState] = useState(() => loadDesktopState(DESKTOP_DEFAULT_STORAGE_KEY));
@@ -934,6 +1144,9 @@ function Home() {
   const [dockPosition, setDockPosition] = useState<DockPosition>(savedDesktopState.dockPosition);
   const [viewportProfile, setViewportProfile] = useState<ViewportProfile>(readViewportProfile);
   const [coarsePointer, setCoarsePointer] = useState(() => window.matchMedia('(pointer: coarse)').matches);
+  const [wallpaperLight, setWallpaperLight] = useState<WallpaperConfig>(savedDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
+  const [wallpaperDark, setWallpaperDark] = useState<WallpaperConfig>(savedDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
+
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const contextMenuOpenerRef = useRef<HTMLElement | null>(null);
   const previousMenuOpenRef = useRef(false);
@@ -954,6 +1167,7 @@ function Home() {
   const managedLayout = workspaceMode === 'managed';
   const effectiveDockPosition: DockPosition = workspaceMode === 'desktop' && !coarsePointer ? dockPosition : 'bottom';
   const singleTapLaunch = workspaceMode !== 'desktop' || coarsePointer;
+
   useEffect(() => {
     const suppressNativeContextMenu = (event: MouseEvent) => {
       event.preventDefault();
@@ -963,6 +1177,7 @@ function Home() {
       document.removeEventListener('contextmenu', suppressNativeContextMenu, { capture: true });
     };
   }, []);
+
   const getCurrentDesktopState = (): SavedDesktopState => ({
     folderPositions: workspaceMode === 'desktop' ? folderPositions : desktopGeometryRef.current.folderPositions,
     itemPositions: workspaceMode === 'desktop' ? dragPositions : desktopGeometryRef.current.dragPositions,
@@ -973,7 +1188,10 @@ function Home() {
     showDesktopIcons,
     stickies,
     dockPosition,
+    wallpaperLight,
+    wallpaperDark,
   });
+
   const retryDesktopSave = () => {
     try {
       window.localStorage.setItem(DESKTOP_STORAGE_KEY, JSON.stringify(getCurrentDesktopState()));
@@ -1189,7 +1407,7 @@ function Home() {
       setDragPositions((current) => {
         let changed = false;
         const next = { ...current };
-        for (const id of ['about', 'work', 'contact', 'terminal'] as WindowId[]) {
+        for (const id of ['about', 'work', 'contact', 'terminal', 'settings'] as WindowId[]) {
           const element = area.querySelector<HTMLElement>(`[data-testid="window-${id}"]`);
           if (!element) continue;
           const position = current[id] ?? { left: element.offsetLeft, top: element.offsetTop };
@@ -1220,13 +1438,14 @@ function Home() {
       setStorageUnavailable(true);
       setStorageRestored(false);
     }
-  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode, wallpaperLight, wallpaperDark]);
 
   useEffect(() => {
     if (!storageRestored) return;
     const timeout = window.setTimeout(() => setStorageRestored(false), 4000);
     return () => window.clearTimeout(timeout);
   }, [storageRestored]);
+
   useEffect(() => {
     if (!defaultStateSaved) return;
     const timeout = window.setTimeout(() => setDefaultStateSaved(false), 4000);
@@ -1409,6 +1628,7 @@ function Home() {
       window.removeEventListener('resize', reclampStickies);
     };
   }, [effectiveDockPosition, stickyGeometrySignature, stickySizeSignature, workspaceMode]);
+
   const startDrag = (id: DesktopItemId, event: ReactPointerEvent<HTMLElement>) => {
     const isLauncher = id.startsWith('desktop-');
     if (event.button !== 0 || workspaceMode === 'managed' || (isLauncher && (workspaceMode !== 'desktop' || coarsePointer))) return;
@@ -1466,7 +1686,7 @@ function Home() {
     const constrainedSticky = sticky && workspace && stickySize
       ? constrainStickyPosition({ left: nextLeft, top: nextTop }, stickySize, sticky.rotation, workspace)
       : null;
-    const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal'].includes(drag.id);
+    const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal', 'settings'].includes(drag.id);
     const left = constrainedSticky?.left ?? (staysOnDesktop || constrainsWindow ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft);
     const top = constrainedSticky?.top ?? (staysOnDesktop || constrainsWindow ? Math.max(minTop, Math.min(maxTop, nextTop)) : Math.max(0, nextTop));
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
@@ -1817,6 +2037,8 @@ function Home() {
     setShowDesktopIcons(resetDesktopState.showDesktopIcons);
     setStickies(resetDesktopState.stickies);
     setDockPosition(resetDesktopState.dockPosition);
+    setWallpaperLight(resetDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
+    setWallpaperDark(resetDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
     setWindows(restoredWindows);
     setActiveWindow(restoredActiveWindow);
     setWindowStack(restoredWindowStack);
@@ -1902,11 +2124,21 @@ function Home() {
       : { ...itemStyle(id), zIndex: 4 + windowStack.indexOf(id) },
   });
 
+  // Compute wallpaper background for desktop area
+  const currentWallpaperStyle = workspaceMode === 'desktop'
+    ? desktopBackground(theme, wallpaperLight, wallpaperDark)
+    : {};
+
+  // For picture wallpaper: the os-shell base gradient should be suppressed;
+  // we handle that via a CSS class on the shell.
+  const wallpaperConfig = theme === 'light' ? wallpaperLight : wallpaperDark;
+
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'}`}
+      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${workspaceMode === 'desktop' ? `wallpaper-${wallpaperConfig.mode}` : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
+      style={workspaceMode === 'desktop' ? currentWallpaperStyle : undefined}
     >
       <header className="system-bar">
         <div className="system-left">
@@ -1930,8 +2162,8 @@ function Home() {
       {storageUnavailable && (
         <aside className="storage-notice" role="status" aria-live="polite" data-testid="notice-storage-unavailable">
           <div className="storage-notice-summary">
-            <strong>Changes won’t be saved.</strong>
-            <span>They’ll work for this session, but reset after you reload.</span>
+            <strong>Changes won{'\u2019'}t be saved.</strong>
+            <span>They{'\u2019'}ll work for this session, but reset after you reload.</span>
             <button
               type="button"
               className="storage-help-toggle"
@@ -2099,6 +2331,17 @@ function Home() {
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
         {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
         {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
+        {workspaceMode === 'desktop' && windows.settings && (
+          <SettingsWindow
+            {...windowProps('settings')}
+            theme={theme}
+            onSetTheme={setTheme}
+            wallpaperLight={wallpaperLight}
+            wallpaperDark={wallpaperDark}
+            onSetWallpaperLight={setWallpaperLight}
+            onSetWallpaperDark={setWallpaperDark}
+          />
+        )}
       </div>
 
       {contextMenu?.target === 'desktop' && (
@@ -2128,16 +2371,8 @@ function Home() {
               <div className="context-menu-separator" />
             </>
           )}
-          <div className="context-menu-row has-submenu">
-            <button type="button" role="menuitem" aria-haspopup="menu"><span className="context-check" /><span>Theme</span><ChevronRight size={13} /></button>
-            <div className="context-submenu" role="menu" aria-label="Theme">
-              <button type="button" role="menuitemradio" aria-checked={theme === 'light'} onClick={() => { setTheme('light'); setContextMenu(null); }}><span className="context-check">{theme === 'light' && <Check size={12} />}</span><span>Light</span></button>
-              <button type="button" role="menuitemradio" aria-checked={theme === 'dark'} onClick={() => { setTheme('dark'); setContextMenu(null); }}><span className="context-check">{theme === 'dark' && <Check size={12} />}</span><span>Dark</span></button>
-            </div>
-          </div>
           {workspaceMode === 'desktop' && (
             <>
-              <div className="context-menu-separator" />
               <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={showDesktopIcons} onClick={() => setShowDesktopIcons((value) => !value)}><span className="context-check">{showDesktopIcons && <Check size={12} />}</span><span>Show desktop icons</span></button>
               <button
                 type="button"
@@ -2424,6 +2659,7 @@ function Home() {
             <DockItem className="dock-item" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><Terminal size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · `</DockItemLabel></DockItem>
             <DockItem className="dock-item" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><StickyNote size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies</DockItemLabel></DockItem>
             <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts</DockItemLabel></DockItem>
+            <DockItem className="dock-item" active={windows.settings} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings</DockItemLabel></DockItem>
           </>
         )}
       </nav>

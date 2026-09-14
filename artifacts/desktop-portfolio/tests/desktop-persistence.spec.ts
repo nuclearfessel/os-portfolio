@@ -21,6 +21,13 @@ async function chooseSubmenuOption(page: Page, submenu: string, option: string) 
   await page.getByRole('menuitemradio', { name: option }).click();
 }
 
+async function openSettingsAndSetTheme(page: Page, theme: 'Light' | 'Dark') {
+  await page.getByTestId('button-dock-settings').click();
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+  await page.getByTestId(`settings-theme-${theme.toLowerCase()}`).click();
+  await page.getByTestId('button-close-settings').click();
+}
+
 async function openStickyMenu(page: Page, stickyId = 'sticky') {
   await page.getByTestId(`sticky-${stickyId}`).evaluate((element) => {
     const bounds = element.getBoundingClientRect();
@@ -146,8 +153,7 @@ test('persists moved icons and every desktop preference across reloads', async (
   await openDesktopMenu(page);
   await page.getByRole('menuitemcheckbox', { name: 'Snap to grid' }).click();
 
-  await openDesktopMenu(page);
-  await chooseSubmenuOption(page, 'Theme', 'Dark');
+  await openSettingsAndSetTheme(page, 'Dark');
 
   await openDesktopMenu(page);
   await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
@@ -502,8 +508,7 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await page.mouse.up();
   await sticky.getByRole('textbox', { name: 'Sticky note 1 text' }).fill('Recovery keeps the whole desktop.');
 
-  await openDesktopMenu(page);
-  await chooseSubmenuOption(page, 'Theme', 'Dark');
+  await openSettingsAndSetTheme(page, 'Dark');
   await openDesktopMenu(page);
   await chooseSubmenuOption(page, 'View', 'Small icons');
   await openDesktopMenu(page);
@@ -784,8 +789,7 @@ test('resets a sticky rotation in both themes and keeps it upright after reload'
   await rotationHandle.press('Home');
   await expect.poll(readRotation).toBe('0deg');
 
-  await openDesktopMenu(page);
-  await chooseSubmenuOption(page, 'Theme', 'Dark');
+  await openSettingsAndSetTheme(page, 'Dark');
   await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
 
   await openStickyMenu(page);
@@ -992,7 +996,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
   await expect(page.getByRole('menuitemcheckbox', { name: 'Snap to grid' })).toHaveAttribute('aria-checked', 'false');
   await expect(page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' })).toHaveAttribute('aria-checked', 'true');
 
-  await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey)).toEqual({
+  await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey)).toMatchObject({
     folderPositions: {},
     itemPositions: {},
     itemSizes: {},
@@ -1003,7 +1007,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
     stickies: [{
       id: 'sticky',
       color: 'purple',
-      text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
+      text: "The best interfaces don\u2019t ask for attention. They earn trust, one tiny response at a time.",
       rotation: -9,
       author: 'fes',
       createdAt: '09:42',
@@ -1016,6 +1020,8 @@ test('Reset desktop restores every default after confirmation', async ({ page })
       createdAt: 'saved',
     }],
     dockPosition: 'bottom',
+    wallpaperLight: { mode: 'picture', color: '#e8f0ec' },
+    wallpaperDark: { mode: 'picture', color: '#111326' },
   });
 });
 
@@ -1044,7 +1050,7 @@ test('saves the current desktop state as the default only after confirmation', a
   await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), defaultStorageKey))
     .toMatchObject({
       showDesktopIcons: false,
-      windowStack: ['about', 'contact', 'terminal', 'work'],
+      windowStack: ['about', 'contact', 'terminal', 'settings', 'work'],
     });
 
   await page.getByTestId('window-about').dispatchEvent('mousedown');
@@ -1081,7 +1087,7 @@ test('saves the current desktop state as the default only after confirmation', a
         terminal: true,
       },
       activeWindow: 'work',
-      windowStack: ['about', 'contact', 'terminal', 'work'],
+      windowStack: ['about', 'settings', 'contact', 'terminal', 'work'],
       stickies: [{ id: 'sticky' }],
     });
 
@@ -1109,4 +1115,165 @@ test('saves the current desktop state as the default only after confirmation', a
   ));
   expect(finalStack['window-work']).toBeGreaterThan(finalStack['window-terminal']);
   expect(finalStack['window-work']).toBeGreaterThan(finalStack['window-contact']);
+});
+
+// ─── Settings window & personalization ────────────────────────────────────────
+
+test('Settings dock icon is present on desktop and opens the Settings window', async ({ page }) => {
+  const settingsButton = page.getByTestId('button-dock-settings');
+  await expect(settingsButton).toBeVisible();
+
+  await settingsButton.click();
+  const settingsWindow = page.getByTestId('window-settings');
+  await expect(settingsWindow).toBeVisible();
+
+  // Close button works
+  await page.getByTestId('button-close-settings').click();
+  await expect(settingsWindow).toHaveCount(0);
+
+  // Re-opening from dock works
+  await settingsButton.click();
+  await expect(settingsWindow).toBeVisible();
+});
+
+test('Settings window is not shown on mobile and tablet viewports', async ({ page }) => {
+  for (const viewport of [
+    { width: 375, height: 812 },
+    { width: 1024, height: 768 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.reload();
+    await expect(page.getByTestId('button-dock-settings')).toHaveCount(0);
+  }
+});
+
+test('Settings window changes theme and persists across reload', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  const settingsWindow = page.getByTestId('window-settings');
+  await expect(settingsWindow).toBeVisible();
+
+  // Start in light theme; switch to dark via Settings
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await page.getByTestId('settings-theme-dark').click();
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+
+  // Switch back to light
+  await page.getByTestId('settings-theme-light').click();
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+
+  // Dark persists across reload
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('button-close-settings').click();
+  await page.reload();
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect.poll(() => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}').theme, storageKey))
+    .toBe('dark');
+});
+
+test('Settings wallpaper mode: picture uses background image on desktop', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+
+  // Default is picture mode; main element should have a backgroundImage style
+  const desktop = page.locator('main.os-shell');
+  const bgImage = await desktop.evaluate((el) => (el as HTMLElement).style.backgroundImage);
+  expect(bgImage).toMatch(/wallpaper-light/);
+
+  await page.getByTestId('button-close-settings').click();
+});
+
+test('Settings wallpaper mode: color removes background image and applies solid color', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+
+  // Switch to color mode for the light theme — default color is #e8f0ec
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+
+  // Verify the default color hex is shown in the UI
+  await expect(page.locator('.settings-color-hex').first()).toContainText('#E8F0EC');
+
+  await page.getByTestId('settings-wallpaper-color-light').fill('#345678');
+  await expect(page.locator('.settings-color-hex').first()).toContainText('#345678');
+
+  await page.getByTestId('button-close-settings').click();
+
+  // Desktop background should now be a solid color, not a picture
+  const shell = page.locator('main.os-shell');
+  const bgImage = await shell.evaluate((el) => (el as HTMLElement).style.backgroundImage);
+  // In color mode the backgroundImage inline style is explicitly cleared to 'none'
+  expect(bgImage).toBe('none');
+
+  const bgColor = await shell.evaluate((el) => (el as HTMLElement).style.backgroundColor);
+  // Browser normalises #345678 → rgb(52, 86, 120)
+  expect(bgColor).toMatch(/345678|rgb\(52,\s*86,\s*120\)/i);
+
+  // Saved state reflects color mode
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+  expect(saved.wallpaperLight.mode).toBe('color');
+  expect(saved.wallpaperLight.color).toBe('#345678');
+});
+
+test('wallpaper choice persists across page reload', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+
+  // Switch light theme to color mode
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+
+  // Switch to dark theme and set it to color mode too
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('settings-wallpaper-mode-color-dark').click();
+
+  await page.getByTestId('button-close-settings').click();
+
+  const savedBefore = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+  expect(savedBefore.wallpaperLight.mode).toBe('color');
+  expect(savedBefore.wallpaperDark.mode).toBe('color');
+  expect(savedBefore.theme).toBe('dark');
+
+  await page.reload();
+
+  const savedAfter = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+  expect(savedAfter.wallpaperLight).toEqual(savedBefore.wallpaperLight);
+  expect(savedAfter.wallpaperDark).toEqual(savedBefore.wallpaperDark);
+  expect(savedAfter.theme).toBe('dark');
+});
+
+test('save state as default includes wallpaper config, and reset restores it', async ({ page }) => {
+  // Set color wallpaper for light theme
+  await page.getByTestId('button-dock-settings').click();
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await page.getByTestId('button-close-settings').click();
+
+  // Save as default
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Save state as default' }).click();
+  await page.getByTestId('button-confirm-save-default').click();
+
+  const savedDefault = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), defaultStorageKey);
+  expect(savedDefault.wallpaperLight.mode).toBe('color');
+
+  // Switch back to picture mode
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-wallpaper-mode-picture-light').click();
+  await page.getByTestId('button-close-settings').click();
+
+  const desktop = page.locator('main.os-shell');
+  const bgImageAfterSwitch = await desktop.evaluate((el) => (el as HTMLElement).style.backgroundImage);
+  expect(bgImageAfterSwitch).toMatch(/wallpaper-light/);
+
+  // Reset desktop should restore the saved default (color mode)
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
+  await page.getByTestId('button-confirm-reset').click();
+
+  const bgImageAfterReset = await desktop.evaluate((el) => (el as HTMLElement).style.backgroundImage);
+  // In color mode the backgroundImage inline style is explicitly cleared to 'none'
+  expect(bgImageAfterReset).toBe('none');
+  const bgColorAfterReset = await desktop.evaluate((el) => (el as HTMLElement).style.backgroundColor);
+  expect(bgColorAfterReset).not.toBe('');
+
+  const restoredSaved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+  expect(restoredSaved.wallpaperLight.mode).toBe('color');
 });

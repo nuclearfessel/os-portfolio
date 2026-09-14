@@ -370,6 +370,382 @@ button { cursor: pointer; }
 .reset-dialog-actions button:hover, .reset-dialog-actions button:focus-visible { color: #111326; background: #e4ff5b; border-color: #e4ff5b; outline: none; }
 .reset-dialog-actions .reset-dialog-confirm { color: #fff; background: #cf3048; border-color: #f06375; box-shadow: 0 5px 18px rgba(207,48,72,.28); }
 .reset-dialog-actions .reset-dialog-confirm:hover, .reset-dialog-actions .reset-dialog-confirm:focus-visible { color: #fff; background: #ed3f57; border-color: #ff8795; }
+/* =========================================================
+   Settings window
+   ========================================================= */
+.window.settings {
+  top: 14%;
+  left: 28%;
+  width: min(680px, calc(100vw - 80px));
+  height: min(520px, calc(100dvh - 180px));
+}
+
+.settings-body {
+  height: calc(100% - 44px);
+  overflow: hidden;
+  padding: 0;
+}
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: 172px 1fr;
+  height: 100%;
+}
+
+/* Settings nav sidebar */
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 10px;
+  border-right: 1px solid rgba(214,221,255,.1);
+  background: rgba(20, 22, 42, .6);
+  overflow-y: auto;
+}
+
+.theme-light .settings-nav {
+  background: rgba(218,232,228,.5);
+  border-right-color: rgba(26,83,91,.12);
+}
+
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  color: #aeb2cb;
+  font: 12px var(--app-font-sans);
+  cursor: pointer;
+  transition: background .1s, color .1s;
+}
+
+.theme-light .settings-nav-item { color: #4f6070; }
+
+.settings-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.settings-nav-item-active {
+  color: #e4ff5b;
+  background: rgba(228,255,91,.1);
+}
+
+.theme-light .settings-nav-item-active {
+  color: #0b665d;
+  background: rgba(11,102,93,.1);
+}
+
+/* Settings content area */
+.settings-content {
+  padding: 22px 24px;
+  overflow-y: auto;
+}
+
+.settings-content::-webkit-scrollbar { width: 6px; }
+.settings-content::-webkit-scrollbar-thumb { background: #3d4160; border-radius: 9px; }
+.theme-light .settings-content::-webkit-scrollbar-thumb { background: #aebfba; }
+
+.settings-heading {
+  font-size: 24px;
+  letter-spacing: -.04em;
+  margin: 10px 0 20px;
+}
+
+.settings-section {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-section-header {
+  display: grid;
+  gap: 3px;
+}
+
+.settings-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e4e5ec;
+}
+
+.theme-light .settings-label { color: #17213b; }
+
+.settings-description {
+  font-size: 11px;
+  color: #8d92ae;
+  line-height: 1.5;
+}
+
+.theme-light .settings-description { color: #526660; }
+
+.settings-divider {
+  height: 1px;
+  margin: 20px 0;
+  background: rgba(214,221,255,.12);
+}
+
+.theme-light .settings-divider { background: rgba(26,83,91,.12); }
+
+/* Theme selector */
+.settings-theme-row {
+  display: flex;
+  gap: 12px;
+}
+
+.settings-theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.settings-theme-preview {
+  width: 100px;
+  height: 64px;
+  border-radius: 8px;
+  border: 2px solid rgba(214,221,255,.18);
+  overflow: hidden;
+  transition: border-color .12s;
+  position: relative;
+}
+
+.settings-theme-option:hover .settings-theme-preview,
+.settings-theme-option.is-selected .settings-theme-preview {
+  border-color: #e4ff5b;
+}
+
+.theme-light .settings-theme-option:hover .settings-theme-preview,
+.theme-light .settings-theme-option.is-selected .settings-theme-preview {
+  border-color: #0b665d;
+}
+
+.settings-theme-preview-light {
+  background: linear-gradient(160deg, #e8f0ec 0%, #d4e5de 100%);
+}
+
+.settings-theme-preview-dark {
+  background: linear-gradient(160deg, #111326 0%, #1d2042 100%);
+}
+
+.settings-theme-preview-bar {
+  height: 14px;
+  background: rgba(0,0,0,.08);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+.settings-theme-preview-light .settings-theme-preview-bar { background: rgba(232,244,240,.88); }
+.settings-theme-preview-dark .settings-theme-preview-bar { background: rgba(17,19,38,.78); }
+
+.settings-theme-preview-content {
+  margin: 8px 10px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(0,0,0,.12);
+}
+
+.settings-theme-preview-light .settings-theme-preview-content { background: rgba(11,102,93,.25); }
+.settings-theme-preview-dark .settings-theme-preview-content { background: rgba(228,255,91,.2); }
+
+.settings-theme-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: 11px var(--app-font-sans);
+  color: #aeb2cb;
+  font-weight: 500;
+}
+
+.theme-light .settings-theme-label { color: #4f6070; }
+
+.settings-theme-option.is-selected .settings-theme-label {
+  color: #e4ff5b;
+}
+
+.theme-light .settings-theme-option.is-selected .settings-theme-label {
+  color: #0b665d;
+}
+
+/* Wallpaper mode chips */
+.settings-wallpaper-mode-row {
+  display: flex;
+  gap: 6px;
+}
+
+.settings-mode-chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(214,221,255,.2);
+  color: #aeb2cb;
+  background: rgba(32,35,61,.6);
+  font: 11px var(--app-font-sans);
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .1s, color .1s, background .1s;
+}
+
+.settings-mode-chip:hover {
+  border-color: rgba(228,255,91,.5);
+  color: #e4ff5b;
+}
+
+.settings-mode-chip.is-selected {
+  border-color: #e4ff5b;
+  color: #111326;
+  background: #e4ff5b;
+}
+
+.theme-light .settings-mode-chip {
+  color: #4f6070;
+  background: rgba(248,251,249,.74);
+  border-color: rgba(29,71,78,.18);
+}
+
+.theme-light .settings-mode-chip:hover {
+  border-color: rgba(11,102,93,.5);
+  color: #0b665d;
+}
+
+.theme-light .settings-mode-chip.is-selected {
+  border-color: #0b665d;
+  color: #fff;
+  background: #0b665d;
+}
+
+/* Picture wallpaper row */
+.settings-wallpaper-picture-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.settings-wallpaper-thumb {
+  width: 88px;
+  height: 56px;
+  flex: 0 0 88px;
+  border-radius: 6px;
+  border: 2px solid rgba(214,221,255,.18);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .12s;
+}
+
+.settings-wallpaper-thumb-selected {
+  border-color: #e4ff5b;
+}
+
+.theme-light .settings-wallpaper-thumb-selected {
+  border-color: #0b665d;
+}
+
+.settings-wallpaper-check {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  background: #e4ff5b;
+  color: #111326;
+  border-radius: 50%;
+}
+
+.theme-light .settings-wallpaper-check {
+  background: #0b665d;
+  color: #fff;
+}
+
+.settings-wallpaper-picture-label {
+  display: grid;
+  gap: 4px;
+}
+
+/* Color wallpaper row */
+.settings-wallpaper-color-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.settings-color-preview {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: 6px;
+  border: 2px solid rgba(214,221,255,.2);
+}
+
+.settings-color-picker-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-color-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-color-wheel {
+  width: 40px;
+  height: 40px;
+  padding: 2px;
+  border: 1px solid rgba(214,221,255,.25);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.theme-light .settings-color-wheel {
+  border-color: rgba(26,83,91,.2);
+}
+
+.settings-color-hex {
+  font: 12px var(--app-font-mono);
+  color: #8d92ae;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.theme-light .settings-color-hex { color: #526660; }
+
+/* =========================================================
+   Wallpaper on desktop
+   ========================================================= */
+/* When a picture wallpaper is set on desktop, override the default gradient */
+.os-shell.wallpaper-picture,
+.os-shell.wallpaper-color {
+  /* The inline style on the <main> handles background; suppress the ::before grid overlay a bit */
+}
+
+.os-shell.wallpaper-picture::before {
+  opacity: .12;
+  mix-blend-mode: overlay;
+}
+
+.os-shell.wallpaper-color::before {
+  opacity: .18;
+}
+
+/* System bar needs backdrop on picture wallpaper */
+.wallpaper-picture .system-bar,
+.wallpaper-color .system-bar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 .hidden-window { display: none; }
 .managed-sticky-toolbar { display: none; }
 .mobile-menu { display: none; }

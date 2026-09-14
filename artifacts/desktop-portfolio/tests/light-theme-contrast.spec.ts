@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-const storageKey = 'fes-os.desktop.v1';
+const storageKey = 'fes-os.desktop.v4';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {

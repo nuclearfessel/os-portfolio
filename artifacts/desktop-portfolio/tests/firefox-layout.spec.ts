@@ -10,14 +10,14 @@ test('a fresh Firefox session keeps the default sticky at its intended size', as
   const box = await sticky.boundingBox();
   expect(box?.x).toBeGreaterThan((await page.evaluate(() => innerWidth)) / 2);
 
-  const savedState = await page.evaluate(() => JSON.parse(localStorage.getItem('fes-os.desktop.v4') ?? '{}'));
+  const savedState = await page.evaluate(() => JSON.parse(localStorage.getItem('portfolio-os.desktop.v4') ?? '{}'));
   expect(savedState.itemSizes?.sticky).toBeUndefined();
   expect(savedState.itemPositions?.sticky).toBeUndefined();
 });
 
 test('Firefox discards sticky dimensions below the legal minimum', async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('fes-os.desktop.v4', JSON.stringify({
+    localStorage.setItem('portfolio-os.desktop.v4', JSON.stringify({
       itemPositions: { sticky: { left: 28, top: 137 } },
       itemSizes: { sticky: { width: 1367, height: 84 } },
       stickies: [{
@@ -25,7 +25,7 @@ test('Firefox discards sticky dimensions below the legal minimum', async ({ page
         color: 'lemon',
         text: 'Saved note',
         rotation: 3,
-        author: 'fes',
+        author: 'john',
         createdAt: '09:42',
       }],
     }));

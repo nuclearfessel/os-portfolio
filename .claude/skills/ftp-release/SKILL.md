@@ -1,6 +1,6 @@
 ---
 name: ftp-release
-description: Build and release the static desktop portfolio to an FTP subfolder such as iamfes.com/os1. Use when preparing deployment files, diagnosing blank pages, or updating the hosted site.
+description: Build and release the static desktop portfolio to a configured FTP subfolder. Use when preparing deployment files, diagnosing blank pages, or updating the hosted site.
 ---
 
 # FTP Release

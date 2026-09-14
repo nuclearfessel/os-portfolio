@@ -10,12 +10,12 @@ import { CircleUser as CircleUserFill } from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
 import { BsStickyFill } from 'react-icons/bs';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { Toaster } from '@workspace/fes-os-design-system/components/ui/toaster';
-import { TooltipProvider } from '@workspace/fes-os-design-system/components/ui/tooltip';
-import { Separator } from '@workspace/fes-os-design-system/components/ui/separator';
+import { Toaster } from '@workspace/portfolio-os-design-system/components/ui/toaster';
+import { TooltipProvider } from '@workspace/portfolio-os-design-system/components/ui/tooltip';
+import { Separator } from '@workspace/portfolio-os-design-system/components/ui/separator';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
-} from '@workspace/fes-os-design-system/components/ui/dialog';
+} from '@workspace/portfolio-os-design-system/components/ui/dialog';
 import {
   ActionButton,
   ContextMenuSurface,
@@ -28,7 +28,7 @@ import {
   StickyNoteSurface,
   Surface,
   WindowSurface,
-} from '@workspace/fes-os-design-system/components/ui/fes-os';
+} from '@workspace/portfolio-os-design-system/components/ui/portfolio-os';
 
 const queryClient = new QueryClient();
 
@@ -204,7 +204,7 @@ type StickyData = {
   color: StickyColorId;
   text: string;
   rotation: number;
-  author: 'fes' | 'user';
+  author: 'john' | 'user';
   createdAt: string;
 };
 
@@ -213,7 +213,7 @@ const defaultSticky: StickyData = {
   color: 'purple',
   text: "The best interfaces don\u2019t ask for attention. They earn trust, one tiny response at a time.",
   rotation: -9,
-  author: 'fes',
+  author: 'john',
   createdAt: '09:42',
 };
 
@@ -259,14 +259,14 @@ type SavedDesktopState = {
   introCustomization?: IntroCustomization;
 };
 
-const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
-const DESKTOP_DEFAULT_STORAGE_KEY = 'fes-os.desktop.default.v1';
+const DESKTOP_STORAGE_KEY = 'portfolio-os.desktop.v4';
+const DESKTOP_DEFAULT_STORAGE_KEY = 'portfolio-os.desktop.default.v1';
 const DESKTOP_GRID_SIZE = 8;
 const DEFAULT_INTRO_CUSTOMIZATION: IntroCustomization = {
   text: {
     primary: 'Thoughtful interfaces.',
     accent: 'Fast systems.',
-    body: 'Fes Naqvi is a product-minded designer making things feel clear, capable, and a little more human.',
+    body: 'John Doe is a product-minded designer making things feel clear, capable, and a little more human.',
   },
   colors: {
     light: { primary: '#17213b', accent: '#0b665d', body: '#586878' },
@@ -304,6 +304,10 @@ const defaultDesktopState: SavedDesktopState = {
   introCustomization: DEFAULT_INTRO_CUSTOMIZATION,
 };
 
+function normalizeIntroText(value: string) {
+  return value.replace(/\b(?:Fes Naqvi|Joe Doe)\b/gi, 'John Doe');
+}
+
 function parseWallpaperConfig(raw: unknown): WallpaperConfig | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
   const config = raw as Record<string, unknown>;
@@ -316,9 +320,11 @@ function parseWallpaperConfig(raw: unknown): WallpaperConfig | undefined {
 function parseIntroCustomization(raw: unknown): IntroCustomization {
   if (!raw || typeof raw !== 'object') return DEFAULT_INTRO_CUSTOMIZATION;
   const value = raw as Partial<IntroCustomization>;
-  const parseText = (key: IntroTextKey) => {
+    const parseText = (key: IntroTextKey) => {
     const candidate = value.text?.[key];
-    return typeof candidate === 'string' && candidate.trim() ? candidate.slice(0, key === 'body' ? 240 : 80) : DEFAULT_INTRO_CUSTOMIZATION.text[key];
+      return typeof candidate === 'string' && candidate.trim()
+        ? normalizeIntroText(candidate).slice(0, key === 'body' ? 240 : 80)
+        : DEFAULT_INTRO_CUSTOMIZATION.text[key];
   };
   const parseColor = (theme: Theme, key: IntroTextKey) => {
     const candidate = value.colors?.[theme]?.[key];
@@ -416,7 +422,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
           ? [{
             ...sticky,
             rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
-            author: sticky.author === 'user' ? 'user' as const : sticky.id === 'sticky' ? 'fes' as const : 'user' as const,
+            author: sticky.author === 'user' ? 'user' as const : sticky.id === 'sticky' ? 'john' as const : 'user' as const,
             createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt ? sticky.createdAt : sticky.id === 'sticky' ? '09:42' : 'saved',
           }]
           : []
@@ -489,34 +495,125 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
   }
 }
 
-const projects = [
+type CaseStudyMetric = { value: string; label: string };
+type CaseStudySection = { label: string; heading: string; body: string };
+type CaseStudy = {
+  id: string;
+  name: string;
+  desc: string;
+  tag: string;
+  color: string;
+  category: string;
+  role: string;
+  summary: string;
+  metrics: CaseStudyMetric[];
+  preview: {
+    label: string;
+    content: string;
+    stats: CaseStudyMetric[];
+    bars: number[];
+  };
+  challenge: CaseStudySection;
+  approach: CaseStudySection;
+  outcome: CaseStudySection;
+};
+
+const projects: CaseStudy[] = [
   {
     id: '01',
-    name: 'Intuitive Surgical Design System',
-    desc: 'Lead production, documentation and library management as adoption grew from 1 to 25 product teams.',
-    tag: 'Mar 2022 - Aug 2026',
+    name: 'Northstar Commerce System',
+    desc: 'A flexible foundation that helped a growing commerce team ship consistent storefront and account experiences.',
+    tag: '2024 — 2025',
     color: '#e4ff5b',
+    category: 'case study / design systems / 2025',
+    role: 'Systems design · Product strategy',
+    summary: 'A shared language for a commerce platform moving from one storefront to many.',
+    metrics: [
+      { value: '42%', label: 'faster feature delivery' },
+      { value: '3.4×', label: 'more component reuse' },
+      { value: '91%', label: 'documentation confidence' },
+    ],
+    preview: {
+      label: 'NORTHSTAR',
+      content: 'System health',
+      stats: [{ value: '96', label: 'ready' }, { value: '18', label: 'in review' }, { value: '04', label: 'planned' }],
+      bars: [42, 58, 51, 76, 68, 91],
+    },
+    challenge: { label: '01 / challenge', heading: 'Every team was inventing its own basics.', body: 'Commerce teams shipped similar patterns with different spacing, states, and accessibility decisions. The growing surface area made consistency expensive to maintain.' },
+    approach: { label: '02 / approach', heading: 'Start with the decisions that repeat.', body: 'I mapped the highest-frequency journeys, built a token architecture around them, and paired each component with contribution guidance that met teams where they worked.' },
+    outcome: { label: '03 / outcome', heading: 'A system teams could extend.', body: 'Northstar gave product teams a dependable starting point without flattening their product voice. Adoption grew through practical examples, not mandates.' },
   },
   {
     id: '02',
-    name: 'SimNow 2.0 — da Vinci Simulator UI update',
-    desc: 'Unified the da Vinci console and Inuitive Digital design systems for surgeon training simulator UI.',
-    tag: 'Mar 2022 - Jan 2025',
+    name: 'Signal Operations Platform',
+    desc: 'A focused operations language for teams coordinating alerts, handoffs, and high-stakes daily work.',
+    tag: '2023 — 2024',
     color: '#e4ff5b',
+    category: 'case study / product systems / 2024',
+    role: 'Product design · Systems strategy',
+    summary: 'A calm, coherent operating layer for teams who need to act on signals quickly.',
+    metrics: [
+      { value: '28%', label: 'fewer workflow steps' },
+      { value: '2.7×', label: 'faster triage' },
+      { value: '36%', label: 'less duplicate work' },
+    ],
+    preview: {
+      label: 'SIGNAL',
+      content: 'Queue overview',
+      stats: [{ value: '24', label: 'active' }, { value: '07', label: 'escalated' }, { value: '82%', label: 'resolved' }],
+      bars: [52, 70, 46, 82, 61, 88],
+    },
+    challenge: { label: '01 / challenge', heading: 'Urgent work looked like everything else.', body: 'Operators had to scan noisy queues and reconcile status across tools before they could decide what needed attention. The system rewarded checking, not acting.' },
+    approach: { label: '02 / approach', heading: 'Make priority visible at a glance.', body: 'I created a shared vocabulary for severity, ownership, and resolution, then used it to shape responsive queue, detail, and handoff patterns.' },
+    outcome: { label: '03 / outcome', heading: 'Less scanning, more confident action.', body: 'Teams could see what changed, who owned it, and what to do next from a consistent set of surfaces. The product became easier to learn and easier to trust.' },
   },
   {
     id: '03',
-    name: "Cedar — REI's Design System",
-    desc: "Library and tooling contributions to Cedar, REI's open-source design system",
-    tag: 'June 2019 – June 2020',
+    name: 'Mosaic Health Toolkit',
+    desc: 'An accessible toolkit for designing clear, reassuring health journeys across devices and contexts.',
+    tag: '2022 — 2023',
     color: '#e4ff5b',
+    category: 'case study / design systems / 2023',
+    role: 'Design systems · Accessibility',
+    summary: 'A humane, accessible toolkit for turning complicated health information into clear next steps.',
+    metrics: [
+      { value: '68%', label: 'faster prototyping' },
+      { value: '100%', label: 'core AA coverage' },
+      { value: '14', label: 'teams onboarded' },
+    ],
+    preview: {
+      label: 'MOSAIC',
+      content: 'Journey coverage',
+      stats: [{ value: '14', label: 'teams' }, { value: '38', label: 'patterns' }, { value: 'AA', label: 'baseline' }],
+      bars: [35, 62, 57, 73, 84, 96],
+    },
+    challenge: { label: '01 / challenge', heading: 'Clarity had to work for everyone.', body: 'Health journeys combined dense information, emotional moments, and a wide range of devices and abilities. Teams needed confidence that a reusable pattern would remain understandable.' },
+    approach: { label: '02 / approach', heading: 'Build accessibility into the grammar.', body: 'I partnered with content, research, and engineering to define plain-language structures, resilient states, and tokens that made inclusive choices the default.' },
+    outcome: { label: '03 / outcome', heading: 'A toolkit that reduced uncertainty.', body: 'Mosaic helped teams move from concept to tested interface faster while giving people clearer choices and more confidence at each step.' },
   },
   {
     id: '04',
-    name: 'Microsoft Windows 10 Language Installer',
-    desc: "Redesigned Windows 10's language pack installer flow as a clearer, focused modal-dialog experience",
-    tag: '2017–2018',
+    name: 'Fieldnote Collaboration Kit',
+    desc: 'A lightweight collaboration system that helped distributed teams turn observations into shared decisions.',
+    tag: '2021 — 2022',
     color: '#e4ff5b',
+    category: 'case study / collaboration systems / 2022',
+    role: 'Interaction design · Facilitation',
+    summary: 'A flexible kit for capturing context, making sense of it together, and moving work forward.',
+    metrics: [
+      { value: '3.1×', label: 'more notes resolved' },
+      { value: '44%', label: 'shorter review cycles' },
+      { value: '87%', label: 'weekly team adoption' },
+    ],
+    preview: {
+      label: 'FIELDNOTE',
+      content: 'Team workspace',
+      stats: [{ value: '32', label: 'notes' }, { value: '11', label: 'threads' }, { value: '08', label: 'owners' }],
+      bars: [47, 64, 73, 57, 79, 87],
+    },
+    challenge: { label: '01 / challenge', heading: 'Good observations disappeared in the gap.', body: 'Distributed teams collected useful notes in many places, but lacked a shared moment to connect evidence to decisions. Important context was hard to find later.' },
+    approach: { label: '02 / approach', heading: 'Keep the path from note to next step short.', body: 'I designed a modular workspace with clear ownership, lightweight tagging, and review rituals that supported both solo capture and group sensemaking.' },
+    outcome: { label: '03 / outcome', heading: 'Shared context became a habit.', body: 'Fieldnote gave teams a durable record of why decisions were made and made collaboration feel like part of the work instead of another process around it.' },
   },
 ];
 
@@ -567,7 +664,7 @@ function WindowFrame({
 }) {
   return (
     <WindowSurface
-      className={`window fes-scrollbar-window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
+      className={`window portfolio-scrollbar-window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
       onMouseDown={onFocus}
       onContextMenu={(event) => {
         event.preventDefault();
@@ -580,7 +677,7 @@ function WindowFrame({
     >
       <header className="window-header" onDoubleClick={onHeaderDoubleClick} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
         <span className="window-header-spacer" aria-hidden="true" />
-        <div className="window-title"><strong>~/fes/</strong>{title.toLowerCase()}</div>
+        <div className="window-title"><strong>~/john/</strong>{title.toLowerCase()}</div>
         <div className="traffic-lights" onPointerDown={(event) => event.stopPropagation()}>
           <button className="minimize" onClick={onMinimize} aria-label={`Minimize ${title}`} data-testid={`button-minimize-${id}`}><Minus size={10} strokeWidth={2.6} /><span className="window-control-tooltip">Minimize</span></button>
           <button className="maximize" onClick={onMaximize} aria-label={`${maximized ? 'Restore' : 'Maximize'} ${title}`} data-testid={`button-maximize-${id}`}><Maximize2 size={9} strokeWidth={2.4} /><span className="window-control-tooltip">{maximized ? 'Restore' : 'Maximize'}</span></button>
@@ -613,9 +710,9 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
         <h2>Interfaces with a pulse.</h2>
         <div className="about-grid">
           <div className="about-bio" data-testid="about-bio">
-            <p>I'm Fes Naqvi, a product-minded design based in Seattle. I build the connective tissue between a good idea and a product people want to keep using.</p>
+            <p>I'm John Doe, a product-minded designer based in Seattle. I build the connective tissue between a good idea and a product people want to keep using.</p>
             <p>My favorite work lives where interaction design, resilient systems, and a sharp point of view overlap. I care about the small delays, the useful defaults, and the moment software gets out of your way.</p>
-            <div className="signature">fes_naqvi<span className="blink">_</span></div>
+            <div className="signature">john_doe<span className="blink">_</span></div>
           </div>
           <div className="fact-list" data-testid="about-facts">
             <div className="fact"><label>currently</label><span>Independent / open to select teams</span></div>
@@ -630,40 +727,45 @@ function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
 }
 
 function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
-  const [caseStudyOpen, setCaseStudyOpen] = useState(false);
+  const [caseStudyId, setCaseStudyId] = useState<string | null>(null);
+  const activeStudy = projects.find((project) => project.id === caseStudyId);
 
   return (
     <WindowFrame {...props} id="work" title="Selected work">
-      {caseStudyOpen ? (
-        <div className="window-body case-study" data-testid="case-study-orbit">
+      {activeStudy ? (
+        <div className="window-body case-study" data-testid={`case-study-${activeStudy.id}`}>
           <div className="case-study-topbar">
-            <button className="case-study-back" onClick={() => setCaseStudyOpen(false)} data-testid="button-back-to-work"><ArrowLeft size={15} />all projects</button>
-            <SectionLabel className="section-kicker">case study / product systems / 2024</SectionLabel>
+            <button className="case-study-back" onClick={() => setCaseStudyId(null)} data-testid="button-back-to-work"><ArrowLeft size={15} />all projects</button>
+            <SectionLabel className="section-kicker">{activeStudy.category}</SectionLabel>
           </div>
           <div className="case-study-hero">
             <div>
-              <h2>Orbit CRM</h2>
-              <p>A calmer command center for customer teams managing complex accounts.</p>
+              <h2>{activeStudy.name}</h2>
+              <p>{activeStudy.summary}</p>
             </div>
-            <span className="case-study-role">Product design<br />Frontend engineering</span>
+            <span className="case-study-role">{activeStudy.role}</span>
           </div>
           <Surface className="case-study-metrics" aria-label="Project outcomes">
-            <div><strong>34%</strong><span>faster account reviews</span></div>
-            <div><strong>2.1×</strong><span>more risks caught early</span></div>
-            <div><strong>18%</strong><span>fewer support escalations</span></div>
+            {activeStudy.metrics.map((metric) => (
+              <div key={`${activeStudy.id}-${metric.label}`}><strong>{metric.value}</strong><span>{metric.label}</span></div>
+            ))}
           </Surface>
-          <div className="orbit-preview" aria-label="Orbit CRM interface preview">
-            <div className="orbit-sidebar"><span className="orbit-logo">ORBIT</span><i /><i /><i /><i /></div>
-            <div className="orbit-dashboard">
-              <div className="orbit-preview-header"><span>Account health</span><b>Q4 review</b></div>
-              <div className="orbit-stat-row"><span><b>92</b> healthy</span><span><b>14</b> watch</span><span><b>03</b> at risk</span></div>
-              <div className="orbit-chart"><span /><span /><span /><span /><span /><span /></div>
+          <div className="case-study-preview" aria-label={`${activeStudy.name} interface preview`}>
+            <div className="case-study-preview-sidebar"><span className="case-study-preview-logo">{activeStudy.preview.label}</span><i /><i /><i /><i /></div>
+            <div className="case-study-preview-dashboard">
+              <div className="case-study-preview-header"><span>{activeStudy.preview.content}</span><b>{activeStudy.tag}</b></div>
+              <div className="case-study-preview-stat-row">
+                {activeStudy.preview.stats.map((stat) => <span key={`${activeStudy.id}-${stat.label}`}><b>{stat.value}</b> {stat.label}</span>)}
+              </div>
+              <div className="case-study-preview-chart">
+                {activeStudy.preview.bars.map((height, index) => <span key={`${activeStudy.id}-bar-${index}`} style={{ height: `${height}%` }} />)}
+              </div>
             </div>
           </div>
           <div className="case-study-sections">
-            <section><span>01 / challenge</span><h3>Important signals were buried.</h3><p>Account teams were jumping between six tools to understand customer health. Reviews were slow, risk was found late, and every manager used a different process.</p></section>
-            <section><span>02 / approach</span><h3>Design around decisions, not data.</h3><p>I worked with success leads to map the few decisions that changed an account's trajectory, then built a focused workspace that grouped signals, history, and next actions together.</p></section>
-            <section><span>03 / outcome</span><h3>One shared operating rhythm.</h3><p>The new workflow made weekly reviews faster and more consistent. Teams caught risk sooner, reduced handoff gaps, and spent more time acting instead of assembling reports.</p></section>
+            {[activeStudy.challenge, activeStudy.approach, activeStudy.outcome].map((section) => (
+              <section key={`${activeStudy.id}-${section.label}`}><span>{section.label}</span><h3>{section.heading}</h3><p>{section.body}</p></section>
+            ))}
           </div>
         </div>
       ) : (
@@ -681,7 +783,7 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
                 description={project.desc}
                 tag={project.tag}
                 accent={project.color}
-                action={<ActionButton className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => setCaseStudyOpen(true)}>view case study <ArrowUpRight size={13} /></ActionButton>}
+                 action={<ActionButton className="project-link" data-testid={`button-open-project-${project.id}`} onClick={() => setCaseStudyId(project.id)}>view case study <ArrowUpRight size={13} /></ActionButton>}
               />
             ))}
           </div>
@@ -699,8 +801,8 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
         <SectionLabel className="section-kicker">contact.txt</SectionLabel>
         <h2>Have a hard problem?</h2>
         <p>Tell me what you're making, where it's stuck, and what "better" would feel like. I'll get back to you with a considered reply, usually within a couple of days.</p>
-        <a className="contact-button" href="mailto:hello@fesnaqvi.dev" data-testid="link-email-fes">email Fes <Mail size={16} /></a>
-        <p style={{ fontFamily: 'var(--app-font-mono)', fontSize: 10, marginTop: 18 }}>hello@fesnaqvi.dev</p>
+        <a className="contact-button" href="mailto:hello@johndoe.design" data-testid="link-email-john">email John <Mail size={16} /></a>
+        <p style={{ fontFamily: 'var(--app-font-mono)', fontSize: 10, marginTop: 18 }}>hello@johndoe.design</p>
       </div>
     </WindowFrame>
   );
@@ -1351,25 +1453,30 @@ type ShellEntry = { id: number; cwd: string; command: string; output?: string; e
 const shellFiles: Record<string, ShellNode> = {
   '/': { type: 'directory' },
   '/home': { type: 'directory' },
-  '/home/fes': { type: 'directory' },
-  '/home/fes/README.md': { type: 'file', content: 'Fes Naqvi\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd selected-work, cat README.md, open work' },
-  '/home/fes/about': { type: 'directory' },
-  '/home/fes/about/bio.txt': { type: 'file', content: 'Frontend engineer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
-  '/home/fes/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
-  '/home/fes/selected-work': { type: 'directory' },
-  '/home/fes/selected-work/intuitive-digital-ds.md': { type: 'file', content: 'Intuitive Surgical Design System\nLead production, documentation and library management as adoption grew from 1 to 25 product teams.\nMar 2022 - Aug 2026' },
-  '/home/fes/selected-work/simnow-2-ds.md': { type: 'file', content: 'SimNow 2.0 — da Vinci Simulator UI update\nUnified the da Vinci console and Inuitive Digital design systems for surgeon training simulator UI.\nMar 2022 - Jan 2025' },
-  '/home/fes/selected-work/cedar-rei-ds.md': { type: 'file', content: "Cedar — REI's Design System\nLibrary and tooling contributions to Cedar, REI's open-source design system\nJune 2019 – June 2020" },
-  '/home/fes/selected-work/win10-lang-installer.md': { type: 'file', content: "Microsoft Windows 10 Language Installer\nRedesigned Windows 10's language pack installer flow as a clearer, focused modal-dialog experience\n2017–2018" },
-  '/home/fes/contact': { type: 'directory' },
-  '/home/fes/contact/contact.txt': { type: 'file', content: 'Email: hello@fesnaqvi.dev\nStatus: Open to thoughtful product partnerships.' },
+  '/home/john': { type: 'directory' },
+  '/home/john/README.md': { type: 'file', content: 'John Doe\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd selected-work, cat README.md, open work' },
+  '/home/john/about': { type: 'directory' },
+  '/home/john/about/bio.txt': { type: 'file', content: 'Design systems designer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
+  '/home/john/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
+  '/home/john/selected-work': { type: 'directory' },
+  '/home/john/selected-work/northstar-commerce-system.md': { type: 'file', content: 'Northstar Commerce System\nA flexible foundation that helped a growing commerce team ship consistent storefront and account experiences.\n2024 — 2025' },
+  '/home/john/selected-work/signal-operations-platform.md': { type: 'file', content: 'Signal Operations Platform\nA focused operations language for teams coordinating alerts, handoffs, and high-stakes daily work.\n2023 — 2024' },
+  '/home/john/selected-work/mosaic-health-toolkit.md': { type: 'file', content: 'Mosaic Health Toolkit\nAn accessible toolkit for designing clear, reassuring health journeys across devices and contexts.\n2022 — 2023' },
+  '/home/john/selected-work/fieldnote-collaboration-kit.md': { type: 'file', content: 'Fieldnote Collaboration Kit\nA lightweight collaboration system that helped distributed teams turn observations into shared decisions.\n2021 — 2022' },
+  '/home/john/contact': { type: 'directory' },
+  '/home/john/contact/contact.txt': { type: 'file', content: 'Email: hello@johndoe.design\nStatus: Open to thoughtful product partnerships.' },
 };
 
 const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd selected-work', 'cat ~/selected-work/intuitive-digital-ds.md', 'open work', 'theme light', 'history', 'clear'];
+const shellExamples = ['ls', 'cd selected-work', 'cat ~/selected-work/northstar-commerce-system.md', 'open work', 'theme light', 'history', 'clear'];
+const shellArgumentOptions: Partial<Record<string, string[]>> = {
+  open: ['about', 'work', 'contact', 'terminal'],
+  close: ['about', 'work', 'contact', 'terminal', 'all'],
+  theme: ['light', 'dark'],
+};
 
 function normalizeShellPath(cwd: string, target = '~') {
-  const home = '/home/fes';
+  const home = '/home/john';
   const expanded = target.startsWith('~') ? `${home}${target.slice(1)}` : target;
   const source = expanded.startsWith('/') ? expanded : `${cwd}/${expanded}`;
   const parts: string[] = [];
@@ -1382,8 +1489,8 @@ function normalizeShellPath(cwd: string, target = '~') {
 }
 
 function displayShellPath(path: string) {
-  if (path === '/home/fes') return '~';
-  if (path.startsWith('/home/fes/')) return `~${path.slice('/home/fes'.length)}`;
+  if (path === '/home/john') return '~';
+  if (path.startsWith('/home/john/')) return `~${path.slice('/home/john'.length)}`;
   return path;
 }
 
@@ -1394,6 +1501,39 @@ function listShellDirectory(path: string) {
     .map((candidate) => candidate.slice(prefix.length).split('/')[0])
     .filter((name, index, names) => name && names.indexOf(name) === index)
     .sort();
+}
+
+function predictShellCommand(input: string, cwd: string) {
+  const leadingWhitespace = input.match(/^\s*/)?.[0] ?? '';
+  const value = input.slice(leadingWhitespace.length);
+  if (!value) return '';
+
+  const parts = value.split(/\s+/);
+  const verb = parts[0]?.toLowerCase() ?? '';
+  if (parts.length === 1 && !value.endsWith(' ')) {
+    const match = shellCommands.find((item) => item.startsWith(verb));
+    if (!match) return '';
+    return `${leadingWhitespace}${match}${match === verb ? ' ' : ''}`;
+  }
+
+  const token = value.endsWith(' ') ? '' : parts.at(-1) ?? '';
+  const commandPrefix = value.slice(0, value.length - token.length);
+  const argumentOptions = shellArgumentOptions[verb];
+  if (argumentOptions) {
+    const match = argumentOptions.find((item) => item.startsWith(token.toLowerCase()));
+    return match ? `${leadingWhitespace}${commandPrefix}${match}` : '';
+  }
+
+  if (!['ls', 'cd', 'cat'].includes(verb)) return '';
+  const slash = token.lastIndexOf('/');
+  const parentToken = slash >= 0 ? token.slice(0, slash + 1) : '';
+  const fragment = slash >= 0 ? token.slice(slash + 1) : token;
+  const parentPath = normalizeShellPath(cwd, parentToken || '.');
+  const match = listShellDirectory(parentPath).find((name) => name.startsWith(fragment));
+  if (!match) return '';
+  const completedPath = normalizeShellPath(parentPath, match);
+  const suffix = shellFiles[completedPath]?.type === 'directory' ? '/' : '';
+  return `${leadingWhitespace}${commandPrefix}${parentToken}${match}${suffix}`;
 }
 
 function TerminalWindow({
@@ -1414,8 +1554,8 @@ function TerminalWindow({
   const [entries, setEntries] = useState<ShellEntry[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
-  const [cwd, setCwd] = useState('/home/fes');
-  const [previousCwd, setPreviousCwd] = useState('/home/fes');
+  const [cwd, setCwd] = useState('/home/john');
+  const [previousCwd, setPreviousCwd] = useState('/home/john');
   const inputRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const nextEntryId = useRef(1);
@@ -1434,25 +1574,13 @@ function TerminalWindow({
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
+  const predictedCommand = predictShellCommand(command, cwd);
+
   const completeCommand = () => {
-    const trimmedStart = command.replace(/^\s+/, '');
-    const parts = trimmedStart.split(/\s+/);
-    if (parts.length === 1 && !trimmedStart.endsWith(' ')) {
-      const matches = shellCommands.filter((item) => item.startsWith(parts[0].toLowerCase()));
-      if (matches.length === 1) setCommand(`${matches[0]} `);
-      return;
+    if (predictedCommand && predictedCommand !== command) {
+      setCommand(predictedCommand);
+      setHistoryIndex(null);
     }
-    const token = parts.at(-1) ?? '';
-    const slash = token.lastIndexOf('/');
-    const parentToken = slash >= 0 ? token.slice(0, slash + 1) : '';
-    const fragment = slash >= 0 ? token.slice(slash + 1) : token;
-    const parentPath = normalizeShellPath(cwd, parentToken || '.');
-    const matches = listShellDirectory(parentPath).filter((name) => name.startsWith(fragment));
-    if (matches.length !== 1) return;
-    const completedPath = normalizeShellPath(parentPath, matches[0]);
-    const suffix = shellFiles[completedPath]?.type === 'directory' ? '/' : '';
-    parts[parts.length - 1] = `${parentToken}${matches[0]}${suffix}`;
-    setCommand(parts.join(' '));
   };
 
   const submitCommand = (event: FormEvent) => {
@@ -1556,7 +1684,7 @@ function TerminalWindow({
       return;
     }
     if (verb === 'whoami') {
-      appendEntry(raw, 'fes');
+      appendEntry(raw, 'john');
       return;
     }
     if (verb === 'date') {
@@ -1599,12 +1727,12 @@ function TerminalWindow({
   return (
     <WindowFrame {...props} id="terminal" title="Terminal">
       <div ref={bodyRef} className="window-body terminal-body" onClick={() => inputRef.current?.focus()}>
-        <div className="terminal-line"><span className="terminal-prompt">fes@studio:~$</span><span className="terminal-command">whoami</span></div>
-        <div className="terminal-output">fes naqvi / product-minded frontend engineer{'\n'}building thoughtful interfaces and fast systems.</div>
+        <div className="terminal-line"><span className="terminal-prompt">john@portfolio:~$</span><span className="terminal-command">whoami</span></div>
+        <div className="terminal-output">john doe / design systems designer{'\n'}building thoughtful interfaces and resilient systems.</div>
         <div className="terminal-output terminal-hint">type "help" to explore. use ↑/↓ for history and Tab to complete.</div>
         {entries.map((entry) => (
           <div className="terminal-entry" key={entry.id}>
-            <div className="terminal-line"><span className="terminal-prompt">fes@studio:{displayShellPath(entry.cwd)}$</span><span className="terminal-command">{entry.command}</span></div>
+            <div className="terminal-line"><span className="terminal-prompt">john@portfolio:{displayShellPath(entry.cwd)}$</span><span className="terminal-command">{entry.command}</span></div>
             {entry.output && <div className={`terminal-output ${entry.error ? 'terminal-error' : ''}`} onPointerDown={(event) => event.stopPropagation()}>{entry.output}</div>}
             {entry.command.toLowerCase() === 'help' && (
               <div className="terminal-examples" aria-label="Example terminal commands">
@@ -1615,8 +1743,13 @@ function TerminalWindow({
           </div>
         ))}
         <form className="terminal-form" onSubmit={submitCommand}>
-          <span className="terminal-prompt">fes@studio:{displayShellPath(cwd)}$</span>
-          <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => { setCommand(event.target.value); setHistoryIndex(null); }} onKeyDown={handleInputKeyDown} aria-label="Terminal command" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" spellCheck={false} />
+          <span className="terminal-prompt">john@portfolio:{displayShellPath(cwd)}$</span>
+          <div className="terminal-input-group">
+            <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => { setCommand(event.target.value); setHistoryIndex(null); }} onKeyDown={handleInputKeyDown} aria-label="Terminal command" aria-describedby="terminal-prediction" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" spellCheck={false} />
+            <span id="terminal-prediction" className="terminal-prediction" aria-live="polite" data-testid="terminal-prediction">
+              {predictedCommand && predictedCommand !== command ? <><kbd>Tab</kbd><span aria-hidden="true"> → </span>{predictedCommand}</> : 'Type a command to see a prediction.'}
+            </span>
+          </div>
         </form>
       </div>
     </WindowFrame>
@@ -2795,7 +2928,7 @@ function Home() {
       <header className="system-bar">
         <div className="system-left">
           <Apple className="system-logo" size={14} strokeWidth={1.8} aria-hidden="true" />
-          <span className="system-mark">FES.OS</span>
+          <span className="system-mark">PORTFOLIO.OS</span>
           <span className="system-separator">/</span>
           <span className="system-location">Seattle, WA</span>
           <span className="system-separator">/</span>

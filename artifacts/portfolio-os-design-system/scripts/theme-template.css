@@ -1,0 +1,713 @@
+/* GENERATED FROM tokens.json BY scripts/build-tokens.mjs -- DO NOT EDIT.
+ * Edit tokens.json instead; the dev server regenerates this file on change. */
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+/* Register this package's own components so any consumer that imports this
+ * stylesheet (via `@import "<pkg>/styles.css"`) gets their utility classes
+ * generated -- Tailwind does not scan node_modules by default. Resolved
+ * relative to this file, so it points at this package's components whether it
+ * runs in the design system's own preview or inside a consuming app/sandbox. */
+@source "./components";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-primary-border: var(--sidebar-primary-border);
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-accent-border: var(--sidebar-accent-border);
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: calc(1 / 0.75);
+  --text-sm: 0.875rem;
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-base: 1rem;
+  --text-base--line-height: calc(1.5 / 1);
+  --text-lg: 1.125rem;
+  --text-lg--line-height: calc(1.75 / 1.125);
+  --text-xl: 1.25rem;
+  --text-xl--line-height: calc(1.75 / 1.25);
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: calc(2 / 1.5);
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: calc(2.25 / 1.875);
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: calc(2.5 / 2.25);
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 1;
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 1;
+  --text-7xl: 4.5rem;
+  --text-7xl--line-height: 1;
+  --text-8xl: 6rem;
+  --text-8xl--line-height: 1;
+  --text-9xl: 8rem;
+  --text-9xl--line-height: 1;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* LIGHT MODE */
+:root {
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+
+  /* Automatic computation of border around primary / danger buttons */
+  --opaque-button-border-intensity: -8; /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
+
+  --background: __DS_LIGHT_BACKGROUND__;
+  --foreground: __DS_LIGHT_FOREGROUND__;
+  --border: __DS_LIGHT_BORDER__;
+  --card: __DS_LIGHT_CARD__;
+  --card-foreground: __DS_LIGHT_CARDFOREGROUND__;
+  --sidebar: __DS_LIGHT_SIDEBAR__;
+  --sidebar-foreground: __DS_LIGHT_SIDEBARFOREGROUND__;
+  --sidebar-border: __DS_LIGHT_SIDEBARBORDER__;
+  --sidebar-primary: __DS_LIGHT_SIDEBARPRIMARY__;
+  --sidebar-primary-foreground: __DS_LIGHT_SIDEBARPRIMARYFOREGROUND__;
+  --sidebar-accent: __DS_LIGHT_SIDEBARACCENT__;
+  --sidebar-accent-foreground: __DS_LIGHT_SIDEBARACCENTFOREGROUND__;
+  --sidebar-ring: __DS_LIGHT_SIDEBARRING__;
+  --popover: __DS_LIGHT_POPOVER__;
+  --popover-foreground: __DS_LIGHT_POPOVERFOREGROUND__;
+  --primary: __DS_LIGHT_PRIMARY__;
+  --primary-foreground: __DS_LIGHT_PRIMARYFOREGROUND__;
+  --secondary: __DS_LIGHT_SECONDARY__;
+  --secondary-foreground: __DS_LIGHT_SECONDARYFOREGROUND__;
+  --muted: __DS_LIGHT_MUTED__;
+  --muted-foreground: __DS_LIGHT_MUTEDFOREGROUND__;
+  --accent: __DS_LIGHT_ACCENT__;
+  --accent-foreground: __DS_LIGHT_ACCENTFOREGROUND__;
+  --destructive: __DS_LIGHT_DESTRUCTIVE__;
+  --destructive-foreground: __DS_LIGHT_DESTRUCTIVEFOREGROUND__;
+  --input: __DS_LIGHT_INPUT__;
+  --ring: __DS_LIGHT_RING__;
+  --chart-1: __DS_LIGHT_CHART1__;
+  --chart-2: __DS_LIGHT_CHART2__;
+  --chart-3: __DS_LIGHT_CHART3__;
+  --chart-4: __DS_LIGHT_CHART4__;
+  --chart-5: __DS_LIGHT_CHART5__;
+
+  --app-font-sans: __DS_FONT_SANS__;
+  --app-font-serif: __DS_FONT_SERIF__;
+  --app-font-mono: __DS_FONT_MONO__;
+  --radius: __DS_RADIUS__;
+  --spacing: __DS_SPACING__;
+
+  /* Computed contrast borders (fallback then modern color-mix syntax). */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  --card-border: hsl(var(--card));
+  --popover-border: hsl(var(--popover));
+}
+
+.dark {
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+
+  --opaque-button-border-intensity: 9;  /* In terms of percentages */
+
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+
+  --background: __DS_DARK_BACKGROUND__;
+  --foreground: __DS_DARK_FOREGROUND__;
+  --border: __DS_DARK_BORDER__;
+  --card: __DS_DARK_CARD__;
+  --card-foreground: __DS_DARK_CARDFOREGROUND__;
+  --sidebar: __DS_DARK_SIDEBAR__;
+  --sidebar-foreground: __DS_DARK_SIDEBARFOREGROUND__;
+  --sidebar-border: __DS_DARK_SIDEBARBORDER__;
+  --sidebar-primary: __DS_DARK_SIDEBARPRIMARY__;
+  --sidebar-primary-foreground: __DS_DARK_SIDEBARPRIMARYFOREGROUND__;
+  --sidebar-accent: __DS_DARK_SIDEBARACCENT__;
+  --sidebar-accent-foreground: __DS_DARK_SIDEBARACCENTFOREGROUND__;
+  --sidebar-ring: __DS_DARK_SIDEBARRING__;
+  --popover: __DS_DARK_POPOVER__;
+  --popover-foreground: __DS_DARK_POPOVERFOREGROUND__;
+  --primary: __DS_DARK_PRIMARY__;
+  --primary-foreground: __DS_DARK_PRIMARYFOREGROUND__;
+  --secondary: __DS_DARK_SECONDARY__;
+  --secondary-foreground: __DS_DARK_SECONDARYFOREGROUND__;
+  --muted: __DS_DARK_MUTED__;
+  --muted-foreground: __DS_DARK_MUTEDFOREGROUND__;
+  --accent: __DS_DARK_ACCENT__;
+  --accent-foreground: __DS_DARK_ACCENTFOREGROUND__;
+  --destructive: __DS_DARK_DESTRUCTIVE__;
+  --destructive-foreground: __DS_DARK_DESTRUCTIVEFOREGROUND__;
+  --input: __DS_DARK_INPUT__;
+  --ring: __DS_DARK_RING__;
+  --chart-1: __DS_DARK_CHART1__;
+  --chart-2: __DS_DARK_CHART2__;
+  --chart-3: __DS_DARK_CHART3__;
+  --chart-4: __DS_DARK_CHART4__;
+  --chart-5: __DS_DARK_CHART5__;
+
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  --card-border: hsl(var(--card));
+  --popover-border: hsl(var(--popover));
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY / USER-PREFERENCE STATE CONTRACTS
+   ==========================================================================
+   These rules are authored here — in the design-system template — so that any
+   app importing the package stylesheet automatically inherits them. The
+   consuming app only has to set/remove the data-attribute on the shell element
+   (e.g. document.documentElement); the CSS here does the rest.
+
+   Attribute authoring pattern (consuming app):
+     document.documentElement.setAttribute('data-always-scrollbars', '');
+     document.documentElement.removeAttribute('data-always-scrollbars');
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. FIXED PALETTE CUSTOM PROPERTIES
+   Generated from color.fixed in tokens.json. DO NOT edit hex values here;
+   edit tokens.json and re-run scripts/build-tokens.mjs.
+
+   Two vars per fixed token:
+     --fixed-*      raw hex — for direct use in backgrounds, previews, style objects
+     --fixed-*-hsl  H S% L% channels — for assignment into semantic hsl() vars
+
+   The raw hex vars are also exposed under the legacy short names used by
+   contrast-theme rules and component previews (--contrast-*, --hc-*).
+   -------------------------------------------------------------------------- */
+:root {
+  /* Wallpaper presets */
+  --fixed-wallpaper-light:              __DS_FIXED_WALLPAPERLIGHTDEFAULT_HEX__;
+  --fixed-wallpaper-light-hsl:          __DS_FIXED_WALLPAPERLIGHTDEFAULT_HSL__;
+  --fixed-wallpaper-dark:               __DS_FIXED_WALLPAPERDARKDEFAULT_HEX__;
+  --fixed-wallpaper-dark-hsl:           __DS_FIXED_WALLPAPERDARKDEFAULT_HSL__;
+
+  /* Low-contrast palette — raw hex (for previews / direct backgrounds) */
+  --contrast-bg:                        __DS_FIXED_LOWCONTRASTBG_HEX__;
+  --contrast-surface:                   __DS_FIXED_LOWCONTRASTSURFACE_HEX__;
+  --contrast-surface-2:                 __DS_FIXED_LOWCONTRASTSURFACE2_HEX__;
+  --contrast-text:                      __DS_FIXED_LOWCONTRASTTEXT_HEX__;
+  --contrast-text-muted:                __DS_FIXED_LOWCONTRASTTEXTMUTED_HEX__;
+  --contrast-accent:                    __DS_FIXED_LOWCONTRASTACCENT_HEX__;
+
+  /* Low-contrast palette — HSL channels (for semantic variable assignment) */
+  --contrast-bg-hsl:                    __DS_FIXED_LOWCONTRASTBG_HSL__;
+  --contrast-surface-hsl:               __DS_FIXED_LOWCONTRASTSURFACE_HSL__;
+  --contrast-surface-2-hsl:             __DS_FIXED_LOWCONTRASTSURFACE2_HSL__;
+  --contrast-text-hsl:                  __DS_FIXED_LOWCONTRASTTEXT_HSL__;
+  --contrast-text-muted-hsl:            __DS_FIXED_LOWCONTRASTTEXTMUTED_HSL__;
+  --contrast-accent-hsl:                __DS_FIXED_LOWCONTRASTACCENT_HSL__;
+
+  /* High-contrast palette — raw hex */
+  --hc-bg:                              __DS_FIXED_HIGHCONTRASTBG_HEX__;
+  --hc-surface:                         __DS_FIXED_HIGHCONTRASTSURFACE_HEX__;
+  --hc-surface-2:                       __DS_FIXED_HIGHCONTRASTSURFACE2_HEX__;
+  --hc-text:                            __DS_FIXED_HIGHCONTRASTTEXT_HEX__;
+  --hc-text-muted:                      __DS_FIXED_HIGHCONTRASTTEXTMUTED_HEX__;
+  --hc-accent:                          __DS_FIXED_HIGHCONTRASTACCENT_HEX__;
+  --hc-accent-alt:                      __DS_FIXED_HIGHCONTRASTACCENTALT_HEX__;
+  --hc-border:                          __DS_FIXED_HIGHCONTRASTBORDER_HEX__;
+  --hc-focus:                           __DS_FIXED_HIGHCONTRASTFOCUS_HEX__;
+
+  /* High-contrast palette — HSL channels */
+  --hc-bg-hsl:                          __DS_FIXED_HIGHCONTRASTBG_HSL__;
+  --hc-surface-hsl:                     __DS_FIXED_HIGHCONTRASTSURFACE_HSL__;
+  --hc-surface-2-hsl:                   __DS_FIXED_HIGHCONTRASTSURFACE2_HSL__;
+  --hc-text-hsl:                        __DS_FIXED_HIGHCONTRASTTEXT_HSL__;
+  --hc-text-muted-hsl:                  __DS_FIXED_HIGHCONTRASTTEXTMUTED_HSL__;
+  --hc-accent-hsl:                      __DS_FIXED_HIGHCONTRASTACCENT_HSL__;
+  --hc-accent-alt-hsl:                  __DS_FIXED_HIGHCONTRASTACCENTALT_HSL__;
+  --hc-border-hsl:                      __DS_FIXED_HIGHCONTRASTBORDER_HSL__;
+  --hc-focus-hsl:                       __DS_FIXED_HIGHCONTRASTFOCUS_HSL__;
+}
+
+/* --------------------------------------------------------------------------
+   2. WINDOW SCROLLBARS  .portfolio-scrollbar-window + [data-always-scrollbars]
+   Scrollbar tracks remain transparent. Thumbs fade in while the pointer is
+   over a window or keyboard focus is inside it. The shell attribute keeps the
+   same styled thumbs visible without replacing them with system-gray tracks.
+   -------------------------------------------------------------------------- */
+.portfolio-scrollbar-window {
+  --portfolio-scrollbar-thumb: transparent;
+  --portfolio-scrollbar-thumb-visible: hsl(var(--muted-foreground) / 0.45);
+  --portfolio-scrollbar-thumb-hover: hsl(var(--muted-foreground) / 0.65);
+}
+.portfolio-scrollbar-window:hover,
+.portfolio-scrollbar-window:focus-within,
+[data-always-scrollbars] .portfolio-scrollbar-window {
+  --portfolio-scrollbar-thumb: var(--portfolio-scrollbar-thumb-visible);
+}
+@supports (-moz-appearance: none) {
+  .portfolio-scrollbar-window,
+  .portfolio-scrollbar-window * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--portfolio-scrollbar-thumb) transparent;
+  }
+}
+.portfolio-scrollbar-window *::-webkit-scrollbar {
+  width: 6px;
+  height: 4px;
+}
+.portfolio-scrollbar-window *::-webkit-scrollbar-button,
+.portfolio-scrollbar-window *::-webkit-scrollbar-button:single-button,
+.portfolio-scrollbar-window *::-webkit-scrollbar-button:vertical:decrement,
+.portfolio-scrollbar-window *::-webkit-scrollbar-button:vertical:increment,
+.portfolio-scrollbar-window *::-webkit-scrollbar-button:horizontal:decrement,
+.portfolio-scrollbar-window *::-webkit-scrollbar-button:horizontal:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.portfolio-scrollbar-window *::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 9999px;
+}
+.portfolio-scrollbar-window *::-webkit-scrollbar-thumb {
+  background-color: var(--portfolio-scrollbar-thumb);
+  border-right: 2px solid transparent;
+  border-radius: 9999px;
+  background-clip: padding-box;
+  transition: background-color 180ms ease;
+}
+.portfolio-scrollbar-window *::-webkit-scrollbar-thumb:hover {
+  background-color: var(--portfolio-scrollbar-thumb-hover);
+}
+
+.portfolio-settings-slider-control::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    hsl(var(--primary)) 0 var(--slider-progress),
+    hsl(var(--primary) / 0.22) var(--slider-progress) 100%
+  );
+  transform: translateY(-50%);
+  content: "";
+  pointer-events: none;
+}
+
+.portfolio-settings-slider-control::after {
+  position: absolute;
+  top: 50%;
+  left: var(--slider-thumb-left);
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  box-shadow: 0 1px 3px hsl(var(--foreground) / 0.28);
+  transform: translateY(-50%);
+  content: "";
+  pointer-events: none;
+}
+
+.portfolio-settings-slider-control:focus-within {
+  border-radius: 4px;
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   3. TRANSLUCENT SURFACE UTILITY CLASS  .portfolio-surface-translucent
+   Apply this class to any window, dock, or menu surface that should carry
+   adjustable transparency. The class itself uses the CSS variable
+   --accessibility-transparency (a unitless alpha in [0, 0.7]) set by the
+   consuming app. Blur is controlled independently by --surface-blur and
+   data-no-blur. When data-no-transparency is present, the background becomes
+   fully opaque without changing the stored blur preference.
+
+   Usage in components: add `portfolio-surface-translucent` alongside bg-* classes.
+   The consuming app sets --accessibility-transparency on :root.
+   -------------------------------------------------------------------------- */
+
+/* Default: moderately translucent (matches the variable's declared fallback). */
+.portfolio-surface-translucent {
+  --accessibility-transparency: 0.2;
+  background-color: hsl(var(--card) / calc(1 - var(--accessibility-transparency)));
+  backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
+}
+
+/* Consuming app enables transparency and sets the desired level */
+[data-transparency-enabled] .portfolio-surface-translucent {
+  background-color: hsl(var(--card) / calc(1 - var(--accessibility-transparency, 0.2)));
+  backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
+}
+
+/* Consuming app disables transparency — fully opaque */
+[data-no-transparency] .portfolio-surface-translucent {
+  background-color: hsl(var(--card));
+}
+
+/* Blur is an independent accessibility preference. */
+[data-no-blur] .portfolio-surface-translucent {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* --------------------------------------------------------------------------
+   4. MOTION CONTRACTS
+   Values and semantics align with the desktop-portfolio implementation.
+   -------------------------------------------------------------------------- */
+
+/* 4a. No animations — durations collapsed to near-zero; events still fire */
+[data-no-animations] *,
+[data-no-animations] *::before,
+[data-no-animations] *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0.001ms !important;
+}
+
+/* 4b. Fast-UI — prioritise immediate interaction feedback: animation and
+   transition fully disabled, smooth scrolling removed.
+   scroll-behavior on the element; animation/transition on all descendants. */
+[data-fast-ui],
+[data-fast-ui] *,
+[data-fast-ui] *::before,
+[data-fast-ui] *::after {
+  scroll-behavior: auto !important;
+  animation: none !important;
+  transition: none !important;
+  transition-delay: 0s !important;
+}
+
+/* 4c. Slower speed — approximately 2× normal durations */
+[data-anim-speed="less"] *,
+[data-anim-speed="less"] *::before,
+[data-anim-speed="less"] *::after {
+  animation-duration: 2s !important;
+  transition-duration: 0.6s !important;
+}
+
+/* 4d. Faster speed — approximately 0.4× normal durations */
+[data-anim-speed="more"] *,
+[data-anim-speed="more"] *::before,
+[data-anim-speed="more"] *::after {
+  animation-duration: 0.4s !important;
+  transition-duration: 0.12s !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. CONTRAST THEMES
+   Re-maps ALL semantic CSS variables (consumed as hsl(var(--x)) etc.) to
+   fixed-palette HSL channel vars so no standard-theme color can leak through
+   any package component — including Button destructive/accent variants, Charts,
+   Sidebar, and interactive accent utilities.
+
+   Assignment decisions:
+   LOW — desaturated blue-grey palette. Vivid accent/destructive replaced by
+         --contrast-accent (muted blue-grey). Charts collapsed to one muted
+         accent to avoid vivid color pop. Sidebar-primary acts like primary.
+   HIGH — black/white/yellow. All interactive accent and destructive roles map
+         to --hc-accent (yellow, 19.6:1 on black). Charts use hc-accent for
+         primary and hc-accent-alt (cyan) for secondary; remaining chart slots
+         use hc-text to remain distinct without adding colour. Sidebar-primary
+         maps to hc-accent so sidebar active items are clearly highlighted.
+
+   No new tokens.json entries are needed — all roles map to existing palette.
+
+   All --*-hsl vars are generated from tokens.json by build-tokens.mjs.
+   -------------------------------------------------------------------------- */
+
+/* 5a. Low contrast */
+[data-contrast="low"] {
+  /* Core surface / text */
+  --background:                  var(--contrast-bg-hsl);
+  --foreground:                  var(--contrast-text-hsl);
+  --card:                        var(--contrast-surface-hsl);
+  --card-foreground:             var(--contrast-text-hsl);
+  --popover:                     var(--contrast-surface-hsl);
+  --popover-foreground:          var(--contrast-text-hsl);
+  --muted:                       var(--contrast-surface-2-hsl);
+  --muted-foreground:            var(--contrast-text-muted-hsl);
+  --border:                      var(--contrast-surface-2-hsl);
+  --input:                       var(--contrast-surface-2-hsl);
+
+  /* Primary */
+  --primary:                     var(--contrast-accent-hsl);
+  --primary-foreground:          var(--contrast-bg-hsl);
+
+  /* Accent — replace vivid colour with muted blue-grey */
+  --accent:                      var(--contrast-accent-hsl);
+  --accent-foreground:           var(--contrast-bg-hsl);
+
+  /* Destructive — remove vivid red; use muted accent so it remains distinct
+     from text but does not create a harsh visual pop */
+  --destructive:                 var(--contrast-accent-hsl);
+  --destructive-foreground:      var(--contrast-bg-hsl);
+
+  /* Ring / focus */
+  --ring:                        var(--contrast-accent-hsl);
+
+  /* Charts — collapse all five to the single muted accent to avoid vivid pops */
+  --chart-1:                     var(--contrast-accent-hsl);
+  --chart-2:                     var(--contrast-accent-hsl);
+  --chart-3:                     var(--contrast-accent-hsl);
+  --chart-4:                     var(--contrast-accent-hsl);
+  --chart-5:                     var(--contrast-accent-hsl);
+
+  /* Sidebar */
+  --sidebar:                     var(--contrast-bg-hsl);
+  --sidebar-foreground:          var(--contrast-text-hsl);
+  --sidebar-border:              var(--contrast-surface-2-hsl);
+  --sidebar-primary:             var(--contrast-accent-hsl);
+  --sidebar-primary-foreground:  var(--contrast-bg-hsl);
+  --sidebar-accent:              var(--contrast-surface-2-hsl);
+  --sidebar-accent-foreground:   var(--contrast-text-hsl);
+  --sidebar-ring:                var(--contrast-accent-hsl);
+}
+
+/* Translucent surfaces become fully opaque under low contrast —
+   contrast palette colors are defined as solid colors and must not be
+   reduced in opacity by backdrop-filter alpha. */
+[data-contrast="low"] .portfolio-surface-translucent {
+  background-color: hsl(var(--card));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* 5b. High contrast */
+[data-contrast="high"] {
+  /* Core surface / text */
+  --background:                  var(--hc-bg-hsl);
+  --foreground:                  var(--hc-text-hsl);
+  --card:                        var(--hc-surface-hsl);
+  --card-foreground:             var(--hc-text-hsl);
+  --popover:                     var(--hc-surface-hsl);
+  --popover-foreground:          var(--hc-text-hsl);
+  --muted:                       var(--hc-surface-2-hsl);
+  --muted-foreground:            var(--hc-text-muted-hsl);
+  --border:                      var(--hc-border-hsl);
+  --input:                       var(--hc-surface-2-hsl);
+
+  /* Primary */
+  --primary:                     var(--hc-accent-hsl);
+  --primary-foreground:          var(--hc-bg-hsl);
+
+  /* Accent — yellow on black for maximum visibility */
+  --accent:                      var(--hc-accent-hsl);
+  --accent-foreground:           var(--hc-bg-hsl);
+
+  /* Destructive — no red in high contrast; yellow is the single vivid signal */
+  --destructive:                 var(--hc-accent-hsl);
+  --destructive-foreground:      var(--hc-bg-hsl);
+
+  /* Ring / focus */
+  --ring:                        var(--hc-focus-hsl);
+
+  /* Charts — yellow primary, cyan secondary, white for remaining three.
+     Three distinct values (yellow/cyan/white) on black — all safe contrast. */
+  --chart-1:                     var(--hc-accent-hsl);
+  --chart-2:                     var(--hc-accent-alt-hsl);
+  --chart-3:                     var(--hc-text-hsl);
+  --chart-4:                     var(--hc-text-hsl);
+  --chart-5:                     var(--hc-text-hsl);
+
+  /* Sidebar */
+  --sidebar:                     var(--hc-bg-hsl);
+  --sidebar-foreground:          var(--hc-text-hsl);
+  --sidebar-border:              var(--hc-border-hsl);
+  --sidebar-primary:             var(--hc-accent-hsl);
+  --sidebar-primary-foreground:  var(--hc-bg-hsl);
+  --sidebar-accent:              var(--hc-surface-2-hsl);
+  --sidebar-accent-foreground:   var(--hc-text-hsl);
+  --sidebar-ring:                var(--hc-focus-hsl);
+}
+
+/* Translucent surfaces become fully opaque under high contrast —
+   pure-black backgrounds must not be diluted by backdrop-filter alpha.
+   The package forces this directly so the consuming app does not have
+   to also set data-no-transparency when a contrast theme is active. */
+[data-contrast="high"] .portfolio-surface-translucent {
+  background-color: hsl(var(--card));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* High-contrast: all focus rings become 3px yellow for maximum visibility */
+[data-contrast="high"] *:focus-visible {
+  outline: 3px solid var(--hc-focus) !important;
+  outline-offset: 2px !important;
+}
+
+@layer utilities {
+  /* Hide ugly search cancel button in Chrome until we can style it properly */
+  input[type="search"]::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+
+  /* Placeholder styling for contentEditable div */
+  [contenteditable][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+  }
+
+  .no-default-hover-elevate {}
+
+  .no-default-active-elevate {}
+
+  .toggle-elevate::before,
+  .toggle-elevate-2::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    border-radius: inherit;
+    z-index: -1;
+  }
+
+  .toggle-elevate.toggle-elevated::before {
+    background-color: var(--elevate-2);
+  }
+
+  .border.toggle-elevate::before {
+    inset: -1px;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate),
+  .active-elevate:not(.no-default-active-elevate),
+  .hover-elevate-2:not(.no-default-hover-elevate),
+  .active-elevate-2:not(.no-default-active-elevate) {
+    position: relative;
+    z-index: 0;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate)::after,
+  .active-elevate:not(.no-default-active-elevate)::after,
+  .hover-elevate-2:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:not(.no-default-active-elevate)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    border-radius: inherit;
+    z-index: 999;
+  }
+
+  .hover-elevate:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-1);
+  }
+
+  .hover-elevate-2:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-2);
+  }
+
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate-2:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
+    inset: -1px;
+  }
+}

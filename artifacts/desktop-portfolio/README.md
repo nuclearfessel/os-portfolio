@@ -1,6 +1,6 @@
-# Fes OS Desktop Portfolio
+# Portfolio OS Desktop Portfolio
 
-A responsive, static React portfolio for Fes Naqvi presented as a desktop operating system.
+A responsive, static React portfolio for John Doe presented as a desktop operating system.
 
 ## Features
 
@@ -19,10 +19,10 @@ The saved default is a complete workspace snapshot. It includes positions, sizes
 
 The virtual `~/selected-work` directory contains:
 
-- `cedar-rei-ds.md`
-- `intuitive-digital-ds.md`
-- `simnow-2-ds.md`
-- `win10-lang-installer.md`
+- `northstar-commerce-system.md`
+- `signal-operations-platform.md`
+- `mosaic-health-toolkit.md`
+- `fieldnote-collaboration-kit.md`
 
 ## Development
 

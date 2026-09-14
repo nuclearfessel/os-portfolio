@@ -1,6 +1,6 @@
-# Fes OS Desktop Portfolio
+# Portfolio OS Desktop Portfolio
 
-Fes Naqvi’s static React portfolio presents selected work inside a responsive desktop operating-system interface.
+John Doe’s static React portfolio presents selected work inside a responsive desktop operating-system interface.
 
 ## Run and validate
 
@@ -20,7 +20,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 ## Stack
 
 - React, Vite, and TypeScript in a pnpm workspace
-- Shared UI package: `@workspace/fes-os-design-system`
+- Shared UI package: `@workspace/portfolio-os-design-system`
 - Browser-local persistence; no backend or database dependency
 - Playwright interaction and responsive-layout coverage
 - Static production output with relative asset URLs
@@ -31,7 +31,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - `artifacts/desktop-portfolio/src/index.css` — responsive presentation, themes, and motion
 - `artifacts/desktop-portfolio/tests/` — persistence, interaction, responsive, and contrast checks
 - `artifacts/desktop-portfolio/dist/public/` — generated upload-ready static site
-- `artifacts/fes-os-design-system/` — shared tokens and visual primitives
+- `artifacts/portfolio-os-design-system/` — shared tokens and visual primitives
 - `CLAUDE.md` — concise collaborator instructions
 - `.claude/skills/desktop-portfolio/SKILL.md` — portfolio maintenance rules
 - `.claude/skills/ftp-release/SKILL.md` — static release procedure
@@ -53,7 +53,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - Commit only after the user gives explicit approval.
 - Merge the approved branch into `main` only after that approval, then push `main`.
 
-- Build strictly on `artifacts/fes-os-design-system`; do not invent replacement tokens or duplicate shared primitives.
+- Build strictly on `artifacts/portfolio-os-design-system`; do not invent replacement tokens or duplicate shared primitives.
 - Keep launchers and their corresponding windows under separate position identities.
 - Do not persist temporary tablet or mobile geometry as desktop geometry.
 - Keep production asset URLs relative for nested static and FTP hosting.

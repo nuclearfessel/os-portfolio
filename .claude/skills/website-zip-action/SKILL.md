@@ -48,9 +48,9 @@ Before asking for user approval, run:
 ```bash
 pnpm --filter @workspace/desktop-portfolio run typecheck
 pnpm --filter @workspace/desktop-portfolio run build
-rm -f /tmp/fes-os-website-validation.zip
-(cd artifacts/desktop-portfolio/dist/public && zip -qr /tmp/fes-os-website-validation.zip .)
-unzip -tq /tmp/fes-os-website-validation.zip
+rm -f /tmp/portfolio-os-website-validation.zip
+(cd artifacts/desktop-portfolio/dist/public && zip -qr /tmp/portfolio-os-website-validation.zip .)
+unzip -tq /tmp/portfolio-os-website-validation.zip
 bash scripts/package-claude-source.sh /tmp/claude-src-pack.zip
 unzip -tq /tmp/claude-src-pack.zip
 ```
@@ -58,7 +58,7 @@ unzip -tq /tmp/claude-src-pack.zip
 Inspect the site archive and confirm `index.html` is at its root. Inspect the Claude archive and confirm `DEPLOYMENT.md`, `public/index.html`, project source, and Claude skills are present:
 
 ```bash
-unzip -l /tmp/fes-os-website-validation.zip
+unzip -l /tmp/portfolio-os-website-validation.zip
 unzip -l /tmp/claude-src-pack.zip
 ```
 

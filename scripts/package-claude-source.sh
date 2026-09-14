@@ -25,7 +25,7 @@ copy_source() {
 }
 
 copy_source artifacts/desktop-portfolio/
-copy_source artifacts/fes-os-design-system/
+copy_source artifacts/portfolio-os-design-system/
 copy_source .claude/
 copy_source docs/
 

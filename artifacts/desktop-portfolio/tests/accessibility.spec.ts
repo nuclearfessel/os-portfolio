@@ -6,8 +6,8 @@
  */
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'fes-os.desktop.v4';
-const defaultStorageKey = 'fes-os.desktop.default.v1';
+const storageKey = 'portfolio-os.desktop.v4';
+const defaultStorageKey = 'portfolio-os.desktop.default.v1';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 

@@ -84,6 +84,6 @@ jobs:
               "$SITE_ZIP" \
               "$CLAUDE_ZIP" \
               --target "$GITHUB_SHA" \
-              --title "Fes OS packages ${RELEASE_VERSION}" \
+              --title "Portfolio OS packages ${RELEASE_VERSION}" \
               --notes "$release_notes"
           fi

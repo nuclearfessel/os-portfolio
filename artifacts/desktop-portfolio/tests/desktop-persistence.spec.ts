@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'fes-os.desktop.v4';
-const defaultStorageKey = 'fes-os.desktop.default.v1';
+const storageKey = 'portfolio-os.desktop.v4';
+const defaultStorageKey = 'portfolio-os.desktop.default.v1';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -61,6 +61,60 @@ test.beforeEach(async ({ page }) => {
     localStorage.removeItem(savedDefaultKey);
   }, [storageKey, defaultStorageKey]);
   await page.reload();
+});
+
+test('migrates legacy persisted intro names in the current desktop state', async ({ page }) => {
+  await page.evaluate(([key, value]) => localStorage.setItem(key, JSON.stringify(value)), [
+    storageKey,
+    {
+      introCustomization: {
+        text: {
+          primary: 'Joe Doe designs',
+          accent: 'Fes Naqvi builds',
+          body: 'Joe Doe and Fes Naqvi make thoughtful systems.',
+        },
+      },
+    },
+  ]);
+  await page.reload();
+
+  await expect(page.locator('.desktop-intro h1')).toContainText('John Doe designs');
+  await expect(page.locator('.desktop-intro h1')).toContainText('John Doe builds');
+  await expect(page.locator('.desktop-intro p')).toHaveText('John Doe and John Doe make thoughtful systems.');
+  await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey))
+    .toMatchObject({
+      introCustomization: {
+        text: {
+          primary: 'John Doe designs',
+          accent: 'John Doe builds',
+          body: 'John Doe and John Doe make thoughtful systems.',
+        },
+      },
+    });
+});
+
+test('migrates legacy persisted intro names in the saved default state', async ({ page }) => {
+  await page.evaluate(([key, value]) => localStorage.setItem(key, JSON.stringify(value)), [
+    defaultStorageKey,
+    {
+      introCustomization: {
+        text: {
+          primary: 'Fes Naqvi designs',
+          accent: 'Joe Doe builds',
+          body: 'Fes Naqvi and Joe Doe make thoughtful systems.',
+        },
+      },
+    },
+  ]);
+  await page.reload();
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
+  await page.getByTestId('button-confirm-reset').click();
+
+  await expect(page.locator('.desktop-intro h1')).toContainText('John Doe designs');
+  await expect(page.locator('.desktop-intro h1')).toContainText('John Doe builds');
+  await expect(page.locator('.desktop-intro p')).toHaveText('John Doe and John Doe make thoughtful systems.');
 });
 
 test('layers stickies above desktop content and below every window', async ({ page }) => {
@@ -342,11 +396,10 @@ test('lists work files with names that match the selected projects', async ({ pa
   await input.press('Enter');
 
   const output = page.getByTestId('window-terminal').locator('.terminal-output').last();
-  await expect(output).toContainText('cedar-rei-ds.md');
-  await expect(output).toContainText('intuitive-digital-ds.md');
-  await expect(output).toContainText('simnow-2-ds.md');
-  await expect(output).toContainText('win10-lang-installer.md');
-  await expect(output).not.toContainText('orbit-crm');
+  await expect(output).toContainText('fieldnote-collaboration-kit.md');
+  await expect(output).toContainText('mosaic-health-toolkit.md');
+  await expect(output).toContainText('northstar-commerce-system.md');
+  await expect(output).toContainText('signal-operations-platform.md');
 });
 
 test('About and Selected Work use distinct saturated application icons instead of folders', async ({ page }) => {
@@ -397,6 +450,29 @@ test('About and Selected Work use distinct saturated application icons instead o
     )),
   );
   expect(new Set(backgrounds).size).toBe(3);
+});
+
+test('Terminal predicts and completes commands, arguments, and paths with Tab', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('button-dock-terminal').click();
+
+  const input = page.getByTestId('input-terminal-command');
+  const prediction = page.getByTestId('terminal-prediction');
+
+  await input.fill('op');
+  await expect(prediction).toContainText('open');
+  await input.press('Tab');
+  await expect(input).toHaveValue('open');
+
+  await input.fill('open w');
+  await expect(prediction).toContainText('open work');
+  await input.press('Tab');
+  await expect(input).toHaveValue('open work');
+
+  await input.fill('cat ~/selected-work/north');
+  await expect(prediction).toContainText('northstar-commerce-system.md');
+  await input.press('Tab');
+  await expect(input).toHaveValue('cat ~/selected-work/northstar-commerce-system.md');
 });
 
 test('Contact uses a filled Remix mail-send icon with its own saturated app treatment', async ({ page }) => {
@@ -1121,7 +1197,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
       color: 'purple',
       text: "The best interfaces don\u2019t ask for attention. They earn trust, one tiny response at a time.",
       rotation: -9,
-      author: 'fes',
+      author: 'john',
       createdAt: '09:42',
     }, {
       id: 'sticky-1',
@@ -1374,17 +1450,32 @@ test('selected light and dark solid wallpaper colors persist in tablet and mobil
 
 test('desktop text personalization and theme-specific colors can be edited and persist', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-section-trigger-theme').click();
+  await page.getByTestId('settings-section-trigger-desktop-text').click();
   const settingsWindow = page.getByTestId('window-settings');
   const editor = settingsWindow.locator('.settings-intro-editor');
-  const itemHeights = () => editor.locator('.settings-intro-field').evaluateAll(
-    (items) => items.map((item) => item.getBoundingClientRect().height),
+  const capsuleSpacing = () => editor.locator('.settings-intro-field').evaluateAll(
+    (items) => items.map((item) => {
+      const style = getComputedStyle(item);
+      return {
+        top: style.paddingTop,
+        right: style.paddingRight,
+        bottom: style.paddingBottom,
+        left: style.paddingLeft,
+      };
+    }),
   );
-  const expectEqualItemHeights = async () => {
-    const heights = await itemHeights();
-    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
+  const expectSymmetricCapsuleSpacing = async () => {
+    const spacing = await capsuleSpacing();
+    expect(spacing).toHaveLength(3);
+    for (const padding of spacing) {
+      expect(padding.top).toBe(padding.left);
+      expect(padding.right).toBe(padding.left);
+      expect(padding.bottom).toBe(padding.left);
+    }
   };
   await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(3);
-  await expectEqualItemHeights();
+  await expectSymmetricCapsuleSpacing();
 
   const settingsBox = await settingsWindow.boundingBox();
   const resizeHandle = settingsWindow.locator('.window-resize-e');
@@ -1396,7 +1487,7 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await page.mouse.move(settingsBox!.x + 540, resizeBox!.y + resizeBox!.height / 2);
   await page.mouse.up();
   await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
-  await expectEqualItemHeights();
+  await expectSymmetricCapsuleSpacing();
 
   const primaryInput = page.getByTestId('settings-intro-primary-text');
   await primaryInput.fill('Interfaces with intent.');
@@ -1426,6 +1517,7 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await expect(primaryHeadline).toHaveCSS('color', 'rgb(254, 220, 186)');
 
   await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-section-trigger-theme').click();
   await page.getByTestId('settings-theme-light').click();
   await page.getByTestId('button-close-settings').click();
   await expect(primaryHeadline).toHaveCSS('color', 'rgb(18, 52, 86)');
@@ -1434,6 +1526,38 @@ test('desktop text personalization and theme-specific colors can be edited and p
   expect(saved.introCustomization.text.primary).toBe('Interfaces with intent.');
   expect(saved.introCustomization.colors.light.primary).toBe('#123456');
   expect(saved.introCustomization.colors.dark.primary).toBe('#fedcba');
+});
+
+test('settings sections collapse independently and allow multiple sections to stay open', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+
+  const theme = page.getByTestId('settings-section-trigger-theme');
+  const desktopText = page.getByTestId('settings-section-trigger-desktop-text');
+  const wallpaper = page.getByTestId('settings-section-trigger-wallpaper');
+
+  await expect(theme).toHaveAttribute('aria-expanded', 'false');
+  await expect(desktopText).toHaveAttribute('aria-expanded', 'false');
+  await expect(wallpaper).toHaveAttribute('aria-expanded', 'false');
+
+  await theme.click();
+  await desktopText.click();
+  await expect(theme).toHaveAttribute('aria-expanded', 'true');
+  await expect(desktopText).toHaveAttribute('aria-expanded', 'true');
+  await expect(wallpaper).toHaveAttribute('aria-expanded', 'false');
+
+  await theme.click();
+  await expect(theme).toHaveAttribute('aria-expanded', 'false');
+  await expect(desktopText).toHaveAttribute('aria-expanded', 'true');
+
+  await page.getByTestId('settings-nav-accessibility').click();
+  const display = page.getByTestId('settings-section-trigger-display');
+  const motion = page.getByTestId('settings-section-trigger-motion');
+  await expect(display).toHaveAttribute('aria-expanded', 'false');
+  await expect(motion).toHaveAttribute('aria-expanded', 'false');
+  await display.click();
+  await motion.click();
+  await expect(display).toHaveAttribute('aria-expanded', 'true');
+  await expect(motion).toHaveAttribute('aria-expanded', 'true');
 });
 
 test('solid color mode offers the original light and dark default color blocks', async ({ page }) => {

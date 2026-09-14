@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-const storageKey = 'fes-os.desktop.v4';
+const storageKey = 'portfolio-os.desktop.v4';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -295,13 +295,13 @@ test('light theme About, Contact, and case study windows meet WCAG AA contrast',
   const contactRepresentatives = [
     { name: 'Contact heading', locator: page.locator('.window.contact .window-body h2') },
     { name: 'Contact body copy', locator: page.locator('.window.contact .window-body p').first() },
-    { name: 'Contact email button', locator: page.getByTestId('link-email-fes') },
+    { name: 'Contact email button', locator: page.getByTestId('link-email-john') },
     { name: 'Contact email address', locator: page.locator('.window.contact .window-body p').last() },
   ];
 
   await page.getByTestId('button-dock-work').click();
   await page.getByTestId('button-open-project-01').click();
-  await expect(page.getByTestId('case-study-orbit')).toBeVisible();
+  await expect(page.getByTestId('case-study-01')).toBeVisible();
   const caseStudyRepresentatives = [
     { name: 'Case study back link', locator: page.getByTestId('button-back-to-work') },
     { name: 'Case study heading', locator: page.locator('.case-study h2') },
@@ -320,5 +320,29 @@ test('light theme About, Contact, and case study windows meet WCAG AA contrast',
       ratio,
       `${representative.name} contrast ${ratio.toFixed(2)}:1 should meet WCAG AA`,
     ).toBeGreaterThanOrEqual(4.5);
+  }
+});
+
+test('opens four distinct complete case studies from Selected Work', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('button-dock-work').click();
+
+  const studies = [
+    { id: '01', name: 'Northstar Commerce System' },
+    { id: '02', name: 'Signal Operations Platform' },
+    { id: '03', name: 'Mosaic Health Toolkit' },
+    { id: '04', name: 'Fieldnote Collaboration Kit' },
+  ];
+
+  for (const study of studies) {
+    await page.getByTestId(`button-open-project-${study.id}`).click();
+    const detail = page.getByTestId(`case-study-${study.id}`);
+    await expect(detail).toBeVisible();
+    await expect(detail.locator('.case-study-hero h2')).toHaveText(study.name);
+    await expect(detail.locator('.case-study-metrics > div')).toHaveCount(3);
+    await expect(detail.locator('.case-study-preview')).toBeVisible();
+    await expect(detail.locator('.case-study-sections section')).toHaveCount(3);
+    await page.getByTestId('button-back-to-work').click();
+    await expect(page.getByTestId('card-project-01')).toBeVisible();
   }
 });

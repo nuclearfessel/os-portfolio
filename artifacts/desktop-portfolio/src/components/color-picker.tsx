@@ -1,5 +1,5 @@
 /**
- * Custom accessible color picker for the Fes OS desktop.
+ * Custom accessible color picker for the Portfolio OS desktop.
  * No alpha channel. Supports HEX / RGB / HSV / HSL with bidirectional sync.
  */
 import {

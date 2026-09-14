@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Fes OS is a React/Vite static portfolio with browser-local workspace persistence and a shared React design-system package. A small Express service is configured under `/api`; its current production API exposes only a JSON health check and has no database-backed or user-account functionality. The design-system browser is a separate preview artifact, while the mockup sandbox is development-only. Deployment discovery for this scan found no active deployment, though configured production behavior remains in scope.
+Portfolio OS is a React/Vite static portfolio with browser-local workspace persistence and a shared React design-system package. A small Express service is configured under `/api`; its current production API exposes only a JSON health check and has no database-backed or user-account functionality. The design-system browser is a separate preview artifact, while the mockup sandbox is development-only. Deployment discovery for this scan found no active deployment, though configured production behavior remains in scope.
 
 ## Assets
 

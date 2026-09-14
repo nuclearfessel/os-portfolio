@@ -352,9 +352,9 @@ importers:
       '@workspace/api-client-react':
         specifier: workspace:*
         version: link:../../lib/api-client-react
-      '@workspace/fes-os-design-system':
+      '@workspace/portfolio-os-design-system':
         specifier: workspace:*
-        version: link:../fes-os-design-system
+        version: link:../portfolio-os-design-system
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -431,7 +431,7 @@ importers:
         specifier: 'catalog:'
         version: 4.6.2
 
-  artifacts/fes-os-design-system:
+  artifacts/portfolio-os-design-system:
     dependencies:
       '@hookform/resolvers':
         specifier: ^5.9.1

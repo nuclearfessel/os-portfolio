@@ -1,12 +1,12 @@
-# Fes OS Portfolio
+# Portfolio OS Portfolio
 
-A desktop-inspired portfolio for **Fes Naqvi**, built as an interactive operating-system workspace. The repository also contains the Fes OS design system that defines the portfolio’s visual language, components, accessibility contracts, and interaction patterns.
+A desktop-inspired portfolio for **John Doe**, built as an interactive operating-system workspace. The repository also contains the Portfolio OS design system that defines the portfolio’s visual language, components, accessibility contracts, and interaction patterns.
 
 ## Portfolio
 
-![Fes OS desktop portfolio](docs/images/fes-os-portfolio.jpg)
+![Portfolio OS desktop portfolio](docs/images/portfolio-os-portfolio.jpg)
 
-The portfolio presents Fes’s work through draggable and resizable application windows, desktop launchers, a responsive Dock, sticky notes, Terminal, Settings, contextual menus, and persistent workspace preferences.
+The portfolio presents John’s work through draggable and resizable application windows, desktop launchers, a responsive Dock, sticky notes, Terminal, Settings, contextual menus, and persistent workspace preferences.
 
 ### Highlights
 
@@ -18,15 +18,15 @@ The portfolio presents Fes’s work through draggable and resizable application 
 - Accessibility controls for contrast, transparency, animation, and scrollbars
 - Keyboard interactions and semantic ARIA states
 
-## Fes OS Design System
+## Portfolio OS Design System
 
-![Fes OS design system documentation](docs/images/fes-os-design-system.jpg)
+![Portfolio OS design system documentation](docs/images/portfolio-os-design-system.jpg)
 
 The living documentation site is built with the same tokens and components used by the portfolio. It includes:
 
 - Five visual and accessibility foundations
 - Public documentation for components used by the portfolio
-- A consolidated Fes OS primitives directory
+- A consolidated Portfolio OS primitives directory
 - Twelve composed interaction patterns
 - Interactive examples, specifications, usage guidance, and copyable source
 - Registered deep links for internal catalog pages that are not publicly surfaced
@@ -36,16 +36,16 @@ The living documentation site is built with the same tokens and components used 
 ```text
 artifacts/
 ├── desktop-portfolio/      # Interactive portfolio
-├── fes-os-design-system/   # Shared components, tokens, and living documentation
+├── portfolio-os-design-system/   # Shared components, tokens, and living documentation
 ├── api-server/             # Workspace API service
 └── mockup-sandbox/         # Design and component preview workspace
 docs/
 └── images/                 # Repository screenshots
 ```
 
-This is a pnpm workspace. Shared visual primitives belong to `@workspace/fes-os-design-system`; portfolio behavior and persistence remain in `@workspace/desktop-portfolio`.
+This is a pnpm workspace. Shared visual primitives belong to `@workspace/portfolio-os-design-system`; portfolio behavior and persistence remain in `@workspace/desktop-portfolio`.
 
-All resizable Fes OS windows with side navigation follow one responsive contract: when the window itself becomes narrow, the sidebar smoothly becomes a horizontal sub-navigation toolbar directly below the window toolbar without changing navigation order, state, or content geometry.
+All resizable Portfolio OS windows with side navigation follow one responsive contract: when the window itself becomes narrow, the sidebar smoothly becomes a horizontal sub-navigation toolbar directly below the window toolbar without changing navigation order, state, or content geometry.
 
 ## Development
 
@@ -69,7 +69,7 @@ pnpm --filter @workspace/desktop-portfolio run dev
 ### Run the design-system documentation
 
 ```bash
-pnpm --filter @workspace/fes-os-design-system run dev
+pnpm --filter @workspace/portfolio-os-design-system run dev
 ```
 
 ### Validate the workspace
@@ -100,10 +100,10 @@ Feature and maintenance branch pushes never create release packages or prereleas
 
 ## Design-system development
 
-Design tokens are defined in `artifacts/fes-os-design-system/tokens.json` and generated before design-system builds and type checks.
+Design tokens are defined in `artifacts/portfolio-os-design-system/tokens.json` and generated before design-system builds and type checks.
 
 ```bash
-pnpm --filter @workspace/fes-os-design-system run tokens
+pnpm --filter @workspace/portfolio-os-design-system run tokens
 ```
 
 New shared components and patterns should include:

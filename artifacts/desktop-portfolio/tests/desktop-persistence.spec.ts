@@ -325,8 +325,10 @@ test('About and Selected Work use distinct saturated application icons instead o
   const terminal = page.getByTestId('button-folder-terminal');
   const stickies = page.getByTestId('button-folder-stickies-app');
 
-  await expect(about.getByTestId('icon-about-circle-user')).toBeVisible();
-  await expect(page.getByTestId('icon-dock-about-circle-user')).toBeVisible();
+  await expect(about.getByTestId('icon-about-circle-user-fill')).toBeVisible();
+  await expect(about.getByTestId('icon-about-circle-user-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
+  await expect(page.getByTestId('icon-dock-about-circle-user-fill')).toBeVisible();
+  await expect(page.getByTestId('icon-dock-about-circle-user-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
   await expect(page.getByTestId('icon-stickies-bootstrap-fill')).toBeVisible();
   await expect(page.getByTestId('icon-dock-stickies-bootstrap-fill')).toBeVisible();
   await expect(terminal.getByTestId('icon-terminal-square')).toBeVisible();
@@ -349,6 +351,7 @@ test('About and Selected Work use distinct saturated application icons instead o
     return { background: style.backgroundImage, border: style.borderColor, color: style.color };
   });
   expect(stickiesDockStyle).toEqual(stickiesLauncherStyle);
+  expect(stickiesLauncherStyle.color).toBe('rgb(75, 35, 122)');
   await expect(about).toHaveClass(/desktop-app/);
   await expect(work).toHaveClass(/desktop-app/);
   await expect(about.locator('.desktop-app-icon')).toBeVisible();

@@ -329,7 +329,7 @@ button { cursor: pointer; }
 .dock.dock-left .dock-item:hover .dock-item-label-tooltip, .dock.dock-left .dock-item:focus-visible .dock-item-label-tooltip,
 .dock.dock-right .dock-item:hover .dock-item-label-tooltip, .dock.dock-right .dock-item:focus-visible .dock-item-label-tooltip { opacity: 1; transform: translate(0, -50%); }
 .mode-icon { position: relative !important; width: 20px; height: 20px; display: block; padding: 0 !important; overflow: visible; opacity: 1 !important; color: inherit; background: transparent !important; border: 0 !important; transform: none !important; }
-.mode-icon svg { position: absolute; inset: 0; display: block; transition: opacity .24s ease, transform .34s cubic-bezier(.2,.8,.2,1); }
+.mode-icon svg { position: absolute; inset: 0; display: block; transition: opacity .12s ease, transform .17s cubic-bezier(.2,.8,.2,1); }
 .mode-light .mode-sun { opacity: 1; transform: rotate(0deg) scale(1); }
 .mode-light .mode-moon { opacity: 0; transform: rotate(-55deg) scale(.35); }
 .mode-dark .mode-sun { opacity: 0; transform: rotate(80deg) scale(.35); }

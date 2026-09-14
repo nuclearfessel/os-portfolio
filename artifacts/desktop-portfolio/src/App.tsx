@@ -1125,7 +1125,7 @@ function SettingsWindow({
                         <>
                           <EffectSlider
                             id="personalization-window-transparency"
-                            label="Window transparency"
+                            label="Window & dock transparency"
                             value={accessibility.transparencyLevel}
                             onChange={(value) => updateAccessibility({ transparencyLevel: value })}
                             testId="settings-personalization-window-transparency"
@@ -2520,7 +2520,7 @@ function Home() {
     const usesLightText = selectedColor.foreground === 'light';
     return {
       ...(managedLayout ? {} : itemStyle(sticky.id)),
-      zIndex: stickyOnTop && activeStickyId === sticky.id ? 11 : 1,
+      zIndex: stickyOnTop && activeStickyId === sticky.id ? 5 : 4,
       '--sticky-bg': selectedColor.background,
       '--sticky-text': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-muted': usesLightText ? '#edf1f5' : '#37414d',
@@ -2766,9 +2766,9 @@ function Home() {
         bottom: dockPosition === 'bottom' ? 82 : 12,
         width: 'auto',
         height: 'auto',
-        zIndex: 4 + windowStack.indexOf(id),
+        zIndex: 10 + windowStack.indexOf(id),
       }
-      : { ...itemStyle(id), zIndex: 4 + windowStack.indexOf(id) },
+      : { ...itemStyle(id), zIndex: 10 + windowStack.indexOf(id) },
   });
 
   const wallpaperConfig = theme === 'light' ? wallpaperLight : wallpaperDark;

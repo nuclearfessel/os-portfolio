@@ -41,8 +41,9 @@ Mirror primary app identity in the Dock: use the same icon glyph and saturated
 color family for About, Selected Work, and Contact across desktop and managed
 workspace navigation.
 
-Selected Work uses a muted slate-indigo treatment rather than a high-saturation
-electric blue.
+App identity fills use softened, moderately saturated palettes rather than
+neon or highly saturated colors. Preserve distinct hues and sufficient icon
+contrast across About, Selected Work, Contact, Terminal, and Stickies.
 
 Contact uses Remix Icon's filled mail-send glyph in saturated red-orange on a
 warm-ivory tile with a matching red-orange border. Keep the same inverted

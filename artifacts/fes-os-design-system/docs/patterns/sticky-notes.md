@@ -47,6 +47,17 @@ Sticky notes are free-floating text/media surfaces on the desktop canvas. They e
 | Delete confirmation | Product (use `AlertDialog` for confirmation) |
 | Z-order | Product state |
 
+### Desktop stacking contract
+
+Keep every visible sticky in a bounded layer above wallpaper, solid fills,
+desktop intro text, images, and launchers, but below every open window. The
+active sticky may rise above other stickies only within that bounded layer; it
+must never overtake a window.
+
+Managed tablet and mobile layouts may replace overlapping layers with
+single-surface navigation. Preserve that navigation model rather than applying
+desktop z-index behavior at narrow breakpoints.
+
 ---
 
 ## Responsive transformation
@@ -65,6 +76,7 @@ Sticky notes are free-floating text/media surfaces on the desktop canvas. They e
 - [ ] Delete button has `aria-label="Delete note"`.
 - [ ] Deletion is confirmed via `AlertDialog` before data is removed.
 - [ ] Keyboard alternative exists for moving notes (drag-only is not sufficient).
+- [ ] Sticky content remains above all desktop content and below every open window.
 
 ---
 
@@ -82,6 +94,7 @@ Background: product-supplied from design system tokens (e.g. `bg-accent`, a fixe
 | Use design system color tokens for note backgrounds | Apply arbitrary hex backgrounds not in the token set |
 | Confirm deletion with `AlertDialog` | Delete notes on a single click without confirmation |
 | Apply rotation via `className` transform | Hardcode CSS `transform` in component styles |
+| Reserve a bounded sticky layer below windows | Let an active sticky rise above an open window |
 
 ---
 

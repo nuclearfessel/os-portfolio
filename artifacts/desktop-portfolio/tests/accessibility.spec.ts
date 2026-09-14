@@ -170,6 +170,9 @@ test.describe('Always show scrollbars toggle', () => {
       const button = getComputedStyle(element, '::-webkit-scrollbar-button');
       return [button.width, button.height];
     })).toEqual(['0px', '0px']);
+    await expect.poll(() => settingsContent.evaluate((element) =>
+      getComputedStyle(element).scrollbarColor,
+    )).toBe('auto');
   });
 
   test('toggling off removes data-always-scrollbars from <html>', async ({ page }) => {

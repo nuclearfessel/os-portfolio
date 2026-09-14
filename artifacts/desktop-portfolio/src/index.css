@@ -333,7 +333,6 @@ button { cursor: pointer; }
   color: #fff;
   background: #3a405b;
   border-color: #aeb7d4;
-  box-shadow: 0 0 0 2px rgba(174,183,212,.22), 0 7px 16px rgba(0,0,0,.26);
 }
 .dock-item.dock-app-about:hover,
 .dock-item.dock-app-about:focus-visible,
@@ -345,11 +344,10 @@ button { cursor: pointer; }
 .dock-item.dock-app-terminal:focus-visible,
 .dock-item.dock-app-stickies:hover,
 .dock-item.dock-app-stickies:focus-visible {
-  filter: brightness(1.1) contrast(1.04);
-  box-shadow: 0 0 0 2px rgba(255,255,255,.72), 0 8px 18px rgba(0,0,0,.3);
+  border-color: #fff;
 }
-.dock-item:hover { transform: translateY(-2px); }
-.dock-item:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.dock-item:hover,
+.dock-item:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .dock-item.active { box-shadow: 0 0 0 3px #e4ff5b, 0 8px 18px rgba(0,0,0,.3); }
 .dock-item.active:not(.dock-app-about):not(.dock-app-work):not(.dock-app-contact):not(.dock-app-terminal):not(.dock-app-stickies) {
   color: #fff;
@@ -1293,7 +1291,6 @@ button { cursor: pointer; }
   color: #173847;
   background: #d5e4df;
   border-color: #52756f;
-  box-shadow: 0 0 0 2px rgba(82,117,111,.2), 0 7px 16px rgba(48,68,71,.2);
 }
 .theme-light .dock-item.dock-app-about:hover,
 .theme-light .dock-item.dock-app-about:focus-visible,
@@ -1305,8 +1302,9 @@ button { cursor: pointer; }
 .theme-light .dock-item.dock-app-terminal:focus-visible,
 .theme-light .dock-item.dock-app-stickies:hover,
 .theme-light .dock-item.dock-app-stickies:focus-visible {
-  box-shadow: 0 0 0 2px rgba(23,56,71,.62), 0 8px 18px rgba(48,68,71,.24);
+  border-color: #173847;
 }
+.theme-light .dock-item:hover,
 .theme-light .dock-item:focus-visible { outline-color: #173847; }
 .theme-light .dock-item.active {
   box-shadow: 0 0 0 3px #0b665d, 0 8px 18px rgba(48,68,71,.24);

@@ -85,7 +85,7 @@ The consuming product controls this switch based on viewport state or a CSS medi
 |---|---|
 | Default | Border + background from consumer classes |
 | Active | Full-tile contrast ring plus a 16–26px directional pill on the nearest Dock edge; never rely on a tiny dot alone |
-| Hover | Branded apps retain their icon foreground and tile fill; use brightness, elevation, and a contrast-safe outer ring for feedback |
+| Hover | Branded apps retain their icon foreground and tile fill; use a flat contrast-safe outline and border change for feedback |
 | Focus-visible | Matches the hover treatment and adds a clearly visible theme-appropriate outline |
 
 Treat branded app items and neutral utility controls as separate state systems.
@@ -122,7 +122,7 @@ pill visible beneath the inline label.
 | Use `presentation="tooltip"` only on desktop | Show tooltip labels on mobile (they overlap other content) |
 | Keep Dock icons in a fixed footprint across states | Resize the icon on hover/active |
 | Combine a full-tile ring with a substantial edge pill for active items | Use a 4px dot as the only active indicator |
-| Preserve branded tile and glyph colors on hover/focus | Apply one global hover foreground to every Dock item |
+| Preserve branded tile and glyph colors and use a flat outline on hover/focus | Move, brighten, emboss, or recolor branded tiles on hover |
 | Change utility foreground and background as a tested pair | Change only the foreground and assume contrast remains sufficient |
 
 ---

@@ -275,10 +275,10 @@ test('lists work files with names that match the selected projects', async ({ pa
   await input.press('Enter');
 
   const output = page.getByTestId('window-terminal').locator('.terminal-output').last();
-  await expect(output).toContainText('intuitive-surgical-design-system.md');
-  await expect(output).toContainText('simnow-2-da-vinci-simulator.md');
-  await expect(output).toContainText('cedar-rei-design-system.md');
-  await expect(output).toContainText('windows-10-language-installer.md');
+  await expect(output).toContainText('cedar-rei-ds.md');
+  await expect(output).toContainText('intuitive-digital-ds.md');
+  await expect(output).toContainText('simnow-2-ds.md');
+  await expect(output).toContainText('win10-lang-installer.md');
   await expect(output).not.toContainText('orbit-crm');
 });
 

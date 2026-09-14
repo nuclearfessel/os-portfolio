@@ -14,6 +14,12 @@ import { Toaster } from '@workspace/portfolio-os-design-system/components/ui/toa
 import { TooltipProvider } from '@workspace/portfolio-os-design-system/components/ui/tooltip';
 import { Separator } from '@workspace/portfolio-os-design-system/components/ui/separator';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@workspace/portfolio-os-design-system/components/ui/accordion';
+import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '@workspace/portfolio-os-design-system/components/ui/dialog';
 import {
@@ -926,6 +932,30 @@ function EffectSlider({
 }
 
 // Settings Window
+function SettingsAccordionSection({
+  value,
+  label,
+  description,
+  children,
+}: {
+  value: string;
+  label: string;
+  description: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <AccordionItem value={value} className="settings-section" data-testid={`settings-section-${value}`}>
+      <AccordionTrigger className="settings-section-trigger" data-testid={`settings-section-trigger-${value}`}>
+        <span className="settings-section-header">
+          <span className="settings-label">{label}</span>
+          <span className="settings-description">{description}</span>
+        </span>
+      </AccordionTrigger>
+      <AccordionContent className="settings-section-content">{children}</AccordionContent>
+    </AccordionItem>
+  );
+}
+
 function SettingsWindow({
   theme,
   onSetTheme,
@@ -1032,12 +1062,16 @@ function SettingsWindow({
                 <SectionLabel className="section-kicker">personalization</SectionLabel>
                 <h2 className="settings-heading">Appearance</h2>
 
-                {/* Theme row */}
-                <div className="settings-section">
-                  <div className="settings-section-header">
-                    <span className="settings-label">Theme</span>
-                    <span className="settings-description">Controls the overall color scheme of the desktop.</span>
-                  </div>
+                <Accordion
+                  type="multiple"
+                  className="settings-accordion"
+                >
+                  {/* Theme row */}
+                  <SettingsAccordionSection
+                    value="theme"
+                    label="Theme"
+                    description="Controls the overall color scheme of the desktop."
+                  >
                   <div className="settings-theme-row">
                     <button
                       type="button"
@@ -1072,15 +1106,13 @@ function SettingsWindow({
                       </span>
                     </button>
                   </div>
-                </div>
+                  </SettingsAccordionSection>
 
-                <div className="settings-divider" />
-
-                <div className="settings-section">
-                  <div className="settings-section-header">
-                    <span className="settings-label">Desktop text personalization</span>
-                    <span className="settings-description">Edit the three desktop text elements and set separate colors for the {theme} theme.</span>
-                  </div>
+                  <SettingsAccordionSection
+                    value="desktop-text"
+                    label="Desktop text personalization"
+                    description={<>Edit the three desktop text elements and set separate colors for the {theme} theme.</>}
+                  >
                   <div className="settings-intro-editor">
                     {(['primary', 'accent', 'body'] as const).map((key) => (
                       <label className="settings-intro-field" key={key}>
@@ -1116,21 +1148,16 @@ function SettingsWindow({
                       </label>
                     ))}
                   </div>
-                </div>
+                  </SettingsAccordionSection>
 
-                <div className="settings-divider" />
-
-                {/* Wallpaper row */}
-                <div className="settings-section">
-                  <div className="settings-section-header">
-                    <span className="settings-label">Desktop wallpaper</span>
-                    <span className="settings-description">
-                      {wallpaperDisabled
-                        ? 'Wallpaper is disabled while a contrast theme is active.'
-                        : 'Your wallpaper choice stays selected when switching themes.'}
-                    </span>
-                  </div>
-
+                  {/* Wallpaper row */}
+                  <SettingsAccordionSection
+                    value="wallpaper"
+                    label="Desktop wallpaper"
+                    description={wallpaperDisabled
+                      ? 'Wallpaper is disabled while a contrast theme is active.'
+                      : 'Your wallpaper choice stays selected when switching themes.'}
+                  >
                   {wallpaperDisabled ? (
                     <div className="settings-wallpaper-disabled-notice" aria-live="polite">
                       Wallpaper controls are hidden while Low or High contrast is active. Return to Standard contrast to change wallpaper.
@@ -1209,18 +1236,13 @@ function SettingsWindow({
                       )}
                     </>
                   )}
-                </div>
+                  </SettingsAccordionSection>
 
-                <div className="settings-divider" />
-
-                <div className="settings-section">
-                  <div className="settings-section-header">
-                    <span className="settings-label">Surface effects</span>
-                    <span className="settings-description">
-                      Fine-tune transparency and blur. Their global switches remain in Accessibility.
-                    </span>
-                  </div>
-
+                  <SettingsAccordionSection
+                    value="surface-effects"
+                    label="Surface effects"
+                    description="Fine-tune transparency and blur. Their global switches remain in Accessibility."
+                  >
                   {accessibility.windowTransparency || accessibility.blurEffects ? (
                     <div className="settings-transparency-grid" data-testid="settings-transparency-grid">
                       {accessibility.windowTransparency && (
@@ -1264,7 +1286,8 @@ function SettingsWindow({
                       Turn on Transparency effects or Blur effects in Accessibility to adjust these levels.
                     </div>
                   )}
-                </div>
+                  </SettingsAccordionSection>
+                </Accordion>
               </>
             )}
 
@@ -1273,13 +1296,16 @@ function SettingsWindow({
                 <SectionLabel className="section-kicker">accessibility</SectionLabel>
                 <h2 className="settings-heading">Accessibility</h2>
 
-                {/* Display section */}
-                <div className="settings-section">
-                  <div className="settings-section-header">
-                    <span className="settings-label">Display</span>
-                    <span className="settings-description">Adjust how elements appear on screen.</span>
-                  </div>
-
+                <Accordion
+                  type="multiple"
+                  className="settings-accordion"
+                >
+                  {/* Display section */}
+                  <SettingsAccordionSection
+                    value="display"
+                    label="Display"
+                    description="Adjust how elements appear on screen."
+                  >
                   <SettingsToggle
                     id="a11y-scrollbars"
                     label="Always show scrollbars"
@@ -1306,17 +1332,14 @@ function SettingsWindow({
                     onChange={(v) => updateAccessibility({ blurEffects: v })}
                     data-testid="settings-a11y-blur"
                   />
-                </div>
+                  </SettingsAccordionSection>
 
-                <div className="settings-divider" />
-
-                {/* Motion section */}
-                <div className="settings-section">
-                  <div className="settings-section-header">
-                    <span className="settings-label">Motion</span>
-                    <span className="settings-description">Control animations and transitions across the UI.</span>
-                  </div>
-
+                  {/* Motion section */}
+                  <SettingsAccordionSection
+                    value="motion"
+                    label="Motion"
+                    description="Control animations and transitions across the UI."
+                  >
                   <SettingsToggle
                     id="a11y-animations"
                     label="UI animations"
@@ -1357,20 +1380,19 @@ function SettingsWindow({
                       </div>
                     </div>
                   )}
-                </div>
+                  </SettingsAccordionSection>
 
-                <div className="settings-divider" />
-
-                {/* Contrast section */}
-                <div className="settings-section">
-                  <div className="settings-section-header">
-                    <span className="settings-label">Contrast theme</span>
-                    <span className="settings-description">
+                  {/* Contrast section */}
+                  <SettingsAccordionSection
+                    value="contrast"
+                    label="Contrast theme"
+                    description={(
+                      <>
                       Applies a fixed system palette. <strong>Low contrast</strong> softens visual harshness for sensitivity to bright contrast. <strong>High contrast</strong> maximises black/white separation and sharpens focus indicators.
                       {accessibility.contrastTheme !== 'none' && ' Wallpaper controls are disabled while a contrast theme is active.'}
-                    </span>
-                  </div>
-
+                      </>
+                    )}
+                  >
                   <div className="settings-contrast-options" role="radiogroup" aria-label="Contrast theme">
                     {([
                       {
@@ -1417,7 +1439,8 @@ function SettingsWindow({
                       </button>
                     ))}
                   </div>
-                </div>
+                  </SettingsAccordionSection>
+                </Accordion>
               </>
             )}
           </div>

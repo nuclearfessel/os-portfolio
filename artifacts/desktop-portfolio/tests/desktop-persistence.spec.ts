@@ -1450,17 +1450,32 @@ test('selected light and dark solid wallpaper colors persist in tablet and mobil
 
 test('desktop text personalization and theme-specific colors can be edited and persist', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-section-trigger-theme').click();
+  await page.getByTestId('settings-section-trigger-desktop-text').click();
   const settingsWindow = page.getByTestId('window-settings');
   const editor = settingsWindow.locator('.settings-intro-editor');
-  const itemHeights = () => editor.locator('.settings-intro-field').evaluateAll(
-    (items) => items.map((item) => item.getBoundingClientRect().height),
+  const capsuleSpacing = () => editor.locator('.settings-intro-field').evaluateAll(
+    (items) => items.map((item) => {
+      const style = getComputedStyle(item);
+      return {
+        top: style.paddingTop,
+        right: style.paddingRight,
+        bottom: style.paddingBottom,
+        left: style.paddingLeft,
+      };
+    }),
   );
-  const expectEqualItemHeights = async () => {
-    const heights = await itemHeights();
-    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
+  const expectSymmetricCapsuleSpacing = async () => {
+    const spacing = await capsuleSpacing();
+    expect(spacing).toHaveLength(3);
+    for (const padding of spacing) {
+      expect(padding.top).toBe(padding.left);
+      expect(padding.right).toBe(padding.left);
+      expect(padding.bottom).toBe(padding.left);
+    }
   };
   await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(3);
-  await expectEqualItemHeights();
+  await expectSymmetricCapsuleSpacing();
 
   const settingsBox = await settingsWindow.boundingBox();
   const resizeHandle = settingsWindow.locator('.window-resize-e');
@@ -1472,7 +1487,7 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await page.mouse.move(settingsBox!.x + 540, resizeBox!.y + resizeBox!.height / 2);
   await page.mouse.up();
   await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
-  await expectEqualItemHeights();
+  await expectSymmetricCapsuleSpacing();
 
   const primaryInput = page.getByTestId('settings-intro-primary-text');
   await primaryInput.fill('Interfaces with intent.');
@@ -1502,6 +1517,7 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await expect(primaryHeadline).toHaveCSS('color', 'rgb(254, 220, 186)');
 
   await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-section-trigger-theme').click();
   await page.getByTestId('settings-theme-light').click();
   await page.getByTestId('button-close-settings').click();
   await expect(primaryHeadline).toHaveCSS('color', 'rgb(18, 52, 86)');
@@ -1510,6 +1526,38 @@ test('desktop text personalization and theme-specific colors can be edited and p
   expect(saved.introCustomization.text.primary).toBe('Interfaces with intent.');
   expect(saved.introCustomization.colors.light.primary).toBe('#123456');
   expect(saved.introCustomization.colors.dark.primary).toBe('#fedcba');
+});
+
+test('settings sections collapse independently and allow multiple sections to stay open', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+
+  const theme = page.getByTestId('settings-section-trigger-theme');
+  const desktopText = page.getByTestId('settings-section-trigger-desktop-text');
+  const wallpaper = page.getByTestId('settings-section-trigger-wallpaper');
+
+  await expect(theme).toHaveAttribute('aria-expanded', 'false');
+  await expect(desktopText).toHaveAttribute('aria-expanded', 'false');
+  await expect(wallpaper).toHaveAttribute('aria-expanded', 'false');
+
+  await theme.click();
+  await desktopText.click();
+  await expect(theme).toHaveAttribute('aria-expanded', 'true');
+  await expect(desktopText).toHaveAttribute('aria-expanded', 'true');
+  await expect(wallpaper).toHaveAttribute('aria-expanded', 'false');
+
+  await theme.click();
+  await expect(theme).toHaveAttribute('aria-expanded', 'false');
+  await expect(desktopText).toHaveAttribute('aria-expanded', 'true');
+
+  await page.getByTestId('settings-nav-accessibility').click();
+  const display = page.getByTestId('settings-section-trigger-display');
+  const motion = page.getByTestId('settings-section-trigger-motion');
+  await expect(display).toHaveAttribute('aria-expanded', 'false');
+  await expect(motion).toHaveAttribute('aria-expanded', 'false');
+  await display.click();
+  await motion.click();
+  await expect(display).toHaveAttribute('aria-expanded', 'true');
+  await expect(motion).toHaveAttribute('aria-expanded', 'true');
 });
 
 test('solid color mode offers the original light and dark default color blocks', async ({ page }) => {

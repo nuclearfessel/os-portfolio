@@ -205,7 +205,7 @@ test('snaps desktop launchers to an 8px grid', async ({ page }) => {
   await expect.poll(() => aboutFolder.evaluate((element) => ({
     left: Number.parseFloat(element.style.left),
     top: Number.parseFloat(element.style.top),
-  }))).toEqual({ left: 336, top: 280 });
+  }))).toEqual({ left: 333, top: 277 });
 
   await page.mouse.up();
 

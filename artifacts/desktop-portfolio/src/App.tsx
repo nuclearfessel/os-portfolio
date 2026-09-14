@@ -1467,17 +1467,8 @@ function Home() {
       ? constrainStickyPosition({ left: nextLeft, top: nextTop }, stickySize, sticky.rotation, workspace)
       : null;
     const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal'].includes(drag.id);
-    const launcherSnaps = snapToGrid && drag.id.startsWith('desktop-');
-    const left = constrainedSticky?.left ?? (launcherSnaps
-      ? snapWithinDesktopGrid(nextLeft, minLeft, maxLeft)
-      : staysOnDesktop || constrainsWindow
-        ? Math.max(minLeft, Math.min(maxLeft, nextLeft))
-        : nextLeft);
-    const top = constrainedSticky?.top ?? (launcherSnaps
-      ? snapWithinDesktopGrid(nextTop, minTop, maxTop)
-      : staysOnDesktop || constrainsWindow
-        ? Math.max(minTop, Math.min(maxTop, nextTop))
-        : Math.max(0, nextTop));
+    const left = constrainedSticky?.left ?? (staysOnDesktop || constrainsWindow ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft);
+    const top = constrainedSticky?.top ?? (staysOnDesktop || constrainsWindow ? Math.max(minTop, Math.min(maxTop, nextTop)) : Math.max(0, nextTop));
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
       drag.moved = true;
     }

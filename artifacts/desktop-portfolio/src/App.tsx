@@ -514,7 +514,7 @@ function WindowFrame({
 }) {
   return (
     <WindowSurface
-      className={`window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
+      className={`window fes-scrollbar-window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
       onMouseDown={onFocus}
       onContextMenu={(event) => {
         event.preventDefault();

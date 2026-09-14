@@ -121,6 +121,21 @@ test.describe('Always show scrollbars toggle', () => {
     await expect(switchEl).toHaveAttribute('aria-checked', 'false');
   });
 
+  test('window scrollbar fades in on hover and out when the pointer leaves', async ({ page }) => {
+    await openSettings(page);
+    const settingsWindow = page.getByTestId('window-settings');
+    const settingsContent = page.locator('.settings-content');
+    const thumbColor = () => settingsContent.evaluate((element) =>
+      getComputedStyle(element, '::-webkit-scrollbar-thumb').backgroundColor,
+    );
+
+    await expect.poll(thumbColor).toBe('rgba(0, 0, 0, 0)');
+    await settingsWindow.hover();
+    await expect.poll(thumbColor).not.toBe('rgba(0, 0, 0, 0)');
+    await page.mouse.move(0, 100);
+    await expect.poll(thumbColor).toBe('rgba(0, 0, 0, 0)');
+  });
+
   test('toggling on sets data-always-scrollbars on <html>', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
@@ -129,6 +144,32 @@ test.describe('Always show scrollbars toggle', () => {
       document.documentElement.hasAttribute('data-always-scrollbars'),
     );
     expect(attrSet).toBe(true);
+  });
+
+  test('persistent scrollbars keep the styled thumb and transparent track', async ({ page }) => {
+    await openSettings(page);
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-scrollbars-switch').click();
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    await page.mouse.move(0, 100);
+
+    const settingsContent = page.locator('.settings-content');
+    await expect.poll(() => settingsContent.evaluate((element) =>
+      getComputedStyle(element, '::-webkit-scrollbar-thumb').backgroundColor,
+    )).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => settingsContent.evaluate((element) =>
+      getComputedStyle(element, '::-webkit-scrollbar-track').backgroundColor,
+    )).toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => settingsContent.evaluate((element) =>
+      getComputedStyle(element, '::-webkit-scrollbar').width,
+    )).toBe('4px');
+    await expect.poll(() => settingsContent.evaluate((element) =>
+      getComputedStyle(element, '::-webkit-scrollbar-button').display,
+    )).toBe('none');
+    await expect.poll(() => settingsContent.evaluate((element) => {
+      const button = getComputedStyle(element, '::-webkit-scrollbar-button');
+      return [button.width, button.height];
+    })).toEqual(['0px', '0px']);
   });
 
   test('toggling off removes data-always-scrollbars from <html>', async ({ page }) => {

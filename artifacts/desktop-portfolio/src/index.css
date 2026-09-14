@@ -209,7 +209,7 @@ button { cursor: pointer; }
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   cursor: default;
-  animation: window-in .14s ease-out both;
+  animation: window-in .07s ease-out both;
 }
 .window.is-active { z-index: 10; border-color: rgba(228,255,91,.43); }
 .window.is-maximized { border-radius: 9px; }

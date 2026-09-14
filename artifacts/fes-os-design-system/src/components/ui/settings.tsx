@@ -303,6 +303,8 @@ export function SettingsSliderGroup({
   'data-testid': testId,
   className,
 }: SettingsSliderGroupProps) {
+  const progress = max === min ? 0 : ((value - min) / (max - min)) * 100;
+
   return (
     <div
       className={classes(
@@ -327,20 +329,29 @@ export function SettingsSliderGroup({
       </div>
 
       {/* Range input */}
-      <input
-        id={id}
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        aria-label={label}
-        aria-valuetext={ariaValueText ?? `${value}${unit}`}
-        aria-labelledby={`${id}-label`}
-        className="fes-settings-slider w-full cursor-pointer accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        onChange={(e) => onChange(Number(e.currentTarget.value))}
-        data-testid={testId ? `${testId}-slider` : undefined}
-      />
+      <div
+        className="fes-settings-slider-control relative h-5"
+        style={{
+          '--slider-progress': `${progress}%`,
+          '--slider-thumb-left': `calc(${progress}% - ${(progress / 100) * 14}px)`,
+        } as React.CSSProperties}
+        data-testid={testId ? `${testId}-track` : undefined}
+      >
+        <input
+          id={id}
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          aria-label={label}
+          aria-valuetext={ariaValueText ?? `${value}${unit}`}
+          aria-labelledby={`${id}-label`}
+          className="fes-settings-slider absolute inset-0 z-[1] h-5 w-full cursor-pointer opacity-0"
+          onChange={(e) => onChange(Number(e.currentTarget.value))}
+          data-testid={testId ? `${testId}-slider` : undefined}
+        />
+      </div>
 
       {/* Guidance labels */}
       {(guidanceStart || guidanceEnd) && (

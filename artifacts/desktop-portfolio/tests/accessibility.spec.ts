@@ -228,9 +228,11 @@ test.describe('Transparency effects', () => {
     expect(await page.evaluate(() =>
       document.documentElement.style.getPropertyValue('--accessibility-transparency'),
     )).toBe('55%');
-    await expect.poll(() => slider.evaluate((element) =>
-      getComputedStyle(element, '::-webkit-slider-runnable-track').height,
-    )).toBe('4px');
+    await expect.poll(() => page.getByTestId('settings-personalization-window-transparency-track').evaluate((element) => {
+      const rail = getComputedStyle(element, '::before');
+      const thumb = getComputedStyle(element, '::after');
+      return [rail.height, rail.top, rail.transform, thumb.height, thumb.top, thumb.transform];
+    })).toEqual(['4px', '10px', 'matrix(1, 0, 0, 1, 0, -2)', '14px', '10px', 'matrix(1, 0, 0, 1, 0, -7)']);
   });
 
   test('sticky transparency slider updates the level and root CSS variable', async ({ page }) => {
@@ -243,9 +245,11 @@ test.describe('Transparency effects', () => {
     expect(await page.evaluate(() =>
       document.documentElement.style.getPropertyValue('--sticky-transparency'),
     )).toBe('45%');
-    await expect.poll(() => slider.evaluate((element) =>
-      getComputedStyle(element, '::-webkit-slider-runnable-track').height,
-    )).toBe('4px');
+    await expect.poll(() => page.getByTestId('settings-personalization-sticky-transparency-track').evaluate((element) => {
+      const rail = getComputedStyle(element, '::before');
+      const thumb = getComputedStyle(element, '::after');
+      return [rail.height, rail.top, rail.transform, thumb.height, thumb.top, thumb.transform];
+    })).toEqual(['4px', '10px', 'matrix(1, 0, 0, 1, 0, -2)', '14px', '10px', 'matrix(1, 0, 0, 1, 0, -7)']);
   });
 
   test('transparency sliders sit side by side in a large window and stack when narrowed', async ({ page }) => {

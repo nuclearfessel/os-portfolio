@@ -159,6 +159,10 @@ export function DesignSystemBrowser() {
   // public detail page (i.e. a Fes OS primitive or family overview that is
   // intentionally omitted from sidebar but is still a public-facing document).
   const isPublicDetailPage = FES_OS_DETAIL_IDS.has(active.id);
+  const isPrimitiveDetailPage =
+    isPublicDetailPage &&
+    active.id !== 'fes-os-pilot' &&
+    active.id !== 'fes-os-settings';
   const isHiddenPage =
     active.id !== OVERVIEW_ENTRY.id &&
     PUBLIC_VISIBILITY_MAP[active.id] !== true &&
@@ -269,6 +273,17 @@ export function DesignSystemBrowser() {
         {/* ── Main content ─────────────────────────────────────────────── */}
         <main className="min-w-0 px-6 py-10 sm:px-10 lg:px-14">
           <div className="mx-auto max-w-5xl">
+            {isPrimitiveDetailPage && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mb-6"
+                onClick={() => selectPage('fes-os-primitives')}
+              >
+                ← Back to Fes OS primitives
+              </Button>
+            )}
+
             {/* Hidden-page notice — subtle, accessible, not obtrusive */}
             {isHiddenPage && (
               <aside

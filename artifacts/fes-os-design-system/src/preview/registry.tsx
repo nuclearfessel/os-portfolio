@@ -452,13 +452,6 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     name: 'Fes OS',
     entries: [
-      // ── Single public directory entry ──────────────────────────────────────
-      {
-        id: 'fes-os-primitives',
-        name: 'Fes OS primitives',
-        description: 'Directory of all 18 Fes OS design primitives — desktop surfaces, actions, dock, launchers, and settings controls. Grouped into Desktop primitives (10) and Settings primitives (8). Each links to its dedicated spec page.',
-        Page: FesOsPrimitivesPage,
-      },
       // ── Family overviews — hidden from sidebar; deep-linkable by hash ──────
       {
         id: 'fes-os-pilot',
@@ -983,6 +976,12 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     name: 'Patterns',
     entries: [
+      {
+        id: 'fes-os-primitives',
+        name: 'Fes OS primitives',
+        description: 'Directory of all 18 Fes OS design primitives — desktop surfaces, actions, dock, launchers, and settings controls. Grouped into Desktop primitives (10) and Settings primitives (8). Each links to its dedicated spec page.',
+        Page: FesOsPrimitivesPage,
+      },
       {
         id: 'pattern-desktop-window',
         name: 'Desktop window workspace',

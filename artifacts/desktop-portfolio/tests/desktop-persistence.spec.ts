@@ -341,18 +341,12 @@ test('About and Selected Work use distinct saturated application icons instead o
   expect(new Set(backgrounds).size).toBe(3);
 });
 
-test('Contact uses a filled Keyline icon with its own saturated app treatment', async ({ page }) => {
+test('Contact uses a filled Remix mail-send icon with its own saturated app treatment', async ({ page }) => {
   const contact = page.getByTestId('button-folder-contact');
   const contactIcon = contact.locator('.desktop-app-icon');
 
   await expect(contact.getByTestId('icon-contact-mail-fill')).toBeVisible();
-  await expect(contact.getByTestId('icon-contact-mail-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
-  await expect(contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-layer')).toHaveCount(2);
-  await expect(contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-status')).toBeVisible();
-  const layerColors = await contact.getByTestId('icon-contact-mail-fill').locator('.contact-mail-layer').evaluateAll(
-    (layers) => layers.map((layer) => getComputedStyle(layer).color),
-  );
-  expect(new Set(layerColors).size).toBe(2);
+  await expect(contact.getByTestId('icon-contact-mail-fill')).toHaveAttribute('fill', 'currentColor');
   const contactBackground = await contactIcon.evaluate((element) => getComputedStyle(element).backgroundImage);
   const otherBackgrounds = await Promise.all(
     ['about', 'work', 'terminal', 'stickies-app'].map((id) => page.getByTestId(`button-folder-${id}`).locator('.desktop-app-icon').evaluate(
@@ -371,9 +365,7 @@ test('Dock mirrors the saturated About, Selected Work, and filled Contact app id
   ];
 
   await expect(page.getByTestId('icon-dock-contact-mail-fill')).toBeVisible();
-  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
-  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('.contact-mail-layer')).toHaveCount(2);
-  await expect(page.getByTestId('icon-dock-contact-mail-fill').locator('.contact-mail-status')).toBeVisible();
+  await expect(page.getByTestId('icon-dock-contact-mail-fill')).toHaveAttribute('fill', 'currentColor');
   const backgrounds = await Promise.all(dockLaunchers.map((launcher) => launcher.evaluate(
     (element) => getComputedStyle(element).backgroundImage,
   )));

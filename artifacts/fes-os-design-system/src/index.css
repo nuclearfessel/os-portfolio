@@ -416,8 +416,9 @@
    Apply this class to any window, dock, or menu surface that should carry
    adjustable transparency. The class itself uses the CSS variable
    --accessibility-transparency (a unitless alpha in [0, 0.7]) set by the
-   consuming app. When data-no-transparency is present, backdrop-filter is
-   removed and the background becomes fully opaque.
+   consuming app. Blur is controlled independently by --surface-blur and
+   data-no-blur. When data-no-transparency is present, the background becomes
+   fully opaque without changing the stored blur preference.
 
    Usage in components: add `fes-surface-translucent` alongside bg-* classes.
    The consuming app sets --accessibility-transparency on :root.
@@ -427,20 +428,24 @@
 .fes-surface-translucent {
   --accessibility-transparency: 0.2;
   background-color: hsl(var(--card) / calc(1 - var(--accessibility-transparency)));
-  backdrop-filter: blur(12px) saturate(1.4);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
 }
 
 /* Consuming app enables transparency and sets the desired level */
 [data-transparency-enabled] .fes-surface-translucent {
   background-color: hsl(var(--card) / calc(1 - var(--accessibility-transparency, 0.2)));
-  backdrop-filter: blur(12px) saturate(1.4);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
 }
 
-/* Consuming app disables transparency — fully opaque, no blur */
+/* Consuming app disables transparency — fully opaque */
 [data-no-transparency] .fes-surface-translucent {
   background-color: hsl(var(--card));
+}
+
+/* Blur is an independent accessibility preference. */
+[data-no-blur] .fes-surface-translucent {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }

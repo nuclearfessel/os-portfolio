@@ -6,7 +6,7 @@
 
 ## Intent
 
-A dedicated settings pane where users control visual accessibility preferences — scrollbar visibility, the system-wide transparency master switch, UI animations, animation speed, and contrast theme. Transparency levels belong in Personalization. All controls are visual-only; the consuming product applies their effects to the DOM.
+A dedicated settings pane where users control visual accessibility preferences — scrollbar visibility, system-wide transparency and blur switches, UI animations, animation speed, and contrast theme. Transparency and blur levels belong in Personalization. All controls are visual-only; the consuming product applies their effects to the DOM.
 
 ---
 
@@ -33,6 +33,9 @@ Display
   ┌─────────────────────────────────────────┐
   │ Transparency effects            [●────] │  ← SettingsToggleRow
   └─────────────────────────────────────────┘
+  ┌─────────────────────────────────────────┐
+  │ Blur effects                    [●────] │  ← SettingsToggleRow
+  └─────────────────────────────────────────┘
 
 Motion
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -56,6 +59,7 @@ All preference values are owned by the consuming product. The panel only reflect
 |---|---|---|
 | Always show scrollbars | `SettingsToggleRow` | Set/remove `data-always-scrollbars` on shell; persistent mode keeps the same window scrollbar styling |
 | Transparency effects on | `SettingsToggleRow` | Set/remove `data-transparency-enabled` on `:root`; applies to all translucent system surfaces |
+| Blur effects on | `SettingsToggleRow` | Set/remove `data-no-blur` and set `--surface-blur` on `:root`; applies independently from transparency |
 | UI animations on | `SettingsToggleRow` | Set/remove `data-no-animations` on shell |
 | Animation speed | `SettingsSegmentedChoice` | Set/remove `data-anim-speed` on shell |
 | Contrast theme | `SettingsContrastCard` | Set/remove `data-contrast` on `:root`; forces transparency off |
@@ -68,8 +72,9 @@ See → [State contracts](../references/components/settings.md#state-contracts)
 
 1. **Transparency is disabled when any contrast theme is active.** Pass `disabled` to the transparency `SettingsToggleRow` when `contrastTheme !== 'none'`.
 2. **Animation speed is hidden/disabled when animations are off.** Only show `SettingsSegmentedChoice` when `uiAnimations === true`.
-3. **Transparency levels belong in Personalization.** Show window and sticky level controls there only when the global transparency switch is on.
-4. **Default scrollbars are contextual.** Apply `fes-scrollbar-window` to each window so scrollbar thumbs fade in on window hover/focus and fade out when idle. `data-always-scrollbars` keeps those same thumbs visible; tracks stay transparent.
+3. **Effect levels belong in Personalization.** Show window and sticky transparency controls when Transparency effects is on, and show the blur control when Blur effects is on.
+4. **Three controls share one wide row.** At the product's large Settings-window breakpoint, window transparency, sticky transparency, and blur use three equal columns. At narrower widths, each uses its own row.
+5. **Default scrollbars are contextual.** Apply `fes-scrollbar-window` to each window so scrollbar thumbs fade in on window hover/focus and fade out when idle. `data-always-scrollbars` keeps those same thumbs visible; tracks stay transparent.
 
 ---
 

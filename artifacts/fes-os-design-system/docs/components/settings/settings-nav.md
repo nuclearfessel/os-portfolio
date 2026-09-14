@@ -8,7 +8,9 @@
 
 ## Purpose
 
-Sidebar navigation for a settings window. `SettingsNavSection` is the `<nav>` landmark; `SettingsNavItem` is each individual navigation button.
+Responsive section navigation for a settings window. `SettingsNavSection` is the `<nav>` landmark; `SettingsNavItem` is each individual navigation button. The consuming product presents it as a sidebar in a wide window and smoothly moves the same landmark into a horizontal sub-navigation toolbar below the title bar when the window narrows.
+
+Settings is the reference implementation. Every Fes OS resizable window with side navigation must follow this same container-responsive transformation.
 
 ---
 
@@ -67,6 +69,7 @@ Sidebar navigation for a settings window. `SettingsNavSection` is the `<nav>` la
 - Active item carries `aria-current="page"`.
 - Icon is wrapped in `aria-hidden="true"` span — accessible name comes from `children` text.
 - Focus ring is `outline` (not `ring`) to avoid layout shift.
+- Responsive presentation must preserve the same DOM order, accessible names, and keyboard sequence when switching between sidebar and sub-navigation toolbar layouts.
 
 ---
 

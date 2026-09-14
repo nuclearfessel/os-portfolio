@@ -59,6 +59,8 @@ type AccessibilityPrefs = {
   windowTransparency: boolean;
   transparencyLevel: number;
   stickyTransparencyLevel: number;
+  blurEffects: boolean;
+  blurLevel: number;
   uiAnimations: boolean;
   animationSpeed: AnimationSpeed;
   contrastTheme: ContrastTheme;
@@ -69,6 +71,8 @@ const DEFAULT_ACCESSIBILITY_PREFS: AccessibilityPrefs = {
   windowTransparency: true,
   transparencyLevel: 20,
   stickyTransparencyLevel: 20,
+  blurEffects: true,
+  blurLevel: 12,
   uiAnimations: true,
   animationSpeed: 'default',
   contrastTheme: 'none',
@@ -297,6 +301,10 @@ function parseAccessibilityPrefs(raw: unknown): AccessibilityPrefs {
     stickyTransparencyLevel: typeof a.stickyTransparencyLevel === 'number' && Number.isFinite(a.stickyTransparencyLevel)
       ? Math.max(0, Math.min(70, Math.round(a.stickyTransparencyLevel)))
       : DEFAULT_ACCESSIBILITY_PREFS.stickyTransparencyLevel,
+    blurEffects: typeof a.blurEffects === 'boolean' ? a.blurEffects : DEFAULT_ACCESSIBILITY_PREFS.blurEffects,
+    blurLevel: typeof a.blurLevel === 'number' && Number.isFinite(a.blurLevel)
+      ? Math.max(0, Math.min(24, Math.round(a.blurLevel / 2) * 2))
+      : DEFAULT_ACCESSIBILITY_PREFS.blurLevel,
     uiAnimations: typeof a.uiAnimations === 'boolean' ? a.uiAnimations : DEFAULT_ACCESSIBILITY_PREFS.uiAnimations,
     animationSpeed: (['less', 'default', 'more'] as AnimationSpeed[]).includes(a.animationSpeed as AnimationSpeed)
       ? a.animationSpeed as AnimationSpeed
@@ -700,20 +708,32 @@ function SettingsToggle({
   );
 }
 
-function TransparencySlider({
+function EffectSlider({
   id,
   label,
   value,
   onChange,
   testId,
+  max = 70,
+  step = 5,
+  unit = '%',
+  guidanceStart = 'Subtle',
+  guidanceEnd = 'More transparent',
+  ariaValueText = `${value}${unit}`,
 }: {
   id: string;
   label: string;
   value: number;
   onChange: (value: number) => void;
   testId: string;
+  max?: number;
+  step?: number;
+  unit?: string;
+  guidanceStart?: string;
+  guidanceEnd?: string;
+  ariaValueText?: string;
 }) {
-  const progress = (value / 70) * 100;
+  const progress = (value / max) * 100;
 
   return (
     <div className="settings-transparency-group" data-testid={testId}>
@@ -725,7 +745,7 @@ function TransparencySlider({
           aria-live="polite"
           data-testid={`${testId}-value`}
         >
-          {value}%
+          {value}{unit}
         </output>
       </div>
       <div
@@ -741,18 +761,18 @@ function TransparencySlider({
           className="settings-transparency-slider"
           type="range"
           min="0"
-          max="70"
-          step="5"
+          max={max}
+          step={step}
           value={value}
           onChange={(event) => onChange(Number(event.currentTarget.value))}
           aria-labelledby={`${id}-label`}
-          aria-valuetext={`${value}% transparent`}
+          aria-valuetext={ariaValueText}
           data-testid={`${testId}-slider`}
         />
       </div>
       <div className="settings-transparency-scale" aria-hidden="true">
-        <span>Subtle</span>
-        <span>More transparent</span>
+        <span>{guidanceStart}</span>
+        <span>{guidanceEnd}</span>
       </div>
     </div>
   );
@@ -982,32 +1002,53 @@ function SettingsWindow({
 
                 <div className="settings-section">
                   <div className="settings-section-header">
-                    <span className="settings-label">Transparency levels</span>
+                    <span className="settings-label">Surface effects</span>
                     <span className="settings-description">
-                      Fine-tune translucent surfaces. The global Transparency effects switch remains in Accessibility.
+                      Fine-tune transparency and blur. Their global switches remain in Accessibility.
                     </span>
                   </div>
 
-                  {accessibility.windowTransparency ? (
+                  {accessibility.windowTransparency || accessibility.blurEffects ? (
                     <div className="settings-transparency-grid" data-testid="settings-transparency-grid">
-                      <TransparencySlider
-                        id="personalization-window-transparency"
-                        label="Window transparency"
-                        value={accessibility.transparencyLevel}
-                        onChange={(value) => updateAccessibility({ transparencyLevel: value })}
-                        testId="settings-personalization-window-transparency"
-                      />
-                      <TransparencySlider
-                        id="personalization-sticky-transparency"
-                        label="Sticky transparency"
-                        value={accessibility.stickyTransparencyLevel}
-                        onChange={(value) => updateAccessibility({ stickyTransparencyLevel: value })}
-                        testId="settings-personalization-sticky-transparency"
-                      />
+                      {accessibility.windowTransparency && (
+                        <>
+                          <EffectSlider
+                            id="personalization-window-transparency"
+                            label="Window transparency"
+                            value={accessibility.transparencyLevel}
+                            onChange={(value) => updateAccessibility({ transparencyLevel: value })}
+                            testId="settings-personalization-window-transparency"
+                            ariaValueText={`${accessibility.transparencyLevel}% transparent`}
+                          />
+                          <EffectSlider
+                            id="personalization-sticky-transparency"
+                            label="Sticky transparency"
+                            value={accessibility.stickyTransparencyLevel}
+                            onChange={(value) => updateAccessibility({ stickyTransparencyLevel: value })}
+                            testId="settings-personalization-sticky-transparency"
+                            ariaValueText={`${accessibility.stickyTransparencyLevel}% transparent`}
+                          />
+                        </>
+                      )}
+                      {accessibility.blurEffects && (
+                        <EffectSlider
+                          id="personalization-blur"
+                          label="Blur"
+                          value={accessibility.blurLevel}
+                          onChange={(value) => updateAccessibility({ blurLevel: value })}
+                          testId="settings-personalization-blur"
+                          max={24}
+                          step={2}
+                          unit="px"
+                          guidanceStart="Sharp"
+                          guidanceEnd="More blurred"
+                          ariaValueText={`${accessibility.blurLevel} pixels of blur`}
+                        />
+                      )}
                     </div>
                   ) : (
                     <div className="settings-wallpaper-disabled-notice" data-testid="settings-transparency-disabled-notice">
-                      Turn on Transparency effects in Accessibility to adjust these levels.
+                      Turn on Transparency effects or Blur effects in Accessibility to adjust these levels.
                     </div>
                   )}
                 </div>
@@ -1042,6 +1083,15 @@ function SettingsWindow({
                     checked={accessibility.windowTransparency}
                     onChange={(v) => updateAccessibility({ windowTransparency: v })}
                     data-testid="settings-a11y-transparency"
+                  />
+
+                  <SettingsToggle
+                    id="a11y-blur"
+                    label="Blur effects"
+                    description="Enables backdrop blur across windows, the dock, menus, and stickies."
+                    checked={accessibility.blurEffects}
+                    onChange={(v) => updateAccessibility({ blurEffects: v })}
+                    data-testid="settings-a11y-blur"
                   />
                 </div>
 
@@ -1602,6 +1652,16 @@ function Home() {
       root.setAttribute('data-transparency-enabled', '');
       root.style.setProperty('--accessibility-transparency', `${accessibility.transparencyLevel}%`);
       root.style.setProperty('--sticky-transparency', `${accessibility.stickyTransparencyLevel}%`);
+    }
+    // Blur
+    if (!accessibility.blurEffects) {
+      root.setAttribute('data-no-blur', '');
+      root.removeAttribute('data-blur-enabled');
+      root.style.removeProperty('--surface-blur');
+    } else {
+      root.removeAttribute('data-no-blur');
+      root.setAttribute('data-blur-enabled', '');
+      root.style.setProperty('--surface-blur', `${accessibility.blurLevel}px`);
     }
     // Animations
     if (!accessibility.uiAnimations) {

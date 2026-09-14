@@ -51,28 +51,29 @@ Do not interpret silence, a new request, or a successful automated check as appr
 ## After explicit approval
 
 1. Confirm only intended files changed.
-2. Commit the approved work on its branch with a descriptive message.
-3. Push the branch to `origin`.
-4. Update local `main` without rewriting history:
+2. Review whether the approved change requires corresponding updates to `README.md`, Claude instruction/skill files, package metadata, package exports, or package documentation. Make and validate every applicable update before committing; do not change unrelated files merely to satisfy the checklist.
+3. Commit the approved work on its branch with a descriptive message.
+4. Push the branch to `origin`.
+5. Update local `main` without rewriting history:
 
    ```bash
    git switch main
    git pull --ff-only origin main
    ```
 
-5. Merge the approved branch into `main`. Preserve the branch in history:
+6. Merge the approved branch into `main`. Preserve the branch in history:
 
    ```bash
    git merge --no-ff <branch-name> -m "Merge <short description>"
    ```
 
-6. Push `main`:
+7. Push `main`:
 
    ```bash
    git push origin main
    ```
 
-7. Confirm that `main` matches `origin/main` and the working tree is clean.
+8. Confirm that `main` matches `origin/main` and the working tree is clean.
 
 Do not delete the branch unless the user asks.
 

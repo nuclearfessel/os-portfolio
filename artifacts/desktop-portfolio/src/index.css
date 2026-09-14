@@ -176,7 +176,7 @@ button { cursor: pointer; }
 .desktop-note[data-testid="sticky-sticky-1"] { left: 77%; top: 8%; width: 220px; height: 156px; }
 .desktop-note:active { cursor: grabbing; }
 .desktop-note::before { content: ''; position: absolute; top: -9px; left: 50%; z-index: 2; width: 64px; height: 18px; background: rgba(245,232,193,.68); border: 1px solid rgba(122,105,69,.16); box-shadow: 0 1px 2px rgba(54,45,27,.12), inset 0 1px rgba(255,255,255,.42); transform: translateX(-50%) rotate(-3deg); pointer-events: none; }
-.desktop-note-surface { position: relative; width: 100%; height: 100%; min-height: inherit; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 7px; box-sizing: border-box; padding: 15px; overflow: hidden; color: var(--sticky-text, #1d2430); background: color-mix(in srgb, var(--sticky-bg, #ffd84d) calc(100% - var(--sticky-transparency, 20%)), transparent); border: 1px solid var(--sticky-border, rgba(29,36,48,.25)); border-radius: inherit; box-shadow: 12px 16px 40px rgba(0,0,0,.17); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+.desktop-note-surface { position: relative; width: 100%; height: 100%; min-height: inherit; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 7px; box-sizing: border-box; padding: 15px; overflow: hidden; color: var(--sticky-text, #1d2430); background: color-mix(in srgb, var(--sticky-bg, #ffd84d) calc(100% - var(--sticky-transparency, 20%)), transparent); border: 1px solid var(--sticky-border, rgba(29,36,48,.25)); border-radius: inherit; box-shadow: 12px 16px 40px rgba(0,0,0,.17); backdrop-filter: blur(var(--surface-blur, 12px)); -webkit-backdrop-filter: blur(var(--surface-blur, 12px)); }
 .note-label { color: var(--sticky-accent, #1d2430); font: 10px var(--app-font-mono); text-transform: uppercase; }
 .sticky-add-button { position: absolute; top: 4px; right: 4px; z-index: 2; width: 32px; height: 32px; display: grid; place-items: center; padding: 0; color: var(--sticky-text, #1d2430); background: transparent; border: 0; border-radius: 6px; cursor: pointer; }
 .sticky-add-button:hover, .sticky-add-button:active { color: var(--sticky-text, #1d2430); background: transparent; transform: none; }
@@ -206,8 +206,8 @@ button { cursor: pointer; }
   border-radius: 10px;
   background: rgba(23, 25, 45, .98);
   box-shadow: 0 24px 70px rgba(0,0,0,.4), 0 2px 0 rgba(255,255,255,.05) inset;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(var(--surface-blur, 12px));
+  -webkit-backdrop-filter: blur(var(--surface-blur, 12px));
   cursor: default;
   animation: window-in .07s ease-out both;
 }
@@ -314,7 +314,7 @@ button { cursor: pointer; }
 }
 .contact-copy { max-width: 400px; }.contact-copy h2 { font-size: 42px; }.contact-button { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 11px 14px; background: #e4ff5b; color: #111326; border-color: #e4ff5b; border-radius: 6px; font-size: 12px; font-weight: 600; margin-top: 12px; }
 .terminal-body { padding: 20px; color: #c8cad9; cursor: text; font: 12px/1.7 var(--app-font-mono); }.terminal-entry { margin-top: 8px; }.terminal-line { display: flex; align-items: baseline; gap: 8px; }.terminal-prompt, .terminal-hint { color: #e4ff5b; }.terminal-path { color: #86d9ee; }.terminal-command { color: #f3f0e3; }.terminal-output { color: #aeb4ca; margin: 4px 0 9px; white-space: pre-wrap; overflow-wrap: anywhere; cursor: text; }.terminal-error { color: #ff9b8b; }.terminal-examples { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 12px; color: #8d92ae; }.terminal-examples button { padding: 3px 6px; color: #dce3ee; background: #252a43; border: 1px solid #414862; border-radius: 4px; font: inherit; cursor: pointer; }.terminal-examples button:hover, .terminal-examples button:focus-visible { color: #111326; background: #e4ff5b; border-color: #e4ff5b; outline: none; }.terminal-form { display: flex; align-items: baseline; gap: 8px; min-width: max-content; padding-bottom: 4px; }.terminal-input { flex: 1; min-width: 120px; color: #f3f0e3; background: transparent; border: 0; outline: 0; font: inherit; caret-color: #e4ff5b; }
-.dock { position: fixed; z-index: 40; display: flex; gap: 7px; padding: 8px 10px; border: 1px solid rgba(214,221,255,.18); border-radius: 15px; background: rgba(28,31,54,.82); box-shadow: 0 10px 28px rgba(0,0,0,.26); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); touch-action: none; cursor: grab; }
+.dock { position: fixed; z-index: 40; display: flex; gap: 7px; padding: 8px 10px; border: 1px solid rgba(214,221,255,.18); border-radius: 15px; background: rgba(28,31,54,.82); box-shadow: 0 10px 28px rgba(0,0,0,.26); backdrop-filter: blur(var(--surface-blur, 12px)); -webkit-backdrop-filter: blur(var(--surface-blur, 12px)); touch-action: none; cursor: grab; }
 .dock:active { cursor: grabbing; }
 .dock.dock-bottom { bottom: 22px; left: 50%; transform: translateX(-50%); flex-direction: row; align-items: flex-end; }
 .dock.dock-top { top: 64px; left: 50%; transform: translateX(-50%); flex-direction: row; align-items: flex-start; }
@@ -394,6 +394,7 @@ button { cursor: pointer; }
   grid-template-columns: 172px 1fr;
   height: 100%;
   min-height: 0;
+  transition: grid-template-columns .2s ease;
 }
 
 /* Settings nav sidebar */
@@ -405,6 +406,7 @@ button { cursor: pointer; }
   border-right: 1px solid rgba(214,221,255,.1);
   background: rgba(20, 22, 42, .6);
   overflow-y: auto;
+  transition: padding .2s ease, border-color .2s ease, background .2s ease;
 }
 
 .theme-light .settings-nav {
@@ -450,6 +452,51 @@ button { cursor: pointer; }
   min-height: 0;
   padding: 22px 24px;
   overflow-y: auto;
+}
+
+@container settings-window (max-width: 560px) {
+  .settings-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .settings-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px 10px;
+    overflow: hidden;
+    border-right: 0;
+    border-bottom: 1px solid rgba(214,221,255,.1);
+    animation: settings-subnav-in .2s ease-out both;
+  }
+
+  .theme-light .settings-nav {
+    border-right-color: transparent;
+    border-bottom-color: rgba(26,83,91,.12);
+  }
+
+  .settings-nav-item {
+    min-width: 0;
+    justify-content: center;
+    padding-inline: 8px;
+    text-align: center;
+  }
+
+  .settings-content {
+    padding: 18px;
+  }
+}
+
+@keyframes settings-subnav-in {
+  from {
+    opacity: .72;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .settings-heading {
@@ -1094,8 +1141,8 @@ button { cursor: pointer; }
 /* System bar needs backdrop on picture wallpaper */
 .wallpaper-picture .system-bar,
 .wallpaper-color .system-bar {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--surface-blur, 12px));
+  -webkit-backdrop-filter: blur(var(--surface-blur, 12px));
 }
 
 .hidden-window { display: none; }
@@ -1534,7 +1581,7 @@ button { cursor: pointer; }
 
 @container settings-window (min-width: 620px) {
   .settings-transparency-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -1980,20 +2027,20 @@ button { cursor: pointer; }
   background-color: var(--fes-scrollbar-thumb-hover);
 }
 
-/* --- No transparency (remove backdrop filters, force opaque) --- */
-[data-no-transparency] .window,
-[data-no-transparency] .window-header,
-[data-no-transparency] .dock,
-[data-no-transparency] .desktop-context-menu,
-[data-no-transparency] .context-menu-surface,
-[data-no-transparency] .dock-mobile-menu,
-[data-no-transparency] .dock-tablet-menu,
-[data-no-transparency] .desktop-note,
-[data-no-transparency] .desktop-note-surface,
-[data-no-transparency] .sticky-note-surface,
-[data-no-transparency] .settings-nav,
-[data-no-transparency] .settings-toggle-row,
-[data-no-transparency] .settings-speed-group {
+/* --- No blur (independent from surface transparency) --- */
+[data-no-blur] .window,
+[data-no-blur] .window-header,
+[data-no-blur] .dock,
+[data-no-blur] .desktop-context-menu,
+[data-no-blur] .context-menu-surface,
+[data-no-blur] .dock-mobile-menu,
+[data-no-blur] .dock-tablet-menu,
+[data-no-blur] .desktop-note,
+[data-no-blur] .desktop-note-surface,
+[data-no-blur] .sticky-note-surface,
+[data-no-blur] .settings-nav,
+[data-no-blur] .settings-toggle-row,
+[data-no-blur] .settings-speed-group {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }

@@ -31,6 +31,7 @@ The site simulates a desktop OS on large screens and becomes a managed app inter
 - Desktop-only apps: Terminal and Stickies.
 - Hide desktop launchers outside desktop mode.
 - Keep tablet/mobile navigation fixed at the bottom with visible labels.
+- Every resizable window with side navigation must respond to its own container width. At narrow widths, smoothly transform the sidebar into a horizontal sub-navigation toolbar directly below the window toolbar while preserving DOM and keyboard order, active state, and non-overlapping content geometry.
 - The non-desktop Mode item toggles light/dark theme using Keyline `Sun` and `Moon` icons.
 - Managed windows stay 8px below the system bar.
 - Tablet portrait and mobile windows are fully opaque.

@@ -268,6 +268,20 @@ test('uses intentional cursors while allowing text selection only in stickies', 
   expect(await cursorFor(page.getByTestId('window-about').locator('.window-resize-se'))).toBe('nwse-resize');
 });
 
+test('lists work files with names that match the selected projects', async ({ page }) => {
+  await page.getByTestId('button-dock-terminal').click();
+  const input = page.getByTestId('input-terminal-command');
+  await input.fill('ls ~/work');
+  await input.press('Enter');
+
+  const output = page.getByTestId('window-terminal').locator('.terminal-output').last();
+  await expect(output).toContainText('intuitive-surgical-design-system.md');
+  await expect(output).toContainText('simnow-2-da-vinci-simulator.md');
+  await expect(output).toContainText('cedar-rei-design-system.md');
+  await expect(output).toContainText('windows-10-language-installer.md');
+  await expect(output).not.toContainText('orbit-crm');
+});
+
 test('keeps mobile and tablet dock labels free of desktop tooltip effects', async ({ page }) => {
   for (const viewport of [
     { width: 390, height: 844 },

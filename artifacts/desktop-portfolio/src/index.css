@@ -148,7 +148,7 @@ button { cursor: pointer; }
 .desktop-launcher-contact .desktop-app-icon { color: #b7fff3; background: linear-gradient(145deg, #176f70, #0a3e46); border-color: #4a9b98; }
 .desktop-launcher-stickies-app .desktop-app-icon { color: #392600; background: linear-gradient(145deg, #ffd96a, #d99520); border-color: #ffe39a; }
 .desktop-app:hover .desktop-app-icon, .desktop-app.is-open .desktop-app-icon { filter: brightness(1.12); border-color: rgba(228,255,91,.65); }
-.desktop-folder-label { max-width: 84px; overflow: hidden; padding: 2px 5px; border-radius: 4px; font: 11px var(--app-font-sans); line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+.desktop-folder-label { box-sizing: border-box; width: fit-content; max-width: 84px; max-height: calc(2.4em + 4px); overflow: hidden; padding: 2px 5px; border-radius: 4px; font: 11px var(--app-font-sans); line-height: 1.2; text-overflow: clip; white-space: normal; overflow-wrap: normal; }
 .desktop-folder.is-open .desktop-folder-label { color: #fff; background: #3568a8; }
 .desktop-launcher-work.is-open .desktop-folder-label { background: #913047; }
 .desktop-folder:focus-visible .desktop-folder-label { outline: 1px solid rgba(134,217,238,.9); outline-offset: 2px; }

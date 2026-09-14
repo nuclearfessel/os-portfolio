@@ -574,21 +574,21 @@ const shellFiles: Record<string, ShellNode> = {
   '/': { type: 'directory' },
   '/home': { type: 'directory' },
   '/home/fes': { type: 'directory' },
-  '/home/fes/README.md': { type: 'file', content: 'Fes Naqvi\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd work, cat README.md, open work' },
+  '/home/fes/README.md': { type: 'file', content: 'Fes Naqvi\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd selected-work, cat README.md, open work' },
   '/home/fes/about': { type: 'directory' },
   '/home/fes/about/bio.txt': { type: 'file', content: 'Frontend engineer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
   '/home/fes/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
-  '/home/fes/work': { type: 'directory' },
-  '/home/fes/work/intuitive-digital-ds.md': { type: 'file', content: 'Intuitive Surgical Design System\nLead production, documentation and library management as adoption grew from 1 to 25 product teams.\nMar 2022 - Aug 2026' },
-  '/home/fes/work/simnow-2-ds.md': { type: 'file', content: 'SimNow 2.0 — da Vinci Simulator UI update\nUnified the da Vinci console and Inuitive Digital design systems for surgeon training simulator UI.\nMar 2022 - Jan 2025' },
-  '/home/fes/work/cedar-rei-ds.md': { type: 'file', content: "Cedar — REI's Design System\nLibrary and tooling contributions to Cedar, REI's open-source design system\nJune 2019 – June 2020" },
-  '/home/fes/work/win10-lang-installer.md': { type: 'file', content: "Microsoft Windows 10 Language Installer\nRedesigned Windows 10's language pack installer flow as a clearer, focused modal-dialog experience\n2017–2018" },
+  '/home/fes/selected-work': { type: 'directory' },
+  '/home/fes/selected-work/intuitive-digital-ds.md': { type: 'file', content: 'Intuitive Surgical Design System\nLead production, documentation and library management as adoption grew from 1 to 25 product teams.\nMar 2022 - Aug 2026' },
+  '/home/fes/selected-work/simnow-2-ds.md': { type: 'file', content: 'SimNow 2.0 — da Vinci Simulator UI update\nUnified the da Vinci console and Inuitive Digital design systems for surgeon training simulator UI.\nMar 2022 - Jan 2025' },
+  '/home/fes/selected-work/cedar-rei-ds.md': { type: 'file', content: "Cedar — REI's Design System\nLibrary and tooling contributions to Cedar, REI's open-source design system\nJune 2019 – June 2020" },
+  '/home/fes/selected-work/win10-lang-installer.md': { type: 'file', content: "Microsoft Windows 10 Language Installer\nRedesigned Windows 10's language pack installer flow as a clearer, focused modal-dialog experience\n2017–2018" },
   '/home/fes/contact': { type: 'directory' },
   '/home/fes/contact/contact.txt': { type: 'file', content: 'Email: hello@fesnaqvi.dev\nStatus: Open to thoughtful product partnerships.' },
 };
 
 const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd work', 'cat ~/work/intuitive-digital-ds.md', 'open work', 'theme light', 'history', 'clear'];
+const shellExamples = ['ls', 'cd selected-work', 'cat ~/selected-work/intuitive-digital-ds.md', 'open work', 'theme light', 'history', 'clear'];
 
 function normalizeShellPath(cwd: string, target = '~') {
   const home = '/home/fes';
@@ -1975,7 +1975,7 @@ function Home() {
         {showDesktopIcons && workspaceMode === 'desktop' && (
           <div className="desktop-folders" aria-label="Desktop applications and folders">
             <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} />
-            <DesktopFolder singleTap={singleTapLaunch} id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} />
+            <DesktopFolder singleTap={singleTapLaunch} id="work" label="selected work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} />
             <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
             <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<Mail size={30} strokeWidth={1.7} />} />
             <DesktopFolder singleTap={singleTapLaunch} id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<StickyNote size={30} strokeWidth={1.7} />} />
@@ -2395,7 +2395,7 @@ function Home() {
           });
         }}
       >
-        <DockItem className="dock-item" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open selected work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Selected work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
         <DockItem className="dock-item" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
         <DockItem className="dock-item" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><Mail size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
         {workspaceMode !== 'desktop' && (

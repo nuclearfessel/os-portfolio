@@ -884,6 +884,15 @@ function Home() {
   const managedLayout = workspaceMode === 'managed';
   const effectiveDockPosition: DockPosition = workspaceMode === 'desktop' && !coarsePointer ? dockPosition : 'bottom';
   const singleTapLaunch = workspaceMode !== 'desktop' || coarsePointer;
+  useEffect(() => {
+    const suppressNativeContextMenu = (event: MouseEvent) => {
+      event.preventDefault();
+    };
+    document.addEventListener('contextmenu', suppressNativeContextMenu, { capture: true });
+    return () => {
+      document.removeEventListener('contextmenu', suppressNativeContextMenu, { capture: true });
+    };
+  }, []);
   const getCurrentDesktopState = (): SavedDesktopState => ({
     folderPositions: workspaceMode === 'desktop' ? folderPositions : desktopGeometryRef.current.folderPositions,
     itemPositions: workspaceMode === 'desktop' ? dragPositions : desktopGeometryRef.current.dragPositions,

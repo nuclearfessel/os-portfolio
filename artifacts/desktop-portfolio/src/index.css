@@ -61,6 +61,7 @@ button { cursor: pointer; }
   min-height: 100dvh;
   overflow: hidden;
   position: relative;
+  -webkit-touch-callout: none;
   background:
     radial-gradient(circle at 85% 20%, rgba(44, 60, 106, .36), transparent 32rem),
     radial-gradient(circle at 8% 88%, rgba(72, 43, 82, .28), transparent 26rem),

@@ -138,19 +138,10 @@ function SettingsWindow({ prefs, updatePrefs, onClose }) {
           <SettingsSectionHeader label="Display" description="Adjust visual behavior." />
           <SettingsToggleRow
             id="a11y-transparency"
-            label="Window transparency effects"
+            label="Transparency effects"
             checked={prefs.windowTransparency}
             onChange={(v) => updatePrefs({ windowTransparency: v })}
           />
-          {prefs.windowTransparency && (
-            <SettingsSliderGroup
-              id="a11y-transparency-level"
-              label="Transparency level"
-              value={prefs.transparencyLevel}
-              min={0} max={70} step={5}
-              onChange={(v) => updatePrefs({ transparencyLevel: v })}
-            />
-          )}
           <SettingsDivider />
         </div>
       </div>

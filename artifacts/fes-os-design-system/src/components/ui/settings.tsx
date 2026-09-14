@@ -177,8 +177,8 @@ export type SettingsToggleRowProps = {
  * ```tsx
  * <SettingsToggleRow
  *   id="a11y-transparency"
- *   label="Window transparency effects"
- *   description="Enables blur and translucency on windows."
+ *   label="Transparency effects"
+ *   description="Enables transparency across system surfaces."
  *   checked={prefs.windowTransparency}
  *   onChange={(v) => updatePrefs({ windowTransparency: v })}
  * />
@@ -268,15 +268,15 @@ export type SettingsSliderGroupProps = {
 /**
  * Conditional transparency/range slider group with live percentage output.
  *
- * Show this component only when the parent toggle is on — e.g. when
- * `windowTransparency === true`. The `<output>` element announces live
+ * Show level controls in Personalization while the system transparency toggle
+ * is on. The `<output>` element announces live
  * changes to assistive technology.
  *
  * ```tsx
  * {prefs.windowTransparency && (
  *   <SettingsSliderGroup
- *     id="a11y-transparency-level"
- *     label="Transparency level"
+ *     id="personalization-window-transparency"
+ *     label="Window transparency"
  *     value={prefs.transparencyLevel}
  *     min={0}
  *     max={70}

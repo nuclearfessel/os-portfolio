@@ -156,35 +156,71 @@ test.describe('Always show scrollbars toggle', () => {
 });
 
 // ═════════════════════════════════════════════════════════════════════════════
-// 3. Window transparency toggle
+// 3. System transparency controls
 // ═════════════════════════════════════════════════════════════════════════════
 
-test.describe('Window transparency toggle', () => {
+test.describe('Transparency effects', () => {
   test('transparency is on by default', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
     const switchEl = page.getByTestId('settings-a11y-transparency-switch');
     await expect(switchEl).toHaveAttribute('aria-checked', 'true');
-    await expect(page.getByTestId('settings-a11y-transparency-slider')).toHaveValue('20');
+    await goToPersonalization(page);
+    await expect(page.getByTestId('settings-personalization-window-transparency-slider')).toHaveValue('20');
+    await expect(page.getByTestId('settings-personalization-sticky-transparency-slider')).toHaveValue('20');
   });
 
-  test('transparency slider updates the level and root CSS variable', async ({ page }) => {
+  test('window transparency slider updates the level and root CSS variable', async ({ page }) => {
     await openSettings(page);
-    await goToAccessibility(page);
-    const slider = page.getByTestId('settings-a11y-transparency-slider');
+    await goToPersonalization(page);
+    const slider = page.getByTestId('settings-personalization-window-transparency-slider');
     await slider.fill('55');
-    await expect(page.getByTestId('settings-a11y-transparency-value')).toHaveText('55%');
+    await expect(page.getByTestId('settings-personalization-window-transparency-value')).toHaveText('55%');
     await expect(slider).toHaveAttribute('aria-valuetext', '55% transparent');
     expect(await page.evaluate(() =>
       document.documentElement.style.getPropertyValue('--accessibility-transparency'),
     )).toBe('55%');
   });
 
-  test('turning transparency off hides the level slider', async ({ page }) => {
+  test('sticky transparency slider updates the level and root CSS variable', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    const slider = page.getByTestId('settings-personalization-sticky-transparency-slider');
+    await slider.fill('45');
+    await expect(page.getByTestId('settings-personalization-sticky-transparency-value')).toHaveText('45%');
+    await expect(slider).toHaveAttribute('aria-valuetext', '45% transparent');
+    expect(await page.evaluate(() =>
+      document.documentElement.style.getPropertyValue('--sticky-transparency'),
+    )).toBe('45%');
+  });
+
+  test('transparency sliders sit side by side in a large window and stack when narrowed', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    const settingsWindow = page.getByTestId('window-settings');
+    const sliderGrid = page.getByTestId('settings-transparency-grid');
+
+    await expect.poll(() => sliderGrid.evaluate((element) =>
+      getComputedStyle(element).gridTemplateColumns.split(' ').length,
+    )).toBe(2);
+
+    await settingsWindow.evaluate((element) => {
+      element.style.width = '560px';
+    });
+
+    await expect.poll(() => sliderGrid.evaluate((element) =>
+      getComputedStyle(element).gridTemplateColumns.split(' ').length,
+    )).toBe(1);
+  });
+
+  test('turning transparency off replaces both level sliders with guidance', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
     await page.getByTestId('settings-a11y-transparency-switch').click();
-    await expect(page.getByTestId('settings-a11y-transparency-group')).not.toBeVisible();
+    await goToPersonalization(page);
+    await expect(page.getByTestId('settings-personalization-window-transparency')).not.toBeVisible();
+    await expect(page.getByTestId('settings-personalization-sticky-transparency')).not.toBeVisible();
+    await expect(page.getByTestId('settings-transparency-disabled-notice')).toBeVisible();
   });
 
   test('turning transparency off sets data-no-transparency on <html>', async ({ page }) => {
@@ -480,16 +516,28 @@ test.describe('Accessibility prefs persist across reload', () => {
     expect(attrSet).toBe(true);
   });
 
-  test('transparency level survives reload', async ({ page }) => {
+  test('window transparency level survives reload', async ({ page }) => {
     await openSettings(page);
-    await goToAccessibility(page);
-    await page.getByTestId('settings-a11y-transparency-slider').fill('45');
+    await goToPersonalization(page);
+    await page.getByTestId('settings-personalization-window-transparency-slider').fill('45');
     await closeSettings(page);
     await page.reload();
     await page.waitForLoadState('networkidle');
     await openSettings(page);
-    await goToAccessibility(page);
-    await expect(page.getByTestId('settings-a11y-transparency-slider')).toHaveValue('45');
+    await goToPersonalization(page);
+    await expect(page.getByTestId('settings-personalization-window-transparency-slider')).toHaveValue('45');
+  });
+
+  test('sticky transparency level survives reload', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    await page.getByTestId('settings-personalization-sticky-transparency-slider').fill('35');
+    await closeSettings(page);
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await openSettings(page);
+    await goToPersonalization(page);
+    await expect(page.getByTestId('settings-personalization-sticky-transparency-slider')).toHaveValue('35');
   });
 
   test('animations-off pref survives reload', async ({ page }) => {

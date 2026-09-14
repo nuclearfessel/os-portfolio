@@ -84,9 +84,19 @@ The consuming product controls this switch based on viewport state or a CSS medi
 | State | Visual |
 |---|---|
 | Default | Border + background from consumer classes |
-| Active | `active` class applied; consumer can target `.active` in CSS |
-| Hover | `transition-colors duration-100` — consumer supplies hover utility |
-| Focus-visible | Inherits `focus-visible:ring-2 focus-visible:ring-ring` from consumer or browser |
+| Active | Full-tile contrast ring plus a 16–26px directional pill on the nearest Dock edge; never rely on a tiny dot alone |
+| Hover | Branded apps retain their icon foreground and tile fill; use brightness, elevation, and a contrast-safe outer ring for feedback |
+| Focus-visible | Matches the hover treatment and adds a clearly visible theme-appropriate outline |
+
+Treat branded app items and neutral utility controls as separate state systems.
+App hover and focus must not replace the app's identity color. Utility controls
+may change foreground and background together, but the resulting pair must meet
+WCAG AA contrast in both light and dark themes.
+
+The active state must remain distinguishable without hover. Use both a full-tile
+ring and a directional edge pill so the signal remains clear against branded
+tiles, neutral controls, and changing wallpaper. On mobile and tablet, keep the
+pill visible beneath the inline label.
 
 ---
 
@@ -111,6 +121,9 @@ The consuming product controls this switch based on viewport state or a CSS medi
 | Supply `aria-label` on every `DockItem` | Rely on `DockItemLabel` text as the only accessible name |
 | Use `presentation="tooltip"` only on desktop | Show tooltip labels on mobile (they overlap other content) |
 | Keep Dock icons in a fixed footprint across states | Resize the icon on hover/active |
+| Combine a full-tile ring with a substantial edge pill for active items | Use a 4px dot as the only active indicator |
+| Preserve branded tile and glyph colors on hover/focus | Apply one global hover foreground to every Dock item |
+| Change utility foreground and background as a tested pair | Change only the foreground and assume contrast remains sufficient |
 
 ---
 

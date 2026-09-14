@@ -678,9 +678,65 @@ button { cursor: pointer; }
 
 /* Color wallpaper row */
 .settings-wallpaper-color-row {
-  display: flex;
+  display: grid;
   align-items: flex-start;
   gap: 14px;
+}
+
+.settings-color-presets {
+  display: flex;
+  gap: 10px;
+}
+
+.settings-color-preset {
+  display: grid;
+  gap: 5px;
+  justify-items: start;
+  padding: 0;
+  color: #aeb2cb;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: 10px var(--app-font-sans);
+}
+
+.theme-light .settings-color-preset {
+  color: #526660;
+}
+
+.settings-color-preset-swatch {
+  width: 48px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: 1px solid rgba(214,221,255,.25);
+  border-radius: 7px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.18);
+}
+
+.settings-color-preset[data-testid="settings-color-preset-light"] .settings-color-preset-swatch {
+  color: #0b665d;
+}
+
+.settings-color-preset.is-selected .settings-color-preset-swatch {
+  border: 2px solid #e4ff5b;
+  box-shadow: 0 0 0 2px rgba(228,255,91,.18);
+}
+
+.theme-light .settings-color-preset.is-selected .settings-color-preset-swatch {
+  border-color: #0b665d;
+  box-shadow: 0 0 0 2px rgba(11,102,93,.14);
+}
+
+.settings-color-preset:focus-visible {
+  outline: 2px solid #e4ff5b;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.theme-light .settings-color-preset:focus-visible {
+  outline-color: #0b665d;
 }
 
 .settings-color-wheel {
@@ -1928,6 +1984,17 @@ button { cursor: pointer; }
   animation-iteration-count: 1 !important;
   transition-duration: 0.001ms !important;
   transition-delay: 0.001ms !important;
+}
+
+/* Combined reduced-effects mode: prioritize immediate interaction feedback. */
+[data-fast-ui],
+[data-fast-ui] *,
+[data-fast-ui] *::before,
+[data-fast-ui] *::after {
+  scroll-behavior: auto !important;
+  animation: none !important;
+  transition: none !important;
+  transition-delay: 0s !important;
 }
 
 /* --- Animation speed: Less (slower, ~2× durations) --- */

@@ -256,6 +256,23 @@ test.describe('UI animations toggle', () => {
     );
     expect(attrSet).toBe(false);
   });
+
+  test('turning animations and transparency off activates fast UI mode', async ({ page }) => {
+    await openSettings(page);
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-animations-switch').click();
+    await page.getByTestId('settings-a11y-transparency-switch').click();
+    await expect.poll(() => page.evaluate(() =>
+      document.documentElement.hasAttribute('data-fast-ui'),
+    )).toBe(true);
+
+    const timing = await page.getByTestId('window-settings').evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { animationName: style.animationName, transitionDuration: style.transitionDuration };
+    });
+    expect(timing.animationName).toBe('none');
+    expect(timing.transitionDuration).toBe('0s');
+  });
 });
 
 test.describe('Animation speed chips', () => {

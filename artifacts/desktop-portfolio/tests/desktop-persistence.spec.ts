@@ -1220,6 +1220,24 @@ test('Settings wallpaper mode: color removes background image and applies solid 
   expect(saved.wallpaperLight.color).toBe('#345678');
 });
 
+test('solid color mode offers the original light and dark default color blocks', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+
+  const lightPreset = page.getByTestId('settings-color-preset-light');
+  const darkPreset = page.getByTestId('settings-color-preset-dark');
+  await expect(lightPreset).toHaveAttribute('aria-pressed', 'true');
+  await expect(darkPreset).toHaveAttribute('aria-pressed', 'false');
+
+  await darkPreset.click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('111326');
+  await expect(darkPreset).toHaveAttribute('aria-pressed', 'true');
+
+  await lightPreset.click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('E8F0EC');
+  await expect(lightPreset).toHaveAttribute('aria-pressed', 'true');
+});
+
 test('wallpaper choice persists across page reload', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   await expect(page.getByTestId('window-settings')).toBeVisible();
@@ -1230,14 +1248,16 @@ test('wallpaper choice persists across page reload', async ({ page }) => {
 
   await page.getByTestId('settings-theme-dark').click();
   await expect(page.getByTestId('settings-wallpaper-mode-color-dark')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('cp-field-hex')).toHaveValue('345678');
-  await expect(page.locator('main.os-shell')).toHaveCSS('background-color', 'rgb(52, 86, 120)');
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('111326');
+  await expect(page.locator('main.os-shell')).toHaveCSS('background-color', 'rgb(17, 19, 38)');
 
   await page.getByTestId('button-close-settings').click();
 
   const savedBefore = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
   expect(savedBefore.wallpaperLight.mode).toBe('color');
   expect(savedBefore.wallpaperDark.mode).toBe('color');
+  expect(savedBefore.wallpaperLight.color).toBe('#345678');
+  expect(savedBefore.wallpaperDark.color).toBe('#111326');
   expect(savedBefore.theme).toBe('dark');
 
   await page.reload();

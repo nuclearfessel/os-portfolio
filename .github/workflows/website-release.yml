@@ -1,0 +1,87 @@
+name: Release website ZIP
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: website-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-website-zip:
+    name: Build and release website ZIP
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck portfolio
+        run: pnpm --filter @workspace/desktop-portfolio run typecheck
+
+      - name: Build portfolio
+        run: pnpm --filter @workspace/desktop-portfolio run build
+
+      - name: Create release metadata
+        id: release
+        shell: bash
+        run: |
+          major=$(( (GITHUB_RUN_NUMBER - 1) / 99 + 1 ))
+          minor=$(( (GITHUB_RUN_NUMBER - 1) % 99 + 1 ))
+          printf -v version 'v%02d.%02d' "$major" "$minor"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=site-package-${version}" >> "$GITHUB_OUTPUT"
+          echo "zip=site-package-${version}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Package deployable website
+        shell: bash
+        run: |
+          cd artifacts/desktop-portfolio/dist/public
+          zip -r "$GITHUB_WORKSPACE/${{ steps.release.outputs.zip }}" .
+
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          RELEASE_ZIP: ${{ steps.release.outputs.zip }}
+        run: |
+          release_flags=()
+          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
+            release_flags+=(--prerelease)
+          fi
+
+          release_notes="Automated deployable website package for branch \`${GITHUB_REF_NAME}\` at commit \`${GITHUB_SHA::7}\`."
+
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$RELEASE_ZIP" --clobber
+          else
+            gh release create "$RELEASE_TAG" \
+              "$RELEASE_ZIP" \
+              --target "$GITHUB_SHA" \
+              --title "Site package ${RELEASE_VERSION}" \
+              --notes "$release_notes" \
+              "${release_flags[@]}"
+          fi

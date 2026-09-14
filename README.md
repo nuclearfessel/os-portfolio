@@ -83,11 +83,11 @@ pnpm run build
 pnpm --filter @workspace/desktop-portfolio run test:e2e
 ```
 
-## Automated website ZIPs
+## Automated website releases
 
-Every push to `main` or any other branch runs the **Build website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, packages the contents of `artifacts/desktop-portfolio/dist/public/`, and uploads a deployable ZIP named with the branch and commit.
+Every push to `main` or any other branch runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, packages the contents of `artifacts/desktop-portfolio/dist/public/`, and publishes a deployable ZIP such as `site-package-v01.01.zip` under the repository’s **Releases** section.
 
-Download a build from the corresponding workflow run under the repository’s **Actions** tab. Website ZIP artifacts are retained for 30 days.
+Branch builds are marked as prereleases. Builds from `main` are published as standard releases.
 
 ## Design-system development
 

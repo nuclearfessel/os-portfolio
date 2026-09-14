@@ -58,6 +58,11 @@ breakpoints, including desktop, tablet-menu, and mobile-menu surfaces. Change
 the surface background alpha rather than the container's `opacity`; Dock items,
 desktop launcher tiles, glyphs, and labels must remain fully opaque.
 
+When `data-no-transparency` is present, every participating surface must become
+opaque together: windows and headers, every Dock variant, menus and submenus,
+Settings navigation, and sticky-note surfaces. Do not leave individual
+translucent surfaces dependent on their default alpha.
+
 ---
 
 ## Consumer responsibility
@@ -122,6 +127,7 @@ document.documentElement.style.removeProperty('--surface-blur');
 - [ ] When `data-no-blur` is set, no backdrop blur appears on any `.fes-surface-translucent` element.
 - [ ] Desktop, tablet, and mobile Dock surfaces all respond to the window transparency level.
 - [ ] Dock items and desktop launcher icons remain fully opaque at every transparency level.
+- [ ] Turning transparency off makes every participating surface fully opaque.
 
 ---
 

@@ -58,6 +58,10 @@ Managed tablet and mobile layouts may replace overlapping layers with
 single-surface navigation. Preserve that navigation model rather than applying
 desktop z-index behavior at narrow breakpoints.
 
+Sticky color presets must be intrinsically opaque. Apply translucency only
+through the shared sticky transparency variable so the global
+`data-no-transparency` state can make every preset fully opaque.
+
 ---
 
 ## Responsive transformation

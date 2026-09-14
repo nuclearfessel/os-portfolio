@@ -118,7 +118,7 @@ Mobile navigation must remain fixed at the bottom — do not hide it or make it 
 | Give every DockItem an `aria-label` | Rely on DockItemLabel text as the accessible name |
 | Keep the Dock fixed at the bottom on mobile | Make the Dock scroll horizontally on small screens |
 | Use `active` prop to reflect current section | Manage active state only via CSS |
-| Use elevation, brightness, and an outer ring for branded app feedback | Replace every app glyph with one global hover color |
+| Use a flat outline and border change for branded app feedback | Move, brighten, emboss, or recolor Dock items on hover |
 | Keep the active ring and edge pill visible in every theme and breakpoint | Hide the active indicator on mobile or rely on color alone |
 
 ---

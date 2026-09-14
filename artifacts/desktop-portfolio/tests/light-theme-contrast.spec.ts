@@ -180,7 +180,8 @@ test('Dock hover and focus preserve app identity and keep utility controls legib
         const style = getComputedStyle(element);
         return { color: style.color, backgroundImage: style.backgroundImage };
       })).toEqual(before);
-      await expect(item).not.toHaveCSS('filter', 'none');
+      await expect(item).toHaveCSS('filter', 'none');
+      await expect(item).toHaveCSS('transform', 'none');
       await item.focus();
       await expect.poll(() => item.evaluate((element) => {
         const style = getComputedStyle(element);

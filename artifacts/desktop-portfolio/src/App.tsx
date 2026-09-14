@@ -514,7 +514,7 @@ function WindowFrame({
 }) {
   return (
     <WindowSurface
-      className={`window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
+      className={`window fes-scrollbar-window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
       onMouseDown={onFocus}
       onContextMenu={(event) => {
         event.preventDefault();
@@ -713,6 +713,8 @@ function TransparencySlider({
   onChange: (value: number) => void;
   testId: string;
 }) {
+  const progress = (value / 70) * 100;
+
   return (
     <div className="settings-transparency-group" data-testid={testId}>
       <div className="settings-transparency-heading">
@@ -726,19 +728,28 @@ function TransparencySlider({
           {value}%
         </output>
       </div>
-      <input
-        id={id}
-        className="settings-transparency-slider"
-        type="range"
-        min="0"
-        max="70"
-        step="5"
-        value={value}
-        onChange={(event) => onChange(Number(event.currentTarget.value))}
-        aria-labelledby={`${id}-label`}
-        aria-valuetext={`${value}% transparent`}
-        data-testid={`${testId}-slider`}
-      />
+      <div
+        className="settings-transparency-control"
+        style={{
+          '--slider-progress': `${progress}%`,
+          '--slider-thumb-left': `calc(${progress}% - ${(progress / 100) * 14}px)`,
+        } as React.CSSProperties}
+        data-testid={`${testId}-track`}
+      >
+        <input
+          id={id}
+          className="settings-transparency-slider"
+          type="range"
+          min="0"
+          max="70"
+          step="5"
+          value={value}
+          onChange={(event) => onChange(Number(event.currentTarget.value))}
+          aria-labelledby={`${id}-label`}
+          aria-valuetext={`${value}% transparent`}
+          data-testid={`${testId}-slider`}
+        />
+      </div>
       <div className="settings-transparency-scale" aria-hidden="true">
         <span>Subtle</span>
         <span>More transparent</span>

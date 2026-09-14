@@ -6,7 +6,7 @@ import {
   Check, FileText as StickyNote, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
   Moon, Plus, Settings, Sun, Terminal, CircleUser as UserRound, Wifi, Eye, X,
 } from '@keyline-icons/react';
-import { Mail as MailFill } from '@keyline-icons/react/fill';
+import { RiMailSendFill } from 'react-icons/ri';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@workspace/fes-os-design-system/components/ui/toaster';
 import { TooltipProvider } from '@workspace/fes-os-design-system/components/ui/tooltip';
@@ -1671,21 +1671,6 @@ function DesktopFolder({
   );
 }
 
-function ContactMailIcon({ size, testId }: { size: number; testId: string }) {
-  return (
-    <span
-      className="contact-mail-icon"
-      style={{ width: size, height: size }}
-      data-testid={testId}
-      aria-hidden="true"
-    >
-      <MailFill className="contact-mail-layer contact-mail-base" size={size} />
-      <MailFill className="contact-mail-layer contact-mail-coral" size={size} />
-      <span className="contact-mail-status" />
-    </span>
-  );
-}
-
 // Compute desktop wallpaper background style
 function desktopBackground(theme: Theme, wallpaperLight: WallpaperConfig, wallpaperDark: WallpaperConfig, contrastTheme: ContrastTheme): React.CSSProperties {
   // Contrast themes override wallpaper
@@ -2885,7 +2870,7 @@ function Home() {
             <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} appIcon={<UserRound size={31} strokeWidth={1.8} />} />
             <DesktopFolder singleTap={singleTapLaunch} id="work" label="selected work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} appIcon={<FolderGit2 size={31} strokeWidth={1.8} />} />
             <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<Terminal size={31} strokeWidth={1.7} />} />
-            <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<ContactMailIcon size={30} testId="icon-contact-mail-fill" />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<RiMailSendFill size={30} data-testid="icon-contact-mail-fill" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<StickyNote size={30} strokeWidth={1.7} />} />
           </div>
         )}
@@ -3312,7 +3297,7 @@ function Home() {
       >
         <DockItem className="dock-item dock-app-work" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open selected work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Selected work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
         <DockItem className="dock-item dock-app-about" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><UserRound size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
-        <DockItem className="dock-item dock-app-contact" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><ContactMailIcon size={20} testId="icon-dock-contact-mail-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-contact" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><RiMailSendFill size={20} data-testid="icon-dock-contact-mail-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
         {workspaceMode !== 'desktop' && (
             <DockItem
               className={`dock-item dock-mode-toggle mode-${theme}`}

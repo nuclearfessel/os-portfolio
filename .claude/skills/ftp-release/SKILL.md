@@ -68,9 +68,10 @@ Do not add browser-path routing to solve FTP hosting. Production uses relative a
 
 ## Claude source ZIP
 
-`claude-desktop-portfolio-source.zip` is the downloadable handoff bundle. Regenerate it after source, documentation, skill, or production-build changes.
+`claude-src-pack.zip` is the downloadable handoff bundle. Its filename is never versioned. Regenerate it after source, documentation, skill, or production-build changes.
 
 - Include portfolio and design-system source, `CLAUDE.md`, `replit.md`, Markdown documentation, `.claude/skills/`, and a top-level `public/` copy of `dist/public/`.
 - Include `DEPLOYMENT.md` explaining that the top-level `public/` folder is deployable.
 - Exclude `node_modules`, package `dist` folders from the source portion, test reports/results, caches, environment files, and `*.tsbuildinfo`.
-- Run `unzip -tq claude-desktop-portfolio-source.zip` before handoff.
+- Run `bash scripts/package-claude-source.sh claude-src-pack.zip` to build it.
+- Run `unzip -tq claude-src-pack.zip` before handoff.

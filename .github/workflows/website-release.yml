@@ -3,7 +3,7 @@ name: Release website ZIP
 on:
   push:
     branches:
-      - '**'
+      - main
   workflow_dispatch:
 
 permissions:
@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   release-website-zip:
+    if: github.ref == 'refs/heads/main'
     name: Build and release website ZIP
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -52,13 +53,18 @@ jobs:
           printf -v version 'v%02d.%02d' "$major" "$minor"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "tag=site-package-${version}" >> "$GITHUB_OUTPUT"
-          echo "zip=site-package-${version}.zip" >> "$GITHUB_OUTPUT"
+          echo "site_zip=site-package-${version}.zip" >> "$GITHUB_OUTPUT"
+          echo "claude_zip=claude-src-pack.zip" >> "$GITHUB_OUTPUT"
 
       - name: Package deployable website
         shell: bash
         run: |
           cd artifacts/desktop-portfolio/dist/public
-          zip -r "$GITHUB_WORKSPACE/${{ steps.release.outputs.zip }}" .
+          zip -r "$GITHUB_WORKSPACE/${{ steps.release.outputs.site_zip }}" .
+
+      - name: Package Claude source
+        shell: bash
+        run: bash scripts/package-claude-source.sh "${{ steps.release.outputs.claude_zip }}"
 
       - name: Publish GitHub Release
         shell: bash
@@ -66,22 +72,18 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
-          RELEASE_ZIP: ${{ steps.release.outputs.zip }}
+          SITE_ZIP: ${{ steps.release.outputs.site_zip }}
+          CLAUDE_ZIP: ${{ steps.release.outputs.claude_zip }}
         run: |
-          release_flags=()
-          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
-            release_flags+=(--prerelease)
-          fi
-
-          release_notes="Automated deployable website package for branch \`${GITHUB_REF_NAME}\` at commit \`${GITHUB_SHA::7}\`."
+          release_notes="Automated deployable website and Claude source packages for \`main\` at commit \`${GITHUB_SHA::7}\`."
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" "$RELEASE_ZIP" --clobber
+            gh release upload "$RELEASE_TAG" "$SITE_ZIP" "$CLAUDE_ZIP" --clobber
           else
             gh release create "$RELEASE_TAG" \
-              "$RELEASE_ZIP" \
+              "$SITE_ZIP" \
+              "$CLAUDE_ZIP" \
               --target "$GITHUB_SHA" \
-              --title "Site package ${RELEASE_VERSION}" \
-              --notes "$release_notes" \
-              "${release_flags[@]}"
+              --title "Fes OS packages ${RELEASE_VERSION}" \
+              --notes "$release_notes"
           fi

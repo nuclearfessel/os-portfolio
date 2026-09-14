@@ -1,5 +1,5 @@
-# Surface
+# Surface — Redirected
 
-Source: windows, cards, Dock, menus, and notices in `artifacts/desktop-portfolio/src/index.css`.
+Canonical spec: [docs/components/fes-os/surface.md](../../components/fes-os/surface.md)
 
-Variants are flat, raised, and floating. Theme-specific borders and foregrounds must remain readable over the desktop background.
+Related: [WindowSurface](../../components/fes-os/window-surface.md)

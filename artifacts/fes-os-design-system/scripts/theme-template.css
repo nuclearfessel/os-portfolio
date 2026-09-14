@@ -244,6 +244,327 @@
   }
 }
 
+/* ==========================================================================
+   ACCESSIBILITY / USER-PREFERENCE STATE CONTRACTS
+   ==========================================================================
+   These rules are authored here — in the design-system template — so that any
+   app importing the package stylesheet automatically inherits them. The
+   consuming app only has to set/remove the data-attribute on the shell element
+   (e.g. document.documentElement); the CSS here does the rest.
+
+   Attribute authoring pattern (consuming app):
+     document.documentElement.setAttribute('data-always-scrollbars', '');
+     document.documentElement.removeAttribute('data-always-scrollbars');
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. FIXED PALETTE CUSTOM PROPERTIES
+   Generated from color.fixed in tokens.json. DO NOT edit hex values here;
+   edit tokens.json and re-run scripts/build-tokens.mjs.
+
+   Two vars per fixed token:
+     --fixed-*      raw hex — for direct use in backgrounds, previews, style objects
+     --fixed-*-hsl  H S% L% channels — for assignment into semantic hsl() vars
+
+   The raw hex vars are also exposed under the legacy short names used by
+   contrast-theme rules and component previews (--contrast-*, --hc-*).
+   -------------------------------------------------------------------------- */
+:root {
+  /* Wallpaper presets */
+  --fixed-wallpaper-light:              __DS_FIXED_WALLPAPERLIGHTDEFAULT_HEX__;
+  --fixed-wallpaper-light-hsl:          __DS_FIXED_WALLPAPERLIGHTDEFAULT_HSL__;
+  --fixed-wallpaper-dark:               __DS_FIXED_WALLPAPERDARKDEFAULT_HEX__;
+  --fixed-wallpaper-dark-hsl:           __DS_FIXED_WALLPAPERDARKDEFAULT_HSL__;
+
+  /* Low-contrast palette — raw hex (for previews / direct backgrounds) */
+  --contrast-bg:                        __DS_FIXED_LOWCONTRASTBG_HEX__;
+  --contrast-surface:                   __DS_FIXED_LOWCONTRASTSURFACE_HEX__;
+  --contrast-surface-2:                 __DS_FIXED_LOWCONTRASTSURFACE2_HEX__;
+  --contrast-text:                      __DS_FIXED_LOWCONTRASTTEXT_HEX__;
+  --contrast-text-muted:                __DS_FIXED_LOWCONTRASTTEXTMUTED_HEX__;
+  --contrast-accent:                    __DS_FIXED_LOWCONTRASTACCENT_HEX__;
+
+  /* Low-contrast palette — HSL channels (for semantic variable assignment) */
+  --contrast-bg-hsl:                    __DS_FIXED_LOWCONTRASTBG_HSL__;
+  --contrast-surface-hsl:               __DS_FIXED_LOWCONTRASTSURFACE_HSL__;
+  --contrast-surface-2-hsl:             __DS_FIXED_LOWCONTRASTSURFACE2_HSL__;
+  --contrast-text-hsl:                  __DS_FIXED_LOWCONTRASTTEXT_HSL__;
+  --contrast-text-muted-hsl:            __DS_FIXED_LOWCONTRASTTEXTMUTED_HSL__;
+  --contrast-accent-hsl:                __DS_FIXED_LOWCONTRASTACCENT_HSL__;
+
+  /* High-contrast palette — raw hex */
+  --hc-bg:                              __DS_FIXED_HIGHCONTRASTBG_HEX__;
+  --hc-surface:                         __DS_FIXED_HIGHCONTRASTSURFACE_HEX__;
+  --hc-surface-2:                       __DS_FIXED_HIGHCONTRASTSURFACE2_HEX__;
+  --hc-text:                            __DS_FIXED_HIGHCONTRASTTEXT_HEX__;
+  --hc-text-muted:                      __DS_FIXED_HIGHCONTRASTTEXTMUTED_HEX__;
+  --hc-accent:                          __DS_FIXED_HIGHCONTRASTACCENT_HEX__;
+  --hc-accent-alt:                      __DS_FIXED_HIGHCONTRASTACCENTALT_HEX__;
+  --hc-border:                          __DS_FIXED_HIGHCONTRASTBORDER_HEX__;
+  --hc-focus:                           __DS_FIXED_HIGHCONTRASTFOCUS_HEX__;
+
+  /* High-contrast palette — HSL channels */
+  --hc-bg-hsl:                          __DS_FIXED_HIGHCONTRASTBG_HSL__;
+  --hc-surface-hsl:                     __DS_FIXED_HIGHCONTRASTSURFACE_HSL__;
+  --hc-surface-2-hsl:                   __DS_FIXED_HIGHCONTRASTSURFACE2_HSL__;
+  --hc-text-hsl:                        __DS_FIXED_HIGHCONTRASTTEXT_HSL__;
+  --hc-text-muted-hsl:                  __DS_FIXED_HIGHCONTRASTTEXTMUTED_HSL__;
+  --hc-accent-hsl:                      __DS_FIXED_HIGHCONTRASTACCENT_HSL__;
+  --hc-accent-alt-hsl:                  __DS_FIXED_HIGHCONTRASTACCENTALT_HSL__;
+  --hc-border-hsl:                      __DS_FIXED_HIGHCONTRASTBORDER_HSL__;
+  --hc-focus-hsl:                       __DS_FIXED_HIGHCONTRASTFOCUS_HSL__;
+}
+
+/* --------------------------------------------------------------------------
+   2. ALWAYS-VISIBLE SCROLLBARS  [data-always-scrollbars]
+   Applied to the shell element so all descendant scrollable areas show
+   persistent tracks. Uses thin width so narrow panels remain usable.
+   -------------------------------------------------------------------------- */
+[data-always-scrollbars] {
+  scrollbar-width: thin;
+}
+[data-always-scrollbars] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+[data-always-scrollbars] ::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.6);
+  border-radius: 9999px;
+}
+[data-always-scrollbars] ::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.35);
+  border-radius: 9999px;
+}
+[data-always-scrollbars] ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.55);
+}
+.dark [data-always-scrollbars] ::-webkit-scrollbar-track,
+[data-always-scrollbars].dark ::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   3. TRANSLUCENT SURFACE UTILITY CLASS  .fes-surface-translucent
+   Apply this class to any window, dock, or menu surface that should carry
+   adjustable transparency. The class itself uses the CSS variable
+   --accessibility-transparency (a unitless alpha in [0, 0.7]) set by the
+   consuming app. When data-no-transparency is present, backdrop-filter is
+   removed and the background becomes fully opaque.
+
+   Usage in components: add `fes-surface-translucent` alongside bg-* classes.
+   The consuming app sets --accessibility-transparency on :root.
+   -------------------------------------------------------------------------- */
+
+/* Default: moderately translucent (matches the variable's declared fallback). */
+.fes-surface-translucent {
+  --accessibility-transparency: 0.2;
+  background-color: hsl(var(--card) / calc(1 - var(--accessibility-transparency)));
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+}
+
+/* Consuming app enables transparency and sets the desired level */
+[data-transparency-enabled] .fes-surface-translucent {
+  background-color: hsl(var(--card) / calc(1 - var(--accessibility-transparency, 0.2)));
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+}
+
+/* Consuming app disables transparency — fully opaque, no blur */
+[data-no-transparency] .fes-surface-translucent {
+  background-color: hsl(var(--card));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* --------------------------------------------------------------------------
+   4. MOTION CONTRACTS
+   Values and semantics align with the desktop-portfolio implementation.
+   -------------------------------------------------------------------------- */
+
+/* 4a. No animations — durations collapsed to near-zero; events still fire */
+[data-no-animations] *,
+[data-no-animations] *::before,
+[data-no-animations] *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0.001ms !important;
+}
+
+/* 4b. Fast-UI — prioritise immediate interaction feedback: animation and
+   transition fully disabled, smooth scrolling removed.
+   scroll-behavior on the element; animation/transition on all descendants. */
+[data-fast-ui],
+[data-fast-ui] *,
+[data-fast-ui] *::before,
+[data-fast-ui] *::after {
+  scroll-behavior: auto !important;
+  animation: none !important;
+  transition: none !important;
+  transition-delay: 0s !important;
+}
+
+/* 4c. Slower speed — approximately 2× normal durations */
+[data-anim-speed="less"] *,
+[data-anim-speed="less"] *::before,
+[data-anim-speed="less"] *::after {
+  animation-duration: 2s !important;
+  transition-duration: 0.6s !important;
+}
+
+/* 4d. Faster speed — approximately 0.4× normal durations */
+[data-anim-speed="more"] *,
+[data-anim-speed="more"] *::before,
+[data-anim-speed="more"] *::after {
+  animation-duration: 0.4s !important;
+  transition-duration: 0.12s !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. CONTRAST THEMES
+   Re-maps ALL semantic CSS variables (consumed as hsl(var(--x)) etc.) to
+   fixed-palette HSL channel vars so no standard-theme color can leak through
+   any package component — including Button destructive/accent variants, Charts,
+   Sidebar, and interactive accent utilities.
+
+   Assignment decisions:
+   LOW — desaturated blue-grey palette. Vivid accent/destructive replaced by
+         --contrast-accent (muted blue-grey). Charts collapsed to one muted
+         accent to avoid vivid color pop. Sidebar-primary acts like primary.
+   HIGH — black/white/yellow. All interactive accent and destructive roles map
+         to --hc-accent (yellow, 19.6:1 on black). Charts use hc-accent for
+         primary and hc-accent-alt (cyan) for secondary; remaining chart slots
+         use hc-text to remain distinct without adding colour. Sidebar-primary
+         maps to hc-accent so sidebar active items are clearly highlighted.
+
+   No new tokens.json entries are needed — all roles map to existing palette.
+
+   All --*-hsl vars are generated from tokens.json by build-tokens.mjs.
+   -------------------------------------------------------------------------- */
+
+/* 5a. Low contrast */
+[data-contrast="low"] {
+  /* Core surface / text */
+  --background:                  var(--contrast-bg-hsl);
+  --foreground:                  var(--contrast-text-hsl);
+  --card:                        var(--contrast-surface-hsl);
+  --card-foreground:             var(--contrast-text-hsl);
+  --popover:                     var(--contrast-surface-hsl);
+  --popover-foreground:          var(--contrast-text-hsl);
+  --muted:                       var(--contrast-surface-2-hsl);
+  --muted-foreground:            var(--contrast-text-muted-hsl);
+  --border:                      var(--contrast-surface-2-hsl);
+  --input:                       var(--contrast-surface-2-hsl);
+
+  /* Primary */
+  --primary:                     var(--contrast-accent-hsl);
+  --primary-foreground:          var(--contrast-bg-hsl);
+
+  /* Accent — replace vivid colour with muted blue-grey */
+  --accent:                      var(--contrast-accent-hsl);
+  --accent-foreground:           var(--contrast-bg-hsl);
+
+  /* Destructive — remove vivid red; use muted accent so it remains distinct
+     from text but does not create a harsh visual pop */
+  --destructive:                 var(--contrast-accent-hsl);
+  --destructive-foreground:      var(--contrast-bg-hsl);
+
+  /* Ring / focus */
+  --ring:                        var(--contrast-accent-hsl);
+
+  /* Charts — collapse all five to the single muted accent to avoid vivid pops */
+  --chart-1:                     var(--contrast-accent-hsl);
+  --chart-2:                     var(--contrast-accent-hsl);
+  --chart-3:                     var(--contrast-accent-hsl);
+  --chart-4:                     var(--contrast-accent-hsl);
+  --chart-5:                     var(--contrast-accent-hsl);
+
+  /* Sidebar */
+  --sidebar:                     var(--contrast-bg-hsl);
+  --sidebar-foreground:          var(--contrast-text-hsl);
+  --sidebar-border:              var(--contrast-surface-2-hsl);
+  --sidebar-primary:             var(--contrast-accent-hsl);
+  --sidebar-primary-foreground:  var(--contrast-bg-hsl);
+  --sidebar-accent:              var(--contrast-surface-2-hsl);
+  --sidebar-accent-foreground:   var(--contrast-text-hsl);
+  --sidebar-ring:                var(--contrast-accent-hsl);
+}
+
+/* Translucent surfaces become fully opaque under low contrast —
+   contrast palette colors are defined as solid colors and must not be
+   reduced in opacity by backdrop-filter alpha. */
+[data-contrast="low"] .fes-surface-translucent {
+  background-color: hsl(var(--card));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* 5b. High contrast */
+[data-contrast="high"] {
+  /* Core surface / text */
+  --background:                  var(--hc-bg-hsl);
+  --foreground:                  var(--hc-text-hsl);
+  --card:                        var(--hc-surface-hsl);
+  --card-foreground:             var(--hc-text-hsl);
+  --popover:                     var(--hc-surface-hsl);
+  --popover-foreground:          var(--hc-text-hsl);
+  --muted:                       var(--hc-surface-2-hsl);
+  --muted-foreground:            var(--hc-text-muted-hsl);
+  --border:                      var(--hc-border-hsl);
+  --input:                       var(--hc-surface-2-hsl);
+
+  /* Primary */
+  --primary:                     var(--hc-accent-hsl);
+  --primary-foreground:          var(--hc-bg-hsl);
+
+  /* Accent — yellow on black for maximum visibility */
+  --accent:                      var(--hc-accent-hsl);
+  --accent-foreground:           var(--hc-bg-hsl);
+
+  /* Destructive — no red in high contrast; yellow is the single vivid signal */
+  --destructive:                 var(--hc-accent-hsl);
+  --destructive-foreground:      var(--hc-bg-hsl);
+
+  /* Ring / focus */
+  --ring:                        var(--hc-focus-hsl);
+
+  /* Charts — yellow primary, cyan secondary, white for remaining three.
+     Three distinct values (yellow/cyan/white) on black — all safe contrast. */
+  --chart-1:                     var(--hc-accent-hsl);
+  --chart-2:                     var(--hc-accent-alt-hsl);
+  --chart-3:                     var(--hc-text-hsl);
+  --chart-4:                     var(--hc-text-hsl);
+  --chart-5:                     var(--hc-text-hsl);
+
+  /* Sidebar */
+  --sidebar:                     var(--hc-bg-hsl);
+  --sidebar-foreground:          var(--hc-text-hsl);
+  --sidebar-border:              var(--hc-border-hsl);
+  --sidebar-primary:             var(--hc-accent-hsl);
+  --sidebar-primary-foreground:  var(--hc-bg-hsl);
+  --sidebar-accent:              var(--hc-surface-2-hsl);
+  --sidebar-accent-foreground:   var(--hc-text-hsl);
+  --sidebar-ring:                var(--hc-focus-hsl);
+}
+
+/* Translucent surfaces become fully opaque under high contrast —
+   pure-black backgrounds must not be diluted by backdrop-filter alpha.
+   The package forces this directly so the consuming app does not have
+   to also set data-no-transparency when a contrast theme is active. */
+[data-contrast="high"] .fes-surface-translucent {
+  background-color: hsl(var(--card));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* High-contrast: all focus rings become 3px yellow for maximum visibility */
+[data-contrast="high"] *:focus-visible {
+  outline: 3px solid var(--hc-focus) !important;
+  outline-offset: 2px !important;
+}
+
 @layer utilities {
   /* Hide ugly search cancel button in Chrome until we can style it properly */
   input[type="search"]::-webkit-search-cancel-button {

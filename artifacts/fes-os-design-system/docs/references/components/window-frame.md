@@ -1,3 +1,5 @@
-# Window Frame
+# WindowSurface (formerly Window Frame) — Redirected
 
-The shared surface owns semantic window structure and appearance. The portfolio supplies title-bar controls, drag/resize handlers, focus state, and content.
+Canonical spec: [docs/components/fes-os/window-surface.md](../../components/fes-os/window-surface.md)
+
+Pattern: [docs/patterns/desktop-window-workspace.md](../../patterns/desktop-window-workspace.md)

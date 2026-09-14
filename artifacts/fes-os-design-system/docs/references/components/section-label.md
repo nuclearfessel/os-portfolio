@@ -1,5 +1,3 @@
-# Section Label
+# SectionLabel — Redirected
 
-Source: intro eyebrow, window kickers, case-study metadata, and keyboard map labels in `artifacts/desktop-portfolio/src/App.tsx`.
-
-Use uppercase DM Mono at compact sizes with increased tracking. Labels orient a section and must not carry paragraph content.
+Canonical spec: [docs/components/fes-os/section-label.md](../../components/fes-os/section-label.md)

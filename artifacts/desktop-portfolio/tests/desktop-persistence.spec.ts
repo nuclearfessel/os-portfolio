@@ -52,6 +52,31 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
+test('suppresses native context menus at every responsive breakpoint', async ({ page }) => {
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 820, height: 1180 },
+    { width: 1440, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport);
+    const result = await page.locator('.system-bar').evaluate((element) => {
+      const event = new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        button: 2,
+      });
+      const dispatchResult = element.dispatchEvent(event);
+      return {
+        defaultPrevented: event.defaultPrevented,
+        dispatchResult,
+      };
+    });
+
+    expect(result.defaultPrevented).toBe(true);
+    expect(result.dispatchResult).toBe(false);
+  }
+});
+
 test('keeps keyboard focus predictable in desktop, dock, and sticky context menus', async ({ page }) => {
   const desktop = page.locator('.desktop-area');
   await desktop.focus();

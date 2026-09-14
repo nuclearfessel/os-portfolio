@@ -11,3 +11,4 @@
 - [Color picker keyboard isolation](color-picker-keyboard-isolation.md) — numeric entry must never trigger the desktop’s numbered Dock shortcuts.
 - [Accessibility contrast wallpapers](accessibility-contrast-wallpapers.md) — contrast themes replace wallpaper visually without discarding the user’s saved wallpaper choice.
 - [GitHub push authentication](github-push-authentication.md) — connected GitHub integrations may still require browser-based CLI authentication for shell pushes.
+- [UI geometry stability](ui-geometry-stability.md) — resizing or aligning any UI element must not misalign itself or disturb surrounding layout.

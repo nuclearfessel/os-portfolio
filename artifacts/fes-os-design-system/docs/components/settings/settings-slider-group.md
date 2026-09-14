@@ -55,6 +55,8 @@ A range slider with a live value readout and optional guidance labels. Used for 
 
 ## Behavior contract
 
+The custom rail and filled range are 4px high and vertically centered in a 20px control. The 14px visual handle has independent geometry and shares the rail's centerline, so changing track thickness must never move the handle. A transparent native range input remains layered above both visuals for interaction.
+
 Show `SettingsSliderGroup` only when its parent toggle is on:
 
 ```tsx

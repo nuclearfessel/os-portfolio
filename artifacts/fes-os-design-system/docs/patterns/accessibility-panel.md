@@ -54,7 +54,7 @@ All preference values are owned by the consuming product. The panel only reflect
 
 | Preference | Component | Product effect |
 |---|---|---|
-| Always show scrollbars | `SettingsToggleRow` | Set/remove `data-always-scrollbars` on shell |
+| Always show scrollbars | `SettingsToggleRow` | Set/remove `data-always-scrollbars` on shell; persistent mode keeps the same window scrollbar styling |
 | Transparency effects on | `SettingsToggleRow` | Set/remove `data-transparency-enabled` on `:root`; applies to all translucent system surfaces |
 | UI animations on | `SettingsToggleRow` | Set/remove `data-no-animations` on shell |
 | Animation speed | `SettingsSegmentedChoice` | Set/remove `data-anim-speed` on shell |
@@ -69,6 +69,7 @@ See → [State contracts](../references/components/settings.md#state-contracts)
 1. **Transparency is disabled when any contrast theme is active.** Pass `disabled` to the transparency `SettingsToggleRow` when `contrastTheme !== 'none'`.
 2. **Animation speed is hidden/disabled when animations are off.** Only show `SettingsSegmentedChoice` when `uiAnimations === true`.
 3. **Transparency levels belong in Personalization.** Show window and sticky level controls there only when the global transparency switch is on.
+4. **Default scrollbars are contextual.** Apply `fes-scrollbar-window` to each window so scrollbar thumbs fade in on window hover/focus and fade out when idle. `data-always-scrollbars` keeps those same thumbs visible; tracks stay transparent.
 
 ---
 

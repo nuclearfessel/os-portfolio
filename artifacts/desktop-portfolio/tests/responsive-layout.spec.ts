@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'fes-os.desktop.v1';
+const storageKey = 'fes-os.desktop.v4';
 
 async function resetStorage(page: Page) {
   await page.goto('/');
@@ -110,7 +110,7 @@ test('managed windows keep an 8px inset below the system bar', async ({ page }) 
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await resetStorage(page);
 
-    const appWindow = page.getByTestId('window-work');
+    const appWindow = page.getByTestId('window-about');
     const systemBar = page.locator('.system-bar');
     const dock = page.locator('.dock');
     await expect(appWindow).toBeVisible();

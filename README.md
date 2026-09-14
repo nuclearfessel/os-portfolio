@@ -89,7 +89,10 @@ Before an approved branch is committed and merged, review whether its changes re
 
 ## Automated website releases
 
-Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, packages the contents of `artifacts/desktop-portfolio/dist/public/`, and publishes a deployable ZIP such as `site-package-v01.01.zip` under the repository’s **Releases** section.
+Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, then publishes two assets in one standard GitHub release:
+
+- A versioned deployable site ZIP, such as `site-package-v01.01.zip`, containing the contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
+- An unversioned Claude source package named exactly `claude-src-pack.zip`, containing project source, documentation, Claude skills, and a top-level `public/` build.
 
 Feature and maintenance branch pushes never create release packages or prereleases. Only `main` publishes standard releases.
 

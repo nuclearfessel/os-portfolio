@@ -34,7 +34,7 @@ pnpm --filter @workspace/desktop-portfolio run build
 - After branch approval and before committing, review whether README, Claude files, package metadata/exports, or package documentation require matching updates. Apply only the updates relevant to the approved change.
 - Preserve the GitHub Releases website ZIP workflow for pushes to `main` only. Feature and maintenance branches must never publish release packages.
 - Website ZIPs must contain the deployable contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
-- Website ZIPs must use the `site-package-vMM.NN.zip` naming scheme and must always be standard releases from `main`; never create prereleases.
+- Every `main` release must contain exactly two ZIP assets: a versioned deployable `site-package-vMM.NN.zip` and an unversioned Claude source package named exactly `claude-src-pack.zip`. Both are standard release assets; never create prereleases.
 - Preserve saved desktop positions and sizes when temporarily entering tablet or mobile layouts.
 - Keep launcher positions separate from the positions of their corresponding windows.
 - Stickies and Terminal are desktop-only.
@@ -54,6 +54,6 @@ Run the smallest relevant test during development. Before handing off a release,
 ## Generated files
 
 - Upload-ready build: `artifacts/desktop-portfolio/dist/public/`
-- Downloadable source bundle: `claude-desktop-portfolio-source.zip`
+- Downloadable source bundle: `claude-src-pack.zip`
 - The ZIP also contains a top-level `public/` copy of the latest production build and `DEPLOYMENT.md`.
 - Source portions of the ZIP exclude `node_modules`, package `dist` folders, Playwright reports/results, caches, environment files, and `*.tsbuildinfo`.

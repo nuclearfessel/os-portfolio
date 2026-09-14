@@ -331,10 +331,12 @@
 [data-always-scrollbars] .fes-scrollbar-window {
   --fes-scrollbar-thumb: var(--fes-scrollbar-thumb-visible);
 }
-.fes-scrollbar-window,
-.fes-scrollbar-window * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--fes-scrollbar-thumb) transparent;
+@supports (-moz-appearance: none) {
+  .fes-scrollbar-window,
+  .fes-scrollbar-window * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--fes-scrollbar-thumb) transparent;
+  }
 }
 .fes-scrollbar-window *::-webkit-scrollbar {
   width: 4px;

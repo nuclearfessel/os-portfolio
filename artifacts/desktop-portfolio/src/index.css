@@ -378,10 +378,12 @@ button { cursor: pointer; }
   left: 28%;
   width: min(680px, calc(100vw - 80px));
   height: min(520px, calc(100dvh - 180px));
+  overflow: hidden;
 }
 
 .settings-body {
   height: calc(100% - 44px);
+  min-height: 0;
   overflow: hidden;
   padding: 0;
 }
@@ -390,6 +392,7 @@ button { cursor: pointer; }
   display: grid;
   grid-template-columns: 172px 1fr;
   height: 100%;
+  min-height: 0;
 }
 
 /* Settings nav sidebar */
@@ -443,6 +446,7 @@ button { cursor: pointer; }
 
 /* Settings content area */
 .settings-content {
+  min-height: 0;
   padding: 22px 24px;
   overflow-y: auto;
 }
@@ -679,25 +683,6 @@ button { cursor: pointer; }
   gap: 14px;
 }
 
-.settings-color-preview {
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
-  border-radius: 6px;
-  border: 2px solid rgba(214,221,255,.2);
-}
-
-.settings-color-picker-wrap {
-  display: grid;
-  gap: 8px;
-}
-
-.settings-color-input-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .settings-color-wheel {
   width: 40px;
   height: 40px;
@@ -720,6 +705,320 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-color-hex { color: #526660; }
+
+/* =========================================================
+   Custom Color Picker
+   ========================================================= */
+
+/* Remove old native input styles that we're replacing */
+.settings-color-wheel { display: none; }
+.settings-color-hex { display: none; }
+
+/* Color picker root */
+.cp-root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 260px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* SV plane */
+.cp-sv-plane {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: crosshair;
+  touch-action: none;
+  outline: none;
+}
+
+.cp-sv-plane:focus-visible {
+  box-shadow: 0 0 0 2px #e4ff5b;
+}
+
+.cp-light .cp-sv-plane:focus-visible {
+  box-shadow: 0 0 0 2px #0b665d;
+}
+
+.cp-sv-white {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #fff, transparent);
+  pointer-events: none;
+}
+
+.cp-sv-black {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, #000);
+  pointer-events: none;
+}
+
+.cp-sv-cursor {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.2);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  will-change: left, top;
+}
+
+/* Controls row: swatch + sliders */
+.cp-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Current colour swatch */
+.cp-swatch {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(214,221,255,.28);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.25);
+}
+
+.cp-light .cp-swatch {
+  border-color: rgba(29,71,78,.22);
+}
+
+/* Sliders container */
+.cp-sliders {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Hue track */
+.cp-hue-track {
+  position: relative;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    to right,
+    hsl(0,100%,50%),
+    hsl(30,100%,50%),
+    hsl(60,100%,50%),
+    hsl(90,100%,50%),
+    hsl(120,100%,50%),
+    hsl(150,100%,50%),
+    hsl(180,100%,50%),
+    hsl(210,100%,50%),
+    hsl(240,100%,50%),
+    hsl(270,100%,50%),
+    hsl(300,100%,50%),
+    hsl(330,100%,50%),
+    hsl(360,100%,50%)
+  );
+  cursor: pointer;
+  touch-action: none;
+  outline: none;
+}
+
+.cp-hue-track:focus-visible {
+  box-shadow: 0 0 0 2px #e4ff5b;
+}
+
+.cp-light .cp-hue-track:focus-visible {
+  box-shadow: 0 0 0 2px #0b665d;
+}
+
+.cp-hue-thumb {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  will-change: left;
+  background: transparent;
+}
+
+/* Fields section */
+.cp-fields-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Format tabs */
+.cp-format-tabs {
+  display: flex;
+  gap: 2px;
+  background: rgba(255,255,255,.05);
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.cp-light .cp-format-tabs {
+  background: rgba(0,0,0,.06);
+}
+
+.cp-format-tab {
+  flex: 1;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #8d92ae;
+  font: 9px var(--app-font-mono);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .1s, color .1s;
+}
+
+.cp-light .cp-format-tab {
+  color: #526660;
+}
+
+.cp-format-tab:hover {
+  color: #e4ff5b;
+}
+
+.cp-light .cp-format-tab:hover {
+  color: #0b665d;
+}
+
+.cp-format-tab.is-active {
+  background: #e4ff5b;
+  color: #111326;
+  font-weight: 600;
+}
+
+.cp-light .cp-format-tab.is-active {
+  background: #0b665d;
+  color: #fff;
+}
+
+.cp-format-tab:focus-visible {
+  outline: 2px solid #e4ff5b;
+  outline-offset: 1px;
+}
+
+.cp-light .cp-format-tab:focus-visible {
+  outline-color: #0b665d;
+}
+
+/* Fields row */
+.cp-fields {
+  display: flex;
+  gap: 4px;
+}
+
+.cp-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.cp-field-group-hex {
+  position: relative;
+  flex: 1;
+}
+
+.cp-field-group-hex .cp-field {
+  padding-left: 16px;
+}
+
+.cp-field-prefix {
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  font: 11px var(--app-font-mono);
+  color: #8d92ae;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.cp-light .cp-field-prefix {
+  color: #526660;
+}
+
+.cp-field-group-multi {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.cp-field-group-multi .cp-field-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.cp-field {
+  width: 100%;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(214,221,255,.2);
+  background: rgba(20,22,42,.7);
+  color: #e2e6f0;
+  font: 11px var(--app-font-mono);
+  text-transform: uppercase;
+  outline: none;
+  box-sizing: border-box;
+  -webkit-user-select: text;
+  user-select: text;
+  caret-color: #e4ff5b;
+  transition: border-color .1s;
+}
+
+.cp-light .cp-field {
+  background: rgba(248,251,249,.85);
+  border-color: rgba(29,71,78,.2);
+  color: #17213b;
+  caret-color: #0b665d;
+}
+
+.cp-field:focus {
+  border-color: #e4ff5b;
+  outline: none;
+}
+
+.cp-light .cp-field:focus {
+  border-color: #0b665d;
+}
+
+.cp-field::selection {
+  background: rgba(228,255,91,.3);
+}
+
+.cp-light .cp-field::selection {
+  background: rgba(11,102,93,.2);
+}
+
+.cp-field-label {
+  text-align: center;
+  font: 8px var(--app-font-mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #707691;
+}
+
+.cp-light .cp-field-label {
+  color: #526660;
+}
+
+/* Expanded settings window to accommodate picker */
+.window.settings {
+  height: min(600px, calc(100dvh - 180px));
+}
 
 /* =========================================================
    Wallpaper on desktop

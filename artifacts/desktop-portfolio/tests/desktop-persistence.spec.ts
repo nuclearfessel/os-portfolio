@@ -1262,6 +1262,21 @@ test('selected light and dark solid wallpaper colors persist in tablet and mobil
 
 test('desktop text personalization and theme-specific colors can be edited and persist', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
+  const settingsWindow = page.getByTestId('window-settings');
+  const editor = settingsWindow.locator('.settings-intro-editor');
+  await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(3);
+
+  const settingsBox = await settingsWindow.boundingBox();
+  const resizeHandle = settingsWindow.locator('.window-resize-e');
+  const resizeBox = await resizeHandle.boundingBox();
+  expect(settingsBox).not.toBeNull();
+  expect(resizeBox).not.toBeNull();
+  await page.mouse.move(resizeBox!.x + resizeBox!.width / 2, resizeBox!.y + resizeBox!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(settingsBox!.x + 540, resizeBox!.y + resizeBox!.height / 2);
+  await page.mouse.up();
+  await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
+
   const primaryInput = page.getByTestId('settings-intro-primary-text');
   await primaryInput.fill('Interfaces with intent.');
 

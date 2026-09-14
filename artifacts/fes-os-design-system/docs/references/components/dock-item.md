@@ -1,3 +1,5 @@
-# Dock Item
+# DockItem / DockItemLabel — Redirected
 
-Dock items expose active state and preserve the product’s visible labels, icons, accessible names, and device-specific navigation behavior.
+Canonical spec: [docs/components/fes-os/dock-item.md](../../components/fes-os/dock-item.md)
+
+Pattern: [docs/patterns/responsive-dock.md](../../patterns/responsive-dock.md)

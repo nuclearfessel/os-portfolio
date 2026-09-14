@@ -1,3 +1,3 @@
-# Desktop Launcher
+# DesktopLauncher — Redirected
 
-Launchers expose open state while the portfolio retains separate launcher geometry, activation policy, icons, labels, and drag handling.
+Canonical spec: [docs/components/fes-os/desktop-launcher.md](../../components/fes-os/desktop-launcher.md)

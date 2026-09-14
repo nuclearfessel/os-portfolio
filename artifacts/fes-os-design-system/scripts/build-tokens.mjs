@@ -143,11 +143,21 @@ function buildCss(tokens) {
   let css = readFileSync(templatePath, "utf8");
   const replacements = {};
 
+  // Light/dark semantic color channels (HSL)
   for (const scope of ["light", "dark"]) {
     for (const [name, hex] of Object.entries(colorEntries(scope, tokens))) {
       replacements[`__DS_${scope.toUpperCase()}_${name.toUpperCase()}__`] =
         hexToHslChannels(hex);
     }
+  }
+
+  // Fixed palette — two forms per token:
+  //   __DS_FIXED_<NAME>_HEX__  → raw hex  (for direct background/preview use)
+  //   __DS_FIXED_<NAME>_HSL__  → H S% L%  (for semantic channel re-assignments)
+  for (const [name, hex] of Object.entries(fixedColorEntries(tokens))) {
+    const key = name.toUpperCase();
+    replacements[`__DS_FIXED_${key}_HEX__`] = normalizeHex(hex);
+    replacements[`__DS_FIXED_${key}_HSL__`] = hexToHslChannels(hex);
   }
 
   replacements.__DS_FONT_SANS__ = toFontStack(
@@ -175,11 +185,21 @@ function buildCss(tokens) {
   return css;
 }
 
+function fixedColorEntries(tokens) {
+  const out = {};
+  for (const [name, node] of Object.entries(tokens.color.fixed)) {
+    if (name.startsWith("$")) continue;
+    out[name] = resolveValue(node, tokens);
+  }
+  return out;
+}
+
 function buildTs(tokens) {
   const portable = {
     color: {
       light: colorEntries("light", tokens),
       dark: colorEntries("dark", tokens),
+      fixed: fixedColorEntries(tokens),
     },
     fontFamily: {
       sans: resolveValue(tokens.typography.fontFamily.sans, tokens),

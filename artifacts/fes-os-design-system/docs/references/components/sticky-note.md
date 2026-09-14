@@ -1,3 +1,5 @@
-# Sticky Note
+# StickyNoteSurface — Redirected
 
-The shared note surface carries border, radius, and elevation. Editing, color, rotation, resizing, duplication, deletion, and persistence remain product behavior.
+Canonical spec: [docs/components/fes-os/sticky-note-surface.md](../../components/fes-os/sticky-note-surface.md)
+
+Pattern: [docs/patterns/sticky-notes.md](../../patterns/sticky-notes.md)

@@ -1,5 +1,3 @@
-# Status Indicator
+# StatusIndicator — Redirected
 
-Source: online state in the portfolio system bar.
-
-Pair color with a visible text label. Supported semantic tones are online, idle, and danger.
+Canonical spec: [docs/components/fes-os/status-indicator.md](../../components/fes-os/status-indicator.md)

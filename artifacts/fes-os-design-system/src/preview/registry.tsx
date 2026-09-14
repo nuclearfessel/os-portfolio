@@ -182,6 +182,9 @@ const FesOsDemo = lazyPage(() =>
 const GuidelinesDemo = lazyPage(() =>
   import('./demos/guidelines').then(({ GuidelinesDemo }) => GuidelinesDemo),
 );
+const SettingsDemo = lazyPage(() =>
+  import('./demos/settings').then(({ SettingsDemo }) => SettingsDemo),
+);
 
 export type PreviewEntry = {
   // Globally unique across every group — it is the deep-link slug (`#page=<id>`)
@@ -220,6 +223,12 @@ export const NAV_GROUPS: NavGroup[] = [
         name: 'Portfolio primitives',
         description: 'Actions, labels, status, surfaces, and project cards used by the portfolio.',
         Page: FesOsDemo,
+      },
+      {
+        id: 'fes-os-settings',
+        name: 'Settings primitives',
+        description: 'Settings sidebar nav, accessible toggle rows, sliders, segmented choices, contrast cards, and color presets.',
+        Page: SettingsDemo,
       },
     ],
   },

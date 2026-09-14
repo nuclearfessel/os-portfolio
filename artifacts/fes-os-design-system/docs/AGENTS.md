@@ -141,4 +141,9 @@ the import resolves and the primitive uses this design system's theme.
   consuming app.
 - Keep product data, navigation, application state, and product-specific
   compositions in the app. Product-agnostic visual primitives belong here.
+- Every resizable window with side navigation must use the universal responsive
+  transformation: at a narrow container width, smoothly replace the side column
+  with a horizontal sub-navigation toolbar directly below the window toolbar.
+  Preserve DOM order, active state, keyboard order, and non-overlapping content
+  geometry. Base this behavior on the window container, not the viewport.
 - Read these docs in place. Do not copy them into another artifact.

@@ -38,6 +38,7 @@ Light and dark are equal system themes. Both expose the same semantic roles for 
 - Tablet and mobile geometry is managed and temporary.
 - Responsive reflow must never overwrite desktop geometry.
 - Mobile navigation remains fixed at the bottom with visible labels.
+- Every resizable window with side navigation must respond to its own container width. At narrow widths, the side navigation smoothly becomes a horizontal sub-navigation toolbar directly below the window toolbar, preserving item order, active state, keyboard order, and a separate content row.
 
 ## Accessibility
 

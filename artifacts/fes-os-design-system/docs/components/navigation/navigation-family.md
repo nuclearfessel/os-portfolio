@@ -217,3 +217,5 @@ import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupLab
 - Token set: `sidebar-*` tokens used throughout.
 
 Note: `Sidebar` is a general-purpose application sidebar. For the Fes OS settings sidebar (section nav inside a window), use `SettingsNavSection` / `SettingsNavItem` instead.
+
+For any sidebar used as section navigation inside a resizable Fes OS window, the universal window rule applies: at a narrow window-container width, smoothly transform it into a horizontal sub-navigation toolbar directly below the window toolbar. Do not key this transformation to viewport width, hide the navigation, or place it over the content.

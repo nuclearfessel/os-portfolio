@@ -45,6 +45,8 @@ docs/
 
 This is a pnpm workspace. Shared visual primitives belong to `@workspace/fes-os-design-system`; portfolio behavior and persistence remain in `@workspace/desktop-portfolio`.
 
+All resizable Fes OS windows with side navigation follow one responsive contract: when the window itself becomes narrow, the sidebar smoothly becomes a horizontal sub-navigation toolbar directly below the window toolbar without changing navigation order, state, or content geometry.
+
 ## Development
 
 ### Requirements

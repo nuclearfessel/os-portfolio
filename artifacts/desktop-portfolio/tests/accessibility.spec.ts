@@ -107,6 +107,42 @@ test.describe('Settings sidebar navigation', () => {
     await page.keyboard.press('Enter');
     await expect(accessibilityBtn).toHaveAttribute('aria-current', 'page');
   });
+
+  test('sidebar becomes a sub-navigation toolbar when the Settings window narrows', async ({ page }) => {
+    await openSettings(page);
+    const settingsWindow = page.getByTestId('window-settings');
+    const header = settingsWindow.locator('.window-header');
+    const nav = settingsWindow.locator('.settings-nav');
+    const content = settingsWindow.locator('.settings-content');
+    const personalization = page.getByTestId('settings-nav-personalization');
+    const accessibility = page.getByTestId('settings-nav-accessibility');
+
+    await settingsWindow.evaluate((element) => {
+      element.style.width = '540px';
+    });
+
+    await expect.poll(async () => {
+      const [headerBox, navBox, contentBox, personalizationBox, accessibilityBox] = await Promise.all([
+        header.boundingBox(),
+        nav.boundingBox(),
+        content.boundingBox(),
+        personalization.boundingBox(),
+        accessibility.boundingBox(),
+      ]);
+      if (!headerBox || !navBox || !contentBox || !personalizationBox || !accessibilityBox) return null;
+      return {
+        navBelowHeader: Math.abs(navBox.y - (headerBox.y + headerBox.height)) < 2,
+        itemsShareRow: Math.abs(personalizationBox.y - accessibilityBox.y) < 2,
+        contentBelowNav: contentBox.y >= navBox.y + navBox.height - 1,
+      };
+    }).toEqual({
+      navBelowHeader: true,
+      itemsShareRow: true,
+      contentBelowNav: true,
+    });
+
+    await expect(nav).toHaveCSS('animation-name', 'settings-subnav-in');
+  });
 });
 
 // ═════════════════════════════════════════════════════════════════════════════

@@ -37,6 +37,7 @@ pnpm --filter @workspace/desktop-portfolio run build
 - Every `main` release must contain exactly two ZIP assets: a versioned deployable `site-package-vMM.NN.zip` and an unversioned Claude source package named exactly `claude-src-pack.zip`. Both are standard release assets; never create prereleases.
 - Preserve saved desktop positions and sizes when temporarily entering tablet or mobile layouts.
 - Keep launcher positions separate from the positions of their corresponding windows.
+- For every resizable window with side navigation, use the window container width to smoothly transform the sidebar into a horizontal sub-navigation toolbar directly below the window toolbar. Preserve item and keyboard order, active state, and non-overlapping content geometry.
 - Stickies and Terminal are desktop-only.
 - Tablet and mobile use a fixed bottom app menu.
 - Mobile always uses the portrait layout rules. A normal browser tab cannot physically lock device orientation.

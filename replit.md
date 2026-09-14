@@ -59,9 +59,10 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - Keep production asset URLs relative for nested static and FTP hosting.
 - Do not add pathname-based client routing or a backend dependency.
 - Preserve custom context menus while suppressing browser-native context menus.
+- Every resizable window with side navigation must use a window-container breakpoint to smoothly transform the side navigation into a horizontal sub-navigation toolbar directly below the window toolbar. Preserve order, active state, keyboard order, and content geometry.
 
 ## Release files
 
 Build output is generated at `artifacts/desktop-portfolio/dist/public/`. Upload the contents of that directory, not the source `public/` folder.
 
-The downloadable source bundle is `claude-desktop-portfolio-source.zip`. It includes source, relevant Markdown, Claude skills, and a top-level deployable `public/` directory. It excludes dependencies, intermediate `dist` directories, and test reports.
+The downloadable source bundle is `claude-src-pack.zip`. It includes source, relevant Markdown, Claude skills, and a top-level deployable `public/` directory. It excludes dependencies, intermediate `dist` directories, and test reports.

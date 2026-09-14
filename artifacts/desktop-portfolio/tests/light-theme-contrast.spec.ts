@@ -153,6 +153,95 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
   expect(terminalFocusRatio, `terminal example focus contrast ${terminalFocusRatio.toFixed(2)}:1 should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
 });
 
+test('Dock hover and focus preserve app identity and keep utility controls legible in both themes', async ({ page }) => {
+  await page.addInitScript(([key]) => {
+    localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));
+  }, [storageKey]);
+  await page.goto('/');
+
+  const appIds = ['work', 'about', 'contact', 'terminal', 'stickies'];
+  for (const theme of ['dark', 'light'] as const) {
+    if (theme === 'light') {
+      await page.getByTestId('button-dock-settings').click();
+      await expect(page.getByTestId('window-settings')).toBeVisible();
+      await page.getByTestId('settings-theme-light').click();
+      await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+      await page.getByTestId('button-close-settings').click();
+    }
+
+    for (const id of appIds) {
+      const item = page.getByTestId(`button-dock-${id}`);
+      const before = await item.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { color: style.color, backgroundImage: style.backgroundImage };
+      });
+      await item.hover();
+      await expect.poll(() => item.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { color: style.color, backgroundImage: style.backgroundImage };
+      })).toEqual(before);
+      await expect(item).not.toHaveCSS('filter', 'none');
+      await item.focus();
+      await expect.poll(() => item.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { color: style.color, backgroundImage: style.backgroundImage };
+      })).toEqual(before);
+    }
+
+    const utility = page.getByTestId('button-dock-settings');
+    await utility.hover();
+    const hoverRatio = await contrastRatio(utility);
+    expect(hoverRatio, `${theme} Dock utility hover contrast should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
+    await utility.focus();
+    const focusRatio = await contrastRatio(utility);
+    expect(focusRatio, `${theme} Dock utility focus contrast should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
+  }
+});
+
+test('Dock active states use a clear ring and substantial edge pill in every theme and layout', async ({ page }) => {
+  await page.addInitScript(([key]) => {
+    localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));
+  }, [storageKey]);
+  await page.goto('/');
+
+  const expectClearActiveState = async (item: Locator, minimumPillWidth = 16) => {
+    await expect(item).toHaveClass(/active/);
+    const state = await item.evaluate((element) => {
+      const tile = getComputedStyle(element);
+      const badge = getComputedStyle(element, '::after');
+      return {
+        boxShadow: tile.boxShadow,
+        badgeDisplay: badge.display,
+        badgeWidth: Number.parseFloat(badge.width),
+        badgeHeight: Number.parseFloat(badge.height),
+      };
+    });
+    expect(state.boxShadow).not.toBe('none');
+    expect(state.badgeDisplay).not.toBe('none');
+    expect(state.badgeWidth).toBeGreaterThanOrEqual(minimumPillWidth);
+    expect(state.badgeHeight).toBeGreaterThanOrEqual(3);
+  };
+
+  for (const theme of ['dark', 'light'] as const) {
+    if (theme === 'light') {
+      await page.getByTestId('button-dock-settings').click();
+      await page.getByTestId('settings-theme-light').click();
+      await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+    }
+
+    await expectClearActiveState(page.getByTestId('button-dock-work'));
+    const settings = page.getByTestId('button-dock-settings');
+    if (!(await settings.getAttribute('class'))?.includes('active')) await settings.click();
+    await expectClearActiveState(settings);
+    await page.getByTestId('button-close-settings').click();
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('.dock-mobile-menu')).toBeVisible();
+  await page.getByTestId('button-dock-about').click();
+  await expectClearActiveState(page.getByTestId('button-dock-about'), 24);
+});
+
 test('light theme About, Contact, and case study windows meet WCAG AA contrast', async ({ page }) => {
   await page.addInitScript(([key]) => {
     localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));

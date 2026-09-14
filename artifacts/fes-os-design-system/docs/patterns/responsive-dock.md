@@ -97,6 +97,10 @@ Mobile navigation must remain fixed at the bottom — do not hide it or make it 
 - [ ] `DockItemLabel presentation="tooltip"` is `pointer-events-none` and excluded from tab order.
 - [ ] Mobile labels are always visible — not tooltip-only.
 - [ ] Dock container has `role="navigation"` and `aria-label="Main navigation"` or equivalent.
+- [ ] Branded app hover/focus states preserve each app's tile and glyph colors.
+- [ ] Neutral utility hover/focus foreground and background pairs meet WCAG AA in both themes.
+- [ ] Active items use a full-tile ring and a substantial edge pill, not a small dot alone.
+- [ ] The active pill remains visible beneath mobile and tablet inline labels.
 
 ---
 
@@ -114,6 +118,8 @@ Mobile navigation must remain fixed at the bottom — do not hide it or make it 
 | Give every DockItem an `aria-label` | Rely on DockItemLabel text as the accessible name |
 | Keep the Dock fixed at the bottom on mobile | Make the Dock scroll horizontally on small screens |
 | Use `active` prop to reflect current section | Manage active state only via CSS |
+| Use elevation, brightness, and an outer ring for branded app feedback | Replace every app glyph with one global hover color |
+| Keep the active ring and edge pill visible in every theme and breakpoint | Hide the active indicator on mobile or rely on color alone |
 
 ---
 

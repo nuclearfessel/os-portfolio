@@ -1035,4 +1035,51 @@ test('saves the current desktop state as the default only after confirmation', a
   ));
   expect(restoredStack['window-work']).toBeGreaterThan(restoredStack['window-about']);
   await expect(page.getByTestId('window-work')).toHaveClass(/is-active/);
+
+  await page.getByTestId('button-dock-contact').click();
+  await page.getByTestId('button-dock-terminal').click();
+  await page.getByTestId('button-delete-sticky-1').click();
+  await page.getByTestId('button-confirm-delete-sticky').click();
+  await page.getByTestId('window-work').dispatchEvent('mousedown');
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Save state as default' }).click();
+  await page.getByTestId('button-confirm-save-default').click();
+  await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), defaultStorageKey))
+    .toMatchObject({
+      windows: {
+        about: true,
+        work: true,
+        contact: true,
+        terminal: true,
+      },
+      activeWindow: 'work',
+      windowStack: ['about', 'contact', 'terminal', 'work'],
+      stickies: [{ id: 'sticky' }],
+    });
+
+  await page.getByTestId('button-close-contact').click();
+  await page.getByTestId('button-close-terminal').click();
+  await page.getByTestId('button-add-sticky').dispatchEvent('click');
+  await page.getByTestId('button-add-sticky').dispatchEvent('click');
+  await page.getByTestId('button-delete-sticky-2').dispatchEvent('click');
+  await page.getByTestId('button-confirm-delete-sticky').click();
+  await expect(page.locator('[data-testid^="sticky-"]')).toHaveCount(2);
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
+  await page.getByTestId('button-confirm-reset').click();
+
+  await expect(page.getByTestId('window-about')).toBeVisible();
+  await expect(page.getByTestId('window-work')).toBeVisible();
+  await expect(page.getByTestId('window-contact')).toBeVisible();
+  await expect(page.getByTestId('window-terminal')).toBeVisible();
+  await expect(page.locator('[data-testid^="sticky-"]')).toHaveCount(1);
+  await expect(page.getByTestId('sticky-sticky')).toBeVisible();
+  await expect(page.getByTestId('window-work')).toHaveClass(/is-active/);
+  const finalStack = await page.locator('[data-testid^="window-"]').evaluateAll((windows) => Object.fromEntries(
+    windows.map((window) => [window.getAttribute('data-testid'), Number(window.getAttribute('style')?.match(/z-index:\s*(\d+)/)?.[1] ?? 0)]),
+  ));
+  expect(finalStack['window-work']).toBeGreaterThan(finalStack['window-terminal']);
+  expect(finalStack['window-work']).toBeGreaterThan(finalStack['window-contact']);
 });

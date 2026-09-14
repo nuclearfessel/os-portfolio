@@ -147,7 +147,7 @@ button { cursor: pointer; }
 .desktop-app-icon { width: 54px; height: 54px; display: grid; place-items: center; color: #e4ff5b; background: linear-gradient(145deg, #252a43, #111420); border: 1px solid #4b526d; border-radius: 12px; box-shadow: 0 7px 14px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.08); transition: filter .1s, border-color .1s; }
 .desktop-launcher-about .desktop-app-icon { color: #fff4fb; background: linear-gradient(145deg, #ff3d9a, #b80064 72%); border-color: #ff8dc5; box-shadow: 0 8px 18px rgba(184,0,100,.42), inset 0 1px 0 rgba(255,255,255,.34); }
 .desktop-launcher-work .desktop-app-icon { color: #f5f4ff; background: linear-gradient(145deg, #5b5cff, #3122c7 72%); border-color: #9c9dff; box-shadow: 0 8px 18px rgba(49,34,199,.44), inset 0 1px 0 rgba(255,255,255,.32); }
-.desktop-launcher-contact .desktop-app-icon { color: #fff8ed; background: linear-gradient(145deg, #ff7a24, #d83a12 72%); border-color: #ffb080; box-shadow: 0 8px 18px rgba(216,58,18,.4), inset 0 1px 0 rgba(255,255,255,.32); }
+.desktop-launcher-contact .desktop-app-icon { color: #e4481d; background: linear-gradient(145deg, #fffaf2, #f3e7da 72%); border-color: #e4481d; box-shadow: 0 8px 18px rgba(69,42,28,.28), inset 0 1px 0 rgba(255,255,255,.78); }
 .desktop-launcher-stickies-app .desktop-app-icon { color: #392600; background: linear-gradient(145deg, #ffd96a, #d99520); border-color: #ffe39a; }
 .desktop-app:hover .desktop-app-icon, .desktop-app.is-open .desktop-app-icon { filter: brightness(1.12); border-color: rgba(228,255,91,.65); }
 .desktop-folder-label { box-sizing: border-box; width: fit-content; max-width: 84px; max-height: calc(2.4em + 4px); overflow: hidden; padding: 2px 5px; border-radius: 4px; font: 11px var(--app-font-sans); line-height: 1.2; text-overflow: clip; white-space: normal; overflow-wrap: normal; }
@@ -325,7 +325,7 @@ button { cursor: pointer; }
 .dock-item { position: relative; width: 45px; height: 45px; display: grid; place-items: center; align-content: center; justify-content: center; padding: 0; line-height: 0; border-radius: 11px; color: #b9bfd8; }.dock-item > svg { width: 20px; height: 20px; }.dock-item:hover { color: #e4ff5b; border-color: rgba(228,255,91,.5); }.dock-item.active::after { content: ''; position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #e4ff5b; }
 .dock-item.dock-app-about { color: #fff4fb; background: linear-gradient(145deg, #ff3d9a, #b80064 72%); border-color: #ff8dc5; }
 .dock-item.dock-app-work { color: #f5f4ff; background: linear-gradient(145deg, #5b5cff, #3122c7 72%); border-color: #9c9dff; }
-.dock-item.dock-app-contact { color: #fff8ed; background: linear-gradient(145deg, #ff7a24, #d83a12 72%); border-color: #ffb080; }
+.dock-item.dock-app-contact { color: #e4481d; background: linear-gradient(145deg, #fffaf2, #f3e7da 72%); border-color: #e4481d; }
 .dock-item.dock-app-about:hover,
 .dock-item.dock-app-work:hover,
 .dock-item.dock-app-contact:hover { color: #fff; filter: brightness(1.1); }
@@ -1240,7 +1240,7 @@ button { cursor: pointer; }
 .theme-light .desktop-app-icon { color: #f3ffbe; background: linear-gradient(145deg, #365761, #19343c); border-color: #5d7d84; }
 .theme-light .desktop-launcher-about .desktop-app-icon { color: #fff7fc; background: linear-gradient(145deg, #ff2f95, #c00068 72%); border-color: #a60059; }
 .theme-light .desktop-launcher-work .desktop-app-icon { color: #fff; background: linear-gradient(145deg, #5758ff, #3021c9 72%); border-color: #2418a5; }
-.theme-light .desktop-launcher-contact .desktop-app-icon { color: #fff; background: linear-gradient(145deg, #ff7620, #d53610 72%); border-color: #b42b0c; }
+.theme-light .desktop-launcher-contact .desktop-app-icon { color: #d83a12; background: linear-gradient(145deg, #fffaf2, #f1e3d5 72%); border-color: #d83a12; }
 .theme-light .desktop-launcher-stickies-app .desktop-app-icon { color: #352300; background: linear-gradient(145deg, #ffd85d, #e3a22d); border-color: #b47711; }
 .theme-light .window.terminal { border-color: rgba(11,102,93,.5); }
 .theme-light .terminal-body { color: #344d58; }
@@ -1256,7 +1256,7 @@ button { cursor: pointer; }
 .theme-light .dock-item { color: #506572; background: rgba(248,251,249,.75); border-color: rgba(26,83,91,.16); }
 .theme-light .dock-item.dock-app-about { color: #fff7fc; background: linear-gradient(145deg, #ff2f95, #c00068 72%); border-color: #a60059; }
 .theme-light .dock-item.dock-app-work { color: #fff; background: linear-gradient(145deg, #5758ff, #3021c9 72%); border-color: #2418a5; }
-.theme-light .dock-item.dock-app-contact { color: #fff; background: linear-gradient(145deg, #ff7620, #d53610 72%); border-color: #b42b0c; }
+.theme-light .dock-item.dock-app-contact { color: #d83a12; background: linear-gradient(145deg, #fffaf2, #f1e3d5 72%); border-color: #d83a12; }
 .theme-light .dock-item:hover { color: #0b665d; border-color: rgba(11,102,93,.45); }
 .theme-light .dock-item.active::after { background: #0b665d; }
 .theme-light .mobile-shortcut-menu { color: #1f3440; background: rgba(247,250,248,.98); border-color: rgba(26,83,91,.28); box-shadow: 0 18px 50px rgba(48,68,71,.24); }
@@ -1412,7 +1412,7 @@ button { cursor: pointer; }
 .theme-light .dock-mobile-menu .dock-item.active { color: #0b665d; }
 .dock-mobile-menu .dock-item.dock-app-about { color: #fff4fb; background: linear-gradient(145deg, #ff3d9a, #b80064 72%); border-color: #ff8dc5; }
 .dock-mobile-menu .dock-item.dock-app-work { color: #f5f4ff; background: linear-gradient(145deg, #5b5cff, #3122c7 72%); border-color: #9c9dff; }
-.dock-mobile-menu .dock-item.dock-app-contact { color: #fff8ed; background: linear-gradient(145deg, #ff7a24, #d83a12 72%); border-color: #ffb080; }
+.dock-mobile-menu .dock-item.dock-app-contact { color: #e4481d; background: linear-gradient(145deg, #fffaf2, #f3e7da 72%); border-color: #e4481d; }
 .theme-light .dock-mobile-menu .dock-mode-toggle, .theme-light .dock-tablet-menu .dock-mode-toggle { color: #0b665d; }
 .dock-mobile-menu .dock-item.active::after,
 .dock-tablet-menu .dock-item.active::after { display: none; }

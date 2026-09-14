@@ -11,6 +11,33 @@ import {
   Surface,
   WindowSurface,
 } from '../../components/ui/fes-os';
+import { CanonicalSpec } from '../md-renderer';
+import {
+  mdFesOsActionButton,
+  mdFesOsSectionLabel,
+  mdFesOsStatusIndicator,
+  mdFesOsSurface,
+  mdFesOsProjectCard,
+  mdFesOsWindowSurface,
+  mdFesOsDockItem,
+  mdFesOsDesktopLauncher,
+  mdFesOsStickyNote,
+  mdFesOsContextMenuSurface,
+} from '../docs-map';
+
+// Combine all Fes OS primitive docs into one readable spec
+const combinedMd = [
+  mdFesOsActionButton,
+  mdFesOsSectionLabel,
+  mdFesOsStatusIndicator,
+  mdFesOsSurface,
+  mdFesOsProjectCard,
+  mdFesOsWindowSurface,
+  mdFesOsDockItem,
+  mdFesOsDesktopLauncher,
+  mdFesOsStickyNote,
+  mdFesOsContextMenuSurface,
+].join('\n\n---\n\n');
 
 export function FesOsDemo() {
   return (
@@ -19,7 +46,7 @@ export function FesOsDemo() {
         <SectionLabel>components / pilot</SectionLabel>
         <h1 className="text-3xl font-semibold tracking-tight">Fes OS primitives</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Reusable foundations for the portfolio’s desktop windows, actions, project lists, and system status.
+          Reusable foundations for the portfolio&rsquo;s desktop windows, actions, project lists, and system status.
         </p>
       </header>
 
@@ -71,7 +98,7 @@ export function FesOsDemo() {
           <DockItem className="size-14 bg-secondary" active aria-label="Active desktop Dock item">
             01
             <DockItemLabel presentation="tooltip" className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 opacity-100">
-              Work · 2
+              Work &middot; 2
             </DockItemLabel>
           </DockItem>
         </div>
@@ -84,9 +111,11 @@ export function FesOsDemo() {
         </div>
         <ContextMenuSurface className="w-48 p-2 text-sm">
           <div className="rounded px-2 py-1.5 hover:bg-secondary">Theme</div>
-          <div className="rounded px-2 py-1.5 hover:bg-secondary">Reset desktop…</div>
+          <div className="rounded px-2 py-1.5 hover:bg-secondary">Reset desktop&hellip;</div>
         </ContextMenuSurface>
       </Surface>
+
+      <CanonicalSpec md={combinedMd} />
     </div>
   );
 }

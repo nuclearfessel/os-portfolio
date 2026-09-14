@@ -12,6 +12,30 @@ import {
   SettingsToggleRow,
   type ContrastVariant,
 } from '../../components/ui/settings';
+import { CanonicalSpec } from '../md-renderer';
+import {
+  mdSettingsFamily,
+  mdSettingsNav,
+  mdSettingsToggleRow,
+  mdSettingsSliderGroup,
+  mdSettingsSegmentedChoice,
+  mdSettingsContrastCard,
+  mdSettingsColorPreset,
+  mdSettingsDivider,
+  mdSettingsSectionHeader,
+} from '../docs-map';
+
+const combinedSettingsMd = [
+  mdSettingsFamily,
+  mdSettingsNav,
+  mdSettingsToggleRow,
+  mdSettingsSliderGroup,
+  mdSettingsSegmentedChoice,
+  mdSettingsContrastCard,
+  mdSettingsColorPreset,
+  mdSettingsDivider,
+  mdSettingsSectionHeader,
+].join('\n\n---\n\n');
 
 type AnimSpeed = 'less' | 'default' | 'more';
 type ContrastTheme = 'none' | 'low' | 'high';
@@ -352,6 +376,8 @@ export function SettingsDemo() {
           </div>
         </Surface>
       </section>
+
+      <CanonicalSpec md={combinedSettingsMd} />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
   Check, FileText as StickyNote, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
-  Moon, Plus, Settings, Sun, Terminal, CircleUser as UserRound, Wifi, X,
+  Moon, Plus, Settings, Sun, Terminal, CircleUser as UserRound, Wifi, Eye, X,
 } from '@keyline-icons/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@workspace/fes-os-design-system/components/ui/toaster';
@@ -48,6 +48,26 @@ type WallpaperMode = 'picture' | 'color';
 type WallpaperConfig = {
   mode: WallpaperMode;
   color: string; // hex string, used when mode === 'color'
+};
+
+// Accessibility types
+type AnimationSpeed = 'less' | 'default' | 'more';
+type ContrastTheme = 'none' | 'low' | 'high';
+
+type AccessibilityPrefs = {
+  alwaysShowScrollbars: boolean;
+  windowTransparency: boolean;
+  uiAnimations: boolean;
+  animationSpeed: AnimationSpeed;
+  contrastTheme: ContrastTheme;
+};
+
+const DEFAULT_ACCESSIBILITY_PREFS: AccessibilityPrefs = {
+  alwaysShowScrollbars: false,
+  windowTransparency: true,
+  uiAnimations: true,
+  animationSpeed: 'default',
+  contrastTheme: 'none',
 };
 
 const DEFAULT_WALLPAPER_LIGHT: WallpaperConfig = { mode: 'picture', color: '#e8f0ec' };
@@ -216,6 +236,7 @@ type SavedDesktopState = {
   activeStickyId?: StickyItemId;
   wallpaperLight?: WallpaperConfig;
   wallpaperDark?: WallpaperConfig;
+  accessibility?: AccessibilityPrefs;
 };
 
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
@@ -248,6 +269,7 @@ const defaultDesktopState: SavedDesktopState = {
   activeStickyId: 'sticky',
   wallpaperLight: DEFAULT_WALLPAPER_LIGHT,
   wallpaperDark: DEFAULT_WALLPAPER_DARK,
+  accessibility: DEFAULT_ACCESSIBILITY_PREFS,
 };
 
 function parseWallpaperConfig(raw: unknown): WallpaperConfig | undefined {
@@ -257,6 +279,22 @@ function parseWallpaperConfig(raw: unknown): WallpaperConfig | undefined {
   if (!mode) return undefined;
   const color = typeof config.color === 'string' && /^#[0-9a-f]{6}$/i.test(config.color) ? config.color : '#111326';
   return { mode, color };
+}
+
+function parseAccessibilityPrefs(raw: unknown): AccessibilityPrefs {
+  if (!raw || typeof raw !== 'object') return DEFAULT_ACCESSIBILITY_PREFS;
+  const a = raw as Record<string, unknown>;
+  return {
+    alwaysShowScrollbars: typeof a.alwaysShowScrollbars === 'boolean' ? a.alwaysShowScrollbars : DEFAULT_ACCESSIBILITY_PREFS.alwaysShowScrollbars,
+    windowTransparency: typeof a.windowTransparency === 'boolean' ? a.windowTransparency : DEFAULT_ACCESSIBILITY_PREFS.windowTransparency,
+    uiAnimations: typeof a.uiAnimations === 'boolean' ? a.uiAnimations : DEFAULT_ACCESSIBILITY_PREFS.uiAnimations,
+    animationSpeed: (['less', 'default', 'more'] as AnimationSpeed[]).includes(a.animationSpeed as AnimationSpeed)
+      ? a.animationSpeed as AnimationSpeed
+      : DEFAULT_ACCESSIBILITY_PREFS.animationSpeed,
+    contrastTheme: (['none', 'low', 'high'] as ContrastTheme[]).includes(a.contrastTheme as ContrastTheme)
+      ? a.contrastTheme as ContrastTheme
+      : DEFAULT_ACCESSIBILITY_PREFS.contrastTheme,
+  };
 }
 
 function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
@@ -381,6 +419,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       activeStickyId,
       wallpaperLight: parseWallpaperConfig(parsed.wallpaperLight) ?? DEFAULT_WALLPAPER_LIGHT,
       wallpaperDark: parseWallpaperConfig(parsed.wallpaperDark) ?? DEFAULT_WALLPAPER_DARK,
+      accessibility: parseAccessibilityPrefs(parsed.accessibility),
     };
   } catch {
     return defaultDesktopState;
@@ -502,6 +541,7 @@ function WindowFrame({
   );
 }
 
+
 function AboutWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
   return (
     <WindowFrame {...props} id="about" title="About">
@@ -603,6 +643,53 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
   );
 }
 
+type SettingsSection = 'personalization' | 'accessibility';
+
+// Settings toggle row component
+function SettingsToggle({
+  id,
+  label,
+  description,
+  checked,
+  onChange,
+  disabled,
+  'data-testid': testId,
+}: {
+  id: string;
+  label: string;
+  description?: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+  disabled?: boolean;
+  'data-testid'?: string;
+}) {
+  return (
+    <label
+      htmlFor={id}
+      className={`settings-toggle-row${disabled ? ' settings-toggle-disabled' : ''}`}
+      data-testid={testId}
+    >
+      <div className="settings-toggle-label-group">
+        <span className="settings-label">{label}</span>
+        {description && <span className="settings-description">{description}</span>}
+      </div>
+      <button
+        type="button"
+        id={id}
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        className={`settings-toggle-switch${checked ? ' is-on' : ''}`}
+        onClick={() => onChange(!checked)}
+        data-testid={testId ? `${testId}-switch` : undefined}
+        aria-label={label}
+      >
+        <span className="settings-toggle-knob" />
+      </button>
+    </label>
+  );
+}
+
 // Settings Window
 function SettingsWindow({
   theme,
@@ -611,6 +698,8 @@ function SettingsWindow({
   wallpaperDark,
   onSetWallpaperLight,
   onSetWallpaperDark,
+  accessibility,
+  onSetAccessibility,
   ...props
 }: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
   theme: Theme;
@@ -619,7 +708,11 @@ function SettingsWindow({
   wallpaperDark: WallpaperConfig;
   onSetWallpaperLight: (config: WallpaperConfig) => void;
   onSetWallpaperDark: (config: WallpaperConfig) => void;
+  accessibility: AccessibilityPrefs;
+  onSetAccessibility: (prefs: AccessibilityPrefs) => void;
 }) {
+  const [activeSection, setActiveSection] = useState<SettingsSection>('personalization');
+
   const currentWallpaper = theme === 'light' ? wallpaperLight : wallpaperDark;
   const setCurrentWallpaper = (config: WallpaperConfig) => {
     onSetWallpaperLight(config);
@@ -628,128 +721,315 @@ function SettingsWindow({
 
   const wallpaperPictureSrc = theme === 'light' ? './wallpaper-light.jpg' : './wallpaper-dark.jpg';
 
+  // Wallpaper controls disabled when contrast theme is active
+  const wallpaperDisabled = accessibility.contrastTheme !== 'none';
+
+  const updateAccessibility = (patch: Partial<AccessibilityPrefs>) => {
+    onSetAccessibility({ ...accessibility, ...patch });
+  };
+
+  const handleContrastThemeChange = (ct: ContrastTheme) => {
+    updateAccessibility({ contrastTheme: ct });
+  };
+
   return (
     <WindowFrame {...props} id="settings" title="Settings">
       <div className="window-body settings-body">
         <div className="settings-layout">
           {/* Sidebar */}
           <nav className="settings-nav" aria-label="Settings sections">
-            <div className="settings-nav-item settings-nav-item-active" aria-current="page">
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'personalization' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'personalization' ? 'page' : undefined}
+              onClick={() => setActiveSection('personalization')}
+              data-testid="settings-nav-personalization"
+            >
               <span className="settings-nav-icon" aria-hidden="true">
                 <Sun size={14} strokeWidth={1.8} />
               </span>
               Personalization
-            </div>
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'accessibility' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'accessibility' ? 'page' : undefined}
+              onClick={() => setActiveSection('accessibility')}
+              data-testid="settings-nav-accessibility"
+            >
+              <span className="settings-nav-icon" aria-hidden="true">
+                <Eye size={14} strokeWidth={1.8} />
+              </span>
+              Accessibility
+            </button>
           </nav>
 
           {/* Content */}
           <div className="settings-content">
-            <SectionLabel className="section-kicker">personalization</SectionLabel>
-            <h2 className="settings-heading">Appearance</h2>
+            {activeSection === 'personalization' && (
+              <>
+                <SectionLabel className="section-kicker">personalization</SectionLabel>
+                <h2 className="settings-heading">Appearance</h2>
 
-            {/* Theme row */}
-            <div className="settings-section">
-              <div className="settings-section-header">
-                <span className="settings-label">Theme</span>
-                <span className="settings-description">Controls the overall color scheme of the desktop.</span>
-              </div>
-              <div className="settings-theme-row">
-                <button
-                  type="button"
-                  className={`settings-theme-option ${theme === 'light' ? 'is-selected' : ''}`}
-                  aria-pressed={theme === 'light'}
-                  onClick={() => onSetTheme('light')}
-                  data-testid="settings-theme-light"
-                >
-                  <div className="settings-theme-preview settings-theme-preview-light" aria-hidden="true">
-                    <div className="settings-theme-preview-bar" />
-                    <div className="settings-theme-preview-content" />
+                {/* Theme row */}
+                <div className="settings-section">
+                  <div className="settings-section-header">
+                    <span className="settings-label">Theme</span>
+                    <span className="settings-description">Controls the overall color scheme of the desktop.</span>
                   </div>
-                  <span className="settings-theme-label">
-                    {theme === 'light' && <Check size={11} strokeWidth={2.5} />}
-                    Light
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className={`settings-theme-option ${theme === 'dark' ? 'is-selected' : ''}`}
-                  aria-pressed={theme === 'dark'}
-                  onClick={() => onSetTheme('dark')}
-                  data-testid="settings-theme-dark"
-                >
-                  <div className="settings-theme-preview settings-theme-preview-dark" aria-hidden="true">
-                    <div className="settings-theme-preview-bar" />
-                    <div className="settings-theme-preview-content" />
+                  <div className="settings-theme-row">
+                    <button
+                      type="button"
+                      className={`settings-theme-option ${theme === 'light' ? 'is-selected' : ''}`}
+                      aria-pressed={theme === 'light'}
+                      onClick={() => onSetTheme('light')}
+                      data-testid="settings-theme-light"
+                    >
+                      <div className="settings-theme-preview settings-theme-preview-light" aria-hidden="true">
+                        <div className="settings-theme-preview-bar" />
+                        <div className="settings-theme-preview-content" />
+                      </div>
+                      <span className="settings-theme-label">
+                        {theme === 'light' && <Check size={11} strokeWidth={2.5} />}
+                        Light
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`settings-theme-option ${theme === 'dark' ? 'is-selected' : ''}`}
+                      aria-pressed={theme === 'dark'}
+                      onClick={() => onSetTheme('dark')}
+                      data-testid="settings-theme-dark"
+                    >
+                      <div className="settings-theme-preview settings-theme-preview-dark" aria-hidden="true">
+                        <div className="settings-theme-preview-bar" />
+                        <div className="settings-theme-preview-content" />
+                      </div>
+                      <span className="settings-theme-label">
+                        {theme === 'dark' && <Check size={11} strokeWidth={2.5} />}
+                        Dark
+                      </span>
+                    </button>
                   </div>
-                  <span className="settings-theme-label">
-                    {theme === 'dark' && <Check size={11} strokeWidth={2.5} />}
-                    Dark
-                  </span>
-                </button>
-              </div>
-            </div>
+                </div>
 
-            <div className="settings-divider" />
+                <div className="settings-divider" />
 
-            {/* Wallpaper row */}
-            <div className="settings-section">
-              <div className="settings-section-header">
-                <span className="settings-label">Desktop wallpaper</span>
-                <span className="settings-description">
-                  Your wallpaper choice stays selected when switching themes.
-                </span>
-              </div>
-
-              {/* Mode toggle: picture vs color */}
-              <div className="settings-wallpaper-mode-row">
-                <button
-                  type="button"
-                  className={`settings-mode-chip ${currentWallpaper.mode === 'picture' ? 'is-selected' : ''}`}
-                  aria-pressed={currentWallpaper.mode === 'picture'}
-                  onClick={() => setCurrentWallpaper({ ...currentWallpaper, mode: 'picture' })}
-                  data-testid={`settings-wallpaper-mode-picture-${theme}`}
-                >
-                  Picture
-                </button>
-                <button
-                  type="button"
-                  className={`settings-mode-chip ${currentWallpaper.mode === 'color' ? 'is-selected' : ''}`}
-                  aria-pressed={currentWallpaper.mode === 'color'}
-                  onClick={() => setCurrentWallpaper({ ...currentWallpaper, mode: 'color' })}
-                  data-testid={`settings-wallpaper-mode-color-${theme}`}
-                >
-                  Solid color
-                </button>
-              </div>
-
-              {currentWallpaper.mode === 'picture' ? (
-                <div className="settings-wallpaper-picture-row">
-                  <div
-                    className="settings-wallpaper-thumb settings-wallpaper-thumb-selected"
-                    aria-label={`Default ${theme} wallpaper, selected`}
-                    data-testid={`settings-wallpaper-picture-${theme}`}
-                    style={{ backgroundImage: `url(${wallpaperPictureSrc})` }}
-                  >
-                    <span className="settings-wallpaper-check" aria-hidden="true">
-                      <Check size={14} strokeWidth={2.5} />
+                {/* Wallpaper row */}
+                <div className="settings-section">
+                  <div className="settings-section-header">
+                    <span className="settings-label">Desktop wallpaper</span>
+                    <span className="settings-description">
+                      {wallpaperDisabled
+                        ? 'Wallpaper is disabled while a contrast theme is active.'
+                        : 'Your wallpaper choice stays selected when switching themes.'}
                     </span>
                   </div>
-                  <div className="settings-wallpaper-picture-label">
-                    <span className="settings-label">Default {theme} wallpaper</span>
-                    <span className="settings-description">The provided default for {theme} mode.</span>
-                  </div>
+
+                  {wallpaperDisabled ? (
+                    <div className="settings-wallpaper-disabled-notice" aria-live="polite">
+                      Wallpaper controls are hidden while Low or High contrast is active. Return to Standard contrast to change wallpaper.
+                    </div>
+                  ) : (
+                    <>
+                      {/* Mode toggle: picture vs color */}
+                      <div className="settings-wallpaper-mode-row">
+                        <button
+                          type="button"
+                          className={`settings-mode-chip ${currentWallpaper.mode === 'picture' ? 'is-selected' : ''}`}
+                          aria-pressed={currentWallpaper.mode === 'picture'}
+                          onClick={() => setCurrentWallpaper({ ...currentWallpaper, mode: 'picture' })}
+                          data-testid={`settings-wallpaper-mode-picture-${theme}`}
+                        >
+                          Picture
+                        </button>
+                        <button
+                          type="button"
+                          className={`settings-mode-chip ${currentWallpaper.mode === 'color' ? 'is-selected' : ''}`}
+                          aria-pressed={currentWallpaper.mode === 'color'}
+                          onClick={() => setCurrentWallpaper({ ...currentWallpaper, mode: 'color' })}
+                          data-testid={`settings-wallpaper-mode-color-${theme}`}
+                        >
+                          Solid color
+                        </button>
+                      </div>
+
+                      {currentWallpaper.mode === 'picture' ? (
+                        <div className="settings-wallpaper-picture-row">
+                          <div
+                            className="settings-wallpaper-thumb settings-wallpaper-thumb-selected"
+                            aria-label={`Default ${theme} wallpaper, selected`}
+                            data-testid={`settings-wallpaper-picture-${theme}`}
+                            style={{ backgroundImage: `url(${wallpaperPictureSrc})` }}
+                          >
+                            <span className="settings-wallpaper-check" aria-hidden="true">
+                              <Check size={14} strokeWidth={2.5} />
+                            </span>
+                          </div>
+                          <div className="settings-wallpaper-picture-label">
+                            <span className="settings-label">Default {theme} wallpaper</span>
+                            <span className="settings-description">The provided default for {theme} mode.</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="settings-wallpaper-color-row">
+                          <ColorPicker
+                            id={`wallpaper-color-${theme}`}
+                            value={currentWallpaper.color}
+                            onChange={(hex) => setCurrentWallpaper({ ...currentWallpaper, color: hex })}
+                            theme={theme}
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
-              ) : (
-                <div className="settings-wallpaper-color-row">
-                  <ColorPicker
-                    id={`wallpaper-color-${theme}`}
-                    value={currentWallpaper.color}
-                    onChange={(hex) => setCurrentWallpaper({ ...currentWallpaper, color: hex })}
-                    theme={theme}
+              </>
+            )}
+
+            {activeSection === 'accessibility' && (
+              <>
+                <SectionLabel className="section-kicker">accessibility</SectionLabel>
+                <h2 className="settings-heading">Accessibility</h2>
+
+                {/* Display section */}
+                <div className="settings-section">
+                  <div className="settings-section-header">
+                    <span className="settings-label">Display</span>
+                    <span className="settings-description">Adjust how elements appear on screen.</span>
+                  </div>
+
+                  <SettingsToggle
+                    id="a11y-scrollbars"
+                    label="Always show scrollbars"
+                    description="Keeps scrollbar tracks and thumbs permanently visible instead of hiding when idle."
+                    checked={accessibility.alwaysShowScrollbars}
+                    onChange={(v) => updateAccessibility({ alwaysShowScrollbars: v })}
+                    data-testid="settings-a11y-scrollbars"
+                  />
+
+                  <SettingsToggle
+                    id="a11y-transparency"
+                    label="Window transparency effects"
+                    description="Enables blur and translucency on windows, the dock, and menus. Turn off for opaque solid surfaces."
+                    checked={accessibility.windowTransparency}
+                    onChange={(v) => updateAccessibility({ windowTransparency: v })}
+                    data-testid="settings-a11y-transparency"
                   />
                 </div>
-              )}
-            </div>
+
+                <div className="settings-divider" />
+
+                {/* Motion section */}
+                <div className="settings-section">
+                  <div className="settings-section-header">
+                    <span className="settings-label">Motion</span>
+                    <span className="settings-description">Control animations and transitions across the UI.</span>
+                  </div>
+
+                  <SettingsToggle
+                    id="a11y-animations"
+                    label="UI animations"
+                    description="Enables transitions, keyframe animations, and motion effects. Turn off to remove all motion."
+                    checked={accessibility.uiAnimations}
+                    onChange={(v) => updateAccessibility({ uiAnimations: v })}
+                    data-testid="settings-a11y-animations"
+                  />
+
+                  {accessibility.uiAnimations && (
+                    <div className="settings-speed-group" data-testid="settings-a11y-speed-group">
+                      <span className="settings-label">Animation speed</span>
+                      <span className="settings-description">
+                        <strong>Less</strong> — slower, reduced intensity (easier on motion sensitivity).{' '}
+                        <strong>Default</strong> — standard timing.{' '}
+                        <strong>More</strong> — faster, snappier motion.
+                      </span>
+                      <div className="settings-speed-chips" role="radiogroup" aria-label="Animation speed">
+                        {([
+                          { value: 'less' as AnimationSpeed, label: 'Less', description: 'Slower, reduced intensity' },
+                          { value: 'default' as AnimationSpeed, label: 'Default', description: 'Standard timing' },
+                          { value: 'more' as AnimationSpeed, label: 'More', description: 'Faster, snappier motion' },
+                        ]).map(({ value, label, description }) => (
+                          <button
+                            key={value}
+                            type="button"
+                            role="radio"
+                            aria-checked={accessibility.animationSpeed === value}
+                            className={`settings-speed-chip${accessibility.animationSpeed === value ? ' is-selected' : ''}`}
+                            onClick={() => updateAccessibility({ animationSpeed: value })}
+                            data-testid={`settings-a11y-speed-${value}`}
+                            title={description}
+                          >
+                            {accessibility.animationSpeed === value && <Check size={10} strokeWidth={2.5} aria-hidden="true" />}
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="settings-divider" />
+
+                {/* Contrast section */}
+                <div className="settings-section">
+                  <div className="settings-section-header">
+                    <span className="settings-label">Contrast theme</span>
+                    <span className="settings-description">
+                      Applies a fixed system palette. <strong>Low contrast</strong> softens visual harshness for sensitivity to bright contrast. <strong>High contrast</strong> maximises black/white separation and sharpens focus indicators.
+                      {accessibility.contrastTheme !== 'none' && ' Wallpaper controls are disabled while a contrast theme is active.'}
+                    </span>
+                  </div>
+
+                  <div className="settings-contrast-options" role="radiogroup" aria-label="Contrast theme">
+                    {([
+                      {
+                        value: 'none' as ContrastTheme,
+                        label: 'Standard',
+                        description: 'Default appearance',
+                        testId: 'settings-a11y-contrast-none',
+                        previewClass: 'settings-contrast-preview-none',
+                      },
+                      {
+                        value: 'low' as ContrastTheme,
+                        label: 'Low contrast',
+                        description: 'Reduced visual harshness',
+                        testId: 'settings-a11y-contrast-low',
+                        previewClass: 'settings-contrast-preview-low',
+                      },
+                      {
+                        value: 'high' as ContrastTheme,
+                        label: 'High contrast',
+                        description: 'Maximum black/white separation',
+                        testId: 'settings-a11y-contrast-high',
+                        previewClass: 'settings-contrast-preview-high',
+                      },
+                    ]).map(({ value, label, description, testId, previewClass }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        role="radio"
+                        aria-checked={accessibility.contrastTheme === value}
+                        className={`settings-contrast-option${accessibility.contrastTheme === value ? ' is-selected' : ''}`}
+                        onClick={() => handleContrastThemeChange(value)}
+                        data-testid={testId}
+                      >
+                        <div className={`settings-contrast-preview ${previewClass}`} aria-hidden="true">
+                          <div className="settings-contrast-preview-bar" />
+                          <div className="settings-contrast-preview-content" />
+                          <div className="settings-contrast-preview-text" />
+                        </div>
+                        <span className="settings-contrast-label">
+                          {accessibility.contrastTheme === value && <Check size={10} strokeWidth={2.5} aria-hidden="true" />}
+                          {label}
+                        </span>
+                        <span className="settings-contrast-desc">{description}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -1086,7 +1366,11 @@ function DesktopFolder({
 }
 
 // Compute desktop wallpaper background style
-function desktopBackground(theme: Theme, wallpaperLight: WallpaperConfig, wallpaperDark: WallpaperConfig): React.CSSProperties {
+function desktopBackground(theme: Theme, wallpaperLight: WallpaperConfig, wallpaperDark: WallpaperConfig, contrastTheme: ContrastTheme): React.CSSProperties {
+  // Contrast themes override wallpaper
+  if (contrastTheme === 'high') return { backgroundColor: '#000000', backgroundImage: 'none' };
+  if (contrastTheme === 'low') return { backgroundColor: '#282a38', backgroundImage: 'none' };
+
   const config = theme === 'light' ? wallpaperLight : wallpaperDark;
   if (config.mode === 'color') {
     return {
@@ -1138,6 +1422,7 @@ function Home() {
   const [coarsePointer, setCoarsePointer] = useState(() => window.matchMedia('(pointer: coarse)').matches);
   const [wallpaperLight, setWallpaperLight] = useState<WallpaperConfig>(savedDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
   const [wallpaperDark, setWallpaperDark] = useState<WallpaperConfig>(savedDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
+  const [accessibility, setAccessibility] = useState<AccessibilityPrefs>(savedDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
 
   const desktopAreaRef = useRef<HTMLDivElement>(null);
   const contextMenuOpenerRef = useRef<HTMLElement | null>(null);
@@ -1170,6 +1455,39 @@ function Home() {
     };
   }, []);
 
+  // Apply accessibility data-attributes to document root
+  useEffect(() => {
+    const root = document.documentElement;
+    // Scrollbars
+    if (accessibility.alwaysShowScrollbars) {
+      root.setAttribute('data-always-scrollbars', '');
+    } else {
+      root.removeAttribute('data-always-scrollbars');
+    }
+    // Transparency
+    if (!accessibility.windowTransparency) {
+      root.setAttribute('data-no-transparency', '');
+    } else {
+      root.removeAttribute('data-no-transparency');
+    }
+    // Animations
+    if (!accessibility.uiAnimations) {
+      root.setAttribute('data-no-animations', '');
+    } else {
+      root.removeAttribute('data-no-animations');
+      // Speed
+      root.removeAttribute('data-anim-speed');
+      if (accessibility.animationSpeed !== 'default') {
+        root.setAttribute('data-anim-speed', accessibility.animationSpeed);
+      }
+    }
+    // Contrast theme
+    root.removeAttribute('data-contrast');
+    if (accessibility.contrastTheme !== 'none') {
+      root.setAttribute('data-contrast', accessibility.contrastTheme);
+    }
+  }, [accessibility]);
+
   const getCurrentDesktopState = (): SavedDesktopState => ({
     folderPositions: workspaceMode === 'desktop' ? folderPositions : desktopGeometryRef.current.folderPositions,
     itemPositions: workspaceMode === 'desktop' ? dragPositions : desktopGeometryRef.current.dragPositions,
@@ -1182,6 +1500,7 @@ function Home() {
     dockPosition,
     wallpaperLight,
     wallpaperDark,
+    accessibility,
   });
 
   const retryDesktopSave = () => {
@@ -1430,7 +1749,7 @@ function Home() {
       setStorageUnavailable(true);
       setStorageRestored(false);
     }
-  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode, wallpaperLight, wallpaperDark]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, workspaceMode, wallpaperLight, wallpaperDark, accessibility]);
 
   useEffect(() => {
     if (!storageRestored) return;
@@ -2034,6 +2353,7 @@ function Home() {
     setDockPosition(resetDesktopState.dockPosition);
     setWallpaperLight(resetDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
     setWallpaperDark(resetDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
+    setAccessibility(resetDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
     setWindows(restoredWindows);
     setActiveWindow(restoredActiveWindow);
     setWindowStack(restoredWindowStack);
@@ -2121,16 +2441,18 @@ function Home() {
 
   // Compute wallpaper background for desktop area
   const currentWallpaperStyle = workspaceMode === 'desktop'
-    ? desktopBackground(theme, wallpaperLight, wallpaperDark)
+    ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
     : {};
 
   // For picture wallpaper: the os-shell base gradient should be suppressed;
   // we handle that via a CSS class on the shell.
   const wallpaperConfig = theme === 'light' ? wallpaperLight : wallpaperDark;
+  // In contrast mode the class is always 'wallpaper-color' for override styling
+  const wallpaperClass = accessibility.contrastTheme !== 'none' ? 'wallpaper-color' : `wallpaper-${wallpaperConfig.mode}`;
 
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${workspaceMode === 'desktop' ? `wallpaper-${wallpaperConfig.mode}` : ''}`}
+      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${workspaceMode === 'desktop' ? wallpaperClass : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
       style={workspaceMode === 'desktop' ? currentWallpaperStyle : undefined}
@@ -2335,6 +2657,8 @@ function Home() {
             wallpaperDark={wallpaperDark}
             onSetWallpaperLight={setWallpaperLight}
             onSetWallpaperDark={setWallpaperDark}
+            accessibility={accessibility}
+            onSetAccessibility={setAccessibility}
           />
         )}
       </div>

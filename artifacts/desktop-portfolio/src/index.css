@@ -116,7 +116,7 @@ button { cursor: pointer; }
 .eyebrow { color: #e4ff5b; font-family: var(--app-font-mono); text-transform: uppercase; letter-spacing: .14em; font-size: 10px; }
 .desktop-intro h1 { font-size: clamp(32px, 4vw, 60px); line-height: .98; letter-spacing: -.06em; margin: 14px 0 17px; max-width: 420px; }
 .desktop-intro h1 em { color: #e4ff5b; font-style: normal; }
-.desktop-intro p { color: #aeb2cb; line-height: 1.65; font-size: 14px; max-width: 420px; }
+.desktop-intro p { color: #aeb2cb; line-height: 1.65; font-size: 14px; max-width: 405px; }
 .quick-actions { margin-top: 24px; display: flex; gap: 9px; flex-wrap: wrap; }
 .quick-button, .window-control, .dock-item, .project-link, .contact-button {
   border: 1px solid rgba(212, 220, 255, .16); color: #dfe2f0; background: rgba(32, 35, 61, .72);

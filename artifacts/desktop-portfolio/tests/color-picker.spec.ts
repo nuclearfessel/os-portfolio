@@ -358,8 +358,9 @@ test('wallpaper color persists independently in light and dark themes', async ({
     return { light: data.wallpaperLight, dark: data.wallpaperDark };
   }, storageKey);
 
-  // Both light and dark are updated (settings applies to both simultaneously)
+  // The active theme is updated without overwriting the other theme.
   expect(saved.dark?.color?.toLowerCase()).toBe('#222244');
+  expect(saved.light?.color?.toLowerCase()).toBe('#e8f0ec');
 });
 
 // ─── Bidirectional sync ───────────────────────────────────────────────────────

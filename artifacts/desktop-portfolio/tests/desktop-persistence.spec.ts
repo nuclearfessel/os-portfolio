@@ -1306,3 +1306,97 @@ test('save state as default includes wallpaper config, and reset restores it', a
   const restoredSaved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
   expect(restoredSaved.wallpaperLight.mode).toBe('color');
 });
+
+test('Picture to Solid Color restores each theme previous solid color', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await page.getByTestId('cp-field-hex').fill('123456');
+  await page.getByTestId('cp-field-hex').press('Enter');
+  await page.getByTestId('settings-wallpaper-mode-picture-light').click();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('123456');
+
+  await page.getByTestId('settings-theme-dark').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('111326');
+});
+
+test('custom solid colors remain independent when switching themes', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await page.getByTestId('cp-field-hex').fill('AABBCC');
+  await page.getByTestId('cp-field-hex').press('Enter');
+
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('cp-field-hex').fill('223344');
+  await page.getByTestId('cp-field-hex').press('Enter');
+  await expect(page.getByTestId('settings-color-preset-light')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByTestId('settings-color-preset-dark')).toHaveAttribute('aria-pressed', 'false');
+
+  await page.getByTestId('settings-theme-light').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('AABBCC');
+  await page.getByTestId('settings-theme-dark').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('223344');
+});
+
+test('opposite preset becomes the saved default for the active theme', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('settings-wallpaper-mode-color-dark').click();
+  await page.getByTestId('settings-color-preset-light').click();
+  await page.getByTestId('button-close-settings').click();
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Save state as default' }).click();
+  await page.getByTestId('button-confirm-save-default').click();
+  const savedDefault = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), defaultStorageKey);
+  expect(savedDefault.theme).toBe('dark');
+  expect(savedDefault.wallpaperDark).toEqual({ mode: 'color', color: '#e8f0ec' });
+
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-color-preset-dark').click();
+  await page.getByTestId('button-close-settings').click();
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
+  await page.getByTestId('button-confirm-reset').click();
+
+  await page.getByTestId('button-dock-settings').click();
+  await expect(page.getByTestId('settings-theme-dark')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('E8F0EC');
+  await expect(page.getByTestId('settings-color-preset-light')).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('contrast themes preserve both underlying solid colors', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-wallpaper-mode-color-light').click();
+  await page.getByTestId('cp-field-hex').fill('ABCDEF');
+  await page.getByTestId('cp-field-hex').press('Enter');
+  await page.getByTestId('settings-theme-dark').click();
+  await page.getByTestId('cp-field-hex').fill('234567');
+  await page.getByTestId('cp-field-hex').press('Enter');
+
+  await page.getByTestId('settings-nav-accessibility').click();
+  await page.getByTestId('settings-a11y-contrast-high').click();
+  await page.getByTestId('settings-a11y-contrast-none').click();
+  await page.getByTestId('settings-nav-personalization').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('234567');
+  await page.getByTestId('settings-theme-light').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('ABCDEF');
+});
+
+test('legacy identical solid colors load without being replaced', async ({ page }) => {
+  await page.evaluate((key) => {
+    const state = JSON.parse(localStorage.getItem(key) ?? '{}');
+    localStorage.setItem(key, JSON.stringify({
+      ...state,
+      theme: 'dark',
+      wallpaperLight: { mode: 'color', color: '#445566' },
+      wallpaperDark: { mode: 'color', color: '#445566' },
+    }));
+  }, storageKey);
+  await page.reload();
+
+  await page.getByTestId('button-dock-settings').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('445566');
+  await page.getByTestId('settings-theme-light').click();
+  await expect(page.getByTestId('cp-field-hex')).toHaveValue('445566');
+});

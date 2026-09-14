@@ -1,0 +1,69 @@
+name: Build website ZIP
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-release-zip-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-website-zip:
+    name: Build deployable website ZIP
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck portfolio
+        run: pnpm --filter @workspace/desktop-portfolio run typecheck
+
+      - name: Build portfolio
+        run: pnpm --filter @workspace/desktop-portfolio run build
+
+      - name: Create artifact metadata
+        id: artifact
+        shell: bash
+        run: |
+          branch_slug="$(printf '%s' "${GITHUB_REF_NAME}" | tr '/[:space:]' '--' | tr -cd '[:alnum:]._-')"
+          short_sha="${GITHUB_SHA::7}"
+          artifact_name="fes-os-website-${branch_slug}-${short_sha}"
+          echo "name=${artifact_name}" >> "$GITHUB_OUTPUT"
+          echo "zip=${artifact_name}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Package deployable website
+        shell: bash
+        run: |
+          cd artifacts/desktop-portfolio/dist/public
+          zip -r "$GITHUB_WORKSPACE/${{ steps.artifact.outputs.zip }}" .
+
+      - name: Upload website ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: ${{ steps.artifact.outputs.zip }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

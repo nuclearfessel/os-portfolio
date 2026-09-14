@@ -46,6 +46,13 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 
 ## Important constraints
 
+### Source-control workflow
+
+- Start every update on a dedicated branch; never develop directly on `main`.
+- Leave completed work uncommitted while the user validates it.
+- Commit only after the user gives explicit approval.
+- Merge the approved branch into `main` only after that approval, then push `main`.
+
 - Build strictly on `artifacts/fes-os-design-system`; do not invent replacement tokens or duplicate shared primitives.
 - Keep launchers and their corresponding windows under separate position identities.
 - Do not persist temporary tablet or mobile geometry as desktop geometry.

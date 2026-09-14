@@ -21,6 +21,12 @@ artifacts/desktop-portfolio/dist/public/
 
 Upload the contents of `dist/public`, not the `public` directory itself.
 
+Run typecheck before preparing release files:
+
+```bash
+pnpm --filter @workspace/desktop-portfolio run typecheck
+```
+
 ## Upload procedure
 
 1. Open the target server directory, such as `/public_html/os1/`.
@@ -59,3 +65,12 @@ If the HTML loads but the app is blank:
 5. Test the exact public subfolder URL, not the domain root.
 
 Do not add browser-path routing to solve FTP hosting. Production uses relative asset paths and renders directly from the nested directory.
+
+## Claude source ZIP
+
+`claude-desktop-portfolio-source.zip` is the downloadable handoff bundle. Regenerate it after source, documentation, skill, or production-build changes.
+
+- Include portfolio and design-system source, `CLAUDE.md`, `replit.md`, Markdown documentation, `.claude/skills/`, and a top-level `public/` copy of `dist/public/`.
+- Include `DEPLOYMENT.md` explaining that the top-level `public/` folder is deployable.
+- Exclude `node_modules`, package `dist` folders from the source portion, test reports/results, caches, environment files, and `*.tsbuildinfo`.
+- Run `unzip -tq claude-desktop-portfolio-source.zip` before handoff.

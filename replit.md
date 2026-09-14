@@ -1,45 +1,60 @@
-# [Project name]
+# Fes OS Desktop Portfolio
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Fes Naqvi’s static React portfolio presents selected work inside a responsive desktop operating-system interface.
 
-## Run & Operate
+## Run and validate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+Run commands from the repository root:
+
+```bash
+pnpm install
+pnpm --filter @workspace/desktop-portfolio run dev
+pnpm --filter @workspace/desktop-portfolio run typecheck
+pnpm --filter @workspace/desktop-portfolio run test:e2e:persistence
+pnpm --filter @workspace/desktop-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
+pnpm --filter @workspace/desktop-portfolio run build
+```
+
+The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- React, Vite, and TypeScript in a pnpm workspace
+- Shared UI package: `@workspace/fes-os-design-system`
+- Browser-local persistence; no backend or database dependency
+- Playwright interaction and responsive-layout coverage
+- Static production output with relative asset URLs
 
-## Where things live
+## Project map
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/desktop-portfolio/src/App.tsx` — desktop behavior, content, Terminal, persistence, windows, Dock, and stickies
+- `artifacts/desktop-portfolio/src/index.css` — responsive presentation, themes, and motion
+- `artifacts/desktop-portfolio/tests/` — persistence, interaction, responsive, and contrast checks
+- `artifacts/desktop-portfolio/dist/public/` — generated upload-ready static site
+- `artifacts/fes-os-design-system/` — shared tokens and visual primitives
+- `CLAUDE.md` — concise collaborator instructions
+- `.claude/skills/desktop-portfolio/SKILL.md` — portfolio maintenance rules
+- `.claude/skills/ftp-release/SKILL.md` — static release procedure
 
-## Architecture decisions
+## Product behavior
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Desktop supports draggable and resizable windows, movable launchers and Dock, Terminal commands, custom context menus, themes, and editable stickies.
+- Tablet and mobile switch to managed layouts without overwriting saved desktop geometry.
+- `Save state as default` stores the complete workspace snapshot. `Reset desktop…` restores that snapshot.
+- The saved default includes window geometry, visibility, maximized state, active window, full stacking order, stickies, Dock position, and desktop preferences.
+- Desktop context menus initially open with submenus collapsed. Keyboard navigation begins with Arrow Down.
 
-## Product
+## Important constraints
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Build strictly on `artifacts/fes-os-design-system`; do not invent replacement tokens or duplicate shared primitives.
+- Keep launchers and their corresponding windows under separate position identities.
+- Do not persist temporary tablet or mobile geometry as desktop geometry.
+- Keep production asset URLs relative for nested static and FTP hosting.
+- Do not add pathname-based client routing or a backend dependency.
+- Preserve custom context menus while suppressing browser-native context menus.
 
-## User preferences
+## Release files
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+Build output is generated at `artifacts/desktop-portfolio/dist/public/`. Upload the contents of that directory, not the source `public/` folder.
 
-## Gotchas
-
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+The downloadable source bundle is `claude-desktop-portfolio-source.zip`. It includes source, relevant Markdown, Claude skills, and a top-level deployable `public/` directory. It excludes dependencies, intermediate `dist` directories, and test reports.

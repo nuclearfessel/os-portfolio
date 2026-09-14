@@ -719,9 +719,13 @@ function SettingsWindow({
   const [activeSection, setActiveSection] = useState<SettingsSection>('personalization');
 
   const currentWallpaper = theme === 'light' ? wallpaperLight : wallpaperDark;
-  const setCurrentWallpaper = (config: WallpaperConfig) => {
-    onSetWallpaperLight(config);
-    onSetWallpaperDark(config);
+  const setWallpaperMode = (mode: WallpaperMode) => {
+    onSetWallpaperLight({ ...wallpaperLight, mode });
+    onSetWallpaperDark({ ...wallpaperDark, mode });
+  };
+  const setCurrentWallpaperColor = (color: string) => {
+    if (theme === 'light') onSetWallpaperLight({ ...wallpaperLight, color });
+    else onSetWallpaperDark({ ...wallpaperDark, color });
   };
 
   const wallpaperPictureSrc = theme === 'light' ? './wallpaper-light.jpg' : './wallpaper-dark.jpg';
@@ -843,7 +847,7 @@ function SettingsWindow({
                           type="button"
                           className={`settings-mode-chip ${currentWallpaper.mode === 'picture' ? 'is-selected' : ''}`}
                           aria-pressed={currentWallpaper.mode === 'picture'}
-                          onClick={() => setCurrentWallpaper({ ...currentWallpaper, mode: 'picture' })}
+                          onClick={() => setWallpaperMode('picture')}
                           data-testid={`settings-wallpaper-mode-picture-${theme}`}
                         >
                           Picture
@@ -852,7 +856,7 @@ function SettingsWindow({
                           type="button"
                           className={`settings-mode-chip ${currentWallpaper.mode === 'color' ? 'is-selected' : ''}`}
                           aria-pressed={currentWallpaper.mode === 'color'}
-                          onClick={() => setCurrentWallpaper({ ...currentWallpaper, mode: 'color' })}
+                          onClick={() => setWallpaperMode('color')}
                           data-testid={`settings-wallpaper-mode-color-${theme}`}
                         >
                           Solid color
@@ -878,10 +882,31 @@ function SettingsWindow({
                         </div>
                       ) : (
                         <div className="settings-wallpaper-color-row">
+                          <div className="settings-color-presets" aria-label="Default solid colors">
+                            {([
+                              { themeId: 'light', label: 'Light default', color: DEFAULT_WALLPAPER_LIGHT.color },
+                              { themeId: 'dark', label: 'Dark default', color: DEFAULT_WALLPAPER_DARK.color },
+                            ] as const).map((preset) => (
+                              <button
+                                key={preset.themeId}
+                                type="button"
+                                className={`settings-color-preset${currentWallpaper.color.toLowerCase() === preset.color ? ' is-selected' : ''}`}
+                                aria-pressed={currentWallpaper.color.toLowerCase() === preset.color}
+                                aria-label={`${preset.label}, ${preset.color}`}
+                                onClick={() => setCurrentWallpaperColor(preset.color)}
+                                data-testid={`settings-color-preset-${preset.themeId}`}
+                              >
+                                <span className="settings-color-preset-swatch" style={{ backgroundColor: preset.color }} aria-hidden="true">
+                                  {currentWallpaper.color.toLowerCase() === preset.color && <Check size={14} strokeWidth={2.5} />}
+                                </span>
+                                <span>{preset.label}</span>
+                              </button>
+                            ))}
+                          </div>
                           <ColorPicker
                             id={`wallpaper-color-${theme}`}
                             value={currentWallpaper.color}
-                            onChange={(hex) => setCurrentWallpaper({ ...currentWallpaper, color: hex })}
+                            onChange={setCurrentWallpaperColor}
                             theme={theme}
                           />
                         </div>
@@ -1521,6 +1546,11 @@ function Home() {
       if (accessibility.animationSpeed !== 'default') {
         root.setAttribute('data-anim-speed', accessibility.animationSpeed);
       }
+    }
+    if (!accessibility.uiAnimations && !accessibility.windowTransparency) {
+      root.setAttribute('data-fast-ui', '');
+    } else {
+      root.removeAttribute('data-fast-ui');
     }
     // Contrast theme
     root.removeAttribute('data-contrast');

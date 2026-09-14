@@ -280,9 +280,18 @@ test('uses intentional cursors while allowing text selection only in stickies', 
 });
 
 test('lists work files with names that match the selected projects', async ({ page }) => {
+  const workLabel = page.getByTestId('button-folder-work').locator('.desktop-folder-label');
+  await expect(workLabel).toHaveText('selected work');
+  await expect(workLabel).toHaveCSS('white-space', 'normal');
+  expect(await workLabel.evaluate((element) => ({
+    horizontallyClipped: element.scrollWidth > element.clientWidth,
+    verticallyClipped: element.scrollHeight > element.clientHeight,
+  }))).toEqual({ horizontallyClipped: false, verticallyClipped: false });
+  await expect(page.getByTestId('button-dock-work')).toContainText('Selected work');
+
   await page.getByTestId('button-dock-terminal').click();
   const input = page.getByTestId('input-terminal-command');
-  await input.fill('ls ~/work');
+  await input.fill('ls ~/selected-work');
   await input.press('Enter');
 
   const output = page.getByTestId('window-terminal').locator('.terminal-output').last();

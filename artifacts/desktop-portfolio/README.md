@@ -17,7 +17,7 @@ The saved default is a complete workspace snapshot. It includes positions, sizes
 
 ## Work files in Terminal
 
-The virtual `~/work` directory contains:
+The virtual `~/selected-work` directory contains:
 
 - `cedar-rei-ds.md`
 - `intuitive-digital-ds.md`

@@ -190,19 +190,30 @@ test('snaps desktop launchers to an 8px grid', async ({ page }) => {
 
   const aboutFolder = page.getByTestId('button-folder-about');
   const initialBox = await aboutFolder.boundingBox();
+  const desktopBox = await page.locator('.desktop-area').boundingBox();
   expect(initialBox).not.toBeNull();
+  expect(desktopBox).not.toBeNull();
 
-  await aboutFolder.hover();
+  await page.mouse.move(initialBox!.x + initialBox!.width / 2, initialBox!.y + initialBox!.height / 2);
   await page.mouse.down();
-  await page.mouse.move(initialBox!.x - 137, initialBox!.y + 43, { steps: 6 });
+  await page.mouse.move(
+    desktopBox!.x + 333 + initialBox!.width / 2,
+    desktopBox!.y + 277 + initialBox!.height / 2,
+    { steps: 6 },
+  );
+
+  await expect.poll(() => aboutFolder.evaluate((element) => ({
+    left: Number.parseFloat(element.style.left),
+    top: Number.parseFloat(element.style.top),
+  }))).toEqual({ left: 336, top: 280 });
+
   await page.mouse.up();
 
   const position = await aboutFolder.evaluate((element) => ({
     left: Number.parseFloat(element.style.left),
     top: Number.parseFloat(element.style.top),
   }));
-  expect(position.left % 8).toBeCloseTo(0, 5);
-  expect(position.top % 8).toBeCloseTo(0, 5);
+  expect(position).toEqual({ left: 336, top: 280 });
 });
 
 test('keeps long desktop icon tooltips evenly padded without overflow', async ({ page }) => {

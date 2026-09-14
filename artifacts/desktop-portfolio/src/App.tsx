@@ -207,6 +207,13 @@ type SavedDesktopState = {
 const DESKTOP_STORAGE_KEY = 'fes-os.desktop.v4';
 const DESKTOP_DEFAULT_STORAGE_KEY = 'fes-os.desktop.default.v1';
 const DESKTOP_GRID_SIZE = 8;
+
+function snapWithinDesktopGrid(value: number, min: number, max: number) {
+  const firstGridLine = Math.ceil(min / DESKTOP_GRID_SIZE) * DESKTOP_GRID_SIZE;
+  const lastGridLine = Math.floor(max / DESKTOP_GRID_SIZE) * DESKTOP_GRID_SIZE;
+  if (firstGridLine > lastGridLine) return Math.max(min, Math.min(max, value));
+  return Math.max(firstGridLine, Math.min(lastGridLine, Math.round(value / DESKTOP_GRID_SIZE) * DESKTOP_GRID_SIZE));
+}
 let storageUnavailableDuringLoad = false;
 const defaultDesktopState: SavedDesktopState = {
   folderPositions: {},
@@ -1460,8 +1467,17 @@ function Home() {
       ? constrainStickyPosition({ left: nextLeft, top: nextTop }, stickySize, sticky.rotation, workspace)
       : null;
     const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal'].includes(drag.id);
-    const left = constrainedSticky?.left ?? (staysOnDesktop || constrainsWindow ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft);
-    const top = constrainedSticky?.top ?? (staysOnDesktop || constrainsWindow ? Math.max(minTop, Math.min(maxTop, nextTop)) : Math.max(0, nextTop));
+    const launcherSnaps = snapToGrid && drag.id.startsWith('desktop-');
+    const left = constrainedSticky?.left ?? (launcherSnaps
+      ? snapWithinDesktopGrid(nextLeft, minLeft, maxLeft)
+      : staysOnDesktop || constrainsWindow
+        ? Math.max(minLeft, Math.min(maxLeft, nextLeft))
+        : nextLeft);
+    const top = constrainedSticky?.top ?? (launcherSnaps
+      ? snapWithinDesktopGrid(nextTop, minTop, maxTop)
+      : staysOnDesktop || constrainsWindow
+        ? Math.max(minTop, Math.min(maxTop, nextTop))
+        : Math.max(0, nextTop));
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
       drag.moved = true;
     }
@@ -1487,8 +1503,8 @@ function Home() {
           const minTop = dockPosition === 'top' ? 70 : 0;
           const maxLeft = area.clientWidth - target.width - (dockPosition === 'right' ? 70 : 0);
           const maxTop = area.clientHeight - target.height - (dockPosition === 'bottom' ? 70 : 0);
-          const left = Math.max(minLeft, Math.min(maxLeft, Math.round(drag.currentLeft / DESKTOP_GRID_SIZE) * DESKTOP_GRID_SIZE));
-          const top = Math.max(minTop, Math.min(maxTop, Math.round(drag.currentTop / DESKTOP_GRID_SIZE) * DESKTOP_GRID_SIZE));
+          const left = snapWithinDesktopGrid(drag.currentLeft, minLeft, maxLeft);
+          const top = snapWithinDesktopGrid(drag.currentTop, minTop, maxTop);
           setDragPositions((current) => ({ ...current, [drag.id]: { left, top } }));
         }
       }

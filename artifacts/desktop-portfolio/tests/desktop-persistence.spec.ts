@@ -243,6 +243,24 @@ test('renders dock labels with the same surface as folder and toolbar tooltips',
   expect(dockSurface).toEqual(folderSurface);
 });
 
+test('uses a text cursor only for terminal and sticky text editing', async ({ page }) => {
+  const cursorFor = (selector: ReturnType<typeof page.locator>) =>
+    selector.evaluate((element) => window.getComputedStyle(element).cursor);
+
+  await expect(page.getByTestId('window-about')).toBeVisible();
+  await expect(page.getByTestId('window-work')).toBeVisible();
+  expect(await cursorFor(page.getByTestId('window-about').locator('.window-body p').first())).toBe('default');
+  expect(await cursorFor(page.getByTestId('window-work').locator('.project-copy h3').first())).toBe('default');
+
+  await page.getByTestId('button-dock-terminal').click();
+  expect(await cursorFor(page.getByTestId('window-terminal').locator('.terminal-body'))).toBe('text');
+  expect(await cursorFor(page.getByTestId('input-terminal-command'))).toBe('text');
+  expect(await cursorFor(page.getByTestId('sticky-sticky').locator('.sticky-text'))).toBe('text');
+
+  expect(await cursorFor(page.getByTestId('window-work').locator('.project-link').first())).toBe('pointer');
+  expect(await cursorFor(page.getByTestId('window-about').locator('.window-resize-se'))).toBe('nwse-resize');
+});
+
 test('keeps mobile and tablet dock labels free of desktop tooltip effects', async ({ page }) => {
   for (const viewport of [
     { width: 390, height: 844 },

@@ -4,11 +4,16 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
   Check, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
-  Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
+  BookOpen, Layers, Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
 } from '@keyline-icons/react';
-import { CircleUser as CircleUserFill } from '@keyline-icons/react/fill';
+import {
+  Book as BookFill,
+  CircleUser as CircleUserFill,
+  Keyboard as KeyboardFill,
+  TerminalCursor as TerminalCursorFill,
+} from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
-import { BsStickyFill } from 'react-icons/bs';
+import { BsGearWideConnected, BsStickyFill } from 'react-icons/bs';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { tokens } from '@workspace/os-portfolio-ds/tokens';
 import { Toaster } from '@workspace/os-portfolio-ds/components/ui/toaster';
@@ -39,16 +44,16 @@ import {
 
 const queryClient = new QueryClient();
 
-type WindowId = 'about' | 'work' | 'contact' | 'terminal' | 'settings';
+type WindowId = 'about' | 'work' | 'contact' | 'terminal' | 'settings' | 'guide';
 type WindowState = Record<WindowId, boolean>;
 type IconSize = 'large' | 'small';
 type Theme = 'dark' | 'light';
-type DesktopLauncherId = Exclude<WindowId, 'settings'> | 'stickies-app';
+type DesktopLauncherId = Exclude<WindowId, 'settings' | 'guide'> | 'stickies-app';
 type FolderPositions = Partial<Record<DesktopLauncherId, { left: number; top: number }>>;
 type StickyItemId = 'sticky' | `sticky-${number}`;
 type DesktopLauncherDragId = `desktop-${DesktopLauncherId}`;
 type DesktopItemId = WindowId | StickyItemId | DesktopLauncherDragId;
-const isWindowId = (id: DesktopItemId): id is WindowId => ['about', 'work', 'contact', 'terminal', 'settings'].includes(id);
+const isWindowId = (id: DesktopItemId): id is WindowId => ['about', 'work', 'contact', 'terminal', 'settings', 'guide'].includes(id);
 type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
@@ -308,8 +313,8 @@ const defaultDesktopState: SavedDesktopState = {
   stickies: [defaultSticky, defaultSecondSticky],
   dockPosition: 'bottom',
   systemBarPosition: 'top',
-  windowStack: ['work', 'about', 'contact', 'terminal', 'settings'],
-  windows: { about: true, work: true, contact: false, terminal: false, settings: false },
+  windowStack: ['work', 'about', 'contact', 'terminal', 'settings', 'guide'],
+  windows: { about: true, work: true, contact: false, terminal: false, settings: false, guide: false },
   activeWindow: 'about',
   maximizedWindows: {},
   stickyVisible: true,
@@ -432,7 +437,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
         id,
         {
           ...position,
-          top: ['about', 'work', 'contact', 'terminal', 'settings'].includes(id) ? Math.max(0, position.top) : position.top,
+          top: ['about', 'work', 'contact', 'terminal', 'settings', 'guide'].includes(id) ? Math.max(0, position.top) : position.top,
         },
       ]),
     ) as ItemPositions;
@@ -469,7 +474,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
           ? migratedLegacyStickyColor as StickyColorId
           : defaultSticky.color,
       }];
-    const allWindowIds: WindowId[] = ['about', 'work', 'contact', 'terminal', 'settings'];
+    const allWindowIds: WindowId[] = ['about', 'work', 'contact', 'terminal', 'settings', 'guide'];
     const savedWindowStack = Array.isArray(parsed.windowStack)
       ? parsed.windowStack.filter((id, index, ids): id is WindowId => (
         allWindowIds.includes(id as WindowId)
@@ -669,6 +674,7 @@ const initialWindows: WindowState = {
   contact: false,
   terminal: false,
   settings: false,
+  guide: false,
 };
 
 function WindowFrame({
@@ -857,6 +863,7 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
 }
 
 type SettingsSection = 'personalization' | 'accessibility';
+type GuideSection = 'overview' | 'windows' | 'customize' | 'technical' | 'shortcuts';
 
 // Settings toggle row component
 function SettingsToggle({
@@ -1537,6 +1544,314 @@ function SettingsWindow({
           )}
         </DialogContent>
       </Dialog>
+    </WindowFrame>
+  );
+}
+
+function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
+  const [activeSection, setActiveSection] = useState<GuideSection>('overview');
+  const guideContentRef = useRef<HTMLDivElement>(null);
+
+  const selectGuideSection = (section: GuideSection) => {
+    setActiveSection(section);
+    if (guideContentRef.current) guideContentRef.current.scrollTop = 0;
+  };
+
+  return (
+    <WindowFrame {...props} id="guide" title="User Guide">
+      <div className="window-body guide-body">
+        <div className="settings-layout guide-layout">
+          <nav className="settings-nav guide-nav" aria-label="User guide sections">
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'overview' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'overview' ? 'page' : undefined}
+              onClick={() => selectGuideSection('overview')}
+              data-testid="guide-nav-overview"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><BookOpen size={14} strokeWidth={1.8} /></span>
+              Overview
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'windows' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'windows' ? 'page' : undefined}
+              onClick={() => selectGuideSection('windows')}
+              data-testid="guide-nav-windows"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><SquareTerminal size={14} strokeWidth={1.8} /></span>
+              Windows
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'customize' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'customize' ? 'page' : undefined}
+              onClick={() => selectGuideSection('customize')}
+              data-testid="guide-nav-customize"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><Settings size={14} strokeWidth={1.8} /></span>
+              Customize
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'technical' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'technical' ? 'page' : undefined}
+              onClick={() => selectGuideSection('technical')}
+              data-testid="guide-nav-technical"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><Layers size={14} strokeWidth={1.8} /></span>
+              Tech notes
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'shortcuts' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'shortcuts' ? 'page' : undefined}
+              onClick={() => selectGuideSection('shortcuts')}
+              data-testid="guide-nav-shortcuts"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><Command size={14} strokeWidth={1.8} /></span>
+              Shortcuts
+            </button>
+          </nav>
+
+          <div ref={guideContentRef} className="settings-content guide-content">
+            {activeSection === 'overview' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / start here</SectionLabel>
+                    <h2 className="settings-heading">A calmer way to work</h2>
+                    <p className="guide-intro">
+                      This desktop is a small, flexible workspace. Open the tools you need, arrange them around your work,
+                      and save the setup that feels right.
+                    </p>
+                  </div>
+                </div>
+                <div className="guide-section-label">First principles</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">01</span>
+                    <div><h3>Open an app</h3><p>Use the Dock, a desktop launcher, or a keyboard shortcut. The active app comes to the front and the window stack remembers the order.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">02</span>
+                    <div><h3>Shape your workspace</h3><p>Drag windows, resize their edges, move the Dock, and place Stickies where you can see them. Your desktop is an arrangement, not a fixed page.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">03</span>
+                    <div><h3>Make it yours</h3><p>Settings controls the theme, wallpaper, accessibility, contrast, and the copy on the home screen. Save a default when the setup feels right.</p></div>
+                  </Surface>
+                </div>
+                <div className="guide-callout">
+                  <span className="guide-callout-label">quick start</span>
+                  <p>Press <kbd>8</kbd> any time to bring this guide to the front. Start with <strong>Windows</strong> if you want to learn the workspace mechanics.</p>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'windows' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / windows</SectionLabel>
+                    <h2 className="settings-heading">Work with windows</h2>
+                    <p className="guide-intro">Every app is a floating window. The title bar keeps the controls close and the workspace stays yours.</p>
+                  </div>
+                </div>
+                <div className="guide-section-label">Window lifecycle</div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Focus</h3><p>Click a window or its Dock item to bring it forward. The active window stays at the front of the stack.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>Move</h3><p>Drag the title bar to place a window anywhere on the desktop. Double-click the title bar to maximize or restore it.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>Resize</h3><p>Drag any edge or corner. Your position and size are remembered when you close and reopen the app.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div><h3>Minimize or close</h3><p>Use the title-bar controls to hide an app or remove it from the desktop. Reopen it from the Dock.</p></div>
+                  </div>
+                </div>
+                <div className="guide-detail-grid">
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">Focus model</span>
+                    <h3>Frontmost is a state</h3>
+                    <p>Clicking a window changes its z-order without changing the other windows. The stack is saved with your desktop so reopening the page does not erase your arrangement.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">Maximize model</span>
+                    <h3>Chrome stays outside</h3>
+                    <p>A maximized window fills the available desktop area while keeping a 12px relationship to the system bar and Dock. Double-click its title bar to restore the previous geometry.</p>
+                  </Surface>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'customize' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / customize</SectionLabel>
+                    <h2 className="settings-heading">Make the desktop yours</h2>
+                    <p className="guide-intro">Open Settings from the Dock to tune the atmosphere, readability, and behavior of the workspace.</p>
+                  </div>
+                </div>
+                <div className="guide-section-label">Preference map</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">01 / Settings</span>
+                    <div><h3>Personalization</h3><p>Switch light or dark mode, choose a picture or solid wallpaper, adjust transparency, and edit the home-screen copy.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">02 / Settings</span>
+                    <div><h3>Accessibility</h3><p>Keep scrollbars visible, tune transparency and blur, reduce motion, and use low or high contrast themes.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">03 / Desktop</span>
+                    <div><h3>Arrange the shell</h3><p>Right-click the desktop to clean up or auto-arrange icons. Drag the Dock to an edge or right-click it to choose a position.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">04 / Desktop</span>
+                    <div><h3>Keep a baseline</h3><p>Use Settings to save your current arrangement as the default, or reset the desktop back to the saved baseline.</p></div>
+                  </Surface>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'technical' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / tech notes</SectionLabel>
+                    <h2 className="settings-heading">A desktop built in the browser</h2>
+                    <p className="guide-intro">This interface borrows the language of an operating system, but it is still a web application. The stack below explains what is simulated, what the browser controls, and why some behaviors differ from a regular operating system.</p>
+                  </div>
+                </div>
+                <div className="guide-section-label">What powers it</div>
+                <dl className="guide-definition-list">
+                  <div><dt>Interface</dt><dd>React components render the desktop, windows, Dock, system bar, Stickies, menus, and guide as one interactive page. Opening an app adds another visual region to the same document.</dd></div>
+                  <div><dt>Language</dt><dd>TypeScript describes window IDs, saved preferences, responsive modes, and pointer interactions. Those types make state changes explicit while the workspace is being rearranged.</dd></div>
+                  <div><dt>Build</dt><dd>Vite bundles the React and TypeScript source into static browser assets. The browser loads those assets into a tab; it does not start a native window manager or a separate process for each app.</dd></div>
+                  <div><dt>Styling</dt><dd>CSS handles the desktop geometry, themes, typography, surfaces, blur, shadows, responsive layouts, focus rings, and reduced-motion behavior. CSS effects are rendered by the browser rather than by a graphics compositor owned by the app.</dd></div>
+                  <div><dt>State</dt><dd>React state tracks open windows, frontmost order, window geometry, Dock placement, menus, Stickies, settings, and the current guide section. A state update causes the relevant DOM to render again.</dd></div>
+                  <div><dt>Browser APIs</dt><dd>Pointer Events support dragging and resizing, keyboard listeners support shortcuts, animation frames keep pointer movement responsive, and media queries report viewport and accessibility preferences.</dd></div>
+                  <div><dt>Persistence</dt><dd>Browser <code>localStorage</code> keeps the desktop snapshot on this device and browser profile: positions, sizes, theme, Dock placement, open windows, Stickies, and preferences.</dd></div>
+                </dl>
+                <div className="guide-section-label">How an interaction travels</div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Input arrives in the page</h3><p>A click, key press, pointer move, resize gesture, or viewport change is delivered to the browser tab. The app only receives events that the browser exposes to the page.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>State describes the change</h3><p>Handlers update focused window IDs, coordinates, dimensions, preferences, or menu visibility. The state model represents the desktop; it is not an operating-system process table.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>React updates the DOM</h3><p>React reconciles the changed component tree and updates the relevant buttons, window surfaces, labels, and styles without navigating to a new page for every app.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div><h3>CSS and the browser paint it</h3><p>Layout, stacking, transforms, transitions, blur, shadows, scrollbars, and focus indicators are calculated and painted by the browser. Support and user preferences can change the result.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">05</span>
+                    <div><h3>The snapshot is saved when needed</h3><p>Persistent preferences and workspace changes are serialized to localStorage. A refresh can restore that snapshot, but only inside the same browser storage boundary.</p></div>
+                  </div>
+                </div>
+                <div className="guide-section-label">Why it differs from a regular operating system</div>
+                <div className="guide-detail-grid">
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">01 / Process</span>
+                    <h3>Windows are visual layers</h3>
+                    <p>Apps are DOM sections in one tab, not independent operating-system processes. Closing a window changes the page state; it does not quit a program or release a native process.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">02 / Files</span>
+                    <h3>The terminal is a simulation</h3>
+                    <p>The Terminal window responds to its built-in command set and portfolio data. It cannot inspect the host computer, launch native programs, run arbitrary commands, or access a real file system.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">03 / Storage</span>
+                    <h3>Saved data belongs to the browser</h3>
+                    <p>localStorage is scoped to a browser origin and profile. It is not a shared home directory, a sync service, or a guarantee that another device will have the same workspace.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">04 / Geometry</span>
+                    <h3>Small screens use managed layouts</h3>
+                    <p>Freeform desktop geometry is for larger pointer-driven viewports. Tablet and mobile layouts temporarily stack or manage windows so content stays usable, then restore the desktop arrangement later.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">05 / Input</span>
+                    <h3>Focus and pointer capture are browser rules</h3>
+                    <p>Keyboard focus, pointer capture, touch behavior, browser chrome, and viewport changes can interrupt or constrain an interaction in ways a native desktop window manager would handle differently.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">06 / Rendering</span>
+                    <h3>Effects depend on the browser</h3>
+                    <p>Blur, transparency, shadows, pointer capture, scrollbars, and keyboard focus are browser-rendered effects. Accessibility preferences and browser support can reduce or change how they appear.</p>
+                  </Surface>
+                </div>
+                <div className="guide-section-label">What this means in practice</div>
+                <dl className="guide-definition-list">
+                  <div><dt>Focus</dt><dd>Only the app’s own window stack is reordered when you click a window. The browser tab, other tabs, and other applications remain outside this workspace’s control.</dd></div>
+                  <div><dt>Shortcuts</dt><dd>Number keys and command combinations are handled while the page can receive keyboard input. A focused text field, browser shortcut, or operating-system shortcut can take precedence.</dd></div>
+                  <div><dt>Refresh</dt><dd>Refreshing reconstructs the interface from code and then restores what was saved. In-memory details that were never persisted can disappear, just as unsaved work can be lost in another application.</dd></div>
+                  <div><dt>Responsive</dt><dd>Mobile and tablet layouts are managed for readability and touch targets. They are not a second native desktop; they are temporary browser layouts that protect the saved desktop geometry.</dd></div>
+                  <div><dt>Accessibility</dt><dd>Reduced motion, contrast settings, visible scrollbars, and browser focus behavior can intentionally change the appearance of the workspace. Those changes are part of the interface contract, not rendering failures.</dd></div>
+                  <div><dt>Security</dt><dd>The browser sandbox prevents the page from acting like a general-purpose shell. It can use the APIs made available to it, but it cannot silently browse private files or control unrelated applications.</dd></div>
+                </dl>
+                <div className="guide-callout">
+                  <span className="guide-callout-label">important</span>
+                  <p>Clearing site data, using private browsing, changing browser profiles, or blocking storage can reset the saved workspace. The guide and Settings explain the interface, but the browser still owns the storage, security, input, and rendering boundaries.</p>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'shortcuts' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / shortcuts</SectionLabel>
+                    <h2 className="settings-heading">Keyboard map</h2>
+                    <p className="guide-intro">On the desktop, number keys open the matching Dock app. Escape closes menus and dialogs.</p>
+                  </div>
+                </div>
+                <Surface elevation="flat" className="guide-shortcuts-panel">
+                  <div className="guide-shortcut-list" aria-label="Keyboard shortcuts">
+                  {[
+                    ['1', 'About', 'Open the about window'],
+                    ['2', 'Work', 'Open the work portfolio'],
+                    ['3', 'Contact', 'Open the contact window'],
+                    ['4', 'Terminal', 'Open the terminal'],
+                    ['5', 'Stickies', 'Show or focus Stickies'],
+                    ['6', 'Shortcuts', 'Open the shortcut menu'],
+                    ['7', 'Settings', 'Open Settings'],
+                    ['8', 'Guide', 'Open this user guide'],
+                  ].map(([key, label, description]) => (
+                    <div className="guide-shortcut" key={key}>
+                      <kbd>{key}</kbd>
+                      <strong>{label}</strong>
+                      <span>{description}</span>
+                    </div>
+                  ))}
+                  </div>
+                </Surface>
+                <div className="guide-callout">
+                  <span className="guide-callout-label">tip</span>
+                  <p>Use <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>X</kbd> to close the front window, or add <kbd>⌥</kbd> to close every open window.</p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </WindowFrame>
   );
 }
@@ -2465,7 +2780,7 @@ function Home() {
     setStickyOnTop(false);
     setContextMenu(null);
     setStickyMenu(null);
-    if (activeWindow !== 'terminal') return;
+    if (activeWindow !== 'terminal' && activeWindow !== 'guide') return;
     const fallback = (['work', 'about', 'contact'] as WindowId[]).find((id) => windows[id]) ?? 'work';
     if (!windows[fallback]) setWindows((current) => ({ ...current, [fallback]: true }));
     setActiveWindow(fallback);
@@ -2500,7 +2815,7 @@ function Home() {
       setDragPositions((current) => {
         let changed = false;
         const next = { ...current };
-        for (const id of ['about', 'work', 'contact', 'terminal', 'settings'] as WindowId[]) {
+        for (const id of ['about', 'work', 'contact', 'terminal', 'settings', 'guide'] as WindowId[]) {
           const element = area.querySelector<HTMLElement>(`[data-testid="window-${id}"]`);
           if (!element) continue;
           const position = current[id] ?? { left: element.offsetLeft, top: element.offsetTop };
@@ -2585,21 +2900,22 @@ function Home() {
       if (event.metaKey || event.ctrlKey) return;
       const target = event.target;
       const isColorValueField = target instanceof HTMLElement && Boolean(target.closest('.cp-field'));
-      if (isColorValueField && ['1', '2', '3', '4', '5', '6', '7'].includes(event.key)) return;
+      if (isColorValueField && ['1', '2', '3', '4', '5', '6', '7', '8'].includes(event.key)) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '4': 'terminal' };
       const id = shortcuts[event.key];
-      if (['4', '5', '6', '7'].includes(event.key) && workspaceMode !== 'desktop') return;
+      if (['4', '5', '6', '7', '8'].includes(event.key) && workspaceMode !== 'desktop') return;
       if (id) { event.preventDefault(); openWindow(id); }
       if (event.key === '5') { event.preventDefault(); handleStickyDock(); }
       if (event.key === '6') { event.preventDefault(); setMobileOpen((value) => !value); }
       if (event.key === '7') { event.preventDefault(); openWindow('settings'); }
+      if (event.key === '8') { event.preventDefault(); openWindow('guide'); }
     };
     window.addEventListener('keydown', handleShortcut);
     return () => window.removeEventListener('keydown', handleShortcut);
   });
 
   const openWindow = (id: WindowId) => {
-    if (id === 'terminal' && workspaceMode !== 'desktop') return;
+    if ((id === 'terminal' || id === 'guide') && workspaceMode !== 'desktop') return;
     setWindows((current) => ({ ...current, [id]: true }));
     setActiveWindow(id);
     setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
@@ -2867,7 +3183,7 @@ function Home() {
     const constrainedSticky = sticky && workspace && stickySize
       ? constrainStickyPosition({ left: nextLeft, top: nextTop }, stickySize, sticky.rotation, workspace)
       : null;
-    const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal', 'settings'].includes(drag.id);
+    const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal', 'settings', 'guide'].includes(drag.id);
     const left = constrainedSticky?.left ?? (staysOnDesktop || constrainsWindow ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft);
     const top = constrainedSticky?.top ?? (staysOnDesktop || constrainsWindow ? Math.max(minTop, Math.min(maxTop, nextTop)) : Math.max(0, nextTop));
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
@@ -3517,7 +3833,7 @@ function Home() {
           <div className="desktop-folders" aria-label="Desktop applications and folders">
             <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} appIcon={<CircleUserFill size={31} data-testid="icon-about-circle-user-fill" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} appIcon={<FolderGit2 size={31} strokeWidth={1.8} />} />
-            <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<SquareTerminal size={31} strokeWidth={1.7} data-testid="icon-terminal-square" />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<TerminalCursorFill size={31} data-testid="icon-terminal-cursor-fill" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<RiMailSendFill size={30} data-testid="icon-contact-mail-fill" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<BsStickyFill size={30} data-testid="icon-stickies-bootstrap-fill" />} />
           </div>
@@ -3648,6 +3964,9 @@ function Home() {
             introCustomization={introCustomization}
             onSetIntroCustomization={setIntroCustomization}
           />
+        )}
+        {workspaceMode === 'desktop' && windows.guide && (
+          <GuideWindow {...windowProps('guide')} />
         )}
       </div>
 
@@ -3997,10 +4316,11 @@ function Home() {
         )}
         {workspaceMode === 'desktop' && (
           <>
-            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} focused={windows.terminal && !stickyOnTop && activeWindow === 'terminal'} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} focused={windows.terminal && !stickyOnTop && activeWindow === 'terminal'} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><TerminalCursorFill size={20} data-testid="icon-dock-terminal-cursor-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-stickies" active={stickyVisible} focused={stickyVisible && stickyOnTop} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
-            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
-            <DockItem className="dock-item" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
+            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><KeyboardFill size={19} data-testid="icon-dock-shortcuts-keyboard-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-settings" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><BsGearWideConnected size={20} data-testid="icon-dock-settings-gear-wide-connected-fill" /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-guide" active={windows.guide} focused={windows.guide && !stickyOnTop && activeWindow === 'guide'} onClick={() => openWindow('guide')} aria-label="Open user guide" data-testid="button-dock-guide"><BookFill size={20} data-testid="icon-dock-guide-book-fill" /><DockItemLabel presentation="tooltip">Guide · 8</DockItemLabel></DockItem>
           </>
         )}
       </nav>
@@ -4008,7 +4328,7 @@ function Home() {
       {mobileOpen && (
         <div ref={shortcutMenuRef} className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}`} data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
-          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–7 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
+          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–8 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
             <button className="quick-button" onClick={() => openWindow('about')} data-testid="button-menu-about"><span className="shortcut-number">1</span>about</button>
             <button className="quick-button" onClick={() => openWindow('work')} data-testid="button-menu-work"><span className="shortcut-number">2</span>work</button>
@@ -4017,6 +4337,7 @@ function Home() {
             <button className="quick-button" onClick={handleStickyDock} data-testid="button-menu-stickies"><span className="shortcut-number">5</span>stickies</button>
             <button className="quick-button" onClick={() => setMobileOpen(false)} data-testid="button-menu-shortcuts"><span className="shortcut-number">6</span>shortcuts</button>
             <button className="quick-button" onClick={() => openWindow('settings')} data-testid="button-menu-settings"><span className="shortcut-number">7</span>settings</button>
+            <button className="quick-button" onClick={() => openWindow('guide')} data-testid="button-menu-guide"><span className="shortcut-number">8</span>guide</button>
           </div>
         </div>
       )}

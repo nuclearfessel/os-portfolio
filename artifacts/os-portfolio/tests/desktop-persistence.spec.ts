@@ -968,14 +968,15 @@ test('uses 4 instead of backtick for the terminal shortcut', async ({ page }) =>
   await expect(terminalWindow).toBeVisible();
 
   await page.getByTestId('button-dock-shortcuts').click();
-  await expect(page.getByTestId('menu-mobile')).toContainText('Use 1–7 for Dock shortcuts.');
+  await expect(page.getByTestId('menu-mobile')).toContainText('Use 1–8 for Dock shortcuts.');
   await expect(page.getByTestId('button-menu-terminal')).toContainText('4terminal');
   await expect(page.getByTestId('button-menu-stickies')).toContainText('5stickies');
   await expect(page.getByTestId('button-menu-shortcuts')).toContainText('6shortcuts');
   await expect(page.getByTestId('button-menu-settings')).toContainText('7settings');
+  await expect(page.getByTestId('button-menu-guide')).toContainText('8guide');
 });
 
-test('uses 5 through 7 for Stickies, Shortcuts, and Settings', async ({ page }) => {
+test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', async ({ page }) => {
   const visibleStickies = page.locator('.desktop-note:visible');
   const stickyDock = page.getByTestId('button-dock-stickies');
   await expect(visibleStickies.first()).toBeVisible();
@@ -993,6 +994,65 @@ test('uses 5 through 7 for Stickies, Shortcuts, and Settings', async ({ page }) 
   await expect(page.getByTestId('window-settings')).toHaveCount(0);
   await page.keyboard.press('7');
   await expect(page.getByTestId('window-settings')).toBeVisible();
+
+  await expect(page.getByTestId('window-guide')).toHaveCount(0);
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+  await expect(guideWindow.getByRole('heading', { name: 'A calmer way to work' })).toBeVisible();
+  await page.getByTestId('guide-nav-customize').click();
+  await expect(guideWindow.getByRole('heading', { name: 'Make the desktop yours' })).toBeVisible();
+  await page.getByTestId('guide-nav-technical').click();
+  await expect(guideWindow.getByRole('heading', { name: 'A desktop built in the browser' })).toBeVisible();
+  await expect(guideWindow).toContainText('React components render the desktop');
+  await expect(guideWindow).toContainText('Vite bundles the React and TypeScript source');
+  await expect(guideWindow).toContainText('The Terminal window responds to its built-in command set');
+  await expect(guideWindow).toContainText('The browser sandbox prevents the page from acting like a general-purpose shell');
+  await expect(guideWindow).toContainText('Blur, transparency, shadows, pointer capture, scrollbars, and keyboard focus');
+});
+
+test('keeps Settings and the User Guide light navigation states consistent', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  const settingsActive = page.getByTestId('settings-nav-personalization');
+  const settingsHover = page.getByTestId('settings-nav-accessibility');
+  await expect(settingsActive).toBeVisible();
+  await settingsHover.hover();
+  const settingsColors = await page.evaluate(() => {
+    const active = document.querySelector('[data-testid="settings-nav-personalization"]');
+    const hover = document.querySelector('[data-testid="settings-nav-accessibility"]');
+    return {
+      activeColor: active ? getComputedStyle(active).color : '',
+      activeBackground: active ? getComputedStyle(active).backgroundColor : '',
+      activeShadow: active ? getComputedStyle(active).boxShadow : '',
+      hoverColor: hover ? getComputedStyle(hover).color : '',
+      hoverBackground: hover ? getComputedStyle(hover).backgroundColor : '',
+    };
+  });
+
+  await page.getByTestId('button-close-settings').click();
+  await page.getByTestId('button-dock-guide').click();
+  const guideActive = page.getByTestId('guide-nav-overview');
+  const guideHover = page.getByTestId('guide-nav-windows');
+  await expect(guideActive).toBeVisible();
+  await guideHover.hover();
+  const guideColors = await page.evaluate(() => {
+    const active = document.querySelector('[data-testid="guide-nav-overview"]');
+    const hover = document.querySelector('[data-testid="guide-nav-windows"]');
+    return {
+      activeColor: active ? getComputedStyle(active).color : '',
+      activeBackground: active ? getComputedStyle(active).backgroundColor : '',
+      activeShadow: active ? getComputedStyle(active).boxShadow : '',
+      hoverColor: hover ? getComputedStyle(hover).color : '',
+      hoverBackground: hover ? getComputedStyle(hover).backgroundColor : '',
+    };
+  });
+
+  expect(guideColors.activeColor).toBe(settingsColors.activeColor);
+  expect(guideColors.activeBackground).toBe(settingsColors.activeBackground);
+  expect(guideColors.hoverColor).toBe(settingsColors.hoverColor);
+  expect(guideColors.hoverBackground).toBe(settingsColors.hoverBackground);
+  expect(guideColors.activeBackground).toBe('rgb(44, 143, 129)');
+  expect(guideColors.activeShadow).toBe('none');
 });
 
 test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {
@@ -1772,7 +1832,7 @@ test('saves the current desktop state as the default only after confirmation', a
   await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), defaultStorageKey))
     .toMatchObject({
       showDesktopIcons: false,
-      windowStack: ['about', 'contact', 'terminal', 'settings', 'work'],
+       windowStack: ['about', 'contact', 'terminal', 'settings', 'guide', 'work'],
     });
 
   await page.getByTestId('window-about').dispatchEvent('mousedown');
@@ -1809,7 +1869,7 @@ test('saves the current desktop state as the default only after confirmation', a
         terminal: true,
       },
       activeWindow: 'work',
-      windowStack: ['about', 'settings', 'contact', 'terminal', 'work'],
+       windowStack: ['about', 'settings', 'guide', 'contact', 'terminal', 'work'],
       stickies: [{ id: 'sticky' }],
     });
 

@@ -854,6 +854,35 @@ test('closes the shortcuts drawer with Escape or an outside click', async ({ pag
   await expect(drawer).toHaveCount(0);
 });
 
+test('closes the topmost or all desktop windows with modifier shortcuts', async ({ page }) => {
+  await page.keyboard.press('3');
+  await expect(page.getByTestId('window-contact')).toBeVisible();
+  await page.keyboard.press('Control+Shift+X');
+  await expect(page.getByTestId('window-contact')).toHaveCount(0);
+  await expect(page.getByTestId('window-about')).toBeVisible();
+  await expect(page.getByTestId('window-work')).toBeVisible();
+
+  await page.keyboard.press('4');
+  await page.keyboard.press('7');
+  await expect(page.getByTestId('window-terminal')).toBeVisible();
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+  await page.keyboard.press('Control+Alt+Shift+X');
+  await expect(page.locator('[data-testid^="window-"]')).toHaveCount(0);
+
+  await page.keyboard.press('1');
+  await expect(page.getByTestId('window-about')).toBeVisible();
+  await page.evaluate(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'x',
+      metaKey: true,
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
+    }));
+  });
+  await expect(page.getByTestId('window-about')).toHaveCount(0);
+});
+
 test('keeps the shortcuts drawer clear of every system bar position', async ({ page }) => {
   for (const position of ['top', 'bottom', 'left', 'right'] as const) {
     await page.evaluate(([key, systemBarPosition]) => {

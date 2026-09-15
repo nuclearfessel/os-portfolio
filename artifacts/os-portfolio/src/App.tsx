@@ -114,6 +114,9 @@ type ViewportProfile = {
 const STICKY_CONTROL_OVERFLOW = 24;
 const STICKY_VIEWPORT_GAP = 2;
 const DOCK_SAFE_INSET = 70;
+const MAXIMIZED_WINDOW_GAP = 12;
+const MAXIMIZED_WINDOW_DOCK_INSET = 97;
+const MAXIMIZED_WINDOW_DOCK_INSET_WITH_SYSTEM_BAR = 87;
 
 function readViewportProfile(): ViewportProfile {
   const width = window.innerWidth;
@@ -3292,6 +3295,9 @@ function Home() {
     }
     setSaveDefaultDialogOpen(false);
   };
+  const maximizedWindowDockInset = dockPosition === systemBarPosition
+    ? MAXIMIZED_WINDOW_DOCK_INSET_WITH_SYSTEM_BAR
+    : MAXIMIZED_WINDOW_DOCK_INSET;
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
     maximized: Boolean(maximizedWindows[id]),
@@ -3334,10 +3340,10 @@ function Home() {
       ? undefined
       : maximizedWindows[id]
       ? {
-        left: dockPosition === 'left' ? 82 : systemBarPosition === 'left' ? 60 : 12,
-        top: dockPosition === 'top' ? 82 : systemBarPosition === 'top' ? 54 : 12,
-        right: dockPosition === 'right' ? 82 : systemBarPosition === 'right' ? 60 : 12,
-        bottom: dockPosition === 'bottom' ? 82 : systemBarPosition === 'bottom' ? 54 : 12,
+        left: dockPosition === 'left' ? maximizedWindowDockInset : MAXIMIZED_WINDOW_GAP,
+        top: dockPosition === 'top' ? maximizedWindowDockInset : MAXIMIZED_WINDOW_GAP,
+        right: dockPosition === 'right' ? maximizedWindowDockInset : MAXIMIZED_WINDOW_GAP,
+        bottom: dockPosition === 'bottom' ? maximizedWindowDockInset : MAXIMIZED_WINDOW_GAP,
         width: 'auto',
         height: 'auto',
         zIndex: 10 + windowStack.indexOf(id),
@@ -3667,8 +3673,8 @@ function Home() {
                   <button type="button" role="menuitemradio" aria-checked={iconSize === 'small'} onClick={() => { setIconSize('small'); setContextMenu(null); }}><span className="context-check">{iconSize === 'small' && <Check size={12} />}</span><span>Small icons</span></button>
                 </div>
               </div>
-              <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={snapToGrid} onClick={() => setSnapToGrid((value) => !value)}><span className="context-check">{snapToGrid && <Check size={12} />}</span><span>Snap to grid</span></button>
               <button type="button" className="context-menu-button" role="menuitem" onClick={cleanupIcons}><span className="context-check" /><span>Cleanup icons</span></button>
+              <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={snapToGrid} onClick={() => setSnapToGrid((value) => !value)}><span className="context-check">{snapToGrid && <Check size={12} />}</span><span>Snap to grid</span></button>
               <button type="button" className="context-menu-button" role="menuitem" onClick={autoArrangeIcons}><span className="context-check" /><span>Auto arrange icons</span></button>
               <div className="context-menu-separator" />
             </>

@@ -852,6 +852,18 @@ test('keeps stacked windows locally painted while moving and dragging across the
   expectOverlap(initialGeometry[0], initialGeometry[2]);
   expectOverlap(initialGeometry[1], initialGeometry[2]);
 
+  const expectRestingShadow = async (window: ReturnType<typeof page.getByTestId>) => {
+    await expect.poll(() => window.evaluate((element) => {
+      const shadow = getComputedStyle(element).boxShadow;
+      const withoutColor = shadow.replace(/(?:rgba?|hsla?)\([^)]*\)/g, '').trim();
+      return {
+        shadow,
+        isInsetOnly: shadow !== 'none'
+          && shadow.endsWith('inset')
+          && /^(?:-?\d+(?:\.\d+)?px\s+){3,4}inset$/.test(withoutColor),
+      };
+    })).toMatchObject({ isInsetOnly: false });
+  };
   const expectLocalShadow = async (window: ReturnType<typeof page.getByTestId>) => {
     await expect.poll(() => window.evaluate((element) => {
       const shadow = getComputedStyle(element).boxShadow;
@@ -865,7 +877,7 @@ test('keeps stacked windows locally painted while moving and dragging across the
     })).toMatchObject({ isInsetOnly: true });
   };
   for (const window of [aboutWindow, workWindow, settingsWindow]) {
-    await expectLocalShadow(window);
+    await expectRestingShadow(window);
   }
 
   const overlapX = Math.max(initialGeometry[0].x, initialGeometry[1].x, initialGeometry[2].x) + 40;
@@ -890,6 +902,9 @@ test('keeps stacked windows locally painted while moving and dragging across the
   await page.mouse.move(startX, startY);
   await page.mouse.down();
   await page.mouse.move(startX + dragDelta.x, startY + dragDelta.y, { steps: 12 });
+  await expectLocalShadow(settingsWindow);
+  await expectRestingShadow(aboutWindow);
+  await expectRestingShadow(workWindow);
   await page.mouse.up();
 
   const settingsAfterDrag = await settingsWindow.boundingBox();
@@ -906,7 +921,7 @@ test('keeps stacked windows locally painted while moving and dragging across the
   expect(workAfterDrag!.y).toBeCloseTo(workBeforeDrag!.y, 0);
 
   for (const window of [aboutWindow, workWindow, settingsWindow]) {
-    await expectLocalShadow(window);
+    await expectRestingShadow(window);
   }
 });
 

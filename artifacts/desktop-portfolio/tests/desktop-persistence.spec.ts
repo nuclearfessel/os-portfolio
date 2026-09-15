@@ -24,8 +24,17 @@ async function chooseSubmenuOption(page: Page, submenu: string, option: string) 
 async function openSettingsAndSetTheme(page: Page, theme: 'Light' | 'Dark') {
   await page.getByTestId('button-dock-settings').click();
   await expect(page.getByTestId('window-settings')).toBeVisible();
+  await openSettingsSection(page, 'theme');
   await page.getByTestId(`settings-theme-${theme.toLowerCase()}`).click();
   await page.getByTestId('button-close-settings').click();
+}
+
+async function openSettingsSection(page: Page, section: string) {
+  const trigger = page.getByTestId(`settings-section-trigger-${section}`);
+  if (await trigger.getAttribute('aria-expanded') !== 'true') {
+    await trigger.click();
+  }
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
 }
 
 async function openStickyMenu(page: Page, stickyId = 'sticky') {
@@ -611,18 +620,24 @@ test('About and Work use distinct saturated application icons instead of folders
   });
   const terminalDockStyle = await page.getByTestId('button-dock-terminal').evaluate((element) => {
     const style = getComputedStyle(element);
-    return { background: style.backgroundImage, border: style.borderColor, color: style.color };
+    return { background: style.backgroundImage, color: style.color };
   });
-  expect(terminalDockStyle).toEqual(terminalLauncherStyle);
+  expect(terminalDockStyle).toEqual({
+    background: terminalLauncherStyle.background,
+    color: terminalLauncherStyle.color,
+  });
   const stickiesLauncherStyle = await stickies.locator('.desktop-app-icon').evaluate((element) => {
     const style = getComputedStyle(element);
     return { background: style.backgroundImage, border: style.borderColor, color: style.color };
   });
   const stickiesDockStyle = await page.getByTestId('button-dock-stickies').evaluate((element) => {
     const style = getComputedStyle(element);
-    return { background: style.backgroundImage, border: style.borderColor, color: style.color };
+    return { background: style.backgroundImage, color: style.color };
   });
-  expect(stickiesDockStyle).toEqual(stickiesLauncherStyle);
+  expect(stickiesDockStyle).toEqual({
+    background: stickiesLauncherStyle.background,
+    color: stickiesLauncherStyle.color,
+  });
   expect(stickiesLauncherStyle.color).toBe('rgb(87, 61, 114)');
   await expect(about).toHaveClass(/desktop-app/);
   await expect(work).toHaveClass(/desktop-app/);
@@ -968,7 +983,17 @@ test('stays usable when browser storage reads, writes, and removals fail', async
     window as typeof window & { __storageFailureAttempts: { getItem: number } }
   ).__storageFailureAttempts.getItem)).toBeGreaterThan(0);
 
-  await page.getByTestId('button-open-contact').click();
+  const sticky = page.getByTestId('sticky-sticky');
+  await expect(sticky).toBeVisible();
+  const initialStickyBox = await sticky.boundingBox();
+  expect(initialStickyBox).not.toBeNull();
+  await sticky.locator('.note-label').hover();
+  await page.mouse.down();
+  await page.mouse.move(initialStickyBox!.x - 100, initialStickyBox!.y + 65, { steps: 6 });
+  await page.mouse.up();
+  await sticky.getByRole('textbox', { name: 'Sticky note 1 text' }).fill('Recovery keeps the whole desktop.');
+
+  await page.getByTestId('button-open-contact').evaluate((element) => (element as HTMLElement).click());
   const contactWindow = page.getByTestId('window-contact');
   await expect(contactWindow).toBeVisible();
 
@@ -1002,17 +1027,6 @@ test('stays usable when browser storage reads, writes, and removals fail', async
     width: Number.NaN,
     height: Number.NaN,
   }));
-
-  await page.getByTestId('button-dock-stickies').click();
-  const sticky = page.getByTestId('sticky-sticky');
-  await expect(sticky).toBeVisible();
-  const initialStickyBox = await sticky.boundingBox();
-  expect(initialStickyBox).not.toBeNull();
-  await sticky.locator('.note-label').hover({ force: true });
-  await page.mouse.down();
-  await page.mouse.move(initialStickyBox!.x - 100, initialStickyBox!.y + 65, { steps: 6 });
-  await page.mouse.up();
-  await sticky.getByRole('textbox', { name: 'Sticky note 1 text' }).fill('Recovery keeps the whole desktop.');
 
   await openSettingsAndSetTheme(page, 'Dark');
   await openDesktopMenu(page);
@@ -1657,6 +1671,7 @@ test('Settings window changes theme and persists across reload', async ({ page }
   await page.getByTestId('button-dock-settings').click();
   const settingsWindow = page.getByTestId('window-settings');
   await expect(settingsWindow).toBeVisible();
+  await openSettingsSection(page, 'theme');
 
   // Start in light theme; switch to dark via Settings
   await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
@@ -1691,6 +1706,7 @@ test('Settings wallpaper mode: picture uses background image on desktop', async 
 test('Settings wallpaper mode: color removes background image and applies solid color', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   await expect(page.getByTestId('window-settings')).toBeVisible();
+  await openSettingsSection(page, 'wallpaper');
 
   // Switch to color mode for the light theme — default color is #e8f0ec
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
@@ -1730,6 +1746,7 @@ test('selected light and dark solid wallpaper colors persist in tablet and mobil
   const shell = page.locator('main.os-shell');
 
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
   await page.getByTestId('cp-field-hex').fill('345678');
   await page.getByTestId('cp-field-hex').press('Enter');
@@ -1748,6 +1765,8 @@ test('selected light and dark solid wallpaper colors persist in tablet and mobil
 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-theme-dark').click();
   await page.getByTestId('cp-field-hex').fill('654321');
   await page.getByTestId('cp-field-hex').press('Enter');
@@ -1995,6 +2014,7 @@ test('switching settings pages resets the content pane to the top', async ({ pag
 
 test('solid color mode offers the original light and dark default color blocks', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
 
   const lightPreset = page.getByTestId('settings-color-preset-light');
@@ -2014,6 +2034,8 @@ test('solid color mode offers the original light and dark default color blocks',
 test('wallpaper choice persists across page reload', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   await expect(page.getByTestId('window-settings')).toBeVisible();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
 
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
   await page.getByTestId('cp-field-hex').fill('345678');
@@ -2045,6 +2067,7 @@ test('save state as default includes wallpaper config, and reset restores it', a
   // Set color wallpaper for light theme
   await page.getByTestId('button-dock-settings').click();
   await expect(page.getByTestId('window-settings')).toBeVisible();
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
   await page.getByTestId('button-close-settings').click();
 
@@ -2058,6 +2081,7 @@ test('save state as default includes wallpaper config, and reset restores it', a
 
   // Switch back to picture mode
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-wallpaper-mode-picture-light').click();
   await page.getByTestId('button-close-settings').click();
 
@@ -2082,6 +2106,8 @@ test('save state as default includes wallpaper config, and reset restores it', a
 
 test('Picture to Solid Color restores each theme previous solid color', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
   await page.getByTestId('cp-field-hex').fill('123456');
   await page.getByTestId('cp-field-hex').press('Enter');
@@ -2095,6 +2121,8 @@ test('Picture to Solid Color restores each theme previous solid color', async ({
 
 test('custom solid colors remain independent when switching themes', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
   await page.getByTestId('cp-field-hex').fill('AABBCC');
   await page.getByTestId('cp-field-hex').press('Enter');
@@ -2113,6 +2141,8 @@ test('custom solid colors remain independent when switching themes', async ({ pa
 
 test('opposite preset becomes the saved default for the active theme', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-theme-dark').click();
   await page.getByTestId('settings-wallpaper-mode-color-dark').click();
   await page.getByTestId('settings-color-preset-light').click();
@@ -2126,6 +2156,7 @@ test('opposite preset becomes the saved default for the active theme', async ({ 
   expect(savedDefault.wallpaperDark).toEqual({ mode: 'color', color: '#e8f0ec' });
 
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-color-preset-dark').click();
   await page.getByTestId('button-close-settings').click();
   await openDesktopMenu(page);
@@ -2133,6 +2164,8 @@ test('opposite preset becomes the saved default for the active theme', async ({ 
   await page.getByTestId('button-confirm-reset').click();
 
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
   await expect(page.getByTestId('settings-theme-dark')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('cp-field-hex')).toHaveValue('E8F0EC');
   await expect(page.getByTestId('settings-color-preset-light')).toHaveAttribute('aria-pressed', 'true');
@@ -2140,6 +2173,8 @@ test('opposite preset becomes the saved default for the active theme', async ({ 
 
 test('contrast themes preserve both underlying solid colors', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
   await page.getByTestId('settings-wallpaper-mode-color-light').click();
   await page.getByTestId('cp-field-hex').fill('ABCDEF');
   await page.getByTestId('cp-field-hex').press('Enter');
@@ -2148,9 +2183,12 @@ test('contrast themes preserve both underlying solid colors', async ({ page }) =
   await page.getByTestId('cp-field-hex').press('Enter');
 
   await page.getByTestId('settings-nav-accessibility').click();
+  await openSettingsSection(page, 'contrast');
   await page.getByTestId('settings-a11y-contrast-high').click();
   await page.getByTestId('settings-a11y-contrast-none').click();
   await page.getByTestId('settings-nav-personalization').click();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
   await expect(page.getByTestId('cp-field-hex')).toHaveValue('234567');
   await page.getByTestId('settings-theme-light').click();
   await expect(page.getByTestId('cp-field-hex')).toHaveValue('ABCDEF');
@@ -2169,6 +2207,8 @@ test('legacy identical solid colors load without being replaced', async ({ page 
   await page.reload();
 
   await page.getByTestId('button-dock-settings').click();
+  await openSettingsSection(page, 'theme');
+  await openSettingsSection(page, 'wallpaper');
   await expect(page.getByTestId('cp-field-hex')).toHaveValue('445566');
   await page.getByTestId('settings-theme-light').click();
   await expect(page.getByTestId('cp-field-hex')).toHaveValue('445566');

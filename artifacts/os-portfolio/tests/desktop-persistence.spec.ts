@@ -1005,6 +1005,10 @@ test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', a
   await page.getByTestId('guide-nav-technical').click();
   await expect(guideWindow.getByRole('heading', { name: 'A desktop built in the browser' })).toBeVisible();
   await expect(guideWindow).toContainText('React components render the desktop');
+  await expect(guideWindow).toContainText('Vite bundles the React and TypeScript source');
+  await expect(guideWindow).toContainText('The Terminal window responds to its built-in command set');
+  await expect(guideWindow).toContainText('The browser sandbox prevents the page from acting like a general-purpose shell');
+  await expect(guideWindow).toContainText('Blur, transparency, shadows, pointer capture, scrollbars, and keyboard focus');
 });
 
 test('keeps Settings and the User Guide light navigation states consistent', async ({ page }) => {

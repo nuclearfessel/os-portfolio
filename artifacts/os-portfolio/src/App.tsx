@@ -1724,43 +1724,87 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   <div>
                     <SectionLabel className="section-kicker">user guide / tech notes</SectionLabel>
                     <h2 className="settings-heading">A desktop built in the browser</h2>
-                    <p className="guide-intro">This interface borrows the language of an operating system, but it is still a web application. Knowing where those boundaries are makes its behavior easier to understand.</p>
+                    <p className="guide-intro">This interface borrows the language of an operating system, but it is still a web application. The stack below explains what is simulated, what the browser controls, and why some behaviors differ from a regular operating system.</p>
                   </div>
                 </div>
                 <div className="guide-section-label">What powers it</div>
                 <dl className="guide-definition-list">
-                  <div><dt>Interface</dt><dd>React components render the desktop, windows, Dock, system bar, Stickies, menus, and guide as one interactive page.</dd></div>
-                  <div><dt>Language</dt><dd>TypeScript describes window IDs, saved preferences, responsive modes, and pointer interactions so the workspace can stay consistent as it changes.</dd></div>
-                  <div><dt>Build</dt><dd>Vite bundles the application into static browser assets. There is no native window manager or separate process behind each app.</dd></div>
+                  <div><dt>Interface</dt><dd>React components render the desktop, windows, Dock, system bar, Stickies, menus, and guide as one interactive page. Opening an app adds another visual region to the same document.</dd></div>
+                  <div><dt>Language</dt><dd>TypeScript describes window IDs, saved preferences, responsive modes, and pointer interactions. Those types make state changes explicit while the workspace is being rearranged.</dd></div>
+                  <div><dt>Build</dt><dd>Vite bundles the React and TypeScript source into static browser assets. The browser loads those assets into a tab; it does not start a native window manager or a separate process for each app.</dd></div>
+                  <div><dt>Styling</dt><dd>CSS handles the desktop geometry, themes, typography, surfaces, blur, shadows, responsive layouts, focus rings, and reduced-motion behavior. CSS effects are rendered by the browser rather than by a graphics compositor owned by the app.</dd></div>
+                  <div><dt>State</dt><dd>React state tracks open windows, frontmost order, window geometry, Dock placement, menus, Stickies, settings, and the current guide section. A state update causes the relevant DOM to render again.</dd></div>
+                  <div><dt>Browser APIs</dt><dd>Pointer Events support dragging and resizing, keyboard listeners support shortcuts, animation frames keep pointer movement responsive, and media queries report viewport and accessibility preferences.</dd></div>
                   <div><dt>Persistence</dt><dd>Browser <code>localStorage</code> keeps the desktop snapshot on this device and browser profile: positions, sizes, theme, Dock placement, open windows, Stickies, and preferences.</dd></div>
-                  <div><dt>Interaction</dt><dd>Pointer Events, keyboard listeners, CSS layout, and animation frames create dragging, resizing, focus, snapping, and responsive transitions.</dd></div>
                 </dl>
-                <div className="guide-section-label">Why it feels different from a regular OS</div>
+                <div className="guide-section-label">How an interaction travels</div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Input arrives in the page</h3><p>A click, key press, pointer move, resize gesture, or viewport change is delivered to the browser tab. The app only receives events that the browser exposes to the page.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>State describes the change</h3><p>Handlers update focused window IDs, coordinates, dimensions, preferences, or menu visibility. The state model represents the desktop; it is not an operating-system process table.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>React updates the DOM</h3><p>React reconciles the changed component tree and updates the relevant buttons, window surfaces, labels, and styles without navigating to a new page for every app.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div><h3>CSS and the browser paint it</h3><p>Layout, stacking, transforms, transitions, blur, shadows, scrollbars, and focus indicators are calculated and painted by the browser. Support and user preferences can change the result.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">05</span>
+                    <div><h3>The snapshot is saved when needed</h3><p>Persistent preferences and workspace changes are serialized to localStorage. A refresh can restore that snapshot, but only inside the same browser storage boundary.</p></div>
+                  </div>
+                </div>
+                <div className="guide-section-label">Why it differs from a regular operating system</div>
                 <div className="guide-detail-grid">
                   <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">Browser boundary</span>
+                    <span className="guide-card-index">01 / Process</span>
                     <h3>Windows are visual layers</h3>
                     <p>Apps are DOM sections in one tab, not independent operating-system processes. Closing a window changes the page state; it does not quit a program or release a native process.</p>
                   </Surface>
                   <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">Browser boundary</span>
+                    <span className="guide-card-index">02 / Files</span>
                     <h3>The terminal is a simulation</h3>
-                    <p>The Terminal window responds to its built-in command set and portfolio data. It cannot inspect the host computer, launch native programs, or access a real file system.</p>
+                    <p>The Terminal window responds to its built-in command set and portfolio data. It cannot inspect the host computer, launch native programs, run arbitrary commands, or access a real file system.</p>
                   </Surface>
                   <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">Responsive boundary</span>
+                    <span className="guide-card-index">03 / Storage</span>
+                    <h3>Saved data belongs to the browser</h3>
+                    <p>localStorage is scoped to a browser origin and profile. It is not a shared home directory, a sync service, or a guarantee that another device will have the same workspace.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">04 / Geometry</span>
                     <h3>Small screens use managed layouts</h3>
                     <p>Freeform desktop geometry is for larger pointer-driven viewports. Tablet and mobile layouts temporarily stack or manage windows so content stays usable, then restore the desktop arrangement later.</p>
                   </Surface>
                   <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">Rendering boundary</span>
+                    <span className="guide-card-index">05 / Input</span>
+                    <h3>Focus and pointer capture are browser rules</h3>
+                    <p>Keyboard focus, pointer capture, touch behavior, browser chrome, and viewport changes can interrupt or constrain an interaction in ways a native desktop window manager would handle differently.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">06 / Rendering</span>
                     <h3>Effects depend on the browser</h3>
                     <p>Blur, transparency, shadows, pointer capture, scrollbars, and keyboard focus are browser-rendered effects. Accessibility preferences and browser support can reduce or change how they appear.</p>
                   </Surface>
                 </div>
+                <div className="guide-section-label">What this means in practice</div>
+                <dl className="guide-definition-list">
+                  <div><dt>Focus</dt><dd>Only the app’s own window stack is reordered when you click a window. The browser tab, other tabs, and other applications remain outside this workspace’s control.</dd></div>
+                  <div><dt>Shortcuts</dt><dd>Number keys and command combinations are handled while the page can receive keyboard input. A focused text field, browser shortcut, or operating-system shortcut can take precedence.</dd></div>
+                  <div><dt>Refresh</dt><dd>Refreshing reconstructs the interface from code and then restores what was saved. In-memory details that were never persisted can disappear, just as unsaved work can be lost in another application.</dd></div>
+                  <div><dt>Responsive</dt><dd>Mobile and tablet layouts are managed for readability and touch targets. They are not a second native desktop; they are temporary browser layouts that protect the saved desktop geometry.</dd></div>
+                  <div><dt>Accessibility</dt><dd>Reduced motion, contrast settings, visible scrollbars, and browser focus behavior can intentionally change the appearance of the workspace. Those changes are part of the interface contract, not rendering failures.</dd></div>
+                  <div><dt>Security</dt><dd>The browser sandbox prevents the page from acting like a general-purpose shell. It can use the APIs made available to it, but it cannot silently browse private files or control unrelated applications.</dd></div>
+                </dl>
                 <div className="guide-callout">
                   <span className="guide-callout-label">important</span>
-                  <p>Clearing site data, using private browsing, changing browser profiles, or blocking storage can reset the saved workspace. The guide and Settings explain the interface, but the browser still owns the storage boundary.</p>
+                  <p>Clearing site data, using private browsing, changing browser profiles, or blocking storage can reset the saved workspace. The guide and Settings explain the interface, but the browser still owns the storage, security, input, and rendering boundaries.</p>
                 </div>
               </>
             )}

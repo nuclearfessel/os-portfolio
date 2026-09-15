@@ -1002,6 +1002,9 @@ test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', a
   await expect(guideWindow.getByRole('heading', { name: 'A calmer way to work' })).toBeVisible();
   await page.getByTestId('guide-nav-customize').click();
   await expect(guideWindow.getByRole('heading', { name: 'Make the desktop yours' })).toBeVisible();
+  await page.getByTestId('guide-nav-technical').click();
+  await expect(guideWindow.getByRole('heading', { name: 'A desktop built in the browser' })).toBeVisible();
+  await expect(guideWindow).toContainText('React components render the desktop');
 });
 
 test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {

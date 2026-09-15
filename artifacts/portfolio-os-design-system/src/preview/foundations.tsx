@@ -13,6 +13,7 @@ import { Label } from '../components/ui/label';
 import { Separator } from '../components/ui/separator';
 import { Switch } from '../components/ui/switch';
 import { SectionLabel } from '../components/ui/portfolio-os';
+import { tokens } from '../generated/tokens';
 import { CanonicalSpec } from './md-renderer';
 import {
   mdFoundationColor,
@@ -32,6 +33,61 @@ const SUPPORTING_SWATCHES = [
   { name: 'Muted', className: 'bg-muted' },
   { name: 'Destructive', className: 'bg-destructive' },
   { name: 'Border', className: 'bg-border' },
+] as const;
+
+const MAPPING_FLOW = [
+  {
+    primitive: 'teal',
+    semantic: 'primary',
+    semanticClass: 'bg-primary',
+    component: 'actionButton.background',
+    componentClass: 'bg-primary',
+  },
+  {
+    primitive: 'paper',
+    semantic: 'card',
+    semanticClass: 'bg-card',
+    component: 'projectCard.surface',
+    componentClass: 'bg-card',
+  },
+  {
+    primitive: 'lightPopover',
+    semantic: 'popover',
+    semanticClass: 'bg-popover',
+    component: 'contextMenu.surface',
+    componentClass: 'bg-popover',
+  },
+  {
+    primitive: 'coral',
+    semantic: 'accent',
+    semanticClass: 'bg-accent',
+    component: 'contactCta.background',
+    componentClass: 'bg-accent',
+  },
+] as const;
+
+const COMPONENT_COLOR_COVERAGE = [
+  'actionButton',
+  'accordion',
+  'dialog',
+  'separator',
+  'toast',
+  'tooltip',
+  'contextMenu',
+  'desktopLauncher',
+  'dock',
+  'dockLabel',
+  'projectCard',
+  'sectionLabel',
+  'statusIndicator',
+  'stickyNoteSurface',
+  'genericSurface',
+  'windowSurface',
+  'systemBar',
+  'settingsControls',
+  'colorPicker',
+  'terminal',
+  'contactCta',
 ] as const;
 
 const TYPE_SCALE = [
@@ -215,6 +271,76 @@ export function ColorsPage() {
           </div>
         </section>
       </div>
+      <section className="space-y-5 rounded-xl border bg-card p-6 text-card-foreground">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Token architecture</p>
+          <h2 className="mt-2 font-semibold">One palette, three purposeful layers</h2>
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
+            Raw palette values feed semantic roles, then component intent. The
+            semantic middle layer keeps light, dark, and contrast remapping in
+            sync without coupling components to hex values.
+          </p>
+        </div>
+        <div className="space-y-3">
+          {MAPPING_FLOW.map((entry) => (
+            <div
+              key={entry.component}
+              className="grid items-center gap-3 rounded-lg border bg-background p-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1.25fr)]"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <span
+                  className="h-9 w-9 shrink-0 rounded-md border"
+                  style={{ backgroundColor: tokens.color.primitive[entry.primitive] }}
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium">Primitive</p>
+                  <code className="font-mono text-[0.6875rem] text-muted-foreground">color.primitive.{entry.primitive}</code>
+                </div>
+              </div>
+              <span className="hidden text-muted-foreground sm:block" aria-hidden="true">→</span>
+              <div className="flex min-w-0 items-center gap-3">
+                <span className={`h-9 w-9 shrink-0 rounded-md border ${entry.semanticClass}`} />
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium">Semantic</p>
+                  <code className="font-mono text-[0.6875rem] text-muted-foreground">color.light.{entry.semantic}</code>
+                </div>
+              </div>
+              <span className="hidden text-muted-foreground sm:block" aria-hidden="true">→</span>
+              <div className="flex min-w-0 items-center gap-3">
+                <span className={`h-9 w-9 shrink-0 rounded-md border ${entry.componentClass}`} />
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium">Component intent</p>
+                  <code className="font-mono text-[0.6875rem] text-primary">component.light.{entry.component}</code>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="font-mono text-[0.6875rem] text-muted-foreground">
+          component aliases resolve to semantic CSS variables, so contrast modes
+          continue to flow through the same contract.
+        </p>
+      </section>
+      <section className="rounded-xl border bg-card p-6 text-card-foreground">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Component coverage</p>
+          <h2 className="mt-2 font-semibold">OS surfaces mapped to intent</h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            Shared primitives and bespoke desktop surfaces use matching light and
+            dark component groups.
+          </p>
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {COMPONENT_COLOR_COVERAGE.map((component) => (
+            <span
+              key={component}
+              className="rounded-md border bg-muted px-2.5 py-1.5 font-mono text-[0.6875rem] text-muted-foreground"
+            >
+              {component}
+            </span>
+          ))}
+        </div>
+      </section>
       <CanonicalSpec md={mdFoundationColor} />
     </div>
   );

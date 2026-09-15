@@ -14,6 +14,72 @@ Tokens exist in two coordinated themes (**light** and **dark**) plus a **fixed**
 
 ---
 
+## Three-tier color contract
+
+Color tokens have three tiers. `tokens.json` is the only authored source; generated
+CSS and TypeScript preserve these relationships for web and native consumers.
+
+| Tier | Token path | Contract |
+|---|---|---|
+| Primitive | `color.primitive.*` | Raw hex values that form the palette. Primitives are implementation details and are never consumed directly by components. |
+| Semantic | `color.light.*` / `color.dark.*` | Stable theme roles such as `primary`, `card`, and `muted`. Every leaf aliases a primitive, and this is the backwards-compatible public color API. Contrast modes remap these CSS variables. |
+| Component | `color.component.light.*` / `color.component.dark.*` | Component intent such as `actionButton.background` or `windowSurface.titleBar`. Every leaf aliases a same-theme semantic role, never a primitive. |
+
+The mapping therefore flows in one direction:
+
+```text
+primitive hex → semantic role → component intent
+```
+
+Components should use their component intent when one exists, or the semantic
+role directly for generic composition. Never skip from a component to a
+primitive. Since generated component CSS uses references such as
+`var(--primary)`, theme and contrast-mode semantic remapping continues to
+propagate through the component tier.
+
+### Representative primitive → semantic mappings
+
+| Primitive | Light semantic role | Dark semantic role |
+|---|---|---|
+| `primitive.teal` | `light.primary`, `light.ring`, `light.chart1` | — |
+| `primitive.lime` | — | `dark.primary`, `dark.ring`, `dark.chart1` |
+| `primitive.paper` | `light.card`, `light.primaryForeground` | — |
+| `primitive.indigoCard` | — | `dark.card` |
+| `primitive.sageBorder` | `light.border`, `light.sidebarBorder` | — |
+| `primitive.indigoBorder` | — | `dark.border`, `dark.sidebarBorder` |
+| `primitive.coral` | `light.accent`, `light.chart2` | — |
+| `primitive.salmon` | — | `dark.accent`, `dark.chart2` |
+
+### Representative semantic → component mappings
+
+| Component intent | Semantic aliases (light / dark) |
+|---|---|
+| `actionButton.background` | `primary` / `primary` |
+| `dialog.surface` | `card` / `card` |
+| `contextMenu.surface` | `popover` / `popover` |
+| `projectCard.surface` | `card` / `card` |
+| `windowSurface.titleBar` | `sidebar` / `sidebar` |
+| `statusIndicator.danger` | `destructive` / `destructive` |
+| `contactCta.background` | `accent` / `accent` |
+
+The same intent names exist under both `color.component.light` and
+`color.component.dark`; only their semantic target changes with the theme.
+
+### Component coverage
+
+The component tier covers every OS color category currently in use:
+
+| Shared primitives | Desktop-specific surfaces |
+|---|---|
+| `actionButton`, `accordion`, `dialog`, `separator`, `toast`, `tooltip`, `contextMenu` | `desktopLauncher`, `dock`, `dockLabel`, `projectCard`, `sectionLabel`, `statusIndicator`, `stickyNoteSurface`, `genericSurface`, `windowSurface`, `systemBar`, `settingsControls`, `colorPicker`, `terminal`, `contactCta` |
+
+Each group includes only intent leaves relevant to that surface (for example,
+`tooltip.surface`, `tooltip.foreground`, and `tooltip.border`). Add new intent
+leaves to both themes and point them at semantic roles rather than adding a raw
+hex value.
+
+---
+
 ## Semantic roles
 
 ### Background & surface

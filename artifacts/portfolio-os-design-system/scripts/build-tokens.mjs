@@ -130,13 +130,62 @@ function buildFavicon(tokens) {
 `;
 }
 
-function colorEntries(scope, tokens) {
+function tokenEntries(scope, tokens) {
   const out = {};
-  for (const [name, node] of Object.entries(tokens.color[scope])) {
-    if (name.startsWith("$")) continue;
-    out[name] = resolveValue(node, tokens);
-  }
+  const walk = (target, source) => {
+    for (const [name, node] of Object.entries(source ?? {})) {
+      if (name.startsWith("$")) continue;
+      if (node && typeof node === "object" && "$value" in node) {
+        target[name] = resolveValue(node, tokens);
+      } else if (node && typeof node === "object") {
+        target[name] = {};
+        walk(target[name], node);
+      }
+    }
+  };
+  walk(out, tokens.color[scope]);
   return out;
+}
+
+function colorEntries(scope, tokens) {
+  return tokenEntries(scope, tokens);
+}
+
+function kebabCase(value) {
+  return value
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
+}
+
+function componentCssEntries(scope, tokens) {
+  const lines = [];
+  const walk = (node, path) => {
+    for (const [name, child] of Object.entries(node ?? {})) {
+      if (name.startsWith("$")) continue;
+      const nextPath = [...path, name];
+      if (child && typeof child === "object" && "$value" in child) {
+        const raw = child.$value;
+        const match = typeof raw === "string"
+          ? raw.match(/^\{color\.(light|dark)\.([^}]+)\}$/)
+          : null;
+        if (!match || match[1] !== scope) {
+          throw new Error(
+            `Component color ${scope}.${nextPath.join(".")} must alias a semantic ${scope} color`,
+          );
+        }
+        const semanticName = match[2]
+          .split(".")
+          .map(kebabCase)
+          .join("-");
+        lines.push(`  --component-${nextPath.map(kebabCase).join("-")}: var(--${semanticName});`);
+      } else {
+        walk(child, nextPath);
+      }
+    }
+  };
+  walk(tokens.color.component[scope], []);
+  return lines.join("\n");
 }
 
 function buildCss(tokens) {
@@ -146,10 +195,14 @@ function buildCss(tokens) {
   // Light/dark semantic color channels (HSL)
   for (const scope of ["light", "dark"]) {
     for (const [name, hex] of Object.entries(colorEntries(scope, tokens))) {
+      if (typeof hex !== "string") continue;
       replacements[`__DS_${scope.toUpperCase()}_${name.toUpperCase()}__`] =
         hexToHslChannels(hex);
     }
   }
+
+  replacements.__DS_COMPONENT_LIGHT_CSS__ = componentCssEntries("light", tokens);
+  replacements.__DS_COMPONENT_DARK_CSS__ = componentCssEntries("dark", tokens);
 
   // Fixed palette — two forms per token:
   //   __DS_FIXED_<NAME>_HEX__  → raw hex  (for direct background/preview use)
@@ -206,20 +259,20 @@ function buildCss(tokens) {
 }
 
 function fixedColorEntries(tokens) {
-  const out = {};
-  for (const [name, node] of Object.entries(tokens.color.fixed)) {
-    if (name.startsWith("$")) continue;
-    out[name] = resolveValue(node, tokens);
-  }
-  return out;
+  return tokenEntries("fixed", tokens);
 }
 
 function buildTs(tokens) {
   const portable = {
     color: {
+      primitive: colorEntries("primitive", tokens),
       light: colorEntries("light", tokens),
       dark: colorEntries("dark", tokens),
       fixed: fixedColorEntries(tokens),
+      component: {
+        light: colorEntries("component", tokens).light,
+        dark: colorEntries("component", tokens).dark,
+      },
     },
     fontFamily: {
       sans: resolveValue(tokens.typography.fontFamily.sans, tokens),

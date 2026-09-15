@@ -150,6 +150,9 @@
   --window-title-foreground-dark: __DS_DARK_WINDOWTITLEFOREGROUND__;
   --window-title-foreground: var(--window-title-foreground-light);
 
+  /* Component aliases intentionally reference semantic variables. */
+__DS_COMPONENT_LIGHT_CSS__
+
   --app-font-sans: __DS_FONT_SANS__;
   --app-font-serif: __DS_FONT_SERIF__;
   --app-font-mono: __DS_FONT_MONO__;
@@ -223,6 +226,9 @@
   --chart-3: __DS_DARK_CHART3__;
   --chart-4: __DS_DARK_CHART4__;
   --chart-5: __DS_DARK_CHART5__;
+
+  /* Component aliases intentionally reference semantic variables. */
+__DS_COMPONENT_DARK_CSS__
 
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);

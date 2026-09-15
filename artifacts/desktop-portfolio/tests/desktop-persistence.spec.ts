@@ -311,7 +311,11 @@ test('keeps keyboard focus predictable in desktop, dock, and sticky context menu
   await page.keyboard.press('ArrowDown');
   await expect(page.getByRole('menuitem', { name: 'View' })).toBeFocused();
   await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('menuitem', { name: 'Cleanup icons' })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
   await expect(page.getByRole('menuitemcheckbox', { name: 'Snap to grid' })).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await expect(page.getByRole('menuitem', { name: 'Cleanup icons' })).toBeFocused();
   await page.keyboard.press('ArrowUp');
   await expect(page.getByRole('menuitem', { name: 'View' })).toBeFocused();
   await page.keyboard.press('Escape');
@@ -434,6 +438,61 @@ test('snaps desktop launchers to an 8px grid', async ({ page }) => {
     top: Number.parseFloat(element.style.top),
   }));
   expect(position).toEqual({ left: 336, top: 280 });
+});
+
+test('cleanup aligns icons horizontally from the leftmost anchor without changing auto arrange order', async ({ page }) => {
+  await page.evaluate((key) => {
+    localStorage.setItem(key, JSON.stringify({
+      itemPositions: {
+        'desktop-about': { left: 200, top: 300 },
+        'desktop-work': { left: 120, top: 420 },
+        'desktop-terminal': { left: 350, top: 180 },
+        'desktop-contact': { left: 250, top: 250 },
+        'desktop-stickies-app': { left: 300, top: 500 },
+      },
+    }));
+  }, storageKey);
+  await page.reload();
+
+  await openDesktopMenu(page);
+  const cleanup = page.getByRole('menuitem', { name: 'Cleanup icons' });
+  const snapToGridItem = page.getByRole('menuitemcheckbox', { name: 'Snap to grid' });
+  expect(await cleanup.evaluate((element) => (
+    Array.from(element.parentElement!.children).indexOf(element)
+  ))).toBeLessThan(await snapToGridItem.evaluate((element) => (
+    Array.from(element.parentElement!.children).indexOf(element)
+  )));
+  await cleanup.click();
+
+  const ids = ['about', 'work', 'terminal', 'contact', 'stickies-app'];
+  const cleaned = await Promise.all(ids.map(async (id) => ({
+    id,
+    ...await page.getByTestId(`button-folder-${id}`).evaluate((element) => ({
+      left: Number.parseFloat((element as HTMLElement).style.left),
+      top: Number.parseFloat((element as HTMLElement).style.top),
+    })),
+  })));
+  const anchor = cleaned.find((icon) => icon.id === 'work')!;
+  expect(new Set(cleaned.map((icon) => icon.top)).size).toBe(1);
+  expect(anchor).toMatchObject({ left: 120, top: 420 });
+  expect(cleaned.every((icon) => (icon.left - anchor.left) % 8 === 0)).toBe(true);
+  expect([...cleaned].sort((first, second) => first.left - second.left).map((icon) => icon.id))
+    .toEqual(['work', 'about', 'contact', 'stickies-app', 'terminal']);
+
+  await openDesktopMenu(page);
+  await page.getByRole('menuitem', { name: 'Auto arrange icons' }).click();
+  const autoArrangeOrder = ['about', 'work', 'terminal', 'contact', 'stickies-app'];
+  const arranged = await Promise.all(autoArrangeOrder.map(async (id) => ({
+    id,
+    ...await page.getByTestId(`button-folder-${id}`).evaluate((element) => ({
+      left: Number.parseFloat((element as HTMLElement).style.left),
+      top: Number.parseFloat((element as HTMLElement).style.top),
+    })),
+  })));
+  expect(new Set(arranged.map((icon) => icon.left)).size).toBe(1);
+  expect(arranged[0].left).toBeGreaterThan(1000);
+  expect([...arranged].sort((first, second) => first.top - second.top).map((icon) => icon.id))
+    .toEqual(autoArrangeOrder);
 });
 
 test('keeps long desktop icon tooltips evenly padded without overflow', async ({ page }) => {

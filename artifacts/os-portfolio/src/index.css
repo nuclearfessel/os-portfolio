@@ -2257,18 +2257,28 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav-item:hover:not(.settings-nav-item-active) {
-  background: rgba(26, 83, 91, .08);
-  color: #3a5260;
+  background: rgba(26, 83, 91, .08) !important;
+  color: #3a5260 !important;
+}
+
+.theme-light .settings-window-nav .settings-nav-item:hover:not(.settings-nav-item-active) {
+  background: rgba(11, 102, 93, .1) !important;
+  color: #0b665d !important;
+}
+
+.theme-light .settings-window-nav .settings-nav-item-active {
+  background: rgba(11, 102, 93, .1) !important;
+  color: #0b665d !important;
 }
 
 .theme-light .guide-nav .settings-nav-item:hover:not(.settings-nav-item-active) {
-  background: rgba(25, 113, 140, .1);
-  color: #19718c;
+  background: rgba(25, 113, 140, .1) !important;
+  color: #19718c !important;
 }
 
 .theme-light .guide-nav .settings-nav-item-active {
-  background: rgba(165, 77, 61, .1);
-  color: #a54d3d;
+  background: rgba(165, 77, 61, .1) !important;
+  color: #a54d3d !important;
 }
 
 .theme-light .guide-nav .settings-nav-item:focus-visible {

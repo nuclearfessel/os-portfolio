@@ -132,7 +132,7 @@ test('migrates legacy persisted intro names in the current desktop state', async
         },
       },
     },
-  ]);
+  ] as const);
   await page.reload();
 
   await expect(page.locator('.desktop-intro h1')).toContainText('John Doe designs');
@@ -162,7 +162,7 @@ test('migrates legacy persisted intro names in the saved default state', async (
         },
       },
     },
-  ]);
+  ] as const);
   await page.reload();
 
   await openDesktopMenu(page);
@@ -647,8 +647,8 @@ test('About and Work use distinct saturated application icons instead of folders
   await expect(page.getByTestId('icon-dock-about-circle-user-fill').locator('path').first()).toHaveAttribute('fill', 'currentColor');
   await expect(page.getByTestId('icon-stickies-bootstrap-fill')).toBeVisible();
   await expect(page.getByTestId('icon-dock-stickies-bootstrap-fill')).toBeVisible();
-  await expect(terminal.getByTestId('icon-terminal-square')).toBeVisible();
-  await expect(page.getByTestId('icon-dock-terminal-square')).toBeVisible();
+  await expect(terminal.getByTestId('icon-terminal-cursor-fill')).toBeVisible();
+  await expect(page.getByTestId('icon-dock-terminal-cursor-fill')).toBeVisible();
   const terminalLauncherStyle = await terminal.locator('.desktop-app-icon').evaluate((element) => {
     const style = getComputedStyle(element);
     return { background: style.backgroundImage, border: style.borderColor, color: style.color };
@@ -1150,7 +1150,7 @@ test('stays usable when browser storage reads, writes, and removals fail', async
         configurable: true,
         value: function (...args: [string, string?]) {
           if (!storageBlocked) {
-            return original.apply(this, args as never);
+            return Reflect.apply(original, this, args);
           }
           attempts[method] += 1;
           throw new Error(`localStorage ${method} blocked`);
@@ -1659,8 +1659,8 @@ test('deletes only user-created stickies after confirmation and clears their sav
     const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
     return {
       stickyIds: saved.stickies?.map((item: { id: string }) => item.id),
-      hasPosition: Object.hasOwn(saved.itemPositions ?? {}, 'sticky-2'),
-      hasSize: Object.hasOwn(saved.itemSizes ?? {}, 'sticky-2'),
+      hasPosition: Object.prototype.hasOwnProperty.call(saved.itemPositions ?? {}, 'sticky-2'),
+      hasSize: Object.prototype.hasOwnProperty.call(saved.itemSizes ?? {}, 'sticky-2'),
     };
   }, storageKey)).toEqual({
     stickyIds: ['sticky', 'sticky-1'],
@@ -1716,7 +1716,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
       }],
       dockPosition: 'left',
     },
-  ]);
+  ] as const);
   await page.reload();
   await page.getByTestId('button-close-work').click();
   await page.getByTestId('button-close-about').click();

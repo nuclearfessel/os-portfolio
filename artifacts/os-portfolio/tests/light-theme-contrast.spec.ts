@@ -186,6 +186,9 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
 
   for (const state of states) {
     await state.locator.hover({ force: true });
+    await state.locator.evaluate(async (element) => {
+      await Promise.all(element.getAnimations().map((animation) => animation.finished));
+    });
     const hoverRatio = await contrastRatio(state.locator);
     expect(
       hoverRatio,
@@ -194,6 +197,9 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
 
     await state.locator.focus();
     await expect(state.locator).toBeFocused();
+    await state.locator.evaluate(async (element) => {
+      await Promise.all(element.getAnimations().map((animation) => animation.finished));
+    });
     const focusRatio = await contrastRatio(state.locator);
     expect(
       focusRatio,
@@ -252,6 +258,14 @@ test('primary, secondary, and tertiary actions use their theme-specific treatmen
   await expect(projectAction).toHaveCSS('background-color', 'rgb(228, 255, 91)');
   await expect(projectAction).toHaveCSS('color', 'rgb(17, 19, 38)');
 
+  await page.getByTestId('button-dock-contact').click();
+  const contactCta = page.getByTestId('link-email-john');
+  await expect(contactCta).toHaveCSS('background-color', 'rgb(255, 141, 121)');
+  await expect(contactCta).toHaveCSS('color', 'rgb(17, 19, 38)');
+  await contactCta.hover();
+  await expect(contactCta).toHaveCSS('background-color', 'rgb(228, 255, 91)');
+  await expect(contactCta).toHaveCSS('border-color', 'rgb(228, 255, 91)');
+
   await page.getByTestId('button-dock-settings').click();
   await page.getByTestId('settings-nav-about').click();
   const settingsAction = page.getByTestId('settings-about-open-guide');
@@ -275,7 +289,6 @@ test('primary, secondary, and tertiary actions use their theme-specific treatmen
   await expect(tertiaryAction).toHaveCSS('background-color', 'rgb(150, 63, 53)');
   await expect(tertiaryAction).toHaveCSS('color', 'rgb(255, 255, 255)');
   await expect(tertiaryAction).toHaveCSS('border-color', 'rgb(150, 63, 53)');
-
   await page.getByTestId('settings-nav-about').click();
   await expect(settingsAction).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(settingsAction).toHaveCSS('color', 'rgb(197, 78, 72)');
@@ -284,6 +297,14 @@ test('primary, secondary, and tertiary actions use their theme-specific treatmen
   await expect(settingsAction).toHaveCSS('color', 'rgb(247, 251, 249)');
 
   await page.getByTestId('button-close-settings').click();
+  await page.getByTestId('button-dock-contact').click();
+  await expect(contactCta).toHaveCSS('background-color', 'rgb(197, 78, 72)');
+  await expect(contactCta).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await contactCta.hover();
+  await expect(contactCta).toHaveCSS('background-color', 'rgb(11, 102, 93)');
+  await expect(contactCta).toHaveCSS('border-color', 'rgb(11, 102, 93)');
+
+  await page.getByTestId('button-dock-work').click();
   await expect(projectAction).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(projectAction).toHaveCSS('color', 'rgb(197, 78, 72)');
   await projectAction.hover();
@@ -320,8 +341,11 @@ test('Dock hover and focus preserve app identity and keep utility controls legib
         };
       })
     ));
-    expect(new Set(inactiveBorders.map((border) => border.color)).size).toBe(1);
     expect(inactiveBorders.every((border) => border.width === '1px' && border.style === 'solid')).toBe(true);
+    const inactiveApplicationBorders = await page.locator(
+      '.dock:not(.dock-mobile-menu):not(.dock-tablet-menu) .dock-item:not(.active):is([data-testid="button-dock-contact"], [data-testid="button-dock-terminal"], [data-testid="button-dock-stickies"])',
+    ).evaluateAll((items) => items.map((item) => getComputedStyle(item).borderTopColor));
+    expect(new Set(inactiveApplicationBorders).size).toBe(1);
 
     for (const id of appIds) {
       const item = page.getByTestId(`button-dock-${id}`);
@@ -345,10 +369,16 @@ test('Dock hover and focus preserve app identity and keep utility controls legib
 
     const utility = page.getByTestId('button-dock-settings');
     await utility.hover();
-    const hoverRatio = await contrastRatio(utility);
+    await utility.evaluate(async (element) => {
+      await Promise.all(element.getAnimations().map((animation) => animation.finished));
+    });
+    const hoverRatio = await dockIconContrastRatio(utility);
     expect(hoverRatio, `${theme} Dock utility hover contrast should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
     await utility.focus();
-    const focusRatio = await contrastRatio(utility);
+    await utility.evaluate(async (element) => {
+      await Promise.all(element.getAnimations().map((animation) => animation.finished));
+    });
+    const focusRatio = await dockIconContrastRatio(utility);
     expect(focusRatio, `${theme} Dock utility focus contrast should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
   }
 });

@@ -3864,6 +3864,7 @@ function Home() {
   const actionButtonSecondary = tokens.color.component[presentationTheme].actionButtonSecondary;
   const actionButtonTertiary = tokens.color.component[presentationTheme].actionButtonTertiary;
   const actionButtonDanger = tokens.color.component[presentationTheme].actionButtonDanger;
+  const contactCta = tokens.color.component[presentationTheme].contactCta;
   const shellStyle = {
     ...currentWallpaperStyle,
     '--component-action-button-primary-background': hexToHslChannels(actionButtonPrimary.background),
@@ -3894,6 +3895,11 @@ function Home() {
     '--component-action-button-danger-hover-foreground': hexToHslChannels(actionButtonDanger.hoverForeground),
     '--component-action-button-danger-hover-border': hexToHslChannels(actionButtonDanger.hoverBorder),
     '--component-action-button-danger-focus': hexToHslChannels(actionButtonDanger.focus),
+    '--component-contact-cta-background': hexToHslChannels(contactCta.background),
+    '--component-contact-cta-foreground': hexToHslChannels(contactCta.foreground),
+    '--component-contact-cta-border': hexToHslChannels(contactCta.border),
+    '--component-contact-cta-hover': hexToHslChannels(contactCta.hover),
+    '--component-contact-cta-accent': hexToHslChannels(contactCta.accent),
   } as React.CSSProperties;
   const automaticContrastActive = (
     introCustomization.automaticContrast

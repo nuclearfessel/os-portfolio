@@ -553,8 +553,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav {
-  background: rgba(218,232,228,.5);
-  border-right-color: rgba(26,83,91,.12);
+  background: rgba(194,222,216,.76);
+  border-right-color: rgba(26,83,91,.2);
 }
 
 .settings-nav-item {
@@ -586,13 +586,13 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav-item-active {
-  color: #064f47 !important;
-  background: #b8d9d2 !important;
+  color: #f7fbf8 !important;
+  background: #2c8f81 !important;
   font-weight: 600;
 }
 
 .theme-light .settings-nav-item-active .settings-nav-icon {
-  color: #064f47;
+  color: #f7fbf8;
 }
 
 /* Settings content area */
@@ -756,9 +756,9 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-topic {
-  border-color: rgba(31, 92, 98, .15);
+  border-color: rgba(31, 92, 98, .26);
   --guide-accent: #0b665d;
-  background: linear-gradient(90deg, rgba(11, 102, 93, .06), rgba(218, 232, 229, .52) 24%);
+  background: linear-gradient(90deg, rgba(11, 102, 93, .15), rgba(199, 226, 220, .82) 24%);
 }
 
 .guide-topic:nth-child(2) {
@@ -778,17 +778,17 @@ button { cursor: pointer; }
 
 .theme-light .guide-topic:nth-child(2) {
   --guide-accent: #19718c;
-  background: linear-gradient(90deg, rgba(25, 113, 140, .06), rgba(218, 232, 229, .52) 24%);
+  background: linear-gradient(90deg, rgba(25, 113, 140, .14), rgba(199, 224, 232, .82) 24%);
 }
 
 .theme-light .guide-topic:nth-child(3) {
   --guide-accent: #a54d3d;
-  background: linear-gradient(90deg, rgba(165, 77, 61, .06), rgba(218, 232, 229, .52) 24%);
+  background: linear-gradient(90deg, rgba(165, 77, 61, .14), rgba(239, 215, 208, .84) 24%);
 }
 
 .theme-light .guide-topic:nth-child(4) {
   --guide-accent: #19718c;
-  background: linear-gradient(90deg, rgba(25, 113, 140, .06), rgba(218, 232, 229, .52) 24%);
+  background: linear-gradient(90deg, rgba(25, 113, 140, .14), rgba(199, 224, 232, .82) 24%);
 }
 
 .guide-topic {
@@ -850,8 +850,8 @@ button { cursor: pointer; }
 
 .theme-light .guide-detail {
   --guide-accent: #19718c;
-  border-color: rgba(31, 92, 98, .15);
-  background: rgba(218, 232, 229, .38);
+  border-color: rgba(31, 92, 98, .24);
+  background: rgba(199, 224, 218, .72);
 }
 
 .guide-detail:nth-child(2) {
@@ -895,7 +895,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-definition-list {
-  border-top-color: rgba(26, 83, 91, .12);
+  border-top-color: rgba(26, 83, 91, .2);
 }
 
 .guide-definition-list > div {
@@ -907,7 +907,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-definition-list > div {
-  border-bottom-color: rgba(26, 83, 91, .12);
+  border-bottom-color: rgba(26, 83, 91, .2);
 }
 
 .guide-definition-list dt {
@@ -942,7 +942,7 @@ button { cursor: pointer; }
 
 .theme-light .guide-definition-list code {
   color: #0b665d;
-  background: rgba(11, 102, 93, .08);
+  background: rgba(11, 102, 93, .14);
 }
 
 .guide-shortcuts-panel {
@@ -953,8 +953,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-shortcuts-panel {
-  border-color: rgba(31, 92, 98, .15);
-  background: rgba(218, 232, 229, .38);
+  border-color: rgba(31, 92, 98, .24);
+  background: rgba(199, 224, 218, .72);
 }
 
 .guide-card-grid {
@@ -979,8 +979,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-card {
-  border-color: rgba(26, 83, 91, .12);
-  background: rgba(218, 232, 228, .42);
+  border-color: rgba(26, 83, 91, .22);
+  background: rgba(199, 224, 218, .7);
 }
 
 .guide-card-index,
@@ -1039,9 +1039,9 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-callout {
-  border-color: rgba(31, 92, 98, .15);
+  border-color: rgba(31, 92, 98, .24);
   border-left-color: #0b665d;
-  background: rgba(11, 102, 93, .05);
+  background: rgba(11, 102, 93, .12);
 }
 
 .guide-callout-label {
@@ -1076,9 +1076,9 @@ button { cursor: pointer; }
 
 .theme-light .guide-callout kbd,
 .theme-light .guide-shortcut kbd {
-  border-color: rgba(26, 83, 91, .2);
+  border-color: rgba(26, 83, 91, .3);
   color: #17213b;
-  background: rgba(218, 232, 228, .72);
+  background: rgba(199, 224, 218, .86);
 }
 
 .guide-step-list {
@@ -1088,7 +1088,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-step-list {
-  border-top-color: rgba(26, 83, 91, .12);
+  border-top-color: rgba(26, 83, 91, .2);
 }
 
 .guide-step {
@@ -1100,7 +1100,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-step {
-  border-bottom-color: rgba(26, 83, 91, .12);
+  border-bottom-color: rgba(26, 83, 91, .2);
 }
 
 .guide-step-number {
@@ -1129,7 +1129,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-shortcut {
-  border-bottom-color: rgba(26, 83, 91, .12);
+  border-bottom-color: rgba(26, 83, 91, .2);
 }
 
 .guide-shortcut kbd {
@@ -1218,7 +1218,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-accordion {
-  border-top-color: rgba(26,83,91,.12);
+  border-top-color: rgba(26,83,91,.2);
 }
 
 .settings-section {
@@ -1226,7 +1226,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-section {
-  border-bottom-color: rgba(26,83,91,.12);
+  border-bottom-color: rgba(26,83,91,.2);
 }
 
 .settings-section-trigger {
@@ -1274,7 +1274,7 @@ button { cursor: pointer; }
   background: rgba(214,221,255,.12);
 }
 
-.theme-light .settings-divider { background: rgba(26,83,91,.12); }
+.theme-light .settings-divider { background: rgba(26,83,91,.2); }
 
 /* Theme selector */
 .settings-theme-row {
@@ -1395,8 +1395,8 @@ button { cursor: pointer; }
 
 .theme-light .settings-mode-chip {
   color: #4f6070;
-  background: rgba(248,251,249,.74);
-  border-color: rgba(29,71,78,.18);
+  background: rgba(214,235,229,.88);
+  border-color: rgba(29,71,78,.28);
 }
 
 .theme-light .settings-mode-chip:hover {
@@ -2272,8 +2272,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav .settings-nav-item-active {
-  color: #064f47 !important;
-  background: #b8d9d2 !important;
+  color: #f7fbf8 !important;
+  background: #2c8f81 !important;
 }
 
 .theme-light .settings-nav .settings-nav-item:hover:not(.settings-nav-item-active) {
@@ -2303,13 +2303,13 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-toggle-row {
-  border-color: rgba(26, 83, 91, .12);
-  background: rgba(240, 248, 246, .6);
+  border-color: rgba(26, 83, 91, .22);
+  background: rgba(207, 231, 225, .78);
 }
 
 .theme-light .settings-toggle-row:hover {
-  background: rgba(225, 242, 238, .7);
-  border-color: rgba(26, 83, 91, .2);
+  background: rgba(191, 220, 213, .9);
+  border-color: rgba(26, 83, 91, .32);
 }
 
 .settings-toggle-disabled {
@@ -2416,8 +2416,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-transparency-group {
-  border-color: rgba(26, 83, 91, .12);
-  background: rgba(240, 248, 246, .6);
+  border-color: rgba(26, 83, 91, .22);
+  background: rgba(207, 231, 225, .78);
 }
 
 .settings-transparency-heading,
@@ -2531,8 +2531,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-speed-group {
-  border-color: rgba(26, 83, 91, .12);
-  background: rgba(240, 248, 246, .6);
+  border-color: rgba(26, 83, 91, .22);
+  background: rgba(207, 231, 225, .78);
 }
 
 .settings-speed-chips {
@@ -2577,8 +2577,8 @@ button { cursor: pointer; }
 
 .theme-light .settings-speed-chip {
   color: #4f6070;
-  background: rgba(248, 251, 249, .74);
-  border-color: rgba(29, 71, 78, .18);
+  background: rgba(214, 235, 229, .88);
+  border-color: rgba(29, 71, 78, .28);
 }
 
 .theme-light .settings-speed-chip:focus-visible {
@@ -2953,7 +2953,7 @@ button { cursor: pointer; }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .window-header,
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .settings-nav {
-  background: rgb(218 232 228 / calc(100% - var(--accessibility-transparency))) !important;
+  background: rgb(194 222 216 / calc(100% - var(--accessibility-transparency))) !important;
 }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .desktop-context-menu,

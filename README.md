@@ -88,7 +88,7 @@ pnpm --filter @workspace/desktop-portfolio run test:e2e
 
 ### Approved branch checklist
 
-The exact response **“Approved”** immediately starts the post-approval workflow; it is never treated as simple confirmation. Before the branch is committed and merged, review whether its changes require corresponding updates to this README, Claude instructions or skills, package metadata or exports, and package documentation. Update only the applicable surfaces, then validate, commit, push the branch, merge it into `main`, push `main`, and confirm the main-only release.
+The exact response **“Approved”** immediately starts the post-approval workflow; it is never treated as simple confirmation. Before the branch is committed and merged, review whether its changes require corresponding updates to this README, Claude instructions or skills, package metadata or exports, and package documentation. Update only the applicable surfaces, validate, refresh this README’s portfolio and design-system screenshots from the running previews, then commit, push the branch, merge it into `main`, push `main`, and confirm the main-only release.
 
 ## Automated website releases
 

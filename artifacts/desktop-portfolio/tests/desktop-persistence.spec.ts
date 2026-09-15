@@ -571,13 +571,13 @@ test('uses intentional cursors while allowing text selection only in stickies', 
 
 test('lists work files with names that match the selected projects', async ({ page }) => {
   const workLabel = page.getByTestId('button-folder-work').locator('.desktop-folder-label');
-  await expect(workLabel).toHaveText('selected work');
+  await expect(workLabel).toHaveText('work');
   await expect(workLabel).toHaveCSS('white-space', 'normal');
   expect(await workLabel.evaluate((element) => ({
     horizontallyClipped: element.scrollWidth > element.clientWidth,
     verticallyClipped: element.scrollHeight > element.clientHeight,
   }))).toEqual({ horizontallyClipped: false, verticallyClipped: false });
-  await expect(page.getByTestId('button-dock-work')).toContainText('Selected work');
+  await expect(page.getByTestId('button-dock-work')).toContainText('Work');
 
   await page.getByTestId('button-dock-terminal').click();
   const input = page.getByTestId('input-terminal-command');
@@ -591,7 +591,7 @@ test('lists work files with names that match the selected projects', async ({ pa
   await expect(output).toContainText('signal-operations-platform.md');
 });
 
-test('About and Selected Work use distinct saturated application icons instead of folders', async ({ page }) => {
+test('About and Work use distinct saturated application icons instead of folders', async ({ page }) => {
   const about = page.getByTestId('button-folder-about');
   const work = page.getByTestId('button-folder-work');
   const terminal = page.getByTestId('button-folder-terminal');
@@ -680,7 +680,7 @@ test('Contact uses a filled Remix mail-send icon with its own saturated app trea
   expect(otherBackgrounds).not.toContain(contactBackground);
 });
 
-test('Dock mirrors the saturated About, Selected Work, and filled Contact app identities', async ({ page }) => {
+test('Dock mirrors the saturated About, Work, and filled Contact app identities', async ({ page }) => {
   const dockLaunchers = [
     page.getByTestId('button-dock-about'),
     page.getByTestId('button-dock-work'),
@@ -839,6 +839,19 @@ test('uses 5 through 7 for Stickies, Shortcuts, and Settings', async ({ page }) 
   await expect(page.getByTestId('window-settings')).toHaveCount(0);
   await page.keyboard.press('7');
   await expect(page.getByTestId('window-settings')).toBeVisible();
+});
+
+test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {
+  const drawer = page.getByTestId('menu-mobile');
+  await page.getByTestId('button-dock-shortcuts').click();
+  await expect(drawer).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(drawer).toHaveCount(0);
+
+  await page.getByTestId('button-dock-shortcuts').click();
+  await expect(drawer).toBeVisible();
+  await page.mouse.click(8, 700);
+  await expect(drawer).toHaveCount(0);
 });
 
 test('keeps the shortcuts drawer clear of every system bar position', async ({ page }) => {

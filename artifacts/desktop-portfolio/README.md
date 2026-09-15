@@ -6,7 +6,7 @@ A responsive, static React portfolio for John Doe presented as a desktop operati
 
 - Draggable, resizable, maximizable desktop windows
 - Movable app launchers and Dock
-- Selected Work, About, Contact, Terminal, and Stickies
+- Work, About, Contact, Terminal, and Stickies
 - Light and dark themes
 - Custom desktop, Dock, and sticky context menus
 - Responsive managed layouts for tablet and mobile

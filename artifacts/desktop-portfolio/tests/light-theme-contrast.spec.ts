@@ -323,7 +323,7 @@ test('light theme About, Contact, and case study windows meet WCAG AA contrast',
   }
 });
 
-test('opens four distinct complete case studies from Selected Work', async ({ page }) => {
+test('opens four distinct complete case studies from Work', async ({ page }) => {
   await page.goto('/');
   await page.getByTestId('button-dock-work').click();
 

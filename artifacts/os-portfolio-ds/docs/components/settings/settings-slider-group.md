@@ -35,6 +35,8 @@ A range slider with a live value readout and optional guidance labels. Used for 
 | `max` | `number` | `100` | Maximum value |
 | `step` | `number` | `1` | Step increment |
 | `onChange` | `(value: number) => void` | — | Called with the new numeric value |
+| `disabled` | `boolean` | `false` | Makes the range non-interactive while preserving its controlled value |
+| `disabledDescription` | `ReactNode` | — | Explains why a disabled range is unavailable and is linked with `aria-describedby` |
 | `guidanceStart` | `string` | — | Left guidance label (e.g. `"None"`) |
 | `guidanceEnd` | `string` | — | Right guidance label (e.g. `"Almost full"`) |
 | `unit` | `string` | `'%'` | Unit appended to the `<output>` display |
@@ -57,7 +59,7 @@ A range slider with a live value readout and optional guidance labels. Used for 
 
 The custom rail and filled range are 4px high and vertically centered in a 20px control. The 14px visual handle has independent geometry and shares the rail's centerline, so changing track thickness must never move the handle. A transparent native range input remains layered above both visuals for interaction.
 
-Show each `SettingsSliderGroup` only when its parent toggle is on. In a large desktop Settings window, window transparency, sticky transparency, and blur form one three-column row. Below the product's wide-window breakpoint, each occupies its own row.
+Show each `SettingsSliderGroup` only when its parent toggle is on. In a large desktop Settings window, window transparency, sticky transparency, and blur form one three-column row. Below the product's wide-window breakpoint, each occupies its own row. When the combined window and Dock transparency level is `0` (“None”), keep the Blur slider visible but disabled. Preserve its controlled value and re-enable it when transparency rises above `0`.
 
 ```tsx
 {prefs.windowTransparency && (
@@ -78,6 +80,7 @@ Show each `SettingsSliderGroup` only when its parent toggle is on. In a large de
     id="personalization-blur"
     label="Blur"
     value={prefs.blurLevel}
+    disabled={prefs.transparencyLevel === 0}
     min={0} max={24} step={2}
     onChange={(v) => updatePrefs({ blurLevel: v })}
     guidanceStart="Sharp"

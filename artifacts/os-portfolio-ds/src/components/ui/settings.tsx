@@ -253,6 +253,10 @@ export type SettingsSliderGroupProps = {
   max?: number;
   step?: number;
   onChange: (value: number) => void;
+  /** Makes the range non-interactive without changing its controlled value */
+  disabled?: boolean;
+  /** Explains why the range is disabled and is announced with the input */
+  disabledDescription?: ReactNode;
   /** Left guidance label (e.g. "Subtle") */
   guidanceStart?: string;
   /** Right guidance label (e.g. "More transparent") */
@@ -296,6 +300,8 @@ export function SettingsSliderGroup({
   max = 100,
   step = 1,
   onChange,
+  disabled = false,
+  disabledDescription,
   guidanceStart,
   guidanceEnd,
   unit = '%',
@@ -309,12 +315,17 @@ export function SettingsSliderGroup({
     <div
       className={classes(
         'portfolio-settings-slider-group grid gap-2 rounded-lg border border-border/30 bg-card/40 p-3',
+        disabled && 'border-border/20 bg-card/25',
         className,
       )}
       data-testid={testId}
+      data-disabled={disabled ? '' : undefined}
     >
       {/* Heading row: label + live value output */}
-      <div className="portfolio-settings-slider-heading flex items-center justify-between gap-3">
+      <div className={classes(
+        'portfolio-settings-slider-heading flex items-center justify-between gap-3',
+        disabled && 'opacity-50',
+      )}>
         <span className="portfolio-settings-label text-[13px] font-medium text-foreground" id={`${id}-label`}>
           {label}
         </span>
@@ -330,7 +341,10 @@ export function SettingsSliderGroup({
 
       {/* Range input */}
       <div
-        className="portfolio-settings-slider-control relative h-5"
+        className={classes(
+          'portfolio-settings-slider-control relative h-5',
+          disabled && 'opacity-50',
+        )}
         style={{
           '--slider-progress': `${progress}%`,
           '--slider-thumb-left': `calc(${progress}% - ${(progress / 100) * 14}px)`,
@@ -344,10 +358,15 @@ export function SettingsSliderGroup({
           max={max}
           step={step}
           value={value}
+          disabled={disabled}
           aria-label={label}
           aria-valuetext={ariaValueText ?? `${value}${unit}`}
           aria-labelledby={`${id}-label`}
-          className="portfolio-settings-slider absolute inset-0 z-[1] h-5 w-full cursor-pointer opacity-0"
+          aria-describedby={disabled && disabledDescription ? `${id}-disabled-description` : undefined}
+          className={classes(
+            'portfolio-settings-slider absolute inset-0 z-[1] h-5 w-full opacity-0',
+            disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+          )}
           onChange={(e) => onChange(Number(e.currentTarget.value))}
           data-testid={testId ? `${testId}-slider` : undefined}
         />
@@ -356,12 +375,24 @@ export function SettingsSliderGroup({
       {/* Guidance labels */}
       {(guidanceStart || guidanceEnd) && (
         <div
-          className="portfolio-settings-slider-guidance flex justify-between font-mono text-[9px] text-muted-foreground"
+          className={classes(
+            'portfolio-settings-slider-guidance flex justify-between font-mono text-[9px] text-muted-foreground',
+            disabled && 'opacity-50',
+          )}
           aria-hidden="true"
         >
           <span>{guidanceStart}</span>
           <span>{guidanceEnd}</span>
         </div>
+      )}
+      {disabled && disabledDescription && (
+        <p
+          id={`${id}-disabled-description`}
+          className="portfolio-settings-slider-disabled-description m-0 font-mono text-[10px] leading-relaxed text-muted-foreground"
+          data-testid={testId ? `${testId}-disabled-description` : undefined}
+        >
+          {disabledDescription}
+        </p>
       )}
     </div>
   );

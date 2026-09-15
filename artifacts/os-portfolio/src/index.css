@@ -2723,6 +2723,22 @@ button { cursor: pointer; }
   background: rgba(207, 231, 225, .78);
 }
 
+.settings-transparency-group.is-disabled {
+  border-color: rgba(214, 221, 255, .07);
+  background: rgba(32, 35, 61, .24);
+}
+
+.theme-light .settings-transparency-group.is-disabled {
+  border-color: rgba(26, 83, 91, .13);
+  background: rgba(207, 231, 225, .46);
+}
+
+.settings-transparency-group.is-disabled .settings-transparency-heading,
+.settings-transparency-group.is-disabled .settings-transparency-control,
+.settings-transparency-group.is-disabled .settings-transparency-scale {
+  opacity: .5;
+}
+
 .settings-transparency-heading,
 .settings-transparency-scale {
   display: flex;
@@ -2796,6 +2812,10 @@ button { cursor: pointer; }
   cursor: pointer;
   opacity: 0;
   accent-color: #e4ff5b;
+}
+
+.settings-transparency-slider:disabled {
+  cursor: not-allowed;
 }
 
 .theme-light .settings-transparency-slider {

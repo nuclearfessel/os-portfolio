@@ -940,6 +940,7 @@ function EffectSlider({
   value,
   onChange,
   testId,
+  disabled = false,
   max = 70,
   step = 5,
   unit = '%',
@@ -952,6 +953,7 @@ function EffectSlider({
   value: number;
   onChange: (value: number) => void;
   testId: string;
+  disabled?: boolean;
   max?: number;
   step?: number;
   unit?: string;
@@ -962,7 +964,11 @@ function EffectSlider({
   const progress = (value / max) * 100;
 
   return (
-    <div className="settings-transparency-group" data-testid={testId}>
+    <div
+      className={`settings-transparency-group${disabled ? ' is-disabled' : ''}`}
+      data-testid={testId}
+      data-disabled={disabled ? '' : undefined}
+    >
       <div className="settings-transparency-heading">
         <span className="settings-label" id={`${id}-label`}>{label}</span>
         <output
@@ -990,6 +996,7 @@ function EffectSlider({
           max={max}
           step={step}
           value={value}
+          disabled={disabled}
           onChange={(event) => onChange(Number(event.currentTarget.value))}
           aria-labelledby={`${id}-label`}
           aria-valuetext={ariaValueText}
@@ -1413,6 +1420,7 @@ function SettingsWindow({
                           value={accessibility.blurLevel}
                           onChange={(value) => updateAccessibility({ blurLevel: value })}
                           testId="settings-personalization-blur"
+                          disabled={accessibility.transparencyLevel === 0}
                           max={24}
                           step={2}
                           unit="px"
@@ -1888,7 +1896,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 <div className="guide-topic-list" role="list">
                   <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">01 / Settings</span>
-                    <div><h3>Personalization</h3><p>Switch light or dark mode, choose a picture or solid wallpaper, adjust transparency, and edit the home-screen copy.</p></div>
+                    <div><h3>Personalization</h3><p>Switch light or dark mode, choose a picture or solid wallpaper, adjust transparency, and edit the home-screen copy. When Window &amp; dock transparency is set to None, the Blur control is disabled without changing its saved value.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">02 / Settings</span>

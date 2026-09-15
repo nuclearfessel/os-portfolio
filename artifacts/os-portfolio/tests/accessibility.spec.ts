@@ -363,6 +363,30 @@ test.describe('Transparency effects', () => {
     )).toBe('20px');
   });
 
+  test('None for window and dock transparency disables blur without discarding its value', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    const transparencySlider = page.getByTestId('settings-personalization-window-transparency-slider');
+    const blurSlider = page.getByTestId('settings-personalization-blur-slider');
+    const blurGroup = page.getByTestId('settings-personalization-blur');
+
+    await blurSlider.fill('20');
+    await transparencySlider.fill('0');
+
+    await expect(blurSlider).toBeDisabled();
+    await expect(blurSlider).toHaveValue('20');
+    await expect(blurGroup).toHaveAttribute('data-disabled', '');
+    await expect(page.getByTestId('settings-personalization-blur-disabled-description')).toHaveCount(0);
+    expect(await page.evaluate(() => JSON.parse(
+      localStorage.getItem('os-portfolio.desktop.v4') ?? '{}',
+    ).accessibility?.blurLevel)).toBe(20);
+
+    await transparencySlider.fill('10');
+
+    await expect(blurSlider).toBeEnabled();
+    await expect(blurSlider).toHaveValue('20');
+  });
+
   test('all three effect sliders share one row in a large window and stack when narrowed', async ({ page }) => {
     await openSettings(page);
     await goToPersonalization(page);

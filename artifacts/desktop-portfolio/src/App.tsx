@@ -3872,7 +3872,7 @@ function Home() {
       </nav>
 
       {mobileOpen && (
-        <div className="mobile-shortcut-menu" data-testid="menu-mobile">
+        <div className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}`} data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
           <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–4 to open a window.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>

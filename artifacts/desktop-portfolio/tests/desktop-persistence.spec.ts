@@ -818,6 +818,23 @@ test('uses 4 instead of backtick for the terminal shortcut', async ({ page }) =>
   await expect(page.getByTestId('button-menu-terminal')).toContainText('4terminal');
 });
 
+test('keeps the shortcuts drawer clear of every system bar position', async ({ page }) => {
+  for (const position of ['top', 'bottom', 'left', 'right'] as const) {
+    await page.evaluate(([key, systemBarPosition]) => {
+      const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
+      localStorage.setItem(key, JSON.stringify({ ...saved, systemBarPosition }));
+    }, [storageKey, position]);
+    await page.reload();
+    await page.getByTestId('button-dock-shortcuts').click();
+
+    const drawerBox = await page.getByTestId('menu-mobile').boundingBox();
+    expect(drawerBox).not.toBeNull();
+    expect(drawerBox!.y).toBeCloseTo(50, 0);
+    if (position === 'left') expect(drawerBox!.x).toBeGreaterThanOrEqual(62);
+    if (position === 'right') expect(drawerBox!.x + drawerBox!.width).toBeLessThanOrEqual(1280 - 62);
+  }
+});
+
 test('falls back to safe defaults when saved data is corrupted', async ({ page }) => {
   await page.evaluate(([key, value]) => localStorage.setItem(key, value), [storageKey, '{not-json']);
   await page.reload();

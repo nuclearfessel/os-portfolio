@@ -2335,7 +2335,8 @@ button { cursor: pointer; }
   padding: 0;
   border: none;
   border-radius: 10px;
-  background: rgba(214, 221, 255, .2);
+  background: rgba(15, 18, 36, .88);
+  box-shadow: inset 0 0 0 1px rgba(214, 221, 255, .28);
   cursor: pointer;
   transition: background .18s;
   appearance: none;
@@ -2353,10 +2354,12 @@ button { cursor: pointer; }
 
 .settings-toggle-switch.is-on {
   background: #e4ff5b;
+  box-shadow: none;
 }
 
 .theme-light .settings-toggle-switch {
   background: rgba(26, 83, 91, .18);
+  box-shadow: none;
 }
 
 .theme-light .settings-toggle-switch.is-on {
@@ -2380,8 +2383,14 @@ button { cursor: pointer; }
   transform: translateX(16px);
 }
 
+.settings-toggle-switch.is-on .settings-toggle-knob {
+  background: #111326;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .34);
+}
+
 .theme-light .settings-toggle-switch.is-on .settings-toggle-knob {
   background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .28);
 }
 
 /* Transparency level */

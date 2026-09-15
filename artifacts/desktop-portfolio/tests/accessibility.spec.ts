@@ -639,6 +639,15 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await expect(shell).toHaveClass(/theme-dark/);
     await expect(shell).not.toHaveClass(/theme-light/);
     await expect(shell).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+    await page.getByTestId('button-dock-terminal').click();
+    const terminalInput = page.getByTestId('input-terminal-command');
+    for (const command of ['theme light', 'theme dark']) {
+      await terminalInput.fill(command);
+      await terminalInput.press('Enter');
+      await expect(page.getByTestId('window-terminal').locator('.terminal-output').last()).toHaveText(
+        'Light and dark themes are disabled while a contrast theme is active.',
+      );
+    }
     const desktopAboutIcon = page.locator('.desktop-launcher-about .desktop-app-icon');
     const dockAboutIcon = page.getByTestId('button-dock-about');
     await expect.poll(async () => ({

@@ -1591,6 +1591,7 @@ function TerminalWindow({
   onSetTheme,
   openWindows,
   currentTheme,
+  contrastTheme,
   ...props
 }: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
   onOpenWindow: (id: WindowId) => void;
@@ -1598,6 +1599,7 @@ function TerminalWindow({
   onSetTheme: (theme: Theme) => void;
   openWindows: WindowState;
   currentTheme: Theme;
+  contrastTheme: ContrastTheme;
 }) {
   const [command, setCommand] = useState('');
   const [entries, setEntries] = useState<ShellEntry[]>([]);
@@ -1721,6 +1723,7 @@ function TerminalWindow({
     if (verb === 'theme') {
       const mode = rawArgs[0]?.toLowerCase();
       if (mode !== 'light' && mode !== 'dark') appendEntry(raw, 'theme: expected light or dark', true);
+      else if (contrastTheme !== 'none') appendEntry(raw, 'Light and dark themes are disabled while a contrast theme is active.');
       else if (mode === currentTheme) appendEntry(raw, `${mode} theme is already active.`);
       else {
         onSetTheme(mode);
@@ -3542,7 +3545,7 @@ function Home() {
         {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
         {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
-        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} openWindows={windows} currentTheme={theme} />}
+        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} openWindows={windows} currentTheme={theme} contrastTheme={accessibility.contrastTheme} />}
         {workspaceMode === 'desktop' && windows.settings && (
           <SettingsWindow
             {...windowProps('settings')}

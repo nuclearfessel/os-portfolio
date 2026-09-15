@@ -1045,7 +1045,7 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   expect(guideColors.activeBackground).toBe(settingsColors.activeBackground);
   expect(guideColors.hoverColor).toBe(settingsColors.hoverColor);
   expect(guideColors.hoverBackground).toBe(settingsColors.hoverBackground);
-  expect(guideColors.activeBackground).toBe('rgba(11, 102, 93, 0.14)');
+  expect(guideColors.activeBackground).toBe('rgba(11, 102, 93, 0.2)');
 });
 
 test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {

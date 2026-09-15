@@ -673,6 +673,11 @@ test('Terminal predicts and completes commands, arguments, and paths with Tab', 
   await input.press('Tab');
   await expect(input).toHaveValue('open work');
 
+  await input.fill('set high c');
+  await expect(prediction).toContainText('set high contrast on');
+  await input.press('Tab');
+  await expect(input).toHaveValue('set high contrast on');
+
   await input.fill('cat ~/work/north');
   await expect(prediction).toContainText('northstar-commerce-system.md');
   await input.press('Tab');

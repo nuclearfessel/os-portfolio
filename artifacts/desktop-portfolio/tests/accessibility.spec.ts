@@ -624,6 +624,41 @@ test.describe('Contrast themes', () => {
 // ═════════════════════════════════════════════════════════════════════════════
 
 test.describe('Contrast themes disable wallpaper controls', () => {
+  test('Terminal contrast commands restore Standard and the last regular theme', async ({ page }) => {
+    await openSettings(page);
+    await page.getByTestId('button-dock-terminal').click();
+    const input = page.getByTestId('input-terminal-command');
+    const shell = page.locator('main.os-shell');
+    const root = page.locator('html');
+
+    const runCommand = async (command: string, expectedOutput: string) => {
+      await input.fill(command);
+      await input.press('Enter');
+      await expect(page.getByTestId('window-terminal').locator('.terminal-output').last()).toHaveText(expectedOutput);
+    };
+
+    await runCommand('set high contrast on', 'High Contrast turned on.');
+    await expect(root).toHaveAttribute('data-contrast', 'high');
+    await expect(shell).toHaveClass(/theme-dark/);
+    await runCommand('set standard on', 'Standard theme restored.');
+    await expect(root).not.toHaveAttribute('data-contrast');
+    await expect(shell).toHaveClass(/theme-light/);
+
+    await runCommand('theme dark', 'Theme changed to dark.');
+    await expect(shell).toHaveClass(/theme-dark/);
+    await runCommand('set low contrast on', 'Low Contrast turned on.');
+    await expect(root).toHaveAttribute('data-contrast', 'low');
+    await runCommand('theme light', 'Light and dark themes are disabled while a contrast theme is active.');
+    await runCommand('set low contrast off', 'Standard theme restored.');
+    await expect(root).not.toHaveAttribute('data-contrast');
+    await expect(shell).toHaveClass(/theme-dark/);
+
+    await runCommand('set high contrast on', 'High Contrast turned on.');
+    await runCommand('set high contrast off', 'Standard theme restored.');
+    await expect(root).not.toHaveAttribute('data-contrast');
+    await expect(shell).toHaveClass(/theme-dark/);
+  });
+
   test('contrast themes disable regular theme controls and preserve the selected theme', async ({ page }) => {
     await openSettings(page);
     await goToPersonalization(page);

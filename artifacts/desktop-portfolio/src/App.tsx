@@ -1516,8 +1516,9 @@ const shellFiles: Record<string, ShellNode> = {
   '/home/john/contact/contact.txt': { type: 'file', content: 'Email: hello@johndoe.design\nStatus: Open to thoughtful product partnerships.' },
 };
 
-const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd work', 'cat ~/work/northstar-commerce-system.md', 'open work', 'theme light', 'history', 'clear'];
+const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'set', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
+const shellExamples = ['ls', 'cd work', 'cat ~/work/northstar-commerce-system.md', 'open work', 'theme light', 'set high contrast on', 'history', 'clear'];
+const shellContrastOptions = ['high contrast on', 'high contrast off', 'low contrast on', 'low contrast off', 'standard on'];
 const shellArgumentOptions: Partial<Record<string, string[]>> = {
   open: ['about', 'work', 'contact', 'terminal'],
   close: ['about', 'work', 'contact', 'terminal', 'all'],
@@ -1567,6 +1568,11 @@ function predictShellCommand(input: string, cwd: string) {
 
   const token = value.endsWith(' ') ? '' : parts.at(-1) ?? '';
   const commandPrefix = value.slice(0, value.length - token.length);
+  if (verb === 'set') {
+    const argumentInput = value.slice(verb.length).trimStart().toLowerCase();
+    const match = shellContrastOptions.find((item) => item.startsWith(argumentInput));
+    return match ? `${leadingWhitespace}set ${match}` : '';
+  }
   const argumentOptions = shellArgumentOptions[verb];
   if (argumentOptions) {
     const match = argumentOptions.find((item) => item.startsWith(token.toLowerCase()));
@@ -1589,6 +1595,7 @@ function TerminalWindow({
   onOpenWindow,
   onCloseWindow,
   onSetTheme,
+  onSetContrastTheme,
   openWindows,
   currentTheme,
   contrastTheme,
@@ -1597,6 +1604,7 @@ function TerminalWindow({
   onOpenWindow: (id: WindowId) => void;
   onCloseWindow: (id: WindowId) => void;
   onSetTheme: (theme: Theme) => void;
+  onSetContrastTheme: (contrastTheme: ContrastTheme) => void;
   openWindows: WindowState;
   currentTheme: Theme;
   contrastTheme: ContrastTheme;
@@ -1656,7 +1664,7 @@ function TerminalWindow({
       return;
     }
     if (verb === 'help') {
-      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
+      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme in Standard mode\n  set high contrast on|off\n  set low contrast on|off\n  set standard on\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
       return;
     }
     if (verb === 'pwd') {
@@ -1728,6 +1736,22 @@ function TerminalWindow({
       else {
         onSetTheme(mode);
         appendEntry(raw, `Theme changed to ${mode}.`);
+      }
+      return;
+    }
+    if (verb === 'set') {
+      const setting = rawArgs.join(' ').toLowerCase();
+      if (setting === 'high contrast on') {
+        onSetContrastTheme('high');
+        appendEntry(raw, 'High Contrast turned on.');
+      } else if (setting === 'low contrast on') {
+        onSetContrastTheme('low');
+        appendEntry(raw, 'Low Contrast turned on.');
+      } else if (setting === 'standard on' || setting === 'high contrast off' || setting === 'low contrast off') {
+        onSetContrastTheme('none');
+        appendEntry(raw, 'Standard theme restored.');
+      } else {
+        appendEntry(raw, 'set: expected high contrast on|off, low contrast on|off, or standard on', true);
       }
       return;
     }
@@ -1920,6 +1944,9 @@ function Home() {
   const [accessibility, setAccessibility] = useState<AccessibilityPrefs>(savedDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
   const setRegularTheme = (nextTheme: Theme) => {
     if (accessibility.contrastTheme === 'none') setTheme(nextTheme);
+  };
+  const setContrastTheme = (contrastTheme: ContrastTheme) => {
+    setAccessibility((current) => ({ ...current, contrastTheme }));
   };
   const [introCustomization, setIntroCustomization] = useState<IntroCustomization>(savedDesktopState.introCustomization ?? DEFAULT_INTRO_CUSTOMIZATION);
   const [automaticIntroColors, setAutomaticIntroColors] = useState<Partial<Record<IntroTextKey, string>>>({});
@@ -3545,7 +3572,7 @@ function Home() {
         {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
         {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
-        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} openWindows={windows} currentTheme={theme} contrastTheme={accessibility.contrastTheme} />}
+        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} onSetContrastTheme={setContrastTheme} openWindows={windows} currentTheme={theme} contrastTheme={accessibility.contrastTheme} />}
         {workspaceMode === 'desktop' && windows.settings && (
           <SettingsWindow
             {...windowProps('settings')}

@@ -1,6 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import { fileURLToPath } from "node:url";
 
 const port = 4173;
+const webkitExecutable = fileURLToPath(new URL("./scripts/playwright-webkit.sh", import.meta.url));
 
 export default defineConfig({
   testDir: "./tests",
@@ -36,7 +38,10 @@ export default defineConfig({
       name: "webkit-storage-recovery",
       testMatch: /desktop-persistence\.spec\.ts/,
       grep: /stays usable when browser storage reads, writes, and removals fail|reflows storage recovery help with enlarged text without clipping controls/,
-      use: { ...devices["Desktop Safari"] },
+      use: {
+        ...devices["Desktop Safari"],
+        launchOptions: { executablePath: webkitExecutable },
+      },
     },
   ],
 });

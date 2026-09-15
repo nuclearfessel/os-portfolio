@@ -19,11 +19,12 @@
 │  [icon / glyph] │  ← relative grid place-items-center rounded-lg border
 │  [DockItemLabel]│    transition-colors duration-100
 └─────────────────┘
-│ .active class when active
+│ .active when open; .focused when topmost
 ```
 
 - Root: `<button>` (forwarded ref)
-- Active state: add `active` CSS class + pass `active={true}` prop
+- Open state: add `active` CSS class + pass `active={true}` prop
+- Focused/topmost state: add `focused` CSS class + pass `focused={true}` prop
 
 ---
 
@@ -32,6 +33,7 @@
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `active` | `boolean` | `false` | Applies `active` class and drives visual state |
+| `focused` | `boolean` | `false` | Applies `focused` class for the topmost app's directional edge tab |
 | `type` | `string` | `'button'` | Prevents form submission |
 | `className` | `string` | — | Required — the consumer applies sizing and color tokens |
 | `ref` | `Ref<HTMLButtonElement>` | — | Forwarded |
@@ -117,7 +119,8 @@ Number shortcuts must not run while focus is inside a color-value input.
 | State | Visual |
 |---|---|
 | Default | Border + background from consumer classes |
-| Active | Full-tile contrast ring plus a 16–26px directional pill on the nearest Dock edge; never rely on a tiny dot alone |
+| Open / active | Full-tile contrast ring; every open app retains this state |
+| Focused / topmost | Directional 16–26px edge pill in addition to the active ring; exactly one item receives it |
 | Hover | Inactive items only: branded apps retain their icon foreground, tile fill, and shared border; use a flat contrast-safe outline |
 | High contrast | Branded app tiles retain the same contrast-safe foreground and fill as their matching desktop launcher; use the active marker rather than replacing app identity |
 | Focus-visible | Uses the same flat, theme-appropriate outline while retaining the shared inactive border |
@@ -132,11 +135,12 @@ rather than inheriting a different border from every branded tile. Keep that
 border stable through hover and focus; use the flat outline for interaction
 feedback.
 
-The active state must remain distinguishable without hover. Use both a full-tile
-ring and a directional edge pill so the signal remains clear against branded
-tiles, neutral controls, and changing wallpaper. On mobile and tablet, keep the
-pill visible beneath the inline label. Do not apply hover styling to active
-items; their selected treatment remains unchanged under the pointer.
+The active state must remain distinguishable without hover. Use a full-tile ring
+for every open app. Add the directional edge pill only to the focused/topmost
+item so users can distinguish open apps from the current app. On mobile and
+tablet, keep that pill visible beneath the inline label. Do not apply hover
+styling to active items; their selected treatment remains unchanged under the
+pointer.
 
 ---
 
@@ -144,6 +148,7 @@ items; their selected treatment remains unchanged under the pointer.
 
 - Every `DockItem` **must** have `aria-label` set to the section name.
 - When `active`, add `aria-current="true"` or `aria-pressed="true"` as appropriate.
+- Use `focused` only for the currently focused/topmost open app; it does not replace keyboard focus semantics.
 - `DockItemLabel` with `presentation="tooltip"` should be position-absolute / `pointer-events-none` and hidden from the tab order (it is decorative; the `aria-label` names the button).
 
 ---
@@ -161,7 +166,7 @@ items; their selected treatment remains unchanged under the pointer.
 | Supply `aria-label` on every `DockItem` | Rely on `DockItemLabel` text as the only accessible name |
 | Use `presentation="tooltip"` only on desktop | Show tooltip labels on mobile (they overlap other content) |
 | Keep Dock icons in a fixed footprint across states | Resize the icon on hover/active |
-| Combine a full-tile ring with a substantial edge pill for active items | Use a 4px dot as the only active indicator |
+| Give every open app a full-tile ring and only the focused app an edge pill | Put the focused edge pill on every open app |
 | Preserve branded tile and glyph colors and use a flat outline on hover/focus | Move, brighten, emboss, or recolor branded tiles on hover |
 | Apply hover feedback only to inactive items | Layer hover styling on top of the active treatment |
 | Use one shared 1px border color for every inactive item | Give each inactive branded tile a different border color |

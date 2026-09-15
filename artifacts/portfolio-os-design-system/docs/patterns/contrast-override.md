@@ -82,8 +82,10 @@ from buttons or other controls.
 ## Side effects
 
 When any contrast theme is active:
-- `portfolio-surface-translucent` elements are forced fully opaque (backdrop blur removed).
-- The consuming app should also disable the transparency toggle row (pass `disabled`).
+- All animation, transition, and smooth-scroll motion is disabled.
+- `portfolio-surface-translucent` elements are forced fully opaque and backdrop blur is removed.
+- The consuming app must show motion, transparency, and blur toggles off and disabled.
+- Saved Standard-mode motion, transparency, and blur preferences remain unchanged and restore when Standard is selected.
 - Regular Light and Dark controls and wallpaper controls remain visible but disabled.
 - The saved regular theme and wallpaper preferences remain unchanged so Standard restores them exactly.
 - The product must remove or neutralize regular-theme presentation classes that can override the fixed contrast palette.
@@ -106,7 +108,7 @@ The `data-contrast` attribute re-maps semantic channel variables — so every pa
 
 - [ ] High contrast mode is visually distinct from the standard theme — confirmed manually.
 - [ ] Focus rings are visible in all three modes (3px yellow in high contrast).
-- [ ] Transparency is disabled when any contrast theme is active.
+- [ ] Motion, transparency, and blur are disabled when any contrast theme is active.
 - [ ] All text meets WCAG AA contrast ratios in each mode.
 
 ---
@@ -116,7 +118,7 @@ The `data-contrast` attribute re-maps semantic channel variables — so every pa
 | ✅ Do | ❌ Don't |
 |---|---|
 | Use semantic tokens so contrast mode updates components automatically | Hardcode colors in components |
-| Disable transparency toggle when contrast is active | Allow translucency and contrast to coexist |
+| Show motion, transparency, and blur off and disabled when contrast is active | Allow effects and contrast to coexist or discard saved Standard preferences |
 | Preserve the saved regular theme while using an independent contrast presentation baseline | Leave the regular light-theme class active underneath contrast mode |
 | Keep regular theme controls visible but disabled | Let users switch Light or Dark while contrast mode is active |
 | Reject Terminal `theme light` and `theme dark` commands with the contrast-mode disabled message | Report that the saved regular theme is already active |

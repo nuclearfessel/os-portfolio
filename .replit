@@ -41,4 +41,4 @@ timeoutMs = 20000
 
 [nix]
 channel = "stable-25_05"
-packages = ["glib", "nss", "nspr", "atk", "at-spi2-atk", "cups", "dbus", "expat", "libdrm", "mesa", "pango", "cairo", "alsa-lib", "xorg.libX11", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXext", "xorg.libXfixes", "xorg.libXrandr", "xorg.libxcb", "libxkbcommon", "libgbm", "xorg.libXcursor", "xorg.libXi", "gtk3", "gdk-pixbuf"]
+packages = ["glib", "nss", "nspr", "atk", "at-spi2-atk", "cups", "dbus", "expat", "libdrm", "mesa", "pango", "cairo", "alsa-lib", "xorg.libX11", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXext", "xorg.libXfixes", "xorg.libXrandr", "xorg.libxcb", "libxkbcommon", "libgbm", "xorg.libXcursor", "xorg.libXi", "gtk3", "gdk-pixbuf", "webkitgtk_6_0", "icu74", "libjpeg8", "libmanette", "libsecret", "libglvnd", "x264", "hyphen"]

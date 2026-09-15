@@ -586,8 +586,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav-item-active {
-  color: #064f47;
-  background: rgba(11,102,93,.18) !important;
+  color: #064f47 !important;
+  background: #b8d9d2 !important;
   font-weight: 600;
 }
 
@@ -2267,8 +2267,18 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav-item:hover:not(.settings-nav-item-active) {
-  background: rgba(11, 102, 93, .08) !important;
-  color: #0b665d !important;
+  background: #d0e6e1 !important;
+  color: #064f47 !important;
+}
+
+.theme-light .settings-nav .settings-nav-item-active {
+  color: #064f47 !important;
+  background: #b8d9d2 !important;
+}
+
+.theme-light .settings-nav .settings-nav-item:hover:not(.settings-nav-item-active) {
+  background: #d0e6e1 !important;
+  color: #064f47 !important;
 }
 
 /* =========================================================

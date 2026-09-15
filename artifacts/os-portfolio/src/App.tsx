@@ -3860,16 +3860,40 @@ function Home() {
   const currentWallpaperStyle = appliesSelectedWallpaper
     ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
     : undefined;
-  const actionButtonColors = tokens.color.component[presentationTheme].actionButton;
+  const actionButtonPrimary = tokens.color.component[presentationTheme].actionButtonPrimary;
+  const actionButtonSecondary = tokens.color.component[presentationTheme].actionButtonSecondary;
+  const actionButtonTertiary = tokens.color.component[presentationTheme].actionButtonTertiary;
+  const actionButtonDanger = tokens.color.component[presentationTheme].actionButtonDanger;
   const shellStyle = {
     ...currentWallpaperStyle,
-    '--component-action-button-background': hexToHslChannels(actionButtonColors.background),
-    '--component-action-button-foreground': hexToHslChannels(actionButtonColors.foreground),
-    '--component-action-button-border': hexToHslChannels(actionButtonColors.border),
-    '--component-action-button-hover': hexToHslChannels(actionButtonColors.hover),
-    '--component-action-button-hover-foreground': hexToHslChannels(actionButtonColors.hoverForeground),
-    '--component-action-button-hover-border': hexToHslChannels(actionButtonColors.hoverBorder),
-    '--component-action-button-focus': hexToHslChannels(actionButtonColors.focus),
+    '--component-action-button-primary-background': hexToHslChannels(actionButtonPrimary.background),
+    '--component-action-button-primary-foreground': hexToHslChannels(actionButtonPrimary.foreground),
+    '--component-action-button-primary-border': hexToHslChannels(actionButtonPrimary.border),
+    '--component-action-button-primary-hover': hexToHslChannels(actionButtonPrimary.hover),
+    '--component-action-button-primary-hover-foreground': hexToHslChannels(actionButtonPrimary.hoverForeground),
+    '--component-action-button-primary-hover-border': hexToHslChannels(actionButtonPrimary.hoverBorder),
+    '--component-action-button-primary-focus': hexToHslChannels(actionButtonPrimary.focus),
+    '--component-action-button-secondary-background': hexToHslChannels(actionButtonSecondary.background),
+    '--component-action-button-secondary-foreground': hexToHslChannels(actionButtonSecondary.foreground),
+    '--component-action-button-secondary-border': hexToHslChannels(actionButtonSecondary.border),
+    '--component-action-button-secondary-hover': hexToHslChannels(actionButtonSecondary.hover),
+    '--component-action-button-secondary-hover-foreground': hexToHslChannels(actionButtonSecondary.hoverForeground),
+    '--component-action-button-secondary-hover-border': hexToHslChannels(actionButtonSecondary.hoverBorder),
+    '--component-action-button-secondary-focus': hexToHslChannels(actionButtonSecondary.focus),
+    '--component-action-button-tertiary-background': hexToHslChannels(actionButtonTertiary.background),
+    '--component-action-button-tertiary-foreground': hexToHslChannels(actionButtonTertiary.foreground),
+    '--component-action-button-tertiary-border': hexToHslChannels(actionButtonTertiary.border),
+    '--component-action-button-tertiary-hover': hexToHslChannels(actionButtonTertiary.hover),
+    '--component-action-button-tertiary-hover-foreground': hexToHslChannels(actionButtonTertiary.hoverForeground),
+    '--component-action-button-tertiary-hover-border': hexToHslChannels(actionButtonTertiary.hoverBorder),
+    '--component-action-button-tertiary-focus': hexToHslChannels(actionButtonTertiary.focus),
+    '--component-action-button-danger-background': hexToHslChannels(actionButtonDanger.background),
+    '--component-action-button-danger-foreground': hexToHslChannels(actionButtonDanger.foreground),
+    '--component-action-button-danger-border': hexToHslChannels(actionButtonDanger.border),
+    '--component-action-button-danger-hover': hexToHslChannels(actionButtonDanger.hover),
+    '--component-action-button-danger-hover-foreground': hexToHslChannels(actionButtonDanger.hoverForeground),
+    '--component-action-button-danger-hover-border': hexToHslChannels(actionButtonDanger.hoverBorder),
+    '--component-action-button-danger-focus': hexToHslChannels(actionButtonDanger.focus),
   } as React.CSSProperties;
   const automaticContrastActive = (
     introCustomization.automaticContrast
@@ -4019,7 +4043,7 @@ function Home() {
           </p>
           <div className="quick-actions">
             <ActionButton className="quick-button primary" variant="primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></ActionButton>
-            <ActionButton className="quick-button tertiary" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></ActionButton>
+            <ActionButton className="quick-button tertiary" variant="tertiary" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></ActionButton>
           </div>
         </div>
 

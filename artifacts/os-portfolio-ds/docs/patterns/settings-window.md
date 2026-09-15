@@ -129,7 +129,7 @@ function SettingsWindow({ prefs, updatePrefs, onClose }) {
     <WindowSurface aria-label="Settings" className="overflow-hidden">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <SectionLabel>settings</SectionLabel>
-        <ActionButton aria-label="Close settings" onClick={onClose}>×</ActionButton>
+        <ActionButton variant="secondary" aria-label="Close settings" onClick={onClose}>×</ActionButton>
       </div>
       <div className="grid min-h-80" style={{ gridTemplateColumns: '160px 1fr' }}>
         <div className="border-r border-border bg-sidebar p-3">

@@ -15,6 +15,8 @@ export const tokens = {
       "sageMuted": "#e2ece8",
       "slateMuted": "#536a72",
       "coral": "#c54f48",
+      "deepCoral": "#963f35",
+      "lightActionSurface": "#edf4f1",
       "white": "#ffffff",
       "redDanger": "#b63f4d",
       "sageInput": "#8db3aa",
@@ -56,6 +58,8 @@ export const tokens = {
       "mutedForeground": "#536a72",
       "accent": "#c54f48",
       "accentForeground": "#ffffff",
+      "accentStrong": "#963f35",
+      "actionSurface": "#edf4f1",
       "destructive": "#b63f4d",
       "destructiveForeground": "#ffffff",
       "input": "#8db3aa",
@@ -91,6 +95,8 @@ export const tokens = {
       "mutedForeground": "#aeb2cb",
       "accent": "#ff8d79",
       "accentForeground": "#111326",
+      "accentStrong": "#ff8d79",
+      "actionSurface": "#2b2f4a",
       "destructive": "#e46765",
       "destructiveForeground": "#111326",
       "input": "#4b526d",
@@ -161,7 +167,16 @@ export const tokens = {
     },
     "component": {
       "light": {
-        "actionButton": {
+        "actionButtonPrimary": {
+          "background": "#0b665d",
+          "foreground": "#f7fbf9",
+          "border": "#0b665d",
+          "hover": "#edf4f1",
+          "hoverForeground": "#c54f48",
+          "hoverBorder": "#c54f48",
+          "focus": "#0b665d"
+        },
+        "actionButtonSecondary": {
           "background": "#eaf3ef",
           "foreground": "#c54f48",
           "border": "#c54f48",
@@ -170,13 +185,22 @@ export const tokens = {
           "hoverBorder": "#0b665d",
           "focus": "#0b665d"
         },
-        "desktopPrimaryAction": {
-          "background": "#0b665d",
-          "foreground": "#f7fbf9",
-          "border": "#0b665d",
-          "hover": "#c54f48",
+        "actionButtonTertiary": {
+          "background": "#f7fbf9",
+          "foreground": "#17233a",
+          "border": "#a9c5bd",
+          "hover": "#963f35",
           "hoverForeground": "#ffffff",
-          "hoverBorder": "#c54f48",
+          "hoverBorder": "#963f35",
+          "focus": "#0b665d"
+        },
+        "actionButtonDanger": {
+          "background": "#b63f4d",
+          "foreground": "#ffffff",
+          "border": "#b63f4d",
+          "hover": "#b63f4d",
+          "hoverForeground": "#ffffff",
+          "hoverBorder": "#b63f4d",
           "focus": "#0b665d"
         },
         "accordion": {
@@ -313,7 +337,16 @@ export const tokens = {
         }
       },
       "dark": {
-        "actionButton": {
+        "actionButtonPrimary": {
+          "background": "#e4ff5b",
+          "foreground": "#111326",
+          "border": "#e4ff5b",
+          "hover": "#2b2f4a",
+          "hoverForeground": "#e4ff5b",
+          "hoverBorder": "#e4ff5b",
+          "focus": "#e4ff5b"
+        },
+        "actionButtonSecondary": {
           "background": "#2b2f4a",
           "foreground": "#e4ff5b",
           "border": "#e4ff5b",
@@ -322,13 +355,22 @@ export const tokens = {
           "hoverBorder": "#e4ff5b",
           "focus": "#e4ff5b"
         },
-        "desktopPrimaryAction": {
-          "background": "#e4ff5b",
+        "actionButtonTertiary": {
+          "background": "#20233d",
+          "foreground": "#e8eaf4",
+          "border": "#444967",
+          "hover": "#ff8d79",
+          "hoverForeground": "#111326",
+          "hoverBorder": "#ff8d79",
+          "focus": "#e4ff5b"
+        },
+        "actionButtonDanger": {
+          "background": "#e46765",
           "foreground": "#111326",
-          "border": "#e4ff5b",
-          "hover": "#2b2f4a",
-          "hoverForeground": "#e4ff5b",
-          "hoverBorder": "#e4ff5b",
+          "border": "#e46765",
+          "hover": "#e46765",
+          "hoverForeground": "#111326",
+          "hoverBorder": "#e46765",
           "focus": "#e4ff5b"
         },
         "accordion": {

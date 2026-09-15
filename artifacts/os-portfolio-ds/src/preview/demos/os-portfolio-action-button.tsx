@@ -10,8 +10,8 @@ export function OsPortfolioActionButtonDemo() {
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">All variants</p>
           <div className="flex flex-wrap gap-3">
             <ActionButton variant="primary">Primary action</ActionButton>
-            <ActionButton variant="desktopPrimary">Desktop primary action</ActionButton>
             <ActionButton variant="secondary">Secondary action</ActionButton>
+            <ActionButton variant="tertiary">Tertiary action</ActionButton>
             <ActionButton variant="danger">Destructive action</ActionButton>
           </div>
         </div>
@@ -20,8 +20,8 @@ export function OsPortfolioActionButtonDemo() {
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Disabled state</p>
           <div className="flex flex-wrap gap-3">
             <ActionButton variant="primary" disabled>Primary disabled</ActionButton>
-            <ActionButton variant="desktopPrimary" disabled>Desktop primary disabled</ActionButton>
             <ActionButton variant="secondary" disabled>Secondary disabled</ActionButton>
+            <ActionButton variant="tertiary" disabled>Tertiary disabled</ActionButton>
             <ActionButton variant="danger" disabled>Danger disabled</ActionButton>
           </div>
         </div>
@@ -29,8 +29,9 @@ export function OsPortfolioActionButtonDemo() {
         <div>
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Common use cases</p>
           <div className="flex flex-wrap items-center gap-3">
-            <ActionButton variant="desktopPrimary">Open work</ActionButton>
-            <ActionButton>View case study</ActionButton>
+            <ActionButton variant="primary">Open work</ActionButton>
+            <ActionButton variant="secondary">View case study</ActionButton>
+            <ActionButton variant="tertiary">Say hello</ActionButton>
             <ActionButton>Close</ActionButton>
             <ActionButton>Reset desktop&hellip;</ActionButton>
             <ActionButton variant="danger">Delete note</ActionButton>

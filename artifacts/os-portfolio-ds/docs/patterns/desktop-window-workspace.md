@@ -16,7 +16,7 @@ The OS Portfolio desktop presents multiple floating windows simultaneously — e
 |---|---|---|
 | `WindowSurface` | `os-portfolio.tsx` | Visual shell (border, bg, shadow) |
 | `SectionLabel` | `os-portfolio.tsx` | Window title kicker / path label |
-| `ActionButton` | `os-portfolio.tsx` | Window controls (close, actions) |
+| `ActionButton` | `os-portfolio.tsx` | Secondary window controls and actions |
 | `Separator` | `ui/separator.tsx` | Title bar / content divider |
 
 ---
@@ -54,6 +54,13 @@ The OS Portfolio desktop presents multiple floating windows simultaneously — e
 | Keyboard close commands | Product global keyboard handling |
 
 `WindowSurface` has no internal state — it is purely visual.
+
+### Action hierarchy
+
+Use `ActionButton variant="secondary"` for Settings, Guide, Work, and other
+in-window actions. Reserve `primary` for the desktop's dominant “open work”
+quick action, `tertiary` for the adjacent “say hello” action, and `danger` for
+destructive confirmation. Do not promote routine window controls to primary.
 
 ### Maximized title-bar dragging
 
@@ -169,6 +176,7 @@ import { WindowSurface, SectionLabel, ActionButton } from '@workspace/os-portfol
   >
     <SectionLabel id="about-title">~/john/about</SectionLabel>
     <ActionButton
+      variant="secondary"
       aria-label="Close About window"
       onClick={closeWindow}
       className="size-6 p-0"

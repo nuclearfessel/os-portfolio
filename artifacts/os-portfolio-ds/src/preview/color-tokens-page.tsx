@@ -100,8 +100,10 @@ const SEMANTIC_PROPOSED: Record<string, string> = {
 // Format: { displayName, element }
 // Element is the sub-part of the component (container, icon, label, etc.)
 const COMPONENT_META: Record<string, { display: string; element: string; group: string }> = {
-  actionButton:    { display: 'action-button', element: 'container', group: 'Shared' },
-  desktopPrimaryAction: { display: 'desktop-primary-action', element: 'container', group: 'Desktop OS' },
+  actionButtonPrimary: { display: 'action-button-primary', element: 'container', group: 'Shared' },
+  actionButtonSecondary: { display: 'action-button-secondary', element: 'container', group: 'Shared' },
+  actionButtonTertiary: { display: 'action-button-tertiary', element: 'container', group: 'Shared' },
+  actionButtonDanger: { display: 'action-button-danger', element: 'container', group: 'Shared' },
   accordion:       { display: 'accordion',     element: 'container', group: 'Shared' },
   dialog:          { display: 'dialog',        element: 'container', group: 'Shared' },
   separator:       { display: 'separator',     element: 'rule',      group: 'Shared' },

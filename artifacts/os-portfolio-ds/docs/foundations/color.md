@@ -23,7 +23,7 @@ CSS and TypeScript preserve these relationships for web and native consumers.
 |---|---|---|
 | Primitive | `color.primitive.*` | Raw hex values that form the palette. Primitives are implementation details and are never consumed directly by components. |
 | Semantic | `color.light.*` / `color.dark.*` | Stable theme roles such as `primary`, `card`, and `muted`. Every leaf aliases a primitive, and this is the backwards-compatible public color API. Contrast modes remap these CSS variables. |
-| Component | `color.component.light.*` / `color.component.dark.*` | Component intent such as `actionButton.background` or `windowSurface.titleBar`. Every leaf aliases a same-theme semantic role, never a primitive. |
+| Component | `color.component.light.*` / `color.component.dark.*` | Component intent such as `actionButtonPrimary.background` or `windowSurface.titleBar`. Every leaf aliases a same-theme semantic role, never a primitive. |
 
 The mapping therefore flows in one direction:
 
@@ -48,20 +48,24 @@ propagate through the component tier.
 | `primitive.sageBorder` | `light.border`, `light.sidebarBorder` | — |
 | `primitive.indigoBorder` | — | `dark.border`, `dark.sidebarBorder` |
 | `primitive.coral` | `light.accent`, `light.chart2` | — |
-| `primitive.salmon` | — | `dark.accent`, `dark.chart2` |
+| `primitive.deepCoral` | `light.accentStrong` | — |
+| `primitive.lightActionSurface` | `light.actionSurface` | — |
+| `primitive.salmon` | — | `dark.accent`, `dark.accentStrong`, `dark.chart2` |
+| `primitive.indigoSurface` | — | `dark.actionSurface`, `dark.secondary`, `dark.muted` |
 
 ### Representative semantic → component mappings
 
 | Component intent | Semantic aliases (light / dark) |
 |---|---|
-| `actionButton.background` | `background` / `secondary` |
-| `actionButton.foreground` | `accent` / `primary` |
-| `actionButton.hover` | `primary` / `primary` |
-| `actionButton.hoverForeground` | `primaryForeground` / `primaryForeground` |
-| `desktopPrimaryAction.background` | `primary` / `primary` |
-| `desktopPrimaryAction.foreground` | `primaryForeground` / `primaryForeground` |
-| `desktopPrimaryAction.hover` | `accent` / `secondary` |
-| `desktopPrimaryAction.hoverForeground` | `accentForeground` / `primary` |
+| `actionButtonPrimary.background` | `primary` / `primary` |
+| `actionButtonPrimary.hover` | `actionSurface` / `actionSurface` |
+| `actionButtonPrimary.hoverForeground` | `accent` / `primary` |
+| `actionButtonSecondary.background` | `background` / `secondary` |
+| `actionButtonSecondary.foreground` | `accent` / `primary` |
+| `actionButtonSecondary.hover` | `primary` / `primary` |
+| `actionButtonTertiary.background` | `card` / `card` |
+| `actionButtonTertiary.hover` | `accentStrong` / `accentStrong` |
+| `actionButtonDanger.background` | `destructive` / `destructive` |
 | `dialog.surface` | `card` / `card` |
 | `contextMenu.surface` | `popover` / `popover` |
 | `projectCard.surface` | `card` / `card` |
@@ -71,11 +75,11 @@ propagate through the component tier.
 
 The same intent names exist under both `color.component.light` and
 `color.component.dark`; their semantic targets can differ when the interaction
-needs theme-specific contrast. In-window action buttons use a transparent
-accent outline that fills with primary in light mode, and secondary-to-primary
-in dark mode. Desktop quick actions are a separate component treatment and do
-not use this mapping. The desktop primary action starts with the primary fill,
-then shares the adjacent secondary quick action's hover treatment in each theme.
+needs theme-specific contrast. Primary, secondary, tertiary, and danger are
+separate component contracts rather than local product overrides. Primary and
+secondary deliberately reverse the filled/outlined emphasis relationship.
+Tertiary uses the theme accent as a solid hover surface with a same-color border,
+so its hover never appears outlined.
 
 ### Component coverage
 
@@ -83,7 +87,7 @@ The component tier covers every OS color category currently in use:
 
 | Shared primitives | Desktop-specific surfaces |
 |---|---|
-| `actionButton`, `accordion`, `dialog`, `separator`, `toast`, `tooltip`, `contextMenu` | `desktopLauncher`, `dock`, `dockLabel`, `projectCard`, `sectionLabel`, `statusIndicator`, `stickyNoteSurface`, `genericSurface`, `windowSurface`, `systemBar`, `settingsControls`, `colorPicker`, `terminal`, `contactCta` |
+| `actionButtonPrimary`, `actionButtonSecondary`, `actionButtonTertiary`, `actionButtonDanger`, `accordion`, `dialog`, `separator`, `toast`, `tooltip`, `contextMenu` | `desktopLauncher`, `dock`, `dockLabel`, `projectCard`, `sectionLabel`, `statusIndicator`, `stickyNoteSurface`, `genericSurface`, `windowSurface`, `systemBar`, `settingsControls`, `colorPicker`, `terminal`, `contactCta` |
 
 Each group includes only intent leaves relevant to that surface (for example,
 `tooltip.surface`, `tooltip.foreground`, and `tooltip.border`). Add new intent

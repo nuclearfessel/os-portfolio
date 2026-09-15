@@ -41,7 +41,7 @@ const MAPPING_FLOW = [
     primitive: 'color.palette.teal.700',
     semantic: 'color.background.action.primary.default.light',
     semanticClass: 'bg-primary',
-    component: 'action-button.container.color.background.hover.light',
+    component: 'action-button-secondary.container.color.background.hover.light',
     componentClass: 'bg-primary',
   },
   {
@@ -65,7 +65,7 @@ const MAPPING_FLOW = [
     primitive: 'color.palette.coral.500',
     semantic: 'color.background.action.accent.default.light',
     semanticClass: 'bg-accent',
-    component: 'action-button.container.color.border.light',
+    component: 'action-button-secondary.container.color.border.default.light',
     componentClass: 'bg-accent',
   },
   {
@@ -73,7 +73,7 @@ const MAPPING_FLOW = [
     primitive: 'color.palette.coral.500',
     semantic: 'color.background.action.accent.default.light',
     semanticClass: 'bg-accent',
-    component: 'desktop-primary-action.container.color.background.hover.light',
+    component: 'action-button-tertiary.container.color.background.hover.light',
     componentClass: 'bg-accent',
   },
 ] as const;
@@ -109,7 +109,10 @@ const TOKEN_TEMPLATES = [
 ] as const;
 
 const COMPONENT_COLOR_COVERAGE = [
-  'actionButton',
+  'actionButtonPrimary',
+  'actionButtonSecondary',
+  'actionButtonTertiary',
+  'actionButtonDanger',
   'accordion',
   'dialog',
   'separator',

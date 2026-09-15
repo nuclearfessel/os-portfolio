@@ -5,13 +5,14 @@ import {
   type ReactNode,
 } from 'react';
 import { tooltipSurfaceClassName } from './tooltip';
+import './os-portfolio-action-button.css';
 
 function classes(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(' ');
 }
 
 export type ActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'secondary' | 'desktopPrimary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'danger';
 };
 
 export const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
@@ -21,12 +22,7 @@ export const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
       type={type}
       className={classes(
         'inline-flex min-h-9 items-center justify-center gap-2 rounded-md border px-3 text-xs font-medium transition-colors duration-100 focus-visible:outline-2 focus-visible:outline-offset-2',
-        variant === 'primary' && 'border-primary bg-primary text-primary-foreground hover:brightness-105',
-        variant === 'secondary' &&
-          'border-[hsl(var(--component-action-button-border))] bg-transparent text-[hsl(var(--component-action-button-foreground))] hover:border-[hsl(var(--component-action-button-hover-border))] hover:bg-[hsl(var(--component-action-button-hover))] hover:text-[hsl(var(--component-action-button-hover-foreground))] dark:bg-[hsl(var(--component-action-button-background))]',
-        variant === 'desktopPrimary' &&
-          'border-[hsl(var(--component-desktop-primary-action-border))] bg-[hsl(var(--component-desktop-primary-action-background))] text-[hsl(var(--component-desktop-primary-action-foreground))] hover:border-[hsl(var(--component-desktop-primary-action-hover-border))] hover:bg-[hsl(var(--component-desktop-primary-action-hover))] hover:text-[hsl(var(--component-desktop-primary-action-hover-foreground))]',
-        variant === 'danger' && 'border-destructive bg-destructive text-destructive-foreground hover:brightness-110',
+        `osp-action-button--${variant}`,
         className,
       )}
       {...props}

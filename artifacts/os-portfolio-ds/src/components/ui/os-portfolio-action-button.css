@@ -1,0 +1,69 @@
+.osp-action-button--primary {
+  color: hsl(var(--component-action-button-primary-foreground));
+  background: hsl(var(--component-action-button-primary-background));
+  border-color: hsl(var(--component-action-button-primary-border));
+}
+
+.osp-action-button--primary:hover {
+  color: hsl(var(--component-action-button-primary-hover-foreground));
+  background: hsl(var(--component-action-button-primary-hover));
+  border-color: hsl(var(--component-action-button-primary-hover-border));
+}
+
+.osp-action-button--primary:focus-visible {
+  outline-color: hsl(var(--component-action-button-primary-focus));
+}
+
+.osp-action-button--secondary {
+  color: hsl(var(--component-action-button-secondary-foreground));
+  background: transparent;
+  border-color: hsl(var(--component-action-button-secondary-border));
+}
+
+.dark .osp-action-button--secondary,
+.theme-dark .osp-action-button--secondary {
+  background: hsl(var(--component-action-button-secondary-background));
+}
+
+.osp-action-button--secondary:hover {
+  color: hsl(var(--component-action-button-secondary-hover-foreground));
+  background: hsl(var(--component-action-button-secondary-hover));
+  border-color: hsl(var(--component-action-button-secondary-hover-border));
+}
+
+.osp-action-button--secondary:focus-visible {
+  outline-color: hsl(var(--component-action-button-secondary-focus));
+}
+
+.osp-action-button--tertiary {
+  color: hsl(var(--component-action-button-tertiary-foreground));
+  background: hsl(var(--component-action-button-tertiary-background));
+  border-color: hsl(var(--component-action-button-tertiary-border));
+}
+
+.osp-action-button--tertiary:hover {
+  color: hsl(var(--component-action-button-tertiary-hover-foreground));
+  background: hsl(var(--component-action-button-tertiary-hover));
+  border-color: hsl(var(--component-action-button-tertiary-hover-border));
+}
+
+.osp-action-button--tertiary:focus-visible {
+  outline-color: hsl(var(--component-action-button-tertiary-focus));
+}
+
+.osp-action-button--danger {
+  color: hsl(var(--component-action-button-danger-foreground));
+  background: hsl(var(--component-action-button-danger-background));
+  border-color: hsl(var(--component-action-button-danger-border));
+}
+
+.osp-action-button--danger:hover {
+  color: hsl(var(--component-action-button-danger-hover-foreground));
+  background: hsl(var(--component-action-button-danger-hover));
+  border-color: hsl(var(--component-action-button-danger-hover-border));
+  filter: brightness(1.1);
+}
+
+.osp-action-button--danger:focus-visible {
+  outline-color: hsl(var(--component-action-button-danger-focus));
+}

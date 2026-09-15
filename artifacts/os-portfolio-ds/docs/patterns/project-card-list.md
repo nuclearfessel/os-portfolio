@@ -6,7 +6,7 @@
 
 ## Intent
 
-The "Work" window presents a vertical list of portfolio projects. Each entry has a numbered index, title, description, category tag, optional accent color, and a primary action button.
+The "Work" window presents a vertical list of portfolio projects. Each entry has a numbered index, title, description, category tag, optional accent color, and a secondary in-window action button.
 
 ---
 
@@ -15,7 +15,7 @@ The "Work" window presents a vertical list of portfolio projects. Each entry has
 | Component | Source | Role |
 |---|---|---|
 | `ProjectCard` | `os-portfolio.tsx` | Primary project row |
-| `ActionButton` | `os-portfolio.tsx` | "View case study" action |
+| `ActionButton` | `os-portfolio.tsx` | Secondary "View case study" action |
 | `ScrollArea` | `ui/scroll-area.tsx` | Scrollable container for long lists |
 | `Item` / `ItemGroup` | `ui/item.tsx` | Alternative for more generic content lists |
 
@@ -32,7 +32,7 @@ The "Work" window presents a vertical list of portfolio projects. Each entry has
 │  │  Northstar Commerce System ← h3             │  │
 │  │  Description ← p                             │  │
 │  │  PRODUCT / 2024  ← .project-tag             │  │
-│  │  [View case study] ← ActionButton default    │  │
+│  │  [View case study] ← ActionButton secondary  │  │
 │  └──────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────┐  │
 │  │  02  …                                       │  │
@@ -77,7 +77,7 @@ The "Work" window presents a vertical list of portfolio projects. Each entry has
 | ✅ Do | ❌ Don't |
 |---|---|
 | Use `accent` prop to color-code projects | Use random non-token colors |
-| Keep project actions to one primary per card | Add multiple competing actions to a single card |
+| Keep project actions to one secondary action per card | Promote every repeated card action to primary |
 | Wrap the list in `ScrollArea` for tall content | Let the list overflow the window without scroll control |
 
 ---
@@ -102,7 +102,7 @@ const projects = [
           <ProjectCard
             {...p}
             action={
-              <ActionButton onClick={() => openCaseStudy(p.index)}>
+              <ActionButton variant="secondary" onClick={() => openCaseStudy(p.index)}>
                 View case study
               </ActionButton>
             }

@@ -1,6 +1,6 @@
 # ActionButton
 
-**Source:** `src/components/ui/os-portfolio.tsx`
+**Sources:** `src/components/ui/os-portfolio.tsx`, `src/components/ui/os-portfolio-action-button.css`
 **Export path:** `@workspace/os-portfolio-ds/components/ui/os-portfolio`
 **Preview page:** `os-portfolio-pilot`
 
@@ -29,10 +29,10 @@
 
 | Variant | Appearance | Use |
 |---|---|---|
-| `secondary` (default) | Theme-mapped in-window action: light transparent with an `accent` outline → solid `primary`; dark `secondary` with primary text/border → solid `primary` | Work, Settings, Guide, and other in-window actions |
-| `primary` | `bg-primary text-primary-foreground border-primary` → hover: `brightness-105` | Single primary call to action per view |
-| `desktopPrimary` | Primary fill → the desktop secondary quick-action hover treatment (`accent` in light, `secondary` with primary text/border in dark) | Desktop “open work” quick action only |
-| `danger` | `bg-destructive text-destructive-foreground border-destructive` → hover: `brightness-110` | Irreversible actions (delete, confirm removal) |
+| `primary` | Solid brand fill. Light hover uses an opaque sage surface with coral text/border; dark hover uses an opaque indigo surface with lime text/border. | Desktop “open work” and the single dominant action |
+| `secondary` (default) | Light coral outline → solid teal; dark indigo surface with lime text/border → solid lime | Settings, Guide, Work, and other in-window actions |
+| `tertiary` | Neutral surface → solid theme accent with matching border so no distinct border is visible | Desktop “say hello” and lower-emphasis actions |
+| `danger` | Solid destructive treatment with a subtle brightness lift | Irreversible actions such as delete or confirm removal |
 
 ---
 
@@ -40,8 +40,8 @@
 
 | State | Visual |
 |---|---|
-| Default | Light mode is border-only with accent text; dark mode uses the secondary surface with primary text and border |
-| Hover | `secondary`: swaps to the theme's solid primary fill and primary foreground; `desktopPrimary`: matches the neighboring desktop secondary action; `primary`/`danger`: subtle brightness lift |
+| Default | Variant-specific mapped surface, foreground, and border |
+| Hover | `primary` inverts the adjacent in-window relationship; `secondary` fills from its outline treatment; `tertiary` becomes a solid borderless-looking accent; `danger` lifts slightly |
 | Focus-visible | `outline-2 outline-offset-2` (uses `--color-ring`) |
 | Disabled | Pass `disabled` — browser default `pointer-events-none opacity-50` applies |
 
@@ -51,7 +51,7 @@
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `variant` | `'primary' \| 'secondary' \| 'desktopPrimary' \| 'danger'` | `'secondary'` | Visual variant |
+| `variant` | `'primary' \| 'secondary' \| 'tertiary' \| 'danger'` | `'secondary'` | Visual hierarchy |
 | `type` | `HTMLButtonElement['type']` | `'button'` | Prevents accidental form submission |
 | `className` | `string` | — | Merged with base classes |
 | `ref` | `Ref<HTMLButtonElement>` | — | Forwarded to the root `<button>` |
@@ -76,7 +76,7 @@
 
 ## Relevant tokens
 
-`--component-action-button-background`, `--component-action-button-foreground`, `--component-action-button-border`, `--component-action-button-hover`, `--component-action-button-hover-foreground`, `--component-action-button-hover-border`, `--component-action-button-focus`, and the parallel `--component-desktop-primary-action-*` aliases, plus the semantic `primary`, `secondary`, `accent`, and foreground roles they reference.
+Each variant exposes `--component-action-button-{variant}-background`, `-foreground`, `-border`, `-hover`, `-hover-foreground`, `-hover-border`, and `-focus`. These aliases resolve through the semantic `primary`, `secondary`, `actionSurface`, `accent`, `accentStrong`, `destructive`, and foreground roles.
 
 ---
 
@@ -84,8 +84,9 @@
 
 | ✅ Do | ❌ Don't |
 |---|---|
-| Use the default `secondary` variant for in-window actions that follow the shared theme mechanic | Reuse this treatment for desktop quick actions such as “open work” |
-| Use `desktopPrimary` only for the desktop’s main quick action | Use `desktopPrimary` for actions inside windows |
+| Use `primary` for the single dominant action such as “open work” | Use multiple competing primary actions in one view |
+| Use the default `secondary` for Settings, Guide, and Work window actions | Use `secondary` for the desktop “say hello” action |
+| Use `tertiary` for lower-emphasis actions such as “say hello” | Add an outlined border to the tertiary hover treatment |
 | Use `variant="danger"` for destructive actions | Use `danger` for warnings or caution states |
 | Add `aria-label` to icon-only instances | Leave icon-only buttons without an accessible name |
 
@@ -96,22 +97,19 @@
 ```tsx
 import { ActionButton } from '@workspace/os-portfolio-ds/components/ui/os-portfolio';
 
-// Secondary (default)
-<ActionButton onClick={handleClose}>Close</ActionButton>
+// Primary
+<ActionButton variant="primary" onClick={handleOpenWork}>
+  Open work
+</ActionButton>
 
-// In-window action
+// Secondary (default, in-window)
 <ActionButton onClick={handleOpenCaseStudy}>
   View case study
 </ActionButton>
 
-// Primary
-<ActionButton variant="primary" onClick={handleSubmit}>
-  Save changes
-</ActionButton>
-
-// Desktop primary quick action
-<ActionButton variant="desktopPrimary" onClick={handleOpenWork}>
-  Open work
+// Tertiary
+<ActionButton variant="tertiary" onClick={handleContact}>
+  Say hello
 </ActionButton>
 
 // Danger

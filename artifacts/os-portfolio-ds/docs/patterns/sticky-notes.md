@@ -16,7 +16,7 @@ Sticky notes are free-floating text/media surfaces on the desktop canvas. They e
 |---|---|---|
 | `StickyNoteSurface` | `os-portfolio.tsx` | Surface shell (border, shadow, rounded) |
 | `SectionLabel` | `os-portfolio.tsx` | Optional note type / number kicker |
-| `ActionButton` | `os-portfolio.tsx` | Optional delete/action control |
+| `ActionButton` | `os-portfolio.tsx` | Optional `danger` delete control |
 
 ---
 

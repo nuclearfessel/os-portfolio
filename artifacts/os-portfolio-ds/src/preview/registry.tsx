@@ -471,7 +471,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'action-button',
         name: 'ActionButton',
-        description: 'Compact action primitive for desktop quick-actions, project links, and calls to action. Includes dedicated desktop primary, in-window secondary, primary, and danger variants.',
+        description: 'Compact action primitive with primary, secondary, tertiary, and danger variants mapped across light and dark themes.',
         Page: OsPortfolioActionButtonDemo,
       },
       {

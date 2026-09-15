@@ -149,6 +149,8 @@ const COMP_PROP_SEGMENT: Record<string, string> = {
   muted:             'foreground.muted',
   link:              'foreground.link',
   accent:            'background.accent',
+  hoverForeground:   'foreground.hover',
+  hoverBorder:       'border.hover',
   titleBar:          'background.title-bar',
   titleForeground:   'foreground.title-bar',
   control:           'background.control',
@@ -341,8 +343,7 @@ function buildCompGroups(): CompGroup[] {
 
 const COMP_GROUPS = buildCompGroups();
 
-// ── Alias chain data — all 97 light component tokens → full prim→sem→comp chain
-// (97 light + 97 dark = 194 total component tokens)
+// ── Alias chain data — component tokens → full prim→sem→comp chain
 // We pair by compKey+prop since property sets match between modes.
 type ChainRow = {
   compKey:      string;

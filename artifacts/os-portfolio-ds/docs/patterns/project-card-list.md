@@ -32,7 +32,7 @@ The "Work" window presents a vertical list of portfolio projects. Each entry has
 │  │  Northstar Commerce System ← h3             │  │
 │  │  Description ← p                             │  │
 │  │  PRODUCT / 2024  ← .project-tag             │  │
-│  │  [View case study] ← ActionButton primary    │  │
+│  │  [View case study] ← ActionButton default    │  │
 │  └──────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────┐  │
 │  │  02  …                                       │  │
@@ -102,7 +102,7 @@ const projects = [
           <ProjectCard
             {...p}
             action={
-              <ActionButton variant="primary" onClick={() => openCaseStudy(p.index)}>
+              <ActionButton onClick={() => openCaseStudy(p.index)}>
                 View case study
               </ActionButton>
             }

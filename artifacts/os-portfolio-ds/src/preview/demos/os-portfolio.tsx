@@ -92,7 +92,7 @@ export function OsPortfolioDemo() {
         description="A flexible foundation that helped a growing commerce team ship consistent storefront and account experiences."
         tag="DESIGN SYSTEM / 2025"
         accent="#e4ff5b"
-        action={<ActionButton variant="primary">View case study</ActionButton>}
+        action={<ActionButton>View case study</ActionButton>}
       />
 
       <Surface className="space-y-3 p-5">

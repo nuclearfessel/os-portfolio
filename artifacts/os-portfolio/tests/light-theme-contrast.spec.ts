@@ -223,6 +223,54 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
   expect(terminalFocusRatio, `terminal example focus contrast ${terminalFocusRatio.toFixed(2)}:1 should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
 });
 
+test('in-window actions swap default and hover colors without changing the desktop primary action', async ({ page }) => {
+  await page.addInitScript(([key]) => {
+    localStorage.setItem(key, JSON.stringify({
+      theme: 'dark',
+      accessibility: { windowTransparency: false },
+    }));
+  }, [storageKey]);
+  await page.goto('/');
+
+  const desktopAction = page.getByTestId('button-open-work');
+  const projectAction = page.getByTestId('button-open-project-01');
+  await expect(desktopAction).toHaveCSS('background-color', 'rgb(228, 255, 91)');
+  await expect(projectAction).toHaveCSS('background-color', 'rgb(43, 47, 74)');
+  await expect(projectAction).toHaveCSS('color', 'rgb(228, 255, 91)');
+  await projectAction.hover();
+  await expect(projectAction).toHaveCSS('background-color', 'rgb(228, 255, 91)');
+  await expect(projectAction).toHaveCSS('color', 'rgb(17, 19, 38)');
+
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('settings-nav-about').click();
+  const settingsAction = page.getByTestId('settings-about-open-guide');
+  await expect(settingsAction).toHaveCSS('background-color', 'rgb(43, 47, 74)');
+  await expect(settingsAction).toHaveCSS('color', 'rgb(228, 255, 91)');
+  await settingsAction.hover();
+  await expect(settingsAction).toHaveCSS('background-color', 'rgb(228, 255, 91)');
+  await expect(settingsAction).toHaveCSS('color', 'rgb(17, 19, 38)');
+
+  await page.getByTestId('settings-nav-personalization').click();
+  const themeTrigger = page.getByTestId('settings-section-trigger-theme');
+  if (await themeTrigger.getAttribute('aria-expanded') !== 'true') await themeTrigger.click();
+  await page.getByTestId('settings-theme-light').click();
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
+
+  await page.getByTestId('settings-nav-about').click();
+  await expect(settingsAction).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(settingsAction).toHaveCSS('color', 'rgb(197, 78, 72)');
+  await settingsAction.hover();
+  await expect(settingsAction).toHaveCSS('background-color', 'rgb(11, 102, 93)');
+  await expect(settingsAction).toHaveCSS('color', 'rgb(247, 251, 249)');
+
+  await page.getByTestId('button-close-settings').click();
+  await expect(projectAction).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(projectAction).toHaveCSS('color', 'rgb(197, 78, 72)');
+  await projectAction.hover();
+  await expect(projectAction).toHaveCSS('background-color', 'rgb(11, 102, 93)');
+  await expect(projectAction).toHaveCSS('color', 'rgb(247, 251, 249)');
+});
+
 test('Dock hover and focus preserve app identity and keep utility controls legible in both themes', async ({ page }) => {
   await page.addInitScript(([key]) => {
     localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));

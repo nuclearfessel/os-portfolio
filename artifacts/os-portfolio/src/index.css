@@ -2228,7 +2228,7 @@ button { cursor: pointer; }
 .theme-light .quick-button { color: #24354a; background: rgba(248,251,249,.74); border-color: rgba(29,71,78,.18); }
 .theme-light .quick-button, .theme-light .contact-button { transition-property: background, border-color, color; }
 .theme-light .quick-button.primary { color: #f7fbf8; background: #0b665d; border-color: #0b665d; }
-.theme-light .quick-button.primary:hover { color: #c54f48; background: transparent; border-color: #c54f48; }
+.theme-light .quick-button.primary:hover { color: #c54f48; background: #edf4f1; border-color: #c54f48; }
 .theme-light .quick-button.tertiary:hover, .theme-light .contact-button:hover { color: #fff; background: #963f35; border-color: transparent; }
 .theme-light .desktop-note { color: var(--sticky-text, #1d2430); background: transparent; border-color: transparent; box-shadow: none; }
 .theme-light .desktop-note-surface { color: var(--sticky-text, #1d2430); background: var(--sticky-bg, rgba(255,216,77,.9)); border-color: var(--sticky-border, rgba(29,36,48,.25)); box-shadow: 12px 16px 40px rgba(60,50,27,.16); }

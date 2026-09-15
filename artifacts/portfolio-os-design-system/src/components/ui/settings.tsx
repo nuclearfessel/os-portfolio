@@ -627,6 +627,7 @@ export type SettingsColorPresetProps = {
   name: string;
   selected: boolean;
   onSelect: () => void;
+  disabled?: boolean;
   'data-testid'?: string;
   className?: string;
 };
@@ -663,6 +664,7 @@ export function SettingsColorPreset({
   name,
   selected,
   onSelect,
+  disabled = false,
   'data-testid': testId,
   className,
 }: SettingsColorPresetProps) {
@@ -671,10 +673,11 @@ export function SettingsColorPreset({
       type="button"
       aria-pressed={selected}
       aria-label={label}
+      disabled={disabled}
       onClick={onSelect}
       data-testid={testId}
       className={classes(
-        'portfolio-settings-color-preset grid cursor-pointer justify-items-start gap-1 border-0 bg-transparent p-0 text-left text-[10px] text-muted-foreground',
+        'portfolio-settings-color-preset grid cursor-pointer justify-items-start gap-1 border-0 bg-transparent p-0 text-left text-[10px] text-muted-foreground disabled:cursor-not-allowed disabled:opacity-45',
         'focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
         className,
       )}

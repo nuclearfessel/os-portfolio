@@ -6,7 +6,7 @@
 
 ## Intent
 
-Three contrast themes are available — Standard (default), Low Contrast, and High Contrast. When a non-standard theme is active, the package stylesheet re-maps all semantic CSS channel variables to a fixed palette, updating every component's appearance automatically.
+Three contrast themes are available — Standard (default), Low Contrast, and High Contrast. Low and High Contrast are independent presentation modes, not variants of the regular light or dark theme. When a non-standard theme is active, the package stylesheet re-maps all semantic CSS channel variables to a fixed palette, updating every component's appearance automatically.
 
 ---
 
@@ -59,6 +59,10 @@ Maximum black/white separation.
 | Focus ring | `#ffff00` | `--hc-focus` |
 
 In high contrast mode, `*:focus-visible` receives a `3px yellow outline` globally.
+Text-entry surfaces that already provide an unmistakable caret and active prompt,
+such as the Portfolio OS Terminal command input, may suppress that outer outline
+to avoid drawing a box around the typing area. Do not remove focus indicators
+from buttons or other controls.
 
 ---
 
@@ -67,6 +71,9 @@ In high contrast mode, `*:focus-visible` receives a `3px yellow outline` globall
 When any contrast theme is active:
 - `portfolio-surface-translucent` elements are forced fully opaque (backdrop blur removed).
 - The consuming app should also disable the transparency toggle row (pass `disabled`).
+- Regular Light and Dark controls and wallpaper controls remain visible but disabled.
+- The saved regular theme and wallpaper preferences remain unchanged so Standard restores them exactly.
+- The product must remove or neutralize regular-theme presentation classes that can override the fixed contrast palette.
 
 ---
 
@@ -94,5 +101,7 @@ The `data-contrast` attribute re-maps semantic channel variables — so every pa
 |---|---|
 | Use semantic tokens so contrast mode updates components automatically | Hardcode colors in components |
 | Disable transparency toggle when contrast is active | Allow translucency and contrast to coexist |
+| Preserve the saved regular theme while using an independent contrast presentation baseline | Leave the regular light-theme class active underneath contrast mode |
+| Keep regular theme controls visible but disabled | Let users switch Light or Dark while contrast mode is active |
 | Test all interactive states in high-contrast mode | Only test the base reading state |
 | Use `--hc-focus` (`#ffff00`) for focus in high contrast | Override focus rings with custom colors in high contrast |

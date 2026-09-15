@@ -37,6 +37,7 @@ The workflow must:
 14. Name it `design-system-package-vMM.NN.zip` using the same release version.
 15. Create a Claude source package named exactly `claude-src-pack.zip`, with no version in its filename.
 16. Attach all three ZIPs to the same release and replace all assets safely when rerunning the same workflow run.
+17. After publishing, prune the Releases section so at most two releases exist: keep only the two most recently published releases and delete every older one.
 
 Do not package source files, `node_modules`, test reports, caches, or parent `dist` directories into the website ZIP.
 

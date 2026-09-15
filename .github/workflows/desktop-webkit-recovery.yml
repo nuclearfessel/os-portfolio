@@ -48,8 +48,8 @@ jobs:
         with:
           name: os-portfolio-firefox-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            artifacts/desktop-portfolio/playwright-report/
-            artifacts/desktop-portfolio/test-results/
+            artifacts/os-portfolio/playwright-report/
+            artifacts/os-portfolio/test-results/
           if-no-files-found: warn
           retention-days: 7
 
@@ -88,7 +88,7 @@ jobs:
         with:
           name: os-portfolio-webkit-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            artifacts/desktop-portfolio/playwright-report/
-            artifacts/desktop-portfolio/test-results/
+            artifacts/os-portfolio/playwright-report/
+            artifacts/os-portfolio/test-results/
           if-no-files-found: warn
           retention-days: 7

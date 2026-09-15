@@ -115,13 +115,13 @@ one exception: SDM documents cannot import packages or CSS, so follow
 
 Read only the guides required by the current task:
 
-- Building or styling web UI: `artifacts/portfolio-os-ds/docs/consuming-web.md`
-- Building or styling Expo UI: `artifacts/portfolio-os-ds/docs/consuming-expo.md`
-- Building or styling a slide deck: `artifacts/portfolio-os-ds/docs/consuming-slides.md`
+- Building or styling web UI: `artifacts/os-portfolio-ds/docs/consuming-web.md`
+- Building or styling Expo UI: `artifacts/os-portfolio-ds/docs/consuming-expo.md`
+- Building or styling a slide deck: `artifacts/os-portfolio-ds/docs/consuming-slides.md`
 - Replacing an existing or scaffolded web theme/component library:
-  `artifacts/portfolio-os-ds/docs/migrating-web.md`
+  `artifacts/os-portfolio-ds/docs/migrating-web.md`
 - Replacing existing or scaffolded Expo theme/hooks/components:
-  `artifacts/portfolio-os-ds/docs/migrating-expo.md`
+  `artifacts/os-portfolio-ds/docs/migrating-expo.md`
 
 A freshly scaffolded app counts as a migration when it still contains local
 theme, hook, or component copies that this package supersedes. Read the platform

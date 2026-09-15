@@ -1,9 +1,9 @@
 # Consuming OS Portfolio DS in web apps
 
-Read `artifacts/portfolio-os-ds/docs/AGENTS.md` first. This guide covers
+Read `artifacts/os-portfolio-ds/docs/AGENTS.md` first. This guide covers
 React/Vite and other shadcn/Tailwind web consumers. If the app already contains
 a local theme or component library, also read
-`artifacts/portfolio-os-ds/docs/migrating-web.md` before writing UI.
+`artifacts/os-portfolio-ds/docs/migrating-web.md` before writing UI.
 
 ## Theme
 

@@ -1,6 +1,6 @@
 ---
 name: os-portfolio
-description: Maintain OS Portfolio, the desktop-style React portfolio, including windows, Dock, responsive layouts, stickies, persistence, themes, and accessibility. Use for any feature, design, bug fix, or content change in artifacts/desktop-portfolio.
+description: Maintain OS Portfolio, the desktop-style React portfolio, including windows, Dock, responsive layouts, stickies, persistence, themes, and accessibility. Use for any feature, design, bug fix, or content change in artifacts/os-portfolio.
 ---
 
 # OS Portfolio Development

@@ -11,9 +11,9 @@ The repository must publish fresh deployable OS Portfolio and OS Portfolio DS ZI
 
 - Workflow: `.github/workflows/website-release.yml`
 - OS Portfolio package: `@workspace/desktop-portfolio`
-- Deployable build directory: `artifacts/desktop-portfolio/dist/public/`
+- Deployable build directory: `artifacts/os-portfolio/dist/public/`
 - OS Portfolio DS package: `@workspace/portfolio-os-ds`
-- Deployable OS Portfolio DS build directory: `artifacts/portfolio-os-ds/dist/`
+- Deployable OS Portfolio DS build directory: `artifacts/os-portfolio-ds/dist/`
 - Claude source packaging script: `scripts/package-claude-source.sh`
 - Download location: the repository’s **Releases** section
 
@@ -56,11 +56,11 @@ pnpm --filter @workspace/desktop-portfolio run build
 pnpm --filter @workspace/portfolio-os-ds run typecheck
 pnpm --filter @workspace/portfolio-os-ds run build
 rm -f /tmp/os-portfolio-website-validation.zip
-(cd artifacts/desktop-portfolio/dist/public && zip -qr /tmp/os-portfolio-website-validation.zip .)
+(cd artifacts/os-portfolio/dist/public && zip -qr /tmp/os-portfolio-website-validation.zip .)
 unzip -tq /tmp/os-portfolio-website-validation.zip
-rm -f /tmp/portfolio-os-ds-validation.zip
-(cd artifacts/portfolio-os-ds/dist && zip -qr /tmp/portfolio-os-ds-validation.zip .)
-unzip -tq /tmp/portfolio-os-ds-validation.zip
+rm -f /tmp/os-portfolio-ds-validation.zip
+(cd artifacts/os-portfolio-ds/dist && zip -qr /tmp/os-portfolio-ds-validation.zip .)
+unzip -tq /tmp/os-portfolio-ds-validation.zip
 bash scripts/package-claude-source.sh /tmp/claude-src-pack.zip
 unzip -tq /tmp/claude-src-pack.zip
 ```
@@ -69,7 +69,7 @@ Inspect both deployable archives and confirm `index.html` is at each root. Inspe
 
 ```bash
 unzip -l /tmp/os-portfolio-website-validation.zip
-unzip -l /tmp/portfolio-os-ds-validation.zip
+unzip -l /tmp/os-portfolio-ds-validation.zip
 unzip -l /tmp/claude-src-pack.zip
 ```
 

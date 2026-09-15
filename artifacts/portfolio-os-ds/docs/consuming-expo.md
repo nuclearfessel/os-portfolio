@@ -1,10 +1,10 @@
 # Consuming OS Portfolio DS in Expo apps
 
-Read `artifacts/portfolio-os-ds/docs/AGENTS.md` first. React Native does
+Read `artifacts/os-portfolio-ds/docs/AGENTS.md` first. React Native does
 not consume the web CSS or DOM components. It imports portable tokens, native
 theme/hooks, and native components directly from this package. If the Expo app
 still contains scaffolded or existing local theme/hooks/components, also read
-`artifacts/portfolio-os-ds/docs/migrating-expo.md` before writing UI.
+`artifacts/os-portfolio-ds/docs/migrating-expo.md` before writing UI.
 
 ## Native theme and fonts
 

@@ -20,7 +20,7 @@ The portfolio presents John’s work through draggable and resizable application
 
 ## OS Portfolio DS
 
-![OS Portfolio DS documentation](docs/images/portfolio-os-ds.jpg)
+![OS Portfolio DS documentation](docs/images/os-portfolio-ds.jpg)
 
 The living OS Portfolio DS documentation site is built with the same tokens and components used by the portfolio. It includes:
 
@@ -36,8 +36,8 @@ The living OS Portfolio DS documentation site is built with the same tokens and 
 
 ```text
 artifacts/
-├── desktop-portfolio/      # Interactive portfolio
-├── portfolio-os-ds/          # Shared components, tokens, and living documentation
+├── os-portfolio/      # Interactive portfolio
+├── os-portfolio-ds/          # Shared components, tokens, and living documentation
 ├── api-server/             # Workspace API service
 └── mockup-sandbox/         # Design and component preview workspace
 docs/
@@ -94,15 +94,15 @@ Completed, validated work is automatically approved for GitHub; no separate appr
 
 Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio and design system, then publishes three assets in one standard GitHub release:
 
-- A versioned deployable site ZIP, such as `site-package-v01.01.zip`, containing the contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
-- A versioned deployable design-system ZIP, such as `design-system-package-v01.01.zip`, containing the contents of `artifacts/portfolio-os-ds/dist/` at the archive root.
+- A versioned deployable site ZIP, such as `site-package-v01.01.zip`, containing the contents of `artifacts/os-portfolio/dist/public/` at the archive root.
+- A versioned deployable design-system ZIP, such as `design-system-package-v01.01.zip`, containing the contents of `artifacts/os-portfolio-ds/dist/` at the archive root.
 - An unversioned Claude source package named exactly `claude-src-pack.zip`, containing project source, documentation, Claude skills, and a top-level `public/` build.
 
 Feature and maintenance branch pushes never create release packages or prereleases. Only `main` publishes standard releases.
 
 ## Design-system development
 
-Design tokens are defined in `artifacts/portfolio-os-ds/tokens.json` and generated before OS Portfolio DS builds and type checks.
+Design tokens are defined in `artifacts/os-portfolio-ds/tokens.json` and generated before OS Portfolio DS builds and type checks.
 
 ```bash
 pnpm --filter @workspace/portfolio-os-ds run tokens

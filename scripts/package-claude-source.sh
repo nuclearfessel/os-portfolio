@@ -8,7 +8,7 @@ output_dir="$(dirname "$output")"
 mkdir -p "$output_dir"
 output="$(cd "$output_dir" && pwd)/$(basename "$output")"
 
-if [[ ! -f "$repo_root/artifacts/desktop-portfolio/dist/public/index.html" ]]; then
+if [[ ! -f "$repo_root/artifacts/os-portfolio/dist/public/index.html" ]]; then
   echo "Build OS Portfolio before creating the Claude source package." >&2
   exit 1
 fi
@@ -24,8 +24,8 @@ copy_source() {
   cp -a "$repo_root/$source" "$destination"
 }
 
-copy_source artifacts/desktop-portfolio/
-copy_source artifacts/portfolio-os-ds/
+copy_source artifacts/os-portfolio/
+copy_source artifacts/os-portfolio-ds/
 copy_source .claude/
 copy_source docs/
 
@@ -46,7 +46,7 @@ for file in CLAUDE.md README.md replit.md package.json pnpm-lock.yaml pnpm-works
   cp "$repo_root/$file" "$stage/$file"
 done
 
-cp -R "$repo_root/artifacts/desktop-portfolio/dist/public" "$stage/public"
+cp -R "$repo_root/artifacts/os-portfolio/dist/public" "$stage/public"
 
 cat > "$stage/DEPLOYMENT.md" <<'EOF'
 # Deploying OS Portfolio

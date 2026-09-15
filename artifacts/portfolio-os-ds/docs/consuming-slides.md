@@ -1,6 +1,6 @@
 # Consuming OS Portfolio DS in slide decks
 
-Read `artifacts/portfolio-os-ds/docs/AGENTS.md` first. Slide decks
+Read `artifacts/os-portfolio-ds/docs/AGENTS.md` first. Slide decks
 (SDM documents) do not consume CSS, Tailwind, or React components. Do NOT add
 this package as a dependency of a slides artifact, import `styles.css`, or
 copy components into it. Instead, translate this package's tokens into each

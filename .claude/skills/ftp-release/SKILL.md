@@ -16,7 +16,7 @@ PORT=3000 pnpm --filter @workspace/desktop-portfolio run build
 The upload-ready output is:
 
 ```text
-artifacts/desktop-portfolio/dist/public/
+artifacts/os-portfolio/dist/public/
 ```
 
 Upload the contents of `dist/public`, not the `public` directory itself.

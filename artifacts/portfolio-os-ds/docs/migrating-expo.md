@@ -1,7 +1,7 @@
 # Migrating Expo UI to OS Portfolio DS
 
-Read `artifacts/portfolio-os-ds/docs/AGENTS.md` and
-`artifacts/portfolio-os-ds/docs/consuming-expo.md` first. Use this guide
+Read `artifacts/os-portfolio-ds/docs/AGENTS.md` and
+`artifacts/os-portfolio-ds/docs/consuming-expo.md` first. Use this guide
 when an Expo app, including a fresh scaffold, has local theme, hooks, fonts, or
 product-agnostic component implementations.
 

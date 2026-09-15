@@ -15,7 +15,7 @@ pnpm --filter @workspace/desktop-portfolio exec playwright test tests/responsive
 pnpm --filter @workspace/desktop-portfolio run build
 ```
 
-The managed Replit workflow is `artifacts/desktop-portfolio: web`.
+The managed Replit workflow is `artifacts/os-portfolio: web`.
 
 ## Stack
 
@@ -27,11 +27,11 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 
 ## Project map
 
-- `artifacts/desktop-portfolio/src/App.tsx` — desktop behavior, content, Terminal, persistence, windows, Dock, and stickies
-- `artifacts/desktop-portfolio/src/index.css` — responsive presentation, themes, and motion
-- `artifacts/desktop-portfolio/tests/` — persistence, interaction, responsive, and contrast checks
-- `artifacts/desktop-portfolio/dist/public/` — generated upload-ready static site
-- `artifacts/portfolio-os-ds/` — OS Portfolio DS shared tokens and visual primitives
+- `artifacts/os-portfolio/src/App.tsx` — desktop behavior, content, Terminal, persistence, windows, Dock, and stickies
+- `artifacts/os-portfolio/src/index.css` — responsive presentation, themes, and motion
+- `artifacts/os-portfolio/tests/` — persistence, interaction, responsive, and contrast checks
+- `artifacts/os-portfolio/dist/public/` — generated upload-ready static site
+- `artifacts/os-portfolio-ds/` — OS Portfolio DS shared tokens and visual primitives
 - `CLAUDE.md` — concise collaborator instructions
 - `.claude/skills/os-portfolio/SKILL.md` — OS Portfolio maintenance rules
 - `.claude/skills/ftp-release/SKILL.md` — static release procedure
@@ -52,7 +52,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - Completed, validated work is automatically approved for GitHub. Do not wait for a separate approval response.
 - Completion immediately triggers the GitHub workflow: review and sync applicable docs/package surfaces, refresh both README screenshots, validate, commit, push the branch, merge into `main`, push `main`, and confirm the main-only release.
 
-- Build strictly on `artifacts/portfolio-os-ds`; do not invent replacement tokens or duplicate shared primitives.
+- Build strictly on `artifacts/os-portfolio-ds`; do not invent replacement tokens or duplicate shared primitives.
 - Keep launchers and their corresponding windows under separate position identities.
 - Do not persist temporary tablet or mobile geometry as desktop geometry.
 - Keep production asset URLs relative for nested static and FTP hosting.
@@ -64,6 +64,6 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 
 ## Release files
 
-Build output is generated at `artifacts/desktop-portfolio/dist/public/`. Upload the contents of that directory, not the source `public/` folder.
+Build output is generated at `artifacts/os-portfolio/dist/public/`. Upload the contents of that directory, not the source `public/` folder.
 
 The downloadable source bundle is `claude-src-pack.zip`. It includes source, relevant Markdown, Claude skills, and a top-level deployable `public/` directory. It excludes dependencies, intermediate `dist` directories, and test reports.

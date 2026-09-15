@@ -1,7 +1,7 @@
 # Migrating web UI to OS Portfolio DS
 
-Read `artifacts/portfolio-os-ds/docs/AGENTS.md` and
-`artifacts/portfolio-os-ds/docs/consuming-web.md` first. Use this guide
+Read `artifacts/os-portfolio-ds/docs/AGENTS.md` and
+`artifacts/os-portfolio-ds/docs/consuming-web.md` first. Use this guide
 when a web app, including a fresh scaffold, already has local theme or component
 copies.
 

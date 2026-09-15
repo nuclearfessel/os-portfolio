@@ -66,7 +66,7 @@ Run focused checks while editing and the relevant full suite before release.
 The Vite build writes the static site to:
 
 ```text
-artifacts/desktop-portfolio/dist/public/
+artifacts/os-portfolio/dist/public/
 ```
 
 Assets use relative URLs so the site can run at a domain root or nested static/FTP path. Upload the contents of `dist/public/`, not the source `public/` directory.

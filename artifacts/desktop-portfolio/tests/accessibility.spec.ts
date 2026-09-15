@@ -590,6 +590,7 @@ test.describe('Contrast themes', () => {
   test('selecting High contrast sets data-contrast="high" on <html>', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
+    await page.getByTestId('settings-section-trigger-contrast').click();
     await page.getByTestId('settings-a11y-contrast-high').click();
     const value = await page.evaluate(() =>
       document.documentElement.getAttribute('data-contrast'),
@@ -623,6 +624,45 @@ test.describe('Contrast themes', () => {
 // ═════════════════════════════════════════════════════════════════════════════
 
 test.describe('Contrast themes disable wallpaper controls', () => {
+  test('contrast themes disable regular theme controls and preserve the selected theme', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    await page.getByTestId('settings-section-trigger-theme').click();
+    const lightTheme = page.getByTestId('settings-theme-light');
+    const darkTheme = page.getByTestId('settings-theme-dark');
+    await darkTheme.click();
+    await expect(darkTheme).toHaveAttribute('aria-pressed', 'true');
+
+    await goToAccessibility(page);
+    await page.getByTestId('settings-section-trigger-contrast').click();
+    await page.getByTestId('settings-a11y-contrast-high').click();
+    await goToPersonalization(page);
+    await page.getByTestId('settings-section-trigger-theme').click();
+    await expect(lightTheme).toBeDisabled();
+    await expect(darkTheme).toBeDisabled();
+    await expect(darkTheme).toHaveAttribute('aria-pressed', 'true');
+    await expect(
+      page.locator('.settings-description').filter({ hasText: 'Light and dark themes are disabled' }),
+    ).toBeVisible();
+
+    await goToAccessibility(page);
+    await page.getByTestId('settings-section-trigger-contrast').click();
+    await page.getByTestId('settings-a11y-contrast-low').click();
+    await goToPersonalization(page);
+    await page.getByTestId('settings-section-trigger-theme').click();
+    await expect(lightTheme).toBeDisabled();
+    await expect(darkTheme).toHaveAttribute('aria-pressed', 'true');
+
+    await goToAccessibility(page);
+    await page.getByTestId('settings-section-trigger-contrast').click();
+    await page.getByTestId('settings-a11y-contrast-none').click();
+    await goToPersonalization(page);
+    await page.getByTestId('settings-section-trigger-theme').click();
+    await expect(lightTheme).toBeEnabled();
+    await expect(darkTheme).toBeEnabled();
+    await expect(darkTheme).toHaveAttribute('aria-pressed', 'true');
+  });
+
   test('Low contrast hides wallpaper controls and shows notice', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);

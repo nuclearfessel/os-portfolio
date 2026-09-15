@@ -723,6 +723,11 @@ button { cursor: pointer; }
   cursor: pointer;
 }
 
+.settings-theme-option:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
 .settings-theme-preview {
   width: 100px;
   height: 64px;
@@ -733,12 +738,12 @@ button { cursor: pointer; }
   position: relative;
 }
 
-.settings-theme-option:hover .settings-theme-preview,
+.settings-theme-option:not(:disabled):hover .settings-theme-preview,
 .settings-theme-option.is-selected .settings-theme-preview {
   border-color: #e4ff5b;
 }
 
-.theme-light .settings-theme-option:hover .settings-theme-preview,
+.theme-light .settings-theme-option:not(:disabled):hover .settings-theme-preview,
 .theme-light .settings-theme-option.is-selected .settings-theme-preview {
   border-color: #0b665d;
 }

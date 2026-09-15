@@ -158,6 +158,71 @@ function kebabCase(value) {
     .toLowerCase();
 }
 
+function dimensionAliasCssValue(raw, dimension) {
+  if (typeof raw !== "string") return raw;
+  const match = raw.match(
+    new RegExp(`^\\{${dimension}\\.(primitive|semantic|component)\\.([^}]+)\\}$`),
+  );
+  if (!match) return raw;
+  const [, layer, path] = match;
+  const suffix = path
+    .split(".")
+    .map(kebabCase)
+    .join("-");
+  return `var(--os-${dimension}-${layer}-${suffix})`;
+}
+
+function dimensionCssEntries(dimension, tokens) {
+  const source = tokens[dimension];
+  const lines = [
+    `  --os-${dimension}-base: ${resolveValue(source.base, tokens)};`,
+  ];
+  for (const layer of ["primitive", "semantic", "component"]) {
+    const walk = (node, path) => {
+      for (const [name, child] of Object.entries(node ?? {})) {
+        if (name.startsWith("$")) continue;
+        const nextPath = [...path, name];
+        if (child && typeof child === "object" && "$value" in child) {
+          const suffix = nextPath.map(kebabCase).join("-");
+          lines.push(
+            `  --os-${dimension}-${layer}-${suffix}: ${dimensionAliasCssValue(child.$value, dimension)};`,
+          );
+        } else if (child && typeof child === "object") {
+          walk(child, nextPath);
+        }
+      }
+    };
+    walk(source[layer], []);
+  }
+  return lines.join("\n");
+}
+
+function dimensionEntries(layer, dimension, tokens) {
+  const out = {};
+  const walk = (target, source) => {
+    for (const [name, node] of Object.entries(source ?? {})) {
+      if (name.startsWith("$")) continue;
+      if (node && typeof node === "object" && "$value" in node) {
+        target[name] = resolveValue(node, tokens);
+      } else if (node && typeof node === "object") {
+        target[name] = {};
+        walk(target[name], node);
+      }
+    }
+  };
+  walk(out, tokens[dimension][layer]);
+  return out;
+}
+
+function structuredDimensionEntries(dimension, tokens) {
+  return {
+    base: resolveValue(tokens[dimension].base, tokens),
+    primitive: dimensionEntries("primitive", dimension, tokens),
+    semantic: dimensionEntries("semantic", dimension, tokens),
+    component: dimensionEntries("component", dimension, tokens),
+  };
+}
+
 function componentCssEntries(scope, tokens) {
   const lines = [];
   const walk = (node, path) => {
@@ -244,6 +309,10 @@ function buildCss(tokens) {
   );
   replacements.__DS_RADIUS__ = resolveValue(tokens.radius.base, tokens);
   replacements.__DS_SPACING__ = resolveValue(tokens.spacing.base, tokens);
+  replacements.__DS_DIMENSION_CSS__ = [
+    dimensionCssEntries("spacing", tokens),
+    dimensionCssEntries("radius", tokens),
+  ].join("\n");
 
   for (const [token, value] of Object.entries(replacements)) {
     css = css.split(token).join(value);
@@ -294,12 +363,17 @@ function buildTs(tokens) {
     },
     radius: resolveValue(tokens.radius.base, tokens),
     spacing: resolveValue(tokens.spacing.base, tokens),
+    radiusTokens: structuredDimensionEntries("radius", tokens),
+    spacingTokens: structuredDimensionEntries("spacing", tokens),
   };
   return `/* GENERATED FROM tokens.json -- DO NOT EDIT. Run scripts/build-tokens.mjs. */
 // Portable design tokens (colors as hex). Web consumes the theme via
 // src/index.css; mobile (Expo) and any other platform import this object so the
 // whole product shares one source of truth.
 export const tokens = ${JSON.stringify(portable, null, 2)} as const;
+
+export const radiusTokens = tokens.radiusTokens;
+export const spacingTokens = tokens.spacingTokens;
 
 export type Tokens = typeof tokens;
 export default tokens;

@@ -5,6 +5,7 @@ import {
   LayoutPage,
   OverviewPage,
 } from './foundations';
+import { ColorTokensPage } from './color-tokens-page';
 
 function lazyPage(load: () => Promise<ComponentType>) {
   return lazy(async () => ({ default: await load() }));
@@ -338,6 +339,7 @@ export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
   'settings-section-header': false,
   // ── Foundations ─────────────────────────────────────────────────────────────
   'color-roles': true,
+  'color-tokens': true,
   'type-scale': true,
   'spacing-radius': true,
   'portfolio-os-guidelines': true,
@@ -585,6 +587,12 @@ export const NAV_GROUPS: NavGroup[] = [
         name: 'Color roles',
         description: 'Brand, semantic, text, background, and border colors.',
         Page: ColorsPage,
+      },
+      {
+        id: 'color-tokens',
+        name: 'Color tokens',
+        description: 'All primitive, semantic, and component color tokens with EightShapes taxonomy names, swatches, hex values, and complete alias chains.',
+        Page: ColorTokensPage,
       },
       {
         id: 'type-scale',
@@ -1147,6 +1155,7 @@ export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
   'settings-section-header': 'interactive+canonical',
   // ── Foundations ─────────────────────────────────────────────────────────────
   'color-roles': 'interactive+canonical',
+  'color-tokens': 'canonical-only',
   'type-scale': 'interactive+canonical',
   'spacing-radius': 'interactive+canonical',
   'portfolio-os-guidelines': 'interactive+canonical',

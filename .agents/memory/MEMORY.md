@@ -20,3 +20,4 @@
 - [Design-system token consumption](design-system-token-consumption.md) — consume isolated shared values through generated tokens, not the full stylesheet.
 - [Playwright WebKit on Replit](playwright-webkit-replit.md) — isolate Nix compatibility libraries to WebKit; never export the full closure to Node.
 - [Backdrop-filter build ordering](backdrop-filter-build-ordering.md) — list the WebKit-prefixed declaration before the standard one so production CSS retains browser-compatible blur.
+- [Design-token namespace](design-token-namespace.md) — Portfolio OS token names and generated custom properties use the `os` namespace, never `pos`.

@@ -472,8 +472,225 @@ export const tokens = {
     }
   },
   "radius": "0.75rem",
-  "spacing": "0.25rem"
+  "spacing": "0.25rem",
+  "radiusTokens": {
+    "base": "0.75rem",
+    "primitive": {
+      "none": "0px",
+      "sm": "8px",
+      "md": "10px",
+      "lg": "12px",
+      "xl": "16px",
+      "full": "9999px"
+    },
+    "semantic": {
+      "none": "0px",
+      "sm": "8px",
+      "md": "10px",
+      "lg": "12px",
+      "xl": "16px",
+      "full": "9999px",
+      "compact": "8px",
+      "control": "10px",
+      "surface": "12px",
+      "elevated": "16px",
+      "pill": "9999px"
+    },
+    "component": {
+      "actionButton": {
+        "radius": "10px"
+      },
+      "accordion": {
+        "radius": "16px"
+      },
+      "dialog": {
+        "radius": "12px"
+      },
+      "separator": {
+        "radius": "0px"
+      },
+      "toast": {
+        "radius": "10px"
+      },
+      "tooltip": {
+        "radius": "8px"
+      },
+      "contextMenu": {
+        "radius": "10px"
+      },
+      "desktopLauncher": {
+        "radius": "16px"
+      },
+      "dock": {
+        "radius": "16px"
+      },
+      "dockLabel": {
+        "radius": "0px"
+      },
+      "projectCard": {
+        "radius": "16px"
+      },
+      "sectionLabel": {
+        "radius": "8px"
+      },
+      "statusIndicator": {
+        "radius": "9999px"
+      },
+      "stickyNoteSurface": {
+        "radius": "12px"
+      },
+      "genericSurface": {
+        "radius": "12px"
+      },
+      "windowSurface": {
+        "radius": "16px"
+      },
+      "systemBar": {
+        "radius": "12px"
+      },
+      "settingsControls": {
+        "surface": "12px",
+        "control": "10px",
+        "segmented": "9999px"
+      },
+      "colorPicker": {
+        "radius": "10px"
+      },
+      "terminal": {
+        "radius": "12px"
+      },
+      "contactCta": {
+        "radius": "10px"
+      }
+    }
+  },
+  "spacingTokens": {
+    "base": "0.25rem",
+    "primitive": {
+      "0": "0px",
+      "2": "2px",
+      "4": "4px",
+      "6": "6px",
+      "8": "8px",
+      "10": "10px",
+      "12": "12px",
+      "14": "14px",
+      "16": "16px",
+      "20": "20px",
+      "24": "24px",
+      "28": "28px",
+      "32": "32px"
+    },
+    "semantic": {
+      "none": "0px",
+      "hairline": "2px",
+      "micro": "4px",
+      "iconGap": "6px",
+      "itemGap": "8px",
+      "controlPaddingBlock": "8px",
+      "overlayInset": "8px",
+      "controlGap": "10px",
+      "controlPaddingInline": "12px",
+      "listGap": "12px",
+      "compactPadding": "12px",
+      "surfaceInset": "16px",
+      "surfacePadding": "20px",
+      "stackGap": "16px",
+      "sectionGap": "24px",
+      "shellPadding": "24px",
+      "sectionInset": "32px"
+    },
+    "component": {
+      "actionButton": {
+        "paddingInline": "12px",
+        "paddingBlock": "8px",
+        "gap": "6px"
+      },
+      "accordion": {
+        "padding": "16px",
+        "gap": "8px"
+      },
+      "dialog": {
+        "padding": "24px",
+        "gap": "16px"
+      },
+      "toast": {
+        "padding": "16px",
+        "gap": "6px"
+      },
+      "tooltip": {
+        "paddingInline": "8px",
+        "paddingBlock": "8px",
+        "gap": "6px"
+      },
+      "contextMenu": {
+        "padding": "4px",
+        "gap": "8px"
+      },
+      "desktopLauncher": {
+        "padding": "12px",
+        "gap": "24px"
+      },
+      "dock": {
+        "padding": "16px",
+        "gap": "8px"
+      },
+      "dockLabel": {
+        "gap": "6px"
+      },
+      "projectCard": {
+        "padding": "20px",
+        "gap": "16px"
+      },
+      "sectionLabel": {
+        "paddingInline": "12px",
+        "paddingBlock": "6px",
+        "gap": "6px"
+      },
+      "statusIndicator": {
+        "paddingInline": "8px",
+        "gap": "6px"
+      },
+      "stickyNoteSurface": {
+        "padding": "20px",
+        "gap": "16px"
+      },
+      "genericSurface": {
+        "padding": "20px",
+        "gap": "16px"
+      },
+      "windowSurface": {
+        "padding": "20px",
+        "gap": "16px"
+      },
+      "systemBar": {
+        "padding": "12px",
+        "gap": "8px"
+      },
+      "settingsControls": {
+        "paddingInline": "12px",
+        "paddingBlock": "10px",
+        "gap": "16px"
+      },
+      "colorPicker": {
+        "padding": "8px",
+        "gap": "8px"
+      },
+      "terminal": {
+        "padding": "16px",
+        "gap": "8px"
+      },
+      "contactCta": {
+        "paddingInline": "12px",
+        "paddingBlock": "8px",
+        "gap": "6px"
+      }
+    }
+  }
 } as const;
+
+export const radiusTokens = tokens.radiusTokens;
+export const spacingTokens = tokens.spacingTokens;
 
 export type Tokens = typeof tokens;
 export default tokens;

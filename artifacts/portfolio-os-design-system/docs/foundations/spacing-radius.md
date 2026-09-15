@@ -2,66 +2,123 @@
 
 **Living preview:** `spacing-radius`
 **Token source:** `tokens.json` → `spacing`, `radius`
-**Generated output:** `src/index.css`
+**Generated output:** `src/index.css` and `src/generated/tokens.tsx`
 
 ---
 
-## Spacing
+## Architecture
 
-| Token | Value | Tailwind step |
-|---|---|---|
-| `spacing.base` | `0.25rem` (4px) | `1` = 4px, `2` = 8px, `4` = 16px, etc. |
+Spacing and radius use three DTCG layers:
 
-All Tailwind spacing utilities (`p-`, `m-`, `gap-`, `space-`, `w-`, `h-`) multiply this base step. The system uses the standard Tailwind scale — do not use arbitrary values like `p-[14px]`.
+1. **Primitive** — the audited, reusable numeric values. These are the only
+   values that should be changed when the scale is revised.
+2. **Semantic** — stable purposes such as `surfacePadding`, `iconGap`, and
+   `control`. Every semantic token aliases a primitive.
+3. **Component** — contracts for the component groups that need a stable
+   dimension. Every component token aliases a semantic token; components should
+   not reference primitives directly.
 
-### Common spacing patterns
-
-| Context | Typical values |
-|---|---|
-| Component internal padding (buttons, chips) | `px-3 py-1.5` / `px-4 py-2` |
-| Card / surface padding | `p-4`, `p-5`, `p-6` |
-| Section gaps | `gap-3`, `gap-4`, `gap-6` |
-| Inline icon-to-label gap | `gap-1.5`, `gap-2` |
-| Stack within a form | `gap-4`, `gap-6`, `gap-7` |
-| Settings row padding | `px-3 py-2.5` |
-| Dock item internal padding | `p-3`, `p-4` |
+The generator emits the complete structured layer as `--os-spacing-*` and
+`--os-radius-*` custom properties. It also emits `spacingTokens` and
+`radiusTokens` in the portable token object. The scalar `tokens.spacing`,
+`tokens.radius`, `--spacing`, `--radius`, `--radius-sm`, `--radius-md`,
+`--radius-lg`, and `--radius-xl` APIs remain available for existing consumers.
 
 ---
 
-## Radius
+## Spacing inventory
 
-| Token | Value | CSS variable | Tailwind class |
-|---|---|---|---|
-| `radius.base` | `0.75rem` | `--radius` | `rounded-lg` |
-| `radius-sm` | `calc(var(--radius) - 4px)` = 0.5rem | — | `rounded-sm` |
-| `radius-md` | `calc(var(--radius) - 2px)` = 0.625rem | — | `rounded-md` |
-| `radius-lg` | `var(--radius)` = 0.75rem | — | `rounded-lg` |
-| `radius-xl` | `calc(var(--radius) + 4px)` = 1rem | — | `rounded-xl` |
+There are **13 primitive spacing tokens**:
 
-### Radius application guide
+| Token | Value |
+|---|---:|
+| `spacing.primitive.0` | 0px |
+| `spacing.primitive.2` | 2px |
+| `spacing.primitive.4` | 4px |
+| `spacing.primitive.6` | 6px |
+| `spacing.primitive.8` | 8px |
+| `spacing.primitive.10` | 10px |
+| `spacing.primitive.12` | 12px |
+| `spacing.primitive.14` | 14px |
+| `spacing.primitive.16` | 16px |
+| `spacing.primitive.20` | 20px |
+| `spacing.primitive.24` | 24px |
+| `spacing.primitive.28` | 28px |
+| `spacing.primitive.32` | 32px |
 
-| Use | Class |
-|---|---|
-| Cards, windows, main surfaces | `rounded-xl` or `rounded-lg` |
-| Buttons, form controls, chips | `rounded-md` |
-| Badges, tags | `rounded-md` |
-| Avatar images | `rounded-full` |
-| Tooltip / popover surfaces | `rounded-sm` |
-| Dock items | `rounded-lg` |
-| Sticky note surface | `rounded-lg` |
-| Settings nav items | `rounded-md` |
-| Segmented choice chips | `rounded-full` |
-| Color preset swatches | `rounded-md` |
-| Contrast card preview miniatures | `rounded-md` |
-| Scrollbar thumbs | `rounded-full` (via package CSS) |
+There are **17 semantic spacing aliases**: `none`, `hairline`, `micro`,
+`iconGap`, `itemGap`, `controlPaddingBlock`, `overlayInset`, `controlGap`,
+`controlPaddingInline`, `listGap`, `compactPadding`, `surfaceInset`,
+`surfacePadding`, `stackGap`, `sectionGap`, `shellPadding`, and `sectionInset`.
+
+`spacing.base` remains `0.25rem` (4px) for the original scalar/Tailwind
+contract. It is not part of the staged primitive count.
 
 ---
 
-## Do / Don't
+## Radius inventory
 
-| ✅ Do | ❌ Don't |
-|---|---|
-| Use named Tailwind spacing utilities | Use arbitrary values like `p-[14px]` |
-| Use `rounded-md` for interactive controls | Mix rounded and squared corners on similar elements |
-| Use `rounded-full` for pills, avatars, dots | Apply `rounded-full` to rectangular cards |
-| Keep inner radii smaller than outer (`rounded-sm` inside `rounded-lg`) | Nest equal or larger radii (causes optical concavity) |
+There are **6 primitive radius tokens**:
+
+| Token | Value |
+|---|---:|
+| `radius.primitive.none` | 0px |
+| `radius.primitive.sm` | 8px |
+| `radius.primitive.md` | 10px |
+| `radius.primitive.lg` | 12px |
+| `radius.primitive.xl` | 16px |
+| `radius.primitive.full` | 9999px |
+
+There are **11 semantic radius aliases**: the six size names `none`, `sm`,
+`md`, `lg`, `xl`, `full`, plus the stable purposes `compact`, `control`,
+`surface`, `elevated`, and `pill`.
+
+`radius.base` remains `0.75rem` (12px), and the legacy theme aliases
+`radius-sm`, `radius-md`, `radius-lg`, and `radius-xl` continue to use their
+existing compatibility formulas.
+
+---
+
+## Component coverage
+
+The component layer covers the existing **21 component groups**:
+`actionButton`, `accordion`, `dialog`, `separator`, `toast`, `tooltip`,
+`contextMenu`, `desktopLauncher`, `dock`, `dockLabel`, `projectCard`,
+`sectionLabel`, `statusIndicator`, `stickyNoteSurface`, `genericSurface`,
+`windowSurface`, `systemBar`, `settingsControls`, `colorPicker`, `terminal`,
+and `contactCta`.
+
+The radius layer has stable contracts for all 21 groups (23 component radius
+aliases total). `settingsControls` intentionally has separate `surface`,
+`control`, and `segmented` leaves because its window surface, form controls,
+and segmented pills do not share one radius. The spacing layer has stable
+contracts for 20 groups (44 component spacing aliases total); `separator` has
+no spacing contract and is intentionally omitted. Component properties use
+purpose names such as `padding`, `paddingInline`, `paddingBlock`, `gap`, and
+`radius`, not one-off geometry values.
+
+---
+
+## Exclusions
+
+- Large composition values are not primitives. Page layout, hero positioning,
+  viewport offsets, and other composition geometry remain local to their
+  composition.
+- Arbitrary and dynamic geometry is not tokenized, including percentages,
+  calculated dimensions, responsive widths, transforms, slider positions, and
+  content-dependent sizes.
+- No new separator spacing contract is invented because the audited separator
+  component has no stable spacing purpose.
+- Existing scalar APIs are not replaced by structured objects. Use
+  `tokens.spacingTokens` and `tokens.radiusTokens` when a portable consumer
+  needs the staged layers.
+
+---
+
+## Usage guidance
+
+Prefer the semantic or component contract that describes the purpose of a
+dimension. Use named Tailwind spacing utilities for composition, and use
+`rounded-md` for interactive controls, `rounded-lg`/`rounded-xl` for surfaces,
+and `rounded-full` for pills, avatars, and dots. Avoid arbitrary values such
+as `p-[14px]` when a staged token is appropriate.

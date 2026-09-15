@@ -27,6 +27,19 @@ document.documentElement.setAttribute('data-contrast', 'high');
 
 The package stylesheet then overwrites the HSL channel variables used by `hsl(var(--background))`, `hsl(var(--foreground))`, `hsl(var(--primary))`, etc. Every design system component that uses semantic tokens is updated automatically.
 
+Terminal-style product surfaces may expose these exact commands:
+
+```text
+set high contrast on
+set high contrast off
+set low contrast on
+set low contrast off
+set standard on
+```
+
+Both `off` commands and `set standard on` select Standard. They do not mutate
+the saved regular theme, so the last Light or Dark selection is restored.
+
 ---
 
 ## Fixed palettes

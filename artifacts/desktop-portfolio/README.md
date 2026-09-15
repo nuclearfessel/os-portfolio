@@ -17,7 +17,7 @@ The saved default is a complete workspace snapshot. It includes positions, sizes
 
 ## Work files in Terminal
 
-The virtual `~/selected-work` directory contains:
+The virtual `~/work` directory contains:
 
 - `northstar-commerce-system.md`
 - `signal-operations-platform.md`

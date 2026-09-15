@@ -590,7 +590,7 @@ test('lists work files with names that match the selected projects', async ({ pa
 
   await page.getByTestId('button-dock-terminal').click();
   const input = page.getByTestId('input-terminal-command');
-  await input.fill('ls ~/selected-work');
+  await input.fill('ls ~/work');
   await input.press('Enter');
 
   const output = page.getByTestId('window-terminal').locator('.terminal-output').last();
@@ -673,10 +673,10 @@ test('Terminal predicts and completes commands, arguments, and paths with Tab', 
   await input.press('Tab');
   await expect(input).toHaveValue('open work');
 
-  await input.fill('cat ~/selected-work/north');
+  await input.fill('cat ~/work/north');
   await expect(prediction).toContainText('northstar-commerce-system.md');
   await input.press('Tab');
-  await expect(input).toHaveValue('cat ~/selected-work/northstar-commerce-system.md');
+  await expect(input).toHaveValue('cat ~/work/northstar-commerce-system.md');
 });
 
 test('Contact uses a filled Remix mail-send icon with its own saturated app treatment', async ({ page }) => {

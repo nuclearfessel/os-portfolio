@@ -32,18 +32,18 @@ About          Work           Contact
 ↑ Position is product-managed (inline style or CSS grid)
 ```
 
-About and Selected Work are application launchers rather than folder
+About and Work are application launchers rather than folder
 representations. Give primary portfolio apps distinctive, saturated icon
 treatments while preserving the shared `DesktopLauncher` interaction and
 accessibility contract.
 
 Mirror primary app identity in the Dock: use the same icon glyph and saturated
-color family for About, Selected Work, and Contact across desktop and managed
+color family for About, Work, and Contact across desktop and managed
 workspace navigation.
 
 App identity fills use softened, moderately saturated palettes rather than
 neon or highly saturated colors. Preserve distinct hues and sufficient icon
-contrast across About, Selected Work, Contact, Terminal, and Stickies.
+contrast across About, Work, Contact, Terminal, and Stickies.
 
 Contact uses Remix Icon's filled mail-send glyph in saturated red-orange on a
 warm-ivory tile with a matching red-orange border. Keep the same inverted

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
   Check, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
-  Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
+  BookOpen, Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
 } from '@keyline-icons/react';
 import { CircleUser as CircleUserFill } from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
@@ -39,16 +39,16 @@ import {
 
 const queryClient = new QueryClient();
 
-type WindowId = 'about' | 'work' | 'contact' | 'terminal' | 'settings';
+type WindowId = 'about' | 'work' | 'contact' | 'terminal' | 'settings' | 'guide';
 type WindowState = Record<WindowId, boolean>;
 type IconSize = 'large' | 'small';
 type Theme = 'dark' | 'light';
-type DesktopLauncherId = Exclude<WindowId, 'settings'> | 'stickies-app';
+type DesktopLauncherId = Exclude<WindowId, 'settings' | 'guide'> | 'stickies-app';
 type FolderPositions = Partial<Record<DesktopLauncherId, { left: number; top: number }>>;
 type StickyItemId = 'sticky' | `sticky-${number}`;
 type DesktopLauncherDragId = `desktop-${DesktopLauncherId}`;
 type DesktopItemId = WindowId | StickyItemId | DesktopLauncherDragId;
-const isWindowId = (id: DesktopItemId): id is WindowId => ['about', 'work', 'contact', 'terminal', 'settings'].includes(id);
+const isWindowId = (id: DesktopItemId): id is WindowId => ['about', 'work', 'contact', 'terminal', 'settings', 'guide'].includes(id);
 type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
@@ -308,8 +308,8 @@ const defaultDesktopState: SavedDesktopState = {
   stickies: [defaultSticky, defaultSecondSticky],
   dockPosition: 'bottom',
   systemBarPosition: 'top',
-  windowStack: ['work', 'about', 'contact', 'terminal', 'settings'],
-  windows: { about: true, work: true, contact: false, terminal: false, settings: false },
+  windowStack: ['work', 'about', 'contact', 'terminal', 'settings', 'guide'],
+  windows: { about: true, work: true, contact: false, terminal: false, settings: false, guide: false },
   activeWindow: 'about',
   maximizedWindows: {},
   stickyVisible: true,
@@ -432,7 +432,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
         id,
         {
           ...position,
-          top: ['about', 'work', 'contact', 'terminal', 'settings'].includes(id) ? Math.max(0, position.top) : position.top,
+          top: ['about', 'work', 'contact', 'terminal', 'settings', 'guide'].includes(id) ? Math.max(0, position.top) : position.top,
         },
       ]),
     ) as ItemPositions;
@@ -469,7 +469,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
           ? migratedLegacyStickyColor as StickyColorId
           : defaultSticky.color,
       }];
-    const allWindowIds: WindowId[] = ['about', 'work', 'contact', 'terminal', 'settings'];
+    const allWindowIds: WindowId[] = ['about', 'work', 'contact', 'terminal', 'settings', 'guide'];
     const savedWindowStack = Array.isArray(parsed.windowStack)
       ? parsed.windowStack.filter((id, index, ids): id is WindowId => (
         allWindowIds.includes(id as WindowId)
@@ -669,6 +669,7 @@ const initialWindows: WindowState = {
   contact: false,
   terminal: false,
   settings: false,
+  guide: false,
 };
 
 function WindowFrame({

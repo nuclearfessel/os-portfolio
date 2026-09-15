@@ -6,7 +6,11 @@ import {
   Check, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
   BookOpen, Layers, Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
 } from '@keyline-icons/react';
-import { CircleUser as CircleUserFill } from '@keyline-icons/react/fill';
+import {
+  BookOpen as BookOpenFill,
+  CircleUser as CircleUserFill,
+  Settings as SettingsFill,
+} from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
 import { BsStickyFill } from 'react-icons/bs';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -4314,8 +4318,8 @@ function Home() {
             <DockItem className="dock-item dock-app-terminal" active={windows.terminal} focused={windows.terminal && !stickyOnTop && activeWindow === 'terminal'} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-stickies" active={stickyVisible} focused={stickyVisible && stickyOnTop} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
             <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
-            <DockItem className="dock-item dock-app-settings" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
-            <DockItem className="dock-item dock-app-guide" active={windows.guide} focused={windows.guide && !stickyOnTop && activeWindow === 'guide'} onClick={() => openWindow('guide')} aria-label="Open user guide" data-testid="button-dock-guide"><BookOpen size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Guide · 8</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-settings" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><SettingsFill size={20} data-testid="icon-dock-settings-fill" /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-guide" active={windows.guide} focused={windows.guide && !stickyOnTop && activeWindow === 'guide'} onClick={() => openWindow('guide')} aria-label="Open user guide" data-testid="button-dock-guide"><BookOpenFill size={20} data-testid="icon-dock-guide-book-open-fill" /><DockItemLabel presentation="tooltip">Guide · 8</DockItemLabel></DockItem>
           </>
         )}
       </nav>

@@ -88,13 +88,14 @@ pnpm --filter @workspace/desktop-portfolio run test:e2e
 
 ### Approved branch checklist
 
-The exact response **“Approved”** immediately starts the post-approval workflow; it is never treated as simple confirmation. Before the branch is committed and merged, review whether its changes require corresponding updates to this README, Claude instructions or skills, package metadata or exports, and package documentation. Update only the applicable surfaces, then validate, commit, push the branch, merge it into `main`, push `main`, and confirm the main-only release.
+The exact response **“Approved”** immediately starts the post-approval workflow; it is never treated as simple confirmation. Before the branch is committed and merged, review whether its changes require corresponding updates to this README, Claude instructions or skills, package metadata or exports, and package documentation. Update only the applicable surfaces, validate, refresh this README’s portfolio and design-system screenshots from the running previews, then commit, push the branch, merge it into `main`, push `main`, and confirm the main-only release.
 
 ## Automated website releases
 
-Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio, then publishes two assets in one standard GitHub release:
+Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio and design system, then publishes three assets in one standard GitHub release:
 
 - A versioned deployable site ZIP, such as `site-package-v01.01.zip`, containing the contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
+- A versioned deployable design-system ZIP, such as `design-system-package-v01.01.zip`, containing the contents of `artifacts/portfolio-os-design-system/dist/` at the archive root.
 - An unversioned Claude source package named exactly `claude-src-pack.zip`, containing project source, documentation, Claude skills, and a top-level `public/` build.
 
 Feature and maintenance branch pushes never create release packages or prereleases. Only `main` publishes standard releases.

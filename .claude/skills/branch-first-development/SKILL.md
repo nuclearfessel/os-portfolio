@@ -56,30 +56,35 @@ confirmation, stop after acknowledging it, or substitute a publish suggestion.
 
 1. Confirm only intended files changed.
 2. Review whether the approved change requires corresponding updates to `README.md`, Claude instruction/skill files, package metadata, package exports, or package documentation. Make and validate every applicable update before committing; do not change unrelated files merely to satisfy the checklist.
-3. Commit the approved work on its branch with a descriptive message.
-4. Push the branch to `origin`.
-5. Update local `main` without rewriting history:
+3. Refresh the two GitHub README screenshots from the current running previews:
+   `docs/images/portfolio-os-portfolio.jpg` for the portfolio site and
+   `docs/images/portfolio-os-design-system.jpg` for the design-system site.
+   Confirm `README.md` embeds both files.
+4. Commit the approved work on its branch with a descriptive message.
+5. Push the branch to `origin`.
+6. Update local `main` without rewriting history:
 
    ```bash
    git switch main
    git pull --ff-only origin main
    ```
 
-6. Merge the approved branch into `main`. Preserve the branch in history:
+7. Merge the approved branch into `main`. Preserve the branch in history:
 
    ```bash
    git merge --no-ff <branch-name> -m "Merge <short description>"
    ```
 
-7. Push `main`:
+8. Push `main`:
 
    ```bash
    git push origin main
    ```
 
-8. Confirm that `main` matches `origin/main` and the working tree is clean.
-9. Confirm the `main`-only GitHub release workflow completed and published both
-   required ZIP assets.
+9. Confirm that `main` matches `origin/main` and the working tree is clean.
+10. Confirm the `main`-only GitHub release workflow completed and published all
+   three required ZIP assets: the portfolio site, design-system site, and Claude
+   source packages.
 
 Do not delete the branch unless the user asks.
 

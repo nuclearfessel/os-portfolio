@@ -44,6 +44,12 @@ jobs:
       - name: Build portfolio
         run: pnpm --filter @workspace/desktop-portfolio run build
 
+      - name: Typecheck design system
+        run: pnpm --filter @workspace/portfolio-os-design-system run typecheck
+
+      - name: Build design system
+        run: pnpm --filter @workspace/portfolio-os-design-system run build
+
       - name: Create release metadata
         id: release
         shell: bash
@@ -54,6 +60,7 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "tag=site-package-${version}" >> "$GITHUB_OUTPUT"
           echo "site_zip=site-package-${version}.zip" >> "$GITHUB_OUTPUT"
+          echo "design_system_zip=design-system-package-${version}.zip" >> "$GITHUB_OUTPUT"
           echo "claude_zip=claude-src-pack.zip" >> "$GITHUB_OUTPUT"
 
       - name: Package deployable website
@@ -66,6 +73,12 @@ jobs:
         shell: bash
         run: bash scripts/package-claude-source.sh "${{ steps.release.outputs.claude_zip }}"
 
+      - name: Package deployable design system
+        shell: bash
+        run: |
+          cd artifacts/portfolio-os-design-system/dist
+          zip -r "$GITHUB_WORKSPACE/${{ steps.release.outputs.design_system_zip }}" .
+
       - name: Publish GitHub Release
         shell: bash
         env:
@@ -73,15 +86,17 @@ jobs:
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SITE_ZIP: ${{ steps.release.outputs.site_zip }}
+          DESIGN_SYSTEM_ZIP: ${{ steps.release.outputs.design_system_zip }}
           CLAUDE_ZIP: ${{ steps.release.outputs.claude_zip }}
         run: |
-          release_notes="Automated deployable website and Claude source packages for \`main\` at commit \`${GITHUB_SHA::7}\`."
+          release_notes="Automated deployable portfolio site, design-system site, and Claude source packages for \`main\` at commit \`${GITHUB_SHA::7}\`."
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" "$SITE_ZIP" "$CLAUDE_ZIP" --clobber
+            gh release upload "$RELEASE_TAG" "$SITE_ZIP" "$DESIGN_SYSTEM_ZIP" "$CLAUDE_ZIP" --clobber
           else
             gh release create "$RELEASE_TAG" \
               "$SITE_ZIP" \
+              "$DESIGN_SYSTEM_ZIP" \
               "$CLAUDE_ZIP" \
               --target "$GITHUB_SHA" \
               --title "Portfolio OS packages ${RELEASE_VERSION}" \

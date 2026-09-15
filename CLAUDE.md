@@ -35,6 +35,7 @@ pnpm --filter @workspace/desktop-portfolio run build
 - Preserve the GitHub Releases website ZIP workflow for pushes to `main` only. Feature and maintenance branches must never publish release packages.
 - Website ZIPs must contain the deployable contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
 - Every `main` release must contain exactly two ZIP assets: a versioned deployable `site-package-vMM.NN.zip` and an unversioned Claude source package named exactly `claude-src-pack.zip`. Both are standard release assets; never create prereleases.
+- Keep no more than the three newest GitHub releases public. Mark older releases as drafts so they are hidden without deleting their assets or tags.
 - Preserve saved desktop positions and sizes when temporarily entering tablet or mobile layouts.
 - Keep launcher positions separate from the positions of their corresponding windows.
 - For every resizable window with side navigation, use the window container width to smoothly transform the sidebar into a horizontal sub-navigation toolbar directly below the window toolbar. Preserve item and keyboard order, active state, and non-overlapping content geometry.

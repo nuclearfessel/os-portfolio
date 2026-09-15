@@ -71,6 +71,21 @@ Dock.
 | Launcher position on the desktop | Product state, persisted |
 | Drag-to-rearrange | Product event handlers |
 | Open-state visual indicator | Product CSS targeting `.is-open` |
+| Cleanup and auto-arrange commands | Product geometry and persistence logic |
+
+---
+
+## Cleanup behavior
+
+Expose **Cleanup icons** in the desktop context menu immediately before
+**Snap to grid**. Cleanup preserves the exact position of the current leftmost
+launcher. It moves only the remaining launchers into one horizontal row,
+sharing the anchor's vertical position and using 8px grid increments for
+horizontal spacing.
+
+Preserve the launchers' current left-to-right order during cleanup. Cleanup is
+separate from **Auto arrange icons** and must not change auto-arrange order or
+placement rules.
 
 ---
 
@@ -107,6 +122,8 @@ Dock.
 | Provide `aria-expanded` and `aria-label` on every launcher | Leave icon-only launchers without accessible names |
 | Offer a keyboard alternative to drag-to-rearrange | Make rearranging pointer-only |
 | Hide launchers on mobile (Dock handles navigation) | Show a duplicate navigation set on mobile |
+| Keep the leftmost launcher fixed during cleanup | Snap or relocate the cleanup anchor |
+| Keep cleanup and auto-arrange semantics independent | Reorder auto-arrange as a side effect of cleanup |
 
 ---
 

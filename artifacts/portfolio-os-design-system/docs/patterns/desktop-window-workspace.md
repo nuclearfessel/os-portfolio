@@ -72,6 +72,19 @@ Responsive reflow must never overwrite desktop geometry. The product reads the b
 
 ---
 
+## System-bar placement
+
+The system bar may be placed on any desktop edge. Top and bottom placements
+use the full horizontal identity treatment. Left and right placements use a
+compact 48px rail: keep the Portfolio OS logo visible, hide the wordmark, and
+reflow status and action content vertically.
+
+Windows, desktop launchers, sticky notes, and the Dock must offset from the
+occupied edge so changing system-bar placement never obscures or misaligns
+workspace content.
+
+---
+
 ## Transparency
 
 ```tsx
@@ -108,6 +121,7 @@ When `data-transparency-enabled` + `--accessibility-transparency` are set by the
 | Keep geometry management in the product | Add position/resize state to `WindowSurface` |
 | Apply `portfolio-surface-translucent` only to windows that should respond to transparency prefs | Apply it to all elements globally |
 | Provide keyboard resize alternative | Make resize drag-only |
+| Reserve the mounted system-bar edge in workspace geometry | Overlay a side-mounted system bar on windows or launchers |
 
 ---
 

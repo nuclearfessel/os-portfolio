@@ -1,0 +1,4 @@
+# Route release automation changes to the designated maintainer for review.
+/.github/CODEOWNERS @nuclearfessel
+/.github/workflows/ @nuclearfessel
+/.github/dependabot.yml @nuclearfessel

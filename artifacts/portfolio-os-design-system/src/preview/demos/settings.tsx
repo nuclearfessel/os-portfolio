@@ -69,6 +69,7 @@ export function SettingsDemo() {
   const [animations, setAnimations] = useState(true);
   const [animationSpeed, setAnimationSpeed] = useState<AnimSpeed>('default');
   const [contrastTheme, setContrastTheme] = useState<ContrastTheme>('none');
+  const [regularTheme, setRegularTheme] = useState<'light' | 'dark'>('light');
 
   // Wallpaper state
   const [selectedPreset, setSelectedPreset] = useState<string | null>('#e8f0ec');
@@ -122,11 +123,38 @@ export function SettingsDemo() {
                 <SectionLabel>personalization</SectionLabel>
                 <h2 className="text-2xl font-semibold tracking-tight">Appearance</h2>
 
+                <div className="space-y-3.5">
+                  <SettingsSectionHeader
+                    label="Theme"
+                    description={contrastTheme === 'none'
+                      ? 'Controls the regular light or dark appearance.'
+                      : 'Light and dark themes are disabled while a contrast theme is active.'}
+                  />
+                  <div className="flex gap-2" role="group" aria-label="Regular theme">
+                    {(['light', 'dark'] as const).map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        disabled={contrastTheme !== 'none'}
+                        aria-pressed={regularTheme === value}
+                        onClick={() => setRegularTheme(value)}
+                        className="rounded-md border border-border bg-card px-3 py-2 text-sm capitalize text-foreground aria-pressed:border-primary aria-pressed:text-primary disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        {value}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <SettingsDivider />
+
                 {/* Color presets section */}
                 <div className="space-y-3.5">
                   <SettingsSectionHeader
                     label="Desktop wallpaper"
-                    description="Choose a solid color for your desktop background."
+                    description={contrastTheme === 'none'
+                      ? 'Choose a solid color for your desktop background.'
+                      : 'Wallpaper controls are disabled while a contrast theme is active.'}
                   />
                   <div className="flex gap-2.5" aria-label="Default solid colors">
                     {COLOR_PRESETS.map((preset) => (
@@ -137,13 +165,15 @@ export function SettingsDemo() {
                         name={preset.name}
                         selected={selectedPreset === preset.color}
                         onSelect={() => setSelectedPreset(preset.color)}
+                        disabled={contrastTheme !== 'none'}
                         data-testid={`demo-color-preset-${preset.name.toLowerCase().replace(' ', '-')}`}
                       />
                     ))}
                     {/* Custom color indicator */}
                     <button
                       type="button"
-                      className="grid cursor-pointer justify-items-start gap-1 border-0 bg-transparent p-0 text-left text-[10px] text-muted-foreground focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+                      disabled={contrastTheme !== 'none'}
+                      className="grid cursor-pointer justify-items-start gap-1 border-0 bg-transparent p-0 text-left text-[10px] text-muted-foreground focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-45"
                       onClick={() => setSelectedPreset(null)}
                     >
                       <span

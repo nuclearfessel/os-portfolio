@@ -98,7 +98,7 @@ The canonical labels and assignments are:
 
 Desktop tooltip labels append the assigned number, for example `Work · 2`.
 Responsive inline labels omit shortcut numbers. Use **Work** consistently; do not
-expand it to “Selected Work.”
+expand it to “Work.”
 
 The Shortcuts item opens a non-modal drawer that:
 
@@ -119,6 +119,7 @@ Number shortcuts must not run while focus is inside a color-value input.
 | Default | Border + background from consumer classes |
 | Active | Full-tile contrast ring plus a 16–26px directional pill on the nearest Dock edge; never rely on a tiny dot alone |
 | Hover | Inactive items only: branded apps retain their icon foreground, tile fill, and shared border; use a flat contrast-safe outline |
+| High contrast | Branded app tiles retain the same contrast-safe foreground and fill as their matching desktop launcher; use the active marker rather than replacing app identity |
 | Focus-visible | Uses the same flat, theme-appropriate outline while retaining the shared inactive border |
 
 Treat branded app items and neutral utility controls as separate state systems.

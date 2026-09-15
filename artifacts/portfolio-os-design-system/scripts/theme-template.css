@@ -312,6 +312,37 @@
   --hc-border:                          __DS_FIXED_HIGHCONTRASTBORDER_HEX__;
   --hc-focus:                           __DS_FIXED_HIGHCONTRASTFOCUS_HEX__;
 
+  --fixed-sticky-lemon-low-bg:          __DS_FIXED_STICKYLEMONLOWBACKGROUND_HEX__;
+  --fixed-sticky-lemon-low-accent:      __DS_FIXED_STICKYLEMONLOWACCENT_HEX__;
+  --fixed-sticky-lemon-high-accent:     __DS_FIXED_STICKYLEMONHIGHACCENT_HEX__;
+  --fixed-sticky-orange-low-bg:         __DS_FIXED_STICKYORANGELOWBACKGROUND_HEX__;
+  --fixed-sticky-orange-low-accent:     __DS_FIXED_STICKYORANGELOWACCENT_HEX__;
+  --fixed-sticky-orange-high-accent:    __DS_FIXED_STICKYORANGEHIGHACCENT_HEX__;
+  --fixed-sticky-red-low-bg:            __DS_FIXED_STICKYREDLOWBACKGROUND_HEX__;
+  --fixed-sticky-red-low-accent:        __DS_FIXED_STICKYREDLOWACCENT_HEX__;
+  --fixed-sticky-red-high-accent:       __DS_FIXED_STICKYREDHIGHACCENT_HEX__;
+  --fixed-sticky-cream-low-bg:          __DS_FIXED_STICKYCREAMLOWBACKGROUND_HEX__;
+  --fixed-sticky-cream-low-accent:      __DS_FIXED_STICKYCREAMLOWACCENT_HEX__;
+  --fixed-sticky-cream-high-accent:     __DS_FIXED_STICKYCREAMHIGHACCENT_HEX__;
+  --fixed-sticky-teal-low-bg:           __DS_FIXED_STICKYTEALLOWBACKGROUND_HEX__;
+  --fixed-sticky-teal-low-accent:       __DS_FIXED_STICKYTEALLOWACCENT_HEX__;
+  --fixed-sticky-teal-high-accent:      __DS_FIXED_STICKYTEALHIGHACCENT_HEX__;
+  --fixed-sticky-blue-low-bg:           __DS_FIXED_STICKYBLUELOWBACKGROUND_HEX__;
+  --fixed-sticky-blue-low-accent:       __DS_FIXED_STICKYBLUELOWACCENT_HEX__;
+  --fixed-sticky-blue-high-accent:      __DS_FIXED_STICKYBLUEHIGHACCENT_HEX__;
+  --fixed-sticky-purple-low-bg:         __DS_FIXED_STICKYPURPLELOWBACKGROUND_HEX__;
+  --fixed-sticky-purple-low-accent:     __DS_FIXED_STICKYPURPLELOWACCENT_HEX__;
+  --fixed-sticky-purple-high-accent:    __DS_FIXED_STICKYPURPLEHIGHACCENT_HEX__;
+  --fixed-sticky-berry-low-bg:          __DS_FIXED_STICKYBERRYLOWBACKGROUND_HEX__;
+  --fixed-sticky-berry-low-accent:      __DS_FIXED_STICKYBERRYLOWACCENT_HEX__;
+  --fixed-sticky-berry-high-accent:     __DS_FIXED_STICKYBERRYHIGHACCENT_HEX__;
+  --fixed-sticky-forest-low-bg:         __DS_FIXED_STICKYFORESTLOWBACKGROUND_HEX__;
+  --fixed-sticky-forest-low-accent:     __DS_FIXED_STICKYFORESTLOWACCENT_HEX__;
+  --fixed-sticky-forest-high-accent:    __DS_FIXED_STICKYFORESTHIGHACCENT_HEX__;
+  --fixed-sticky-charcoal-low-bg:       __DS_FIXED_STICKYCHARCOALLOWBACKGROUND_HEX__;
+  --fixed-sticky-charcoal-low-accent:   __DS_FIXED_STICKYCHARCOALLOWACCENT_HEX__;
+  --fixed-sticky-charcoal-high-accent:  __DS_FIXED_STICKYCHARCOALHIGHACCENT_HEX__;
+
   /* High-contrast palette — HSL channels */
   --hc-bg-hsl:                          __DS_FIXED_HIGHCONTRASTBG_HSL__;
   --hc-surface-hsl:                     __DS_FIXED_HIGHCONTRASTSURFACE_HSL__;

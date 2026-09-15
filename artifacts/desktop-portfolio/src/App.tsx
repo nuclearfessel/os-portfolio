@@ -10,6 +10,7 @@ import { CircleUser as CircleUserFill } from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
 import { BsStickyFill } from 'react-icons/bs';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { tokens } from '@workspace/portfolio-os-design-system/tokens';
 import { Toaster } from '@workspace/portfolio-os-design-system/components/ui/toaster';
 import { TooltipProvider } from '@workspace/portfolio-os-design-system/components/ui/tooltip';
 import { Separator } from '@workspace/portfolio-os-design-system/components/ui/separator';
@@ -194,16 +195,16 @@ function fitStickySize(size: Size, rotation: number, workspace: WorkspaceBounds)
 }
 
 const stickyPalette = [
-  { id: 'lemon', label: 'Lemon', background: '#ffd84d', foreground: 'dark', handle: '#8f6900' },
-  { id: 'orange', label: 'Orange', background: '#ffb84d', foreground: 'dark', handle: '#9f5700' },
-  { id: 'coral', label: 'Coral', background: '#ffaaa3', foreground: 'dark', handle: '#9d4648' },
-  { id: 'cream', label: 'Cream', background: '#fff0d2', foreground: 'dark', handle: '#a88655' },
-  { id: 'teal', label: 'Teal', background: '#006456', foreground: 'light', handle: '#76dccb' },
-  { id: 'blue', label: 'Blue', background: '#0d56b3', foreground: 'light', handle: '#8ac4ff' },
-  { id: 'purple', label: 'Purple', background: '#6648b8', foreground: 'light', handle: '#c8b3ff' },
-  { id: 'berry', label: 'Berry', background: '#a93570', foreground: 'light', handle: '#ffb2d5' },
-  { id: 'forest', label: 'Forest', background: '#1e603d', foreground: 'light', handle: '#91d6aa' },
-  { id: 'charcoal', label: 'Charcoal', background: '#343b4f', foreground: 'light', handle: '#b8c2dd' },
+  { id: 'lemon', label: 'Lemon', background: '#ffd84d', foreground: 'dark', handle: '#8f6900', lowBackground: tokens.color.fixed.stickyLemonLowBackground, lowAccent: tokens.color.fixed.stickyLemonLowAccent, highAccent: tokens.color.fixed.stickyLemonHighAccent },
+  { id: 'orange', label: 'Orange', background: '#ffb84d', foreground: 'dark', handle: '#9f5700', lowBackground: tokens.color.fixed.stickyOrangeLowBackground, lowAccent: tokens.color.fixed.stickyOrangeLowAccent, highAccent: tokens.color.fixed.stickyOrangeHighAccent },
+  { id: 'red', label: 'Red', background: '#c9363e', foreground: 'light', handle: '#ffb3b6', lowBackground: tokens.color.fixed.stickyRedLowBackground, lowAccent: tokens.color.fixed.stickyRedLowAccent, highAccent: tokens.color.fixed.stickyRedHighAccent },
+  { id: 'cream', label: 'Cream', background: '#fff0d2', foreground: 'dark', handle: '#a88655', lowBackground: tokens.color.fixed.stickyCreamLowBackground, lowAccent: tokens.color.fixed.stickyCreamLowAccent, highAccent: tokens.color.fixed.stickyCreamHighAccent },
+  { id: 'teal', label: 'Teal', background: '#006456', foreground: 'light', handle: '#76dccb', lowBackground: tokens.color.fixed.stickyTealLowBackground, lowAccent: tokens.color.fixed.stickyTealLowAccent, highAccent: tokens.color.fixed.stickyTealHighAccent },
+  { id: 'blue', label: 'Blue', background: '#0d56b3', foreground: 'light', handle: '#8ac4ff', lowBackground: tokens.color.fixed.stickyBlueLowBackground, lowAccent: tokens.color.fixed.stickyBlueLowAccent, highAccent: tokens.color.fixed.stickyBlueHighAccent },
+  { id: 'purple', label: 'Purple', background: '#6648b8', foreground: 'light', handle: '#c8b3ff', lowBackground: tokens.color.fixed.stickyPurpleLowBackground, lowAccent: tokens.color.fixed.stickyPurpleLowAccent, highAccent: tokens.color.fixed.stickyPurpleHighAccent },
+  { id: 'berry', label: 'Berry', background: '#a93570', foreground: 'light', handle: '#ffb2d5', lowBackground: tokens.color.fixed.stickyBerryLowBackground, lowAccent: tokens.color.fixed.stickyBerryLowAccent, highAccent: tokens.color.fixed.stickyBerryHighAccent },
+  { id: 'forest', label: 'Forest', background: '#1e603d', foreground: 'light', handle: '#91d6aa', lowBackground: tokens.color.fixed.stickyForestLowBackground, lowAccent: tokens.color.fixed.stickyForestLowAccent, highAccent: tokens.color.fixed.stickyForestHighAccent },
+  { id: 'charcoal', label: 'Charcoal', background: '#343b4f', foreground: 'light', handle: '#b8c2dd', lowBackground: tokens.color.fixed.stickyCharcoalLowBackground, lowAccent: tokens.color.fixed.stickyCharcoalLowAccent, highAccent: tokens.color.fixed.stickyCharcoalHighAccent },
 ] as const;
 type StickyColorId = typeof stickyPalette[number]['id'];
 type StickyData = {
@@ -426,24 +427,29 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
         return size.width > 0 && size.height > 0;
       }),
     ) as ItemSizes;
+    const legacyStickyColor = parsed.stickyColor as string | undefined;
+    const migratedLegacyStickyColor = legacyStickyColor === 'coral' ? 'red' : legacyStickyColor;
     const stickies = Array.isArray(parsed.stickies)
-      ? parsed.stickies.flatMap((sticky) => (
-        Boolean(sticky)
-        && (sticky.id === 'sticky' || /^sticky-\d+$/.test(sticky.id))
-        && stickyPalette.some((color) => color.id === sticky.color)
-        && typeof sticky.text === 'string'
-          ? [{
-            ...sticky,
-            rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
-            author: sticky.author === 'user' ? 'user' as const : sticky.id === 'sticky' ? 'john' as const : 'user' as const,
-            createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt ? sticky.createdAt : sticky.id === 'sticky' ? '09:42' : 'saved',
-          }]
-          : []
-      ))
+      ? parsed.stickies.flatMap((sticky) => {
+        if (!sticky) return [];
+        const savedColor = (sticky as unknown as { color: string }).color;
+        const migratedColor = savedColor === 'coral' ? 'red' : savedColor;
+        return (sticky.id === 'sticky' || /^sticky-\d+$/.test(sticky.id))
+          && stickyPalette.some((color) => color.id === migratedColor)
+          && typeof sticky.text === 'string'
+            ? [{
+              ...sticky,
+              color: migratedColor as StickyColorId,
+              rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
+              author: sticky.author === 'user' ? 'user' as const : sticky.id === 'sticky' ? 'john' as const : 'user' as const,
+              createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt ? sticky.createdAt : sticky.id === 'sticky' ? '09:42' : 'saved',
+            }]
+            : [];
+      })
       : [{
         ...defaultSticky,
-        color: stickyPalette.some((color) => color.id === parsed.stickyColor)
-          ? parsed.stickyColor as StickyColorId
+        color: stickyPalette.some((color) => color.id === migratedLegacyStickyColor)
+          ? migratedLegacyStickyColor as StickyColorId
           : defaultSticky.color,
       }];
     const allWindowIds: WindowId[] = ['about', 'work', 'contact', 'terminal', 'settings'];
@@ -1006,6 +1012,7 @@ function SettingsWindow({
 
   // Wallpaper controls disabled when contrast theme is active
   const wallpaperDisabled = accessibility.contrastTheme !== 'none';
+  const regularThemeDisabled = accessibility.contrastTheme !== 'none';
 
   const updateAccessibility = (patch: Partial<AccessibilityPrefs>) => {
     onSetAccessibility({ ...accessibility, ...patch });
@@ -1083,13 +1090,16 @@ function SettingsWindow({
                   <SettingsAccordionSection
                     value="theme"
                     label="Theme"
-                    description="Controls the overall color scheme of the desktop."
+                    description={regularThemeDisabled
+                      ? 'Light and dark themes are disabled while a contrast theme is active.'
+                      : 'Controls the overall color scheme of the desktop.'}
                   >
                   <div className="settings-theme-row">
                     <button
                       type="button"
                       className={`settings-theme-option ${theme === 'light' ? 'is-selected' : ''}`}
                       aria-pressed={theme === 'light'}
+                      disabled={regularThemeDisabled}
                       onClick={() => onSetTheme('light')}
                       data-testid="settings-theme-light"
                     >
@@ -1106,6 +1116,7 @@ function SettingsWindow({
                       type="button"
                       className={`settings-theme-option ${theme === 'dark' ? 'is-selected' : ''}`}
                       aria-pressed={theme === 'dark'}
+                      disabled={regularThemeDisabled}
                       onClick={() => onSetTheme('dark')}
                       data-testid="settings-theme-dark"
                     >
@@ -1498,21 +1509,22 @@ const shellFiles: Record<string, ShellNode> = {
   '/': { type: 'directory' },
   '/home': { type: 'directory' },
   '/home/john': { type: 'directory' },
-  '/home/john/README.md': { type: 'file', content: 'John Doe\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd selected-work, cat README.md, open work' },
+  '/home/john/README.md': { type: 'file', content: 'John Doe\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd work, cat README.md, open work' },
   '/home/john/about': { type: 'directory' },
   '/home/john/about/bio.txt': { type: 'file', content: 'Design systems designer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
   '/home/john/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
-  '/home/john/selected-work': { type: 'directory' },
-  '/home/john/selected-work/northstar-commerce-system.md': { type: 'file', content: 'Northstar Commerce System\nA flexible foundation that helped a growing commerce team ship consistent storefront and account experiences.\n2024 — 2025' },
-  '/home/john/selected-work/signal-operations-platform.md': { type: 'file', content: 'Signal Operations Platform\nA focused operations language for teams coordinating alerts, handoffs, and high-stakes daily work.\n2023 — 2024' },
-  '/home/john/selected-work/mosaic-health-toolkit.md': { type: 'file', content: 'Mosaic Health Toolkit\nAn accessible toolkit for designing clear, reassuring health journeys across devices and contexts.\n2022 — 2023' },
-  '/home/john/selected-work/fieldnote-collaboration-kit.md': { type: 'file', content: 'Fieldnote Collaboration Kit\nA lightweight collaboration system that helped distributed teams turn observations into shared decisions.\n2021 — 2022' },
+  '/home/john/work': { type: 'directory' },
+  '/home/john/work/northstar-commerce-system.md': { type: 'file', content: 'Northstar Commerce System\nA flexible foundation that helped a growing commerce team ship consistent storefront and account experiences.\n2024 — 2025' },
+  '/home/john/work/signal-operations-platform.md': { type: 'file', content: 'Signal Operations Platform\nA focused operations language for teams coordinating alerts, handoffs, and high-stakes daily work.\n2023 — 2024' },
+  '/home/john/work/mosaic-health-toolkit.md': { type: 'file', content: 'Mosaic Health Toolkit\nAn accessible toolkit for designing clear, reassuring health journeys across devices and contexts.\n2022 — 2023' },
+  '/home/john/work/fieldnote-collaboration-kit.md': { type: 'file', content: 'Fieldnote Collaboration Kit\nA lightweight collaboration system that helped distributed teams turn observations into shared decisions.\n2021 — 2022' },
   '/home/john/contact': { type: 'directory' },
   '/home/john/contact/contact.txt': { type: 'file', content: 'Email: hello@johndoe.design\nStatus: Open to thoughtful product partnerships.' },
 };
 
-const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd selected-work', 'cat ~/selected-work/northstar-commerce-system.md', 'open work', 'theme light', 'history', 'clear'];
+const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'set', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
+const shellExamples = ['ls', 'cd work', 'cat ~/work/northstar-commerce-system.md', 'open work', 'theme light', 'set high contrast on', 'history', 'clear'];
+const shellContrastOptions = ['high contrast on', 'high contrast off', 'low contrast on', 'low contrast off', 'standard on'];
 const shellArgumentOptions: Partial<Record<string, string[]>> = {
   open: ['about', 'work', 'contact', 'terminal'],
   close: ['about', 'work', 'contact', 'terminal', 'all'],
@@ -1562,6 +1574,11 @@ function predictShellCommand(input: string, cwd: string) {
 
   const token = value.endsWith(' ') ? '' : parts.at(-1) ?? '';
   const commandPrefix = value.slice(0, value.length - token.length);
+  if (verb === 'set') {
+    const argumentInput = value.slice(verb.length).trimStart().toLowerCase();
+    const match = shellContrastOptions.find((item) => item.startsWith(argumentInput));
+    return match ? `${leadingWhitespace}set ${match}` : '';
+  }
   const argumentOptions = shellArgumentOptions[verb];
   if (argumentOptions) {
     const match = argumentOptions.find((item) => item.startsWith(token.toLowerCase()));
@@ -1584,15 +1601,19 @@ function TerminalWindow({
   onOpenWindow,
   onCloseWindow,
   onSetTheme,
+  onSetContrastTheme,
   openWindows,
   currentTheme,
+  contrastTheme,
   ...props
 }: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
   onOpenWindow: (id: WindowId) => void;
   onCloseWindow: (id: WindowId) => void;
   onSetTheme: (theme: Theme) => void;
+  onSetContrastTheme: (contrastTheme: ContrastTheme) => void;
   openWindows: WindowState;
   currentTheme: Theme;
+  contrastTheme: ContrastTheme;
 }) {
   const [command, setCommand] = useState('');
   const [entries, setEntries] = useState<ShellEntry[]>([]);
@@ -1649,7 +1670,7 @@ function TerminalWindow({
       return;
     }
     if (verb === 'help') {
-      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
+      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme in Standard mode\n  set high contrast on|off\n  set low contrast on|off\n  set standard on\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
       return;
     }
     if (verb === 'pwd') {
@@ -1716,10 +1737,27 @@ function TerminalWindow({
     if (verb === 'theme') {
       const mode = rawArgs[0]?.toLowerCase();
       if (mode !== 'light' && mode !== 'dark') appendEntry(raw, 'theme: expected light or dark', true);
+      else if (contrastTheme !== 'none') appendEntry(raw, 'Light and dark themes are disabled while a contrast theme is active.');
       else if (mode === currentTheme) appendEntry(raw, `${mode} theme is already active.`);
       else {
         onSetTheme(mode);
         appendEntry(raw, `Theme changed to ${mode}.`);
+      }
+      return;
+    }
+    if (verb === 'set') {
+      const setting = rawArgs.join(' ').toLowerCase();
+      if (setting === 'high contrast on') {
+        onSetContrastTheme('high');
+        appendEntry(raw, 'High Contrast turned on.');
+      } else if (setting === 'low contrast on') {
+        onSetContrastTheme('low');
+        appendEntry(raw, 'Low Contrast turned on.');
+      } else if (setting === 'standard on' || setting === 'high contrast off' || setting === 'low contrast off') {
+        onSetContrastTheme('none');
+        appendEntry(raw, 'Standard theme restored.');
+      } else {
+        appendEntry(raw, 'set: expected high contrast on|off, low contrast on|off, or standard on', true);
       }
       return;
     }
@@ -1791,7 +1829,7 @@ function TerminalWindow({
           <div className="terminal-input-group">
             <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => { setCommand(event.target.value); setHistoryIndex(null); }} onKeyDown={handleInputKeyDown} aria-label="Terminal command" aria-describedby="terminal-prediction" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" spellCheck={false} />
             <span id="terminal-prediction" className="terminal-prediction" aria-live="polite" data-testid="terminal-prediction">
-              {predictedCommand && predictedCommand !== command ? <><kbd>Tab</kbd><span aria-hidden="true"> → </span>{predictedCommand}</> : 'Type a command to see a prediction.'}
+              {predictedCommand && predictedCommand !== command ? <><kbd>Tab</kbd><span aria-hidden="true"> → </span>{predictedCommand}</> : null}
             </span>
           </div>
         </form>
@@ -1910,6 +1948,12 @@ function Home() {
   const [wallpaperLight, setWallpaperLight] = useState<WallpaperConfig>(savedDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
   const [wallpaperDark, setWallpaperDark] = useState<WallpaperConfig>(savedDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
   const [accessibility, setAccessibility] = useState<AccessibilityPrefs>(savedDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
+  const setRegularTheme = (nextTheme: Theme) => {
+    if (accessibility.contrastTheme === 'none') setTheme(nextTheme);
+  };
+  const setContrastTheme = (contrastTheme: ContrastTheme) => {
+    setAccessibility((current) => ({ ...current, contrastTheme }));
+  };
   const [introCustomization, setIntroCustomization] = useState<IntroCustomization>(savedDesktopState.introCustomization ?? DEFAULT_INTRO_CUSTOMIZATION);
   const [automaticIntroColors, setAutomaticIntroColors] = useState<Partial<Record<IntroTextKey, string>>>({});
 
@@ -2976,6 +3020,9 @@ function Home() {
       '--sticky-accent': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-border': usesLightText ? 'rgba(255, 255, 255, .28)' : 'rgba(29, 36, 48, .25)',
       '--sticky-handle': selectedColor.handle,
+      '--sticky-low-bg': selectedColor.lowBackground,
+      '--sticky-low-accent': selectedColor.lowAccent,
+      '--sticky-high-accent': selectedColor.highAccent,
       '--sticky-rotation': `${managedLayout ? 0 : sticky.rotation}deg`,
     } as React.CSSProperties;
   };
@@ -3254,6 +3301,7 @@ function Home() {
   });
 
   const wallpaperConfig = theme === 'light' ? wallpaperLight : wallpaperDark;
+  const presentationTheme: Theme = accessibility.contrastTheme === 'none' ? theme : 'dark';
   // Picture wallpapers stay desktop-only, while the selected solid color follows
   // its theme into tablet and mobile. Contrast modes continue to own the managed
   // workspace background.
@@ -3284,7 +3332,7 @@ function Home() {
 
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} system-bar-at-${effectiveSystemBarPosition} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
+      className={`os-shell theme-${presentationTheme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} system-bar-at-${effectiveSystemBarPosition} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
       style={currentWallpaperStyle}
@@ -3429,6 +3477,7 @@ function Home() {
             key={sticky.id}
             className="desktop-note"
             data-draggable-item
+            data-sticky-color={sticky.color}
             data-testid={`sticky-${sticky.id}`}
             style={stickyStyle(sticky)}
             onPointerDown={(event) => { setActiveStickyId(sticky.id); setStickyOnTop(true); startDrag(sticky.id, event); }}
@@ -3533,12 +3582,12 @@ function Home() {
         {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
         {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
-        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
+        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} onSetContrastTheme={setContrastTheme} openWindows={windows} currentTheme={theme} contrastTheme={accessibility.contrastTheme} />}
         {workspaceMode === 'desktop' && windows.settings && (
           <SettingsWindow
             {...windowProps('settings')}
             theme={theme}
-            onSetTheme={setTheme}
+            onSetTheme={setRegularTheme}
             wallpaperLight={wallpaperLight}
             wallpaperDark={wallpaperDark}
             onSetWallpaperLight={setWallpaperLight}
@@ -3694,7 +3743,11 @@ function Home() {
                 type="button"
                 key={color.id}
                 className="sticky-color-option"
-                style={{ background: color.background, color: color.foreground === 'light' ? '#ffffff' : '#1d2430' }}
+                style={{
+                  background: accessibility.contrastTheme === 'high' ? '#000000' : accessibility.contrastTheme === 'low' ? color.lowBackground : color.background,
+                  color: accessibility.contrastTheme === 'high' ? color.highAccent : accessibility.contrastTheme === 'low' ? color.lowAccent : color.foreground === 'light' ? '#ffffff' : '#1d2430',
+                  borderColor: accessibility.contrastTheme === 'high' ? color.highAccent : accessibility.contrastTheme === 'low' ? color.lowAccent : undefined,
+                }}
                 role="menuitemradio"
                 aria-checked={stickies.find((sticky) => sticky.id === stickyMenu.id)?.color === color.id}
                 aria-label={color.label}
@@ -3881,7 +3934,8 @@ function Home() {
         {workspaceMode !== 'desktop' && (
             <DockItem
               className={`dock-item dock-mode-toggle mode-${theme}`}
-            onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')}
+            onClick={() => setRegularTheme(theme === 'light' ? 'dark' : 'light')}
+            disabled={accessibility.contrastTheme !== 'none'}
             aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             data-testid="button-dock-mode"
           >

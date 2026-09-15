@@ -6,7 +6,7 @@
 
 ## Intent
 
-Three contrast themes are available — Standard (default), Low Contrast, and High Contrast. When a non-standard theme is active, the package stylesheet re-maps all semantic CSS channel variables to a fixed palette, updating every component's appearance automatically.
+Three contrast themes are available — Standard (default), Low Contrast, and High Contrast. Low and High Contrast are independent presentation modes, not variants of the regular light or dark theme. When a non-standard theme is active, the package stylesheet re-maps all semantic CSS channel variables to a fixed palette, updating every component's appearance automatically.
 
 ---
 
@@ -26,6 +26,19 @@ document.documentElement.setAttribute('data-contrast', 'high');
 ```
 
 The package stylesheet then overwrites the HSL channel variables used by `hsl(var(--background))`, `hsl(var(--foreground))`, `hsl(var(--primary))`, etc. Every design system component that uses semantic tokens is updated automatically.
+
+Terminal-style product surfaces may expose these exact commands:
+
+```text
+set high contrast on
+set high contrast off
+set low contrast on
+set low contrast off
+set standard on
+```
+
+Both `off` commands and `set standard on` select Standard. They do not mutate
+the saved regular theme, so the last Light or Dark selection is restored.
 
 ---
 
@@ -59,6 +72,10 @@ Maximum black/white separation.
 | Focus ring | `#ffff00` | `--hc-focus` |
 
 In high contrast mode, `*:focus-visible` receives a `3px yellow outline` globally.
+Text-entry surfaces that already provide an unmistakable caret and active prompt,
+such as the Portfolio OS Terminal command input, may suppress that outer outline
+to avoid drawing a box around the typing area. Do not remove focus indicators
+from buttons or other controls.
 
 ---
 
@@ -67,6 +84,12 @@ In high contrast mode, `*:focus-visible` receives a `3px yellow outline` globall
 When any contrast theme is active:
 - `portfolio-surface-translucent` elements are forced fully opaque (backdrop blur removed).
 - The consuming app should also disable the transparency toggle row (pass `disabled`).
+- Regular Light and Dark controls and wallpaper controls remain visible but disabled.
+- The saved regular theme and wallpaper preferences remain unchanged so Standard restores them exactly.
+- The product must remove or neutralize regular-theme presentation classes that can override the fixed contrast palette.
+- Non-visual theme entry points, including Terminal commands, must report that Light and Dark are disabled instead of comparing against the saved regular theme.
+- Branded Dock app tiles retain the same contrast-safe tile and glyph treatment as their matching desktop launchers; the Dock active marker communicates state without replacing app identity.
+- Icons inside an active yellow Settings navigation item inherit its black foreground. Broad contrast text rules must not force those nested icons white.
 
 ---
 
@@ -94,5 +117,10 @@ The `data-contrast` attribute re-maps semantic channel variables — so every pa
 |---|---|
 | Use semantic tokens so contrast mode updates components automatically | Hardcode colors in components |
 | Disable transparency toggle when contrast is active | Allow translucency and contrast to coexist |
+| Preserve the saved regular theme while using an independent contrast presentation baseline | Leave the regular light-theme class active underneath contrast mode |
+| Keep regular theme controls visible but disabled | Let users switch Light or Dark while contrast mode is active |
+| Reject Terminal `theme light` and `theme dark` commands with the contrast-mode disabled message | Report that the saved regular theme is already active |
+| Keep matching Dock and desktop launcher app icons visually consistent | Replace branded Dock app tiles with a generic active fill |
+| Make active Settings labels and icons black on yellow | Let a nested icon retain a white foreground on the active yellow surface |
 | Test all interactive states in high-contrast mode | Only test the base reading state |
 | Use `--hc-focus` (`#ffff00`) for focus in high contrast | Override focus rings with custom colors in high contrast |

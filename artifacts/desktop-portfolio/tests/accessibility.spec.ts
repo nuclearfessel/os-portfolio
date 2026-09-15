@@ -590,6 +590,7 @@ test.describe('Contrast themes', () => {
   test('selecting High contrast sets data-contrast="high" on <html>', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
+    await page.getByTestId('settings-section-trigger-contrast').click();
     await page.getByTestId('settings-a11y-contrast-high').click();
     const value = await page.evaluate(() =>
       document.documentElement.getAttribute('data-contrast'),
@@ -623,6 +624,103 @@ test.describe('Contrast themes', () => {
 // ═════════════════════════════════════════════════════════════════════════════
 
 test.describe('Contrast themes disable wallpaper controls', () => {
+  test('Terminal contrast commands restore Standard and the last regular theme', async ({ page }) => {
+    await openSettings(page);
+    await page.getByTestId('button-dock-terminal').click();
+    const input = page.getByTestId('input-terminal-command');
+    const shell = page.locator('main.os-shell');
+    const root = page.locator('html');
+
+    const runCommand = async (command: string, expectedOutput: string) => {
+      await input.fill(command);
+      await input.press('Enter');
+      await expect(page.getByTestId('window-terminal').locator('.terminal-output').last()).toHaveText(expectedOutput);
+    };
+
+    await runCommand('set high contrast on', 'High Contrast turned on.');
+    await expect(root).toHaveAttribute('data-contrast', 'high');
+    await expect(shell).toHaveClass(/theme-dark/);
+    await runCommand('set standard on', 'Standard theme restored.');
+    await expect(root).not.toHaveAttribute('data-contrast');
+    await expect(shell).toHaveClass(/theme-light/);
+
+    await runCommand('theme dark', 'Theme changed to dark.');
+    await expect(shell).toHaveClass(/theme-dark/);
+    await runCommand('set low contrast on', 'Low Contrast turned on.');
+    await expect(root).toHaveAttribute('data-contrast', 'low');
+    await runCommand('theme light', 'Light and dark themes are disabled while a contrast theme is active.');
+    await runCommand('set low contrast off', 'Standard theme restored.');
+    await expect(root).not.toHaveAttribute('data-contrast');
+    await expect(shell).toHaveClass(/theme-dark/);
+
+    await runCommand('set high contrast on', 'High Contrast turned on.');
+    await runCommand('set high contrast off', 'Standard theme restored.');
+    await expect(root).not.toHaveAttribute('data-contrast');
+    await expect(shell).toHaveClass(/theme-dark/);
+  });
+
+  test('contrast themes disable regular theme controls and preserve the selected theme', async ({ page }) => {
+    await openSettings(page);
+    await goToPersonalization(page);
+    await page.getByTestId('settings-section-trigger-theme').click();
+    const lightTheme = page.getByTestId('settings-theme-light');
+    const darkTheme = page.getByTestId('settings-theme-dark');
+    await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
+
+    await goToAccessibility(page);
+    await page.getByTestId('settings-section-trigger-contrast').click();
+    await page.getByTestId('settings-a11y-contrast-high').click();
+    const shell = page.locator('main.os-shell');
+    await expect(shell).toHaveClass(/theme-dark/);
+    await expect(shell).not.toHaveClass(/theme-light/);
+    await expect(shell).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+    await page.getByTestId('button-dock-terminal').click();
+    const terminalInput = page.getByTestId('input-terminal-command');
+    for (const command of ['theme light', 'theme dark']) {
+      await terminalInput.fill(command);
+      await terminalInput.press('Enter');
+      await expect(page.getByTestId('window-terminal').locator('.terminal-output').last()).toHaveText(
+        'Light and dark themes are disabled while a contrast theme is active.',
+      );
+    }
+    const desktopAboutIcon = page.locator('.desktop-launcher-about .desktop-app-icon');
+    const dockAboutIcon = page.getByTestId('button-dock-about');
+    await expect.poll(async () => ({
+      background: await dockAboutIcon.evaluate((element) => getComputedStyle(element).backgroundImage),
+      color: await dockAboutIcon.evaluate((element) => getComputedStyle(element).color),
+    })).toEqual({
+      background: await desktopAboutIcon.evaluate((element) => getComputedStyle(element).backgroundImage),
+      color: await desktopAboutIcon.evaluate((element) => getComputedStyle(element).color),
+    });
+    await goToPersonalization(page);
+    await expect(page.locator('.settings-nav-item-active .settings-nav-icon')).toHaveCSS('color', 'rgb(0, 0, 0)');
+    await page.getByTestId('settings-section-trigger-theme').click();
+    await expect(lightTheme).toBeDisabled();
+    await expect(darkTheme).toBeDisabled();
+    await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
+    await expect(
+      page.locator('.settings-description').filter({ hasText: 'Light and dark themes are disabled' }),
+    ).toBeVisible();
+
+    await goToAccessibility(page);
+    await page.getByTestId('settings-section-trigger-contrast').click();
+    await page.getByTestId('settings-a11y-contrast-low').click();
+    await goToPersonalization(page);
+    await page.getByTestId('settings-section-trigger-theme').click();
+    await expect(lightTheme).toBeDisabled();
+    await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
+
+    await goToAccessibility(page);
+    await page.getByTestId('settings-section-trigger-contrast').click();
+    await page.getByTestId('settings-a11y-contrast-none').click();
+    await goToPersonalization(page);
+    await page.getByTestId('settings-section-trigger-theme').click();
+    await expect(lightTheme).toBeEnabled();
+    await expect(darkTheme).toBeEnabled();
+    await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
+    await expect(shell).toHaveClass(/theme-light/);
+  });
+
   test('Low contrast hides wallpaper controls and shows notice', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);

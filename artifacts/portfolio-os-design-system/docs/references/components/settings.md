@@ -57,6 +57,8 @@ import { SettingsNavSection, SettingsNavItem } from '@workspace/portfolio-os-des
 `aria-current="page"`. Focus ring uses the `ring-ring` Tailwind utility
 (maps to `--color-ring`, the primary brand color) in both themes.
 Inactive hover uses `bg-muted`. Active state uses `bg-primary/10 text-primary`.
+The leading icon inherits the item foreground; in High Contrast, both the active
+label and icon must use the black foreground on the yellow active surface.
 
 ---
 
@@ -83,6 +85,15 @@ label row also toggles. Disabled state uses `opacity-45 pointer-events-none`.
 
 **Do:** Pass `disabled` when a feature is unavailable (e.g. transparency when a
 contrast theme is active). **Don't:** hide the row — keep it visible but inert.
+
+### Contrast-theme dependencies
+
+Low and High Contrast are independent from the regular Light and Dark themes.
+While either contrast theme is active, consuming products must keep regular
+theme and wallpaper controls visible but disabled. Do not mutate their saved
+values. Use a contrast-specific presentation baseline so regular theme classes
+cannot override the fixed palette, then restore the saved theme and wallpaper
+when Standard is selected.
 
 ---
 
@@ -288,6 +299,7 @@ import { SettingsColorPreset } from '@workspace/portfolio-os-design-system/compo
   name="Light default"
   selected={currentWallpaper.color === '#e8f0ec'}
   onSelect={() => setWallpaperColor('#e8f0ec')}
+  disabled={contrastTheme !== 'none'}
   data-testid="settings-color-preset-light"
 />
 ```
@@ -303,6 +315,7 @@ The consuming app owns exclusion logic:
 - Selected swatch: `border-2 border-primary` + subtle primary shadow ring.
 - Check mark color: auto-selected via luminance heuristic (`isLightColor()`).
   Light swatches get a dark primary-green mark; dark swatches get white.
+- Disabled: native `disabled` semantics with reduced opacity and a not-allowed cursor.
 
 ---
 

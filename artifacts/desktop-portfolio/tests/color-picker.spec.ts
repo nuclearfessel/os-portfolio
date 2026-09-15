@@ -15,6 +15,13 @@ async function openSettingsColorPicker(page: Page) {
   // Open settings
   await page.getByTestId('button-dock-settings').click();
   await expect(page.getByTestId('window-settings')).toBeVisible();
+  for (const section of ['theme', 'wallpaper']) {
+    const trigger = page.getByTestId(`settings-section-trigger-${section}`);
+    if (await trigger.getAttribute('aria-expanded') !== 'true') {
+      await trigger.click();
+    }
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  }
 
   // Switch to Solid color wallpaper mode
   // Determine current theme (light or dark) to click the right button
@@ -338,6 +345,11 @@ test('wallpaper color persists independently in light and dark themes', async ({
   // Set dark theme
   await page.getByTestId('button-dock-settings').click();
   await expect(page.getByTestId('window-settings')).toBeVisible();
+  for (const section of ['theme', 'wallpaper']) {
+    const trigger = page.getByTestId(`settings-section-trigger-${section}`);
+    await trigger.click();
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  }
   await page.getByTestId('settings-theme-dark').click();
 
   // Switch to solid color mode in dark theme

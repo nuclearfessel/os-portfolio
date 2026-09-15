@@ -6,7 +6,7 @@
 
 ## Intent
 
-Windows, the Dock, menus, and stickies can carry translucency and backdrop blur. Accessibility owns independent system-wide Transparency effects and Blur effects switches; Personalization owns separate window and sticky transparency levels plus one shared blur level. The design system provides the primitives that respond to these preferences, while the consuming product applies them to relevant surfaces.
+Windows, the Dock, menus, and stickies can carry translucency and backdrop blur. Accessibility owns system-wide Transparency effects and Blur effects switches; Blur is available only while Transparency is on. Personalization owns separate window and sticky transparency levels plus one shared blur level. The design system provides the primitives that respond to these preferences, while the consuming product applies them to relevant surfaces.
 
 ---
 
@@ -26,9 +26,9 @@ Apply this class to any surface that should respond to the transparency preferen
 |---|---|
 | No attribute (default) | Moderate translucency with `--accessibility-transparency: 0.2` and `--surface-blur: 12px` fallbacks |
 | `data-transparency-enabled` + `--accessibility-transparency` | Uses the variable value (0–0.7) for background alpha |
-| `data-no-transparency` | Forces fully opaque background without changing the blur preference |
+| `data-no-transparency` | Forces fully opaque background, disables effective blur, and preserves the saved blur preference |
 | `data-no-blur` | Removes backdrop blur without changing transparency |
-| `data-contrast="low"` or `data-contrast="high"` | Forces fully opaque (same as `data-no-transparency`) |
+| `data-contrast="low"` or `data-contrast="high"` | Forces fully opaque and removes backdrop blur |
 
 ---
 
@@ -91,7 +91,7 @@ document.documentElement.setAttribute('data-no-transparency', '');
 document.documentElement.style.removeProperty('--accessibility-transparency');
 document.documentElement.removeAttribute('data-transparency-enabled');
 
-// Disable blur independently
+// Disable effective blur when transparency is off or Blur effects is off
 document.documentElement.setAttribute('data-no-blur', '');
 document.documentElement.style.removeProperty('--surface-blur');
 ```
@@ -108,7 +108,7 @@ document.documentElement.style.removeProperty('--surface-blur');
 | `data-no-transparency` attribute | Consuming product |
 | `data-no-blur` attribute | Consuming product |
 | `--surface-blur` CSS variable | Consuming product |
-| When contrast theme forces opaque | Package CSS (automatic) |
+| When contrast theme forces opaque and blur-free | Package CSS (automatic) |
 
 ---
 
@@ -121,9 +121,10 @@ document.documentElement.style.removeProperty('--surface-blur');
 ## Accessibility checklist
 
 - [ ] Translucent surfaces maintain readable text contrast against the backdrop.
-- [ ] Transparency is disabled when any contrast theme is active (automatic via package CSS).
+- [ ] Transparency and blur are disabled when any contrast theme is active (automatic via package CSS).
 - [ ] The transparency preference can be toggled and its effect is immediate.
-- [ ] Transparency and blur can be toggled independently without discarding either saved level.
+- [ ] Turning transparency off disables effective blur without discarding the saved Blur preference.
+- [ ] Turning transparency back on restores the saved Blur preference.
 - [ ] When `data-no-blur` is set, no backdrop blur appears on any `.portfolio-surface-translucent` element.
 - [ ] Desktop, tablet, and mobile Dock surfaces all respond to the window transparency level.
 - [ ] Dock items and desktop launcher icons remain fully opaque at every transparency level.

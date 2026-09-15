@@ -134,9 +134,28 @@ export const WindowSurface = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>
 );
 WindowSurface.displayName = 'WindowSurface';
 
-export const DockItem = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }>(
-  ({ className, active = false, type = 'button', ...props }, ref) => (
-    <button ref={ref} type={type} className={classes('relative grid place-items-center rounded-lg border transition-colors duration-100', active && 'active', className)} {...props} />
+export type DockItemProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Whether the app is open and should retain its active border. */
+  active?: boolean;
+  /** Whether the app is currently focused/topmost and should show its edge tab. */
+  focused?: boolean;
+};
+
+export const DockItem = forwardRef<HTMLButtonElement, DockItemProps>(
+  ({ className, active = false, focused = false, type = 'button', ...props }, ref) => (
+    <button
+      ref={ref}
+      type={type}
+      className={classes(
+        'relative grid place-items-center rounded-lg border transition-colors duration-100',
+        active && 'active',
+        focused && 'focused',
+        className,
+      )}
+      data-active={active || undefined}
+      data-focused={focused || undefined}
+      {...props}
+    />
   ),
 );
 DockItem.displayName = 'DockItem';

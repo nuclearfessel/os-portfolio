@@ -3,11 +3,15 @@ import { CanonicalSpec } from '../md-renderer';
 import { mdPortfolioOsDockItem } from '../docs-map';
 
 const desktopActiveClassName =
-  "size-14 border-accent bg-secondary text-sm font-mono ring-[3px] ring-primary after:absolute after:-bottom-2 after:left-1/2 after:h-1 after:w-[18px] after:-translate-x-1/2 after:rounded-full after:bg-primary after:content-['']";
+  'size-14 border-accent bg-secondary text-sm font-mono ring-[3px] ring-primary';
+const desktopFocusedClassName =
+  `${desktopActiveClassName} after:absolute after:-bottom-2 after:left-1/2 after:h-1 after:w-[18px] after:-translate-x-1/2 after:rounded-full after:bg-primary after:content-['']`;
 const desktopInactiveClassName =
   "size-14 border-accent bg-secondary text-sm font-mono hover:outline-2 hover:outline-offset-2 hover:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 const responsiveActiveClassName =
-  "flex h-14 w-16 flex-col items-center gap-0.5 border-accent bg-secondary text-sm font-mono ring-[3px] ring-primary after:absolute after:-bottom-2 after:left-1/2 after:h-1 after:w-[26px] after:-translate-x-1/2 after:rounded-full after:bg-primary after:content-['']";
+  'flex h-14 w-16 flex-col items-center gap-0.5 border-accent bg-secondary text-sm font-mono ring-[3px] ring-primary';
+const responsiveFocusedClassName =
+  `${responsiveActiveClassName} after:absolute after:-bottom-2 after:left-1/2 after:h-1 after:w-[26px] after:-translate-x-1/2 after:rounded-full after:bg-primary after:content-['']`;
 const responsiveInactiveClassName =
   "flex h-14 w-16 flex-col items-center gap-0.5 border-accent bg-secondary text-sm font-mono hover:outline-2 hover:outline-offset-2 hover:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
@@ -29,7 +33,8 @@ export function PortfolioOsDockItemDemo() {
                 </DockItemLabel>
                 <DockItem
                   active={i === 0}
-                  className={i === 0 ? desktopActiveClassName : desktopInactiveClassName}
+                  focused={i === 0}
+                  className={i === 0 ? desktopFocusedClassName : desktopInactiveClassName}
                   aria-label={`${label} dock item`}
                   aria-current={i === 0 ? 'true' : undefined}
                 >
@@ -48,7 +53,8 @@ export function PortfolioOsDockItemDemo() {
               <DockItem
                 key={label}
                 active={i === 0}
-                className={i === 0 ? responsiveActiveClassName : responsiveInactiveClassName}
+                focused={i === 0}
+                className={i === 0 ? responsiveFocusedClassName : responsiveInactiveClassName}
                 aria-label={`${label} dock item`}
                 aria-current={i === 0 ? 'true' : undefined}
               >
@@ -60,14 +66,18 @@ export function PortfolioOsDockItemDemo() {
         </div>
 
         <div>
-          <SectionLabel>states / active vs inactive</SectionLabel>
+          <SectionLabel>states / focused, open, inactive</SectionLabel>
           <div className="mt-3 inline-flex items-end gap-2 rounded-xl border border-border bg-card p-2">
             <div className="text-center">
-              <DockItem active className={desktopActiveClassName} aria-label="Active dock item" aria-current="true">01</DockItem>
-              <p className="mt-1 text-xs text-muted-foreground">active</p>
+              <DockItem active focused className={desktopFocusedClassName} aria-label="Focused dock item" aria-current="true">01</DockItem>
+              <p className="mt-1 text-xs text-muted-foreground">focused</p>
             </div>
             <div className="text-center">
-              <DockItem className={desktopInactiveClassName} aria-label="Inactive dock item">02</DockItem>
+              <DockItem active className={desktopActiveClassName} aria-label="Open dock item">02</DockItem>
+              <p className="mt-1 text-xs text-muted-foreground">open</p>
+            </div>
+            <div className="text-center">
+              <DockItem className={desktopInactiveClassName} aria-label="Inactive dock item">03</DockItem>
               <p className="mt-1 text-xs text-muted-foreground">inactive</p>
             </div>
           </div>

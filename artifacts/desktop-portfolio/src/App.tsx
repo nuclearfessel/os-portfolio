@@ -100,7 +100,7 @@ const DEFAULT_ACCESSIBILITY_PREFS: AccessibilityPrefs = {
 const DEFAULT_WALLPAPER_LIGHT: WallpaperConfig = { mode: 'picture', color: '#e8f0ec' };
 const DEFAULT_WALLPAPER_DARK: WallpaperConfig = { mode: 'picture', color: '#111326' };
 
-const DEFAULT_STICKY_SIZE: Size = { width: 214, height: 138 };
+const DEFAULT_STICKY_SIZE: Size = { width: 214, height: 160 };
 const MIN_STICKY_SIZE: Size = { width: 140, height: 100 };
 type WorkspaceMode = 'desktop' | 'tablet-landscape' | 'managed';
 type DeviceMode = 'desktop' | 'tablet' | 'mobile';
@@ -1275,7 +1275,7 @@ function SettingsWindow({
                     label="Surface effects"
                     description="Fine-tune transparency and blur. Their global switches remain in Accessibility."
                   >
-                  {accessibility.windowTransparency || accessibility.blurEffects ? (
+                  {accessibility.contrastTheme === 'none' && accessibility.windowTransparency ? (
                     <div className="settings-transparency-grid" data-testid="settings-transparency-grid">
                       {accessibility.windowTransparency && (
                         <>
@@ -1297,7 +1297,7 @@ function SettingsWindow({
                           />
                         </>
                       )}
-                      {accessibility.blurEffects && (
+                      {accessibility.windowTransparency && accessibility.blurEffects && (
                         <EffectSlider
                           id="personalization-blur"
                           label="Blur"
@@ -1350,18 +1350,26 @@ function SettingsWindow({
                   <SettingsToggle
                     id="a11y-transparency"
                     label="Transparency effects"
-                    description="Enables transparency across windows, the dock, menus, and stickies. Turn off for opaque solid surfaces."
-                    checked={accessibility.windowTransparency}
+                    description={accessibility.contrastTheme === 'none'
+                      ? 'Enables transparency across windows, the dock, menus, and stickies. Turn off for opaque solid surfaces.'
+                      : 'Disabled while a contrast theme is active. Your saved Standard preference will be restored.'}
+                    checked={accessibility.contrastTheme === 'none' && accessibility.windowTransparency}
                     onChange={(v) => updateAccessibility({ windowTransparency: v })}
+                    disabled={accessibility.contrastTheme !== 'none'}
                     data-testid="settings-a11y-transparency"
                   />
 
                   <SettingsToggle
                     id="a11y-blur"
                     label="Blur effects"
-                    description="Enables backdrop blur across windows, the dock, menus, and stickies."
-                    checked={accessibility.blurEffects}
+                    description={accessibility.contrastTheme !== 'none'
+                      ? 'Disabled while a contrast theme is active. Your saved Standard preference will be restored.'
+                      : !accessibility.windowTransparency
+                        ? 'Requires Transparency effects. Your saved Blur preference will be restored when Transparency is turned on.'
+                        : 'Enables backdrop blur across windows, the dock, menus, and stickies.'}
+                    checked={accessibility.contrastTheme === 'none' && accessibility.windowTransparency && accessibility.blurEffects}
                     onChange={(v) => updateAccessibility({ blurEffects: v })}
+                    disabled={accessibility.contrastTheme !== 'none' || !accessibility.windowTransparency}
                     data-testid="settings-a11y-blur"
                   />
                   </SettingsAccordionSection>
@@ -1375,13 +1383,16 @@ function SettingsWindow({
                   <SettingsToggle
                     id="a11y-animations"
                     label="UI animations"
-                    description="Enables transitions, keyframe animations, and motion effects. Turn off to remove all motion."
-                    checked={accessibility.uiAnimations}
+                    description={accessibility.contrastTheme === 'none'
+                      ? 'Enables transitions, keyframe animations, and motion effects. Turn off to remove all motion.'
+                      : 'Disabled while a contrast theme is active. Your saved Standard preference will be restored.'}
+                    checked={accessibility.contrastTheme === 'none' && accessibility.uiAnimations}
                     onChange={(v) => updateAccessibility({ uiAnimations: v })}
+                    disabled={accessibility.contrastTheme !== 'none'}
                     data-testid="settings-a11y-animations"
                   />
 
-                  {accessibility.uiAnimations && (
+                  {accessibility.contrastTheme === 'none' && accessibility.uiAnimations && (
                     <div className="settings-speed-group" data-testid="settings-a11y-speed-group">
                       <span className="settings-label">Animation speed</span>
                       <span className="settings-description">
@@ -1421,7 +1432,7 @@ function SettingsWindow({
                     description={(
                       <>
                       Applies a fixed system palette. <strong>Low contrast</strong> softens visual harshness for sensitivity to bright contrast. <strong>High contrast</strong> maximises black/white separation and sharpens focus indicators.
-                      {accessibility.contrastTheme !== 'none' && ' Wallpaper controls are disabled while a contrast theme is active.'}
+                      {accessibility.contrastTheme !== 'none' && ' Wallpaper, motion, transparency, and blur controls are disabled while a contrast theme is active.'}
                       </>
                     )}
                   >
@@ -1996,6 +2007,7 @@ function Home() {
   // Apply accessibility data-attributes to document root
   useEffect(() => {
     const root = document.documentElement;
+    const contrastActive = accessibility.contrastTheme !== 'none';
     // Scrollbars
     if (accessibility.alwaysShowScrollbars) {
       root.setAttribute('data-always-scrollbars', '');
@@ -2003,7 +2015,7 @@ function Home() {
       root.removeAttribute('data-always-scrollbars');
     }
     // Transparency
-    if (!accessibility.windowTransparency) {
+    if (contrastActive || !accessibility.windowTransparency) {
       root.setAttribute('data-no-transparency', '');
       root.removeAttribute('data-transparency-enabled');
       root.style.removeProperty('--accessibility-transparency');
@@ -2015,7 +2027,7 @@ function Home() {
       root.style.setProperty('--sticky-transparency', `${accessibility.stickyTransparencyLevel}%`);
     }
     // Blur
-    if (!accessibility.blurEffects) {
+    if (contrastActive || !accessibility.windowTransparency || !accessibility.blurEffects) {
       root.setAttribute('data-no-blur', '');
       root.removeAttribute('data-blur-enabled');
       root.style.removeProperty('--surface-blur');
@@ -2025,17 +2037,17 @@ function Home() {
       root.style.setProperty('--surface-blur', `${accessibility.blurLevel}px`);
     }
     // Animations
-    if (!accessibility.uiAnimations) {
+    root.removeAttribute('data-anim-speed');
+    if (contrastActive || !accessibility.uiAnimations) {
       root.setAttribute('data-no-animations', '');
     } else {
       root.removeAttribute('data-no-animations');
       // Speed
-      root.removeAttribute('data-anim-speed');
       if (accessibility.animationSpeed !== 'default') {
         root.setAttribute('data-anim-speed', accessibility.animationSpeed);
       }
     }
-    if (!accessibility.uiAnimations && !accessibility.windowTransparency) {
+    if (contrastActive || (!accessibility.uiAnimations && !accessibility.windowTransparency)) {
       root.setAttribute('data-fast-ui', '');
     } else {
       root.removeAttribute('data-fast-ui');
@@ -3928,9 +3940,9 @@ function Home() {
           });
         }}
       >
-        <DockItem className="dock-item dock-app-work" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
-        <DockItem className="dock-item dock-app-about" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><CircleUserFill size={20} data-testid="icon-dock-about-circle-user-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
-        <DockItem className="dock-item dock-app-contact" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><RiMailSendFill size={20} data-testid="icon-dock-contact-mail-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-work" active={windows.work} focused={windows.work && !stickyOnTop && activeWindow === 'work'} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-about" active={windows.about} focused={windows.about && !stickyOnTop && activeWindow === 'about'} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><CircleUserFill size={20} data-testid="icon-dock-about-circle-user-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-contact" active={windows.contact} focused={windows.contact && !stickyOnTop && activeWindow === 'contact'} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><RiMailSendFill size={20} data-testid="icon-dock-contact-mail-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
         {workspaceMode !== 'desktop' && (
             <DockItem
               className={`dock-item dock-mode-toggle mode-${theme}`}
@@ -3948,10 +3960,10 @@ function Home() {
         )}
         {workspaceMode === 'desktop' && (
           <>
-            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
-            <DockItem className="dock-item dock-app-stickies" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} focused={windows.terminal && !stickyOnTop && activeWindow === 'terminal'} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-stickies" active={stickyVisible} focused={stickyVisible && stickyOnTop} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
             <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
-            <DockItem className="dock-item" active={windows.settings} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
+            <DockItem className="dock-item" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
           </>
         )}
       </nav>

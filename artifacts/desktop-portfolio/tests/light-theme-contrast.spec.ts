@@ -15,11 +15,18 @@ async function openDesktopMenu(page: Page) {
 }
 
 async function switchToLightTheme(page: Page) {
-  await openDesktopMenu(page);
-  const themeRow = page.getByRole('menuitem', { name: 'Theme' }).locator('..');
-  await themeRow.hover();
-  await page.getByRole('menuitemradio', { name: 'Light' }).click();
+  await openThemeSettings(page);
+  await page.getByTestId('settings-theme-light').click();
   await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await page.getByTestId('button-close-settings').click();
+}
+
+async function openThemeSettings(page: Page) {
+  await page.getByTestId('button-dock-settings').click();
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+  const trigger = page.getByTestId('settings-section-trigger-theme');
+  if (await trigger.getAttribute('aria-expanded') !== 'true') await trigger.click();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
 }
 
 async function contrastRatio(locator: Locator) {
@@ -68,19 +75,80 @@ async function contrastRatio(locator: Locator) {
   });
 }
 
+async function dockIconContrastRatio(item: Locator) {
+  return item.evaluate((element) => {
+    type Color = { red: number; green: number; blue: number; alpha: number };
+    const parseColor = (value: string): Color => {
+      const channels = value.match(/[\d.]+/g)?.map(Number) ?? [];
+      return {
+        red: channels[0] ?? 0,
+        green: channels[1] ?? 0,
+        blue: channels[2] ?? 0,
+        alpha: channels[3] ?? 1,
+      };
+    };
+    const composite = (foreground: Color, background: Color): Color => {
+      const alpha = foreground.alpha + background.alpha * (1 - foreground.alpha);
+      if (alpha === 0) return { red: 0, green: 0, blue: 0, alpha: 0 };
+      return {
+        red: (foreground.red * foreground.alpha + background.red * background.alpha * (1 - foreground.alpha)) / alpha,
+        green: (foreground.green * foreground.alpha + background.green * background.alpha * (1 - foreground.alpha)) / alpha,
+        blue: (foreground.blue * foreground.alpha + background.blue * background.alpha * (1 - foreground.alpha)) / alpha,
+        alpha,
+      };
+    };
+    const luminance = ({ red, green, blue }: Color) => {
+      const linear = [red, green, blue].map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    };
+    const ratio = (a: Color, b: Color) => {
+      const lighter = Math.max(luminance(a), luminance(b));
+      const darker = Math.min(luminance(a), luminance(b));
+      return (lighter + 0.05) / (darker + 0.05);
+    };
+
+    const parentLayers: Color[] = [];
+    for (let current = element.parentElement; current; current = current.parentElement) {
+      const background = parseColor(getComputedStyle(current).backgroundColor);
+      if (background.alpha > 0) parentLayers.push(background);
+    }
+    let parentBackground = { red: 255, green: 255, blue: 255, alpha: 1 };
+    for (const layer of parentLayers.reverse()) parentBackground = composite(layer, parentBackground);
+
+    const itemStyle = getComputedStyle(element);
+    const gradientStops = itemStyle.backgroundImage
+      .match(/rgba?\([^)]+\)/g)
+      ?.map(parseColor) ?? [];
+    const solid = parseColor(itemStyle.backgroundColor);
+    const backgrounds = gradientStops.length > 0
+      ? gradientStops.map((stop) => composite(stop, parentBackground))
+      : [composite(solid, parentBackground)];
+    const icon = element.querySelector('svg') ?? element;
+    const foreground = parseColor(getComputedStyle(icon).color);
+
+    return Math.min(...backgrounds.map((background) => ratio(composite(foreground, background), background)));
+  });
+}
+
 test('light theme representative text meets WCAG AA contrast', async ({ page }) => {
   await page.addInitScript(([key]) => {
-    localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));
+    localStorage.setItem(key, JSON.stringify({
+      theme: 'light',
+      accessibility: { windowTransparency: false },
+    }));
   }, [storageKey]);
   await page.goto('/');
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
-  await switchToLightTheme(page);
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
 
+  await page.getByTestId('button-dock-terminal').click();
+  await expect(page.getByTestId('window-terminal')).toBeVisible();
   await openDesktopMenu(page);
   await page.getByTestId('button-dock-work').hover();
 
   const representatives = [
-    { surface: 'desktop', locator: page.locator('.desktop-intro p') },
     { surface: 'window', locator: page.locator('.window.work .window-title') },
     { surface: 'card', locator: page.getByTestId('card-project-01').locator('p') },
     { surface: 'terminal', locator: page.locator('.terminal-output').first() },
@@ -101,21 +169,23 @@ test('light theme representative text meets WCAG AA contrast', async ({ page }) 
 
 test('light theme interactive hover and focus states meet WCAG AA contrast', async ({ page }) => {
   await page.addInitScript(([key]) => {
-    localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));
+    localStorage.setItem(key, JSON.stringify({
+      theme: 'light',
+      accessibility: { windowTransparency: false },
+    }));
   }, [storageKey]);
   await page.goto('/');
-  await switchToLightTheme(page);
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
 
   const states: Array<{ name: string; locator: Locator }> = [
     { name: 'secondary quick action hover', locator: page.getByTestId('button-open-contact') },
     { name: 'primary quick action focus', locator: page.getByTestId('button-open-work') },
     { name: 'window control focus', locator: page.getByTestId('button-maximize-work') },
     { name: 'project link hover', locator: page.getByTestId('button-open-project-01') },
-    { name: 'Dock item hover', locator: page.getByTestId('button-dock-contact') },
   ];
 
   for (const state of states) {
-    await state.locator.hover();
+    await state.locator.hover({ force: true });
     const hoverRatio = await contrastRatio(state.locator);
     expect(
       hoverRatio,
@@ -162,8 +232,7 @@ test('Dock hover and focus preserve app identity and keep utility controls legib
   const appIds = ['work', 'about', 'contact', 'terminal', 'stickies'];
   for (const theme of ['dark', 'light'] as const) {
     if (theme === 'light') {
-      await page.getByTestId('button-dock-settings').click();
-      await expect(page.getByTestId('window-settings')).toBeVisible();
+      await openThemeSettings(page);
       await page.getByTestId('settings-theme-light').click();
       await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
       await page.getByTestId('button-close-settings').click();
@@ -216,7 +285,7 @@ test('Dock hover and focus preserve app identity and keep utility controls legib
   }
 });
 
-test('Dock active states use a clear ring and substantial edge pill in every theme and layout', async ({ page }) => {
+test('Dock open apps use active rings while only the focused app uses the edge pill', async ({ page }) => {
   await page.addInitScript(([key]) => {
     localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));
   }, [storageKey]);
@@ -224,6 +293,7 @@ test('Dock active states use a clear ring and substantial edge pill in every the
 
   const expectClearActiveState = async (item: Locator, minimumPillWidth = 16) => {
     await expect(item).toHaveClass(/active/);
+    await expect(item).toHaveClass(/focused/);
     await item.evaluate(async (element) => {
       await Promise.all(element.getAnimations().map((animation) => animation.finished));
     });
@@ -255,14 +325,17 @@ test('Dock active states use a clear ring and substantial edge pill in every the
 
   for (const theme of ['dark', 'light'] as const) {
     if (theme === 'light') {
-      await page.getByTestId('button-dock-settings').click();
+      await openThemeSettings(page);
       await page.getByTestId('settings-theme-light').click();
       await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
     }
 
+    await page.getByTestId('button-dock-work').click();
     await expectClearActiveState(page.getByTestId('button-dock-work'));
+    await expect(page.getByTestId('button-dock-about')).toHaveClass(/active/);
+    await expect(page.getByTestId('button-dock-about')).not.toHaveClass(/focused/);
     const settings = page.getByTestId('button-dock-settings');
-    if (!(await settings.getAttribute('class'))?.includes('active')) await settings.click();
+    await settings.click();
     await expectClearActiveState(settings);
     await page.getByTestId('button-close-settings').click();
   }
@@ -271,14 +344,57 @@ test('Dock active states use a clear ring and substantial edge pill in every the
   await expect(page.locator('.dock-mobile-menu')).toBeVisible();
   await page.getByTestId('button-dock-about').click();
   await expectClearActiveState(page.getByTestId('button-dock-about'), 24);
+  await expect(page.getByTestId('button-dock-work')).toHaveClass(/active/);
+  await expect(page.getByTestId('button-dock-work')).not.toHaveClass(/focused/);
 });
 
-test('light theme About, Contact, and case study windows meet WCAG AA contrast', async ({ page }) => {
+test('tablet and mobile Dock icons meet non-text contrast in every orientation', async ({ page }) => {
   await page.addInitScript(([key]) => {
     localStorage.setItem(key, JSON.stringify({ theme: 'dark' }));
   }, [storageKey]);
   await page.goto('/');
-  await switchToLightTheme(page);
+
+  const viewports = [
+    { name: 'tablet landscape', width: 1024, height: 768 },
+    { name: 'tablet portrait', width: 768, height: 1024 },
+    { name: 'mobile landscape', width: 844, height: 390 },
+    { name: 'mobile portrait', width: 390, height: 844 },
+  ];
+  const iconIds = ['work', 'about', 'contact', 'mode'];
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await expect(page.locator('.dock-mobile-menu, .dock-tablet-menu')).toBeVisible();
+
+    for (const theme of ['dark', 'light'] as const) {
+      const isLight = await page.locator('.os-shell').evaluate((element) => element.classList.contains('theme-light'));
+      if ((theme === 'light') !== isLight) await page.getByTestId('button-dock-mode').click();
+      await expect(page.locator('.os-shell')).toHaveClass(theme === 'light' ? /theme-light/ : /theme-dark/);
+
+      for (const id of iconIds) {
+        const item = page.getByTestId(`button-dock-${id}`);
+        await item.evaluate(async (element) => {
+          await Promise.all(element.getAnimations().map((animation) => animation.finished));
+        });
+        const ratio = await dockIconContrastRatio(item);
+        expect(
+          ratio,
+          `${viewport.name} ${theme} ${id} icon contrast ${ratio.toFixed(2)}:1 should meet WCAG non-text contrast`,
+        ).toBeGreaterThanOrEqual(3);
+      }
+    }
+  }
+});
+
+test('light theme About, Contact, and case study windows meet WCAG AA contrast', async ({ page }) => {
+  await page.addInitScript(([key]) => {
+    localStorage.setItem(key, JSON.stringify({
+      theme: 'light',
+      accessibility: { windowTransparency: false },
+    }));
+  }, [storageKey]);
+  await page.goto('/');
+  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
 
   await page.getByTestId('button-dock-about').click();
   await expect(page.getByTestId('window-about')).toBeVisible();

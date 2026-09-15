@@ -31,11 +31,31 @@ async function closeSettings(page: Page) {
 async function goToAccessibility(page: Page) {
   await page.getByTestId('settings-nav-accessibility').click();
   await expect(page.getByTestId('settings-nav-accessibility')).toHaveAttribute('aria-current', 'page');
+  const sections = ['display', 'motion', 'contrast'];
+  for (let pass = 0; pass < 2; pass += 1) {
+    for (const section of sections) {
+      const trigger = page.getByTestId(`settings-section-trigger-${section}`);
+      if (await trigger.getAttribute('aria-expanded') !== 'true') {
+        await trigger.click();
+      }
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    }
+  }
+  for (const section of sections) {
+    await expect(page.getByTestId(`settings-section-trigger-${section}`)).toHaveAttribute('aria-expanded', 'true');
+  }
 }
 
 async function goToPersonalization(page: Page) {
   await page.getByTestId('settings-nav-personalization').click();
   await expect(page.getByTestId('settings-nav-personalization')).toHaveAttribute('aria-current', 'page');
+  for (const section of ['theme', 'desktop-text', 'wallpaper', 'surface-effects']) {
+    const trigger = page.getByTestId(`settings-section-trigger-${section}`);
+    if (await trigger.getAttribute('aria-expanded') !== 'true') {
+      await trigger.click();
+    }
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  }
 }
 
 async function openContextMenu(page: Page) {
@@ -352,20 +372,30 @@ test.describe('Transparency effects', () => {
     )).toBe(1);
   });
 
-  test('transparency and blur toggles independently control their level sliders', async ({ page }) => {
+  test('turning transparency off disables blur and restores its saved preference when transparency returns', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
     await page.getByTestId('settings-a11y-transparency-switch').click();
+    const blurSwitch = page.getByTestId('settings-a11y-blur-switch');
+    await expect(blurSwitch).toBeDisabled();
+    await expect(blurSwitch).toHaveAttribute('aria-checked', 'false');
+    expect(await page.evaluate(() => document.documentElement.hasAttribute('data-no-blur'))).toBe(true);
+
     await goToPersonalization(page);
     await expect(page.getByTestId('settings-personalization-window-transparency')).not.toBeVisible();
     await expect(page.getByTestId('settings-personalization-sticky-transparency')).not.toBeVisible();
-    await expect(page.getByTestId('settings-personalization-blur')).toBeVisible();
-
-    await goToAccessibility(page);
-    await page.getByTestId('settings-a11y-blur-switch').click();
-    await goToPersonalization(page);
     await expect(page.getByTestId('settings-personalization-blur')).not.toBeVisible();
     await expect(page.getByTestId('settings-transparency-disabled-notice')).toBeVisible();
+
+    await goToAccessibility(page);
+    await page.getByTestId('settings-a11y-transparency-switch').click();
+    await expect(blurSwitch).toBeEnabled();
+    await expect(blurSwitch).toHaveAttribute('aria-checked', 'true');
+
+    await goToPersonalization(page);
+    await expect(page.getByTestId('settings-personalization-window-transparency')).toBeVisible();
+    await expect(page.getByTestId('settings-personalization-sticky-transparency')).toBeVisible();
+    await expect(page.getByTestId('settings-personalization-blur')).toBeVisible();
   });
 
   test('turning transparency off sets data-no-transparency on <html>', async ({ page }) => {
@@ -590,7 +620,6 @@ test.describe('Contrast themes', () => {
   test('selecting High contrast sets data-contrast="high" on <html>', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
-    await page.getByTestId('settings-section-trigger-contrast').click();
     await page.getByTestId('settings-a11y-contrast-high').click();
     const value = await page.evaluate(() =>
       document.documentElement.getAttribute('data-contrast'),
@@ -662,13 +691,11 @@ test.describe('Contrast themes disable wallpaper controls', () => {
   test('contrast themes disable regular theme controls and preserve the selected theme', async ({ page }) => {
     await openSettings(page);
     await goToPersonalization(page);
-    await page.getByTestId('settings-section-trigger-theme').click();
     const lightTheme = page.getByTestId('settings-theme-light');
     const darkTheme = page.getByTestId('settings-theme-dark');
     await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
 
     await goToAccessibility(page);
-    await page.getByTestId('settings-section-trigger-contrast').click();
     await page.getByTestId('settings-a11y-contrast-high').click();
     const shell = page.locator('main.os-shell');
     await expect(shell).toHaveClass(/theme-dark/);
@@ -694,7 +721,6 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     });
     await goToPersonalization(page);
     await expect(page.locator('.settings-nav-item-active .settings-nav-icon')).toHaveCSS('color', 'rgb(0, 0, 0)');
-    await page.getByTestId('settings-section-trigger-theme').click();
     await expect(lightTheme).toBeDisabled();
     await expect(darkTheme).toBeDisabled();
     await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
@@ -703,18 +729,14 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     ).toBeVisible();
 
     await goToAccessibility(page);
-    await page.getByTestId('settings-section-trigger-contrast').click();
     await page.getByTestId('settings-a11y-contrast-low').click();
     await goToPersonalization(page);
-    await page.getByTestId('settings-section-trigger-theme').click();
     await expect(lightTheme).toBeDisabled();
     await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
 
     await goToAccessibility(page);
-    await page.getByTestId('settings-section-trigger-contrast').click();
     await page.getByTestId('settings-a11y-contrast-none').click();
     await goToPersonalization(page);
-    await page.getByTestId('settings-section-trigger-theme').click();
     await expect(lightTheme).toBeEnabled();
     await expect(darkTheme).toBeEnabled();
     await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
@@ -727,7 +749,7 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await page.getByTestId('settings-a11y-contrast-low').click();
     await goToPersonalization(page);
     // The disabled notice should be visible
-    await expect(page.locator('.settings-wallpaper-disabled-notice')).toBeVisible();
+    await expect(page.locator('.settings-wallpaper-disabled-notice').filter({ hasText: 'Wallpaper controls are hidden' })).toBeVisible();
     // Wallpaper mode chips should not be visible
     await expect(page.getByTestId('settings-wallpaper-mode-picture-light')).not.toBeVisible();
     await expect(page.getByTestId('settings-wallpaper-mode-color-light')).not.toBeVisible();
@@ -738,7 +760,7 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await goToAccessibility(page);
     await page.getByTestId('settings-a11y-contrast-high').click();
     await goToPersonalization(page);
-    await expect(page.locator('.settings-wallpaper-disabled-notice')).toBeVisible();
+    await expect(page.locator('.settings-wallpaper-disabled-notice').filter({ hasText: 'Wallpaper controls are hidden' })).toBeVisible();
     await expect(page.getByTestId('settings-wallpaper-mode-picture-light')).not.toBeVisible();
   });
 
@@ -750,6 +772,68 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await goToPersonalization(page);
     await expect(page.locator('.settings-wallpaper-disabled-notice')).not.toBeVisible();
     await expect(page.getByTestId('settings-wallpaper-mode-picture-light')).toBeVisible();
+  });
+
+  test('Low and High contrast disable motion, transparency, and blur without discarding Standard preferences', async ({ page }) => {
+    await openSettings(page);
+    await goToAccessibility(page);
+
+    for (const mode of ['low', 'high'] as const) {
+      await page.getByTestId(`settings-a11y-contrast-${mode}`).click();
+
+      for (const effect of ['transparency', 'blur', 'animations']) {
+        const control = page.getByTestId(`settings-a11y-${effect}-switch`);
+        await expect(control).toBeDisabled();
+        await expect(control).toHaveAttribute('aria-checked', 'false');
+      }
+      await expect(page.getByTestId('settings-a11y-speed-group')).not.toBeVisible();
+
+      expect(await page.evaluate(() => ({
+        noTransparency: document.documentElement.hasAttribute('data-no-transparency'),
+        noBlur: document.documentElement.hasAttribute('data-no-blur'),
+        noAnimations: document.documentElement.hasAttribute('data-no-animations'),
+        fastUi: document.documentElement.hasAttribute('data-fast-ui'),
+        transparencyEnabled: document.documentElement.hasAttribute('data-transparency-enabled'),
+        blurEnabled: document.documentElement.hasAttribute('data-blur-enabled'),
+        animationSpeed: document.documentElement.hasAttribute('data-anim-speed'),
+      }))).toEqual({
+        noTransparency: true,
+        noBlur: true,
+        noAnimations: true,
+        fastUi: true,
+        transparencyEnabled: false,
+        blurEnabled: false,
+        animationSpeed: false,
+      });
+
+      const effects = await page.getByTestId('window-settings').evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          animationName: style.animationName,
+          transitionDuration: style.transitionDuration,
+          backdropFilter: style.backdropFilter,
+        };
+      });
+      expect(effects.animationName).toBe('none');
+      expect(effects.transitionDuration).toBe('0s');
+      expect(effects.backdropFilter).toBe('none');
+    }
+
+    await page.getByTestId('settings-a11y-contrast-none').click();
+    for (const effect of ['transparency', 'blur', 'animations']) {
+      const control = page.getByTestId(`settings-a11y-${effect}-switch`);
+      await expect(control).toBeEnabled();
+      await expect(control).toHaveAttribute('aria-checked', 'true');
+    }
+    expect(await page.evaluate(() => ({
+      transparencyEnabled: document.documentElement.hasAttribute('data-transparency-enabled'),
+      blurEnabled: document.documentElement.hasAttribute('data-blur-enabled'),
+      noAnimations: document.documentElement.hasAttribute('data-no-animations'),
+    }))).toEqual({
+      transparencyEnabled: true,
+      blurEnabled: true,
+      noAnimations: false,
+    });
   });
 
   test('wallpaper description text changes when contrast is active', async ({ page }) => {

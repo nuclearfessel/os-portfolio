@@ -114,6 +114,8 @@ type ViewportProfile = {
 const STICKY_CONTROL_OVERFLOW = 24;
 const STICKY_VIEWPORT_GAP = 2;
 const DOCK_SAFE_INSET = 70;
+const MAXIMIZED_WINDOW_GAP = 12;
+const MAXIMIZED_WINDOW_DOCK_INSET = 97;
 
 function readViewportProfile(): ViewportProfile {
   const width = window.innerWidth;
@@ -3334,10 +3336,10 @@ function Home() {
       ? undefined
       : maximizedWindows[id]
       ? {
-        left: dockPosition === 'left' ? 82 : systemBarPosition === 'left' ? 60 : 12,
-        top: dockPosition === 'top' ? 82 : systemBarPosition === 'top' ? 54 : 12,
-        right: dockPosition === 'right' ? 82 : systemBarPosition === 'right' ? 60 : 12,
-        bottom: dockPosition === 'bottom' ? 82 : systemBarPosition === 'bottom' ? 54 : 12,
+        left: dockPosition === 'left' ? MAXIMIZED_WINDOW_DOCK_INSET : MAXIMIZED_WINDOW_GAP,
+        top: dockPosition === 'top' ? MAXIMIZED_WINDOW_DOCK_INSET : MAXIMIZED_WINDOW_GAP,
+        right: dockPosition === 'right' ? MAXIMIZED_WINDOW_DOCK_INSET : MAXIMIZED_WINDOW_GAP,
+        bottom: dockPosition === 'bottom' ? MAXIMIZED_WINDOW_DOCK_INSET : MAXIMIZED_WINDOW_GAP,
         width: 'auto',
         height: 'auto',
         zIndex: 10 + windowStack.indexOf(id),

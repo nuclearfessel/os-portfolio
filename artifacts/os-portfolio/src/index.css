@@ -223,7 +223,7 @@ button { cursor: pointer; }
 .quick-button > svg { width: 15px; height: 15px; flex: 0 0 15px; }
 .quick-button.primary { color: #111326; background: #e4ff5b; border-color: #e4ff5b; font-weight: 600; }
 .quick-button.primary:hover { color: #e4ff5b; background: #2b2f4a; border-color: #e4ff5b; }
-.quick-button.tertiary:hover, .contact-button:hover { color: #111326; background: #ff8d79; border-color: transparent; }
+.quick-button.tertiary:hover, .contact-button:hover { color: #fff; background: #963f35; border-color: transparent; }
 .desktop-folders { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .desktop-folder { position: absolute; width: 88px; display: grid; justify-items: center; gap: 7px; padding: 5px 4px; color: #e8eaf4; border: 0; background: transparent; text-align: center; cursor: grab; pointer-events: auto; transition: color .1s; touch-action: none; user-select: none; -webkit-user-select: none; }
 .desktop-folder:nth-child(1) { left: 46px; bottom: 150px; }

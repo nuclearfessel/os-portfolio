@@ -243,8 +243,8 @@ test('primary, secondary, and tertiary actions use their theme-specific treatmen
   await expect(primaryAction).toHaveCSS('background-color', 'rgb(43, 47, 74)');
   await expect(primaryAction).toHaveCSS('color', 'rgb(228, 255, 91)');
   await tertiaryAction.hover();
-  await expect(tertiaryAction).toHaveCSS('background-color', 'rgb(255, 141, 121)');
-  await expect(tertiaryAction).toHaveCSS('color', 'rgb(17, 19, 38)');
+  await expect(tertiaryAction).toHaveCSS('background-color', 'rgb(150, 63, 53)');
+  await expect(tertiaryAction).toHaveCSS('color', 'rgb(255, 255, 255)');
   await expect(tertiaryAction).toHaveCSS('border-color', 'rgba(0, 0, 0, 0)');
   await expect(projectAction).toHaveCSS('background-color', 'rgb(43, 47, 74)');
   await expect(projectAction).toHaveCSS('color', 'rgb(228, 255, 91)');

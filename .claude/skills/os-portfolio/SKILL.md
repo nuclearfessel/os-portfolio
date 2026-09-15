@@ -70,20 +70,20 @@ The site simulates a desktop OS on large screens and becomes a managed app inter
 4. Run:
 
 ```bash
-pnpm --filter @workspace/desktop-portfolio run typecheck
+pnpm --filter @workspace/os-portfolio run typecheck
 ```
 
 5. For responsive or persistence changes, run the relevant Playwright spec:
 
 ```bash
-pnpm --filter @workspace/desktop-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
-pnpm --filter @workspace/desktop-portfolio run test:e2e:persistence
+pnpm --filter @workspace/os-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
+pnpm --filter @workspace/os-portfolio run test:e2e:persistence
 ```
 
 6. Build with:
 
 ```bash
-PORT=3000 pnpm --filter @workspace/desktop-portfolio run build
+PORT=3000 pnpm --filter @workspace/os-portfolio run build
 ```
 
 The existing tooltip sourcemap warning during Vite builds is non-fatal if the build otherwise succeeds.

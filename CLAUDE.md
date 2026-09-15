@@ -12,11 +12,11 @@ Run commands from the repository root:
 
 ```bash
 pnpm install
-PORT=5173 pnpm --filter @workspace/desktop-portfolio run dev
-pnpm --filter @workspace/desktop-portfolio run typecheck
-pnpm --filter @workspace/desktop-portfolio run test:e2e:persistence
-pnpm --filter @workspace/desktop-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
-pnpm --filter @workspace/desktop-portfolio run build
+PORT=5173 pnpm --filter @workspace/os-portfolio run dev
+pnpm --filter @workspace/os-portfolio run typecheck
+pnpm --filter @workspace/os-portfolio run test:e2e:persistence
+pnpm --filter @workspace/os-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
+pnpm --filter @workspace/os-portfolio run build
 ```
 
 ## Main files

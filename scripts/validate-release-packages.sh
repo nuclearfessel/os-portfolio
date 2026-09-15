@@ -23,10 +23,10 @@ claude_zip="$(absolute_output "$claude_zip")"
 
 cd "$repo_root"
 
-pnpm --filter @workspace/desktop-portfolio run typecheck
-pnpm --filter @workspace/desktop-portfolio run build
-pnpm --filter @workspace/portfolio-os-ds run typecheck
-pnpm --filter @workspace/portfolio-os-ds run build
+pnpm --filter @workspace/os-portfolio run typecheck
+pnpm --filter @workspace/os-portfolio run build
+pnpm --filter @workspace/os-portfolio-ds run typecheck
+pnpm --filter @workspace/os-portfolio-ds run build
 
 if ! grep -REq '(^|[;{])backdrop-filter:blur\(' artifacts/os-portfolio/dist/public/assets/*.css; then
   printf 'Desktop production CSS is missing the standard backdrop-filter blur declaration.\n' >&2

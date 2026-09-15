@@ -10,7 +10,7 @@ description: Build and release the static OS Portfolio site to a configured FTP 
 From the repository root:
 
 ```bash
-PORT=3000 pnpm --filter @workspace/desktop-portfolio run build
+PORT=3000 pnpm --filter @workspace/os-portfolio run build
 ```
 
 The upload-ready output is:
@@ -24,7 +24,7 @@ Upload the contents of `dist/public`, not the `public` directory itself.
 Run typecheck before preparing release files:
 
 ```bash
-pnpm --filter @workspace/desktop-portfolio run typecheck
+pnpm --filter @workspace/os-portfolio run typecheck
 ```
 
 ## Upload procedure

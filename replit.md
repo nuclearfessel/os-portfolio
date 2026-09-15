@@ -8,11 +8,11 @@ Run commands from the repository root:
 
 ```bash
 pnpm install
-pnpm --filter @workspace/desktop-portfolio run dev
-pnpm --filter @workspace/desktop-portfolio run typecheck
-pnpm --filter @workspace/desktop-portfolio run test:e2e:persistence
-pnpm --filter @workspace/desktop-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
-pnpm --filter @workspace/desktop-portfolio run build
+pnpm --filter @workspace/os-portfolio run dev
+pnpm --filter @workspace/os-portfolio run typecheck
+pnpm --filter @workspace/os-portfolio run test:e2e:persistence
+pnpm --filter @workspace/os-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
+pnpm --filter @workspace/os-portfolio run build
 ```
 
 The managed Replit workflow is `artifacts/os-portfolio: web`.
@@ -20,7 +20,7 @@ The managed Replit workflow is `artifacts/os-portfolio: web`.
 ## Stack
 
 - React, Vite, and TypeScript in a pnpm workspace
-- Shared UI package: `@workspace/portfolio-os-ds` (OS Portfolio DS)
+- Shared UI package: `@workspace/os-portfolio-ds` (OS Portfolio DS)
 - Browser-local persistence; no backend or database dependency
 - Playwright interaction and responsive-layout coverage
 - Static production output with relative asset URLs

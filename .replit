@@ -26,7 +26,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pnpm --filter @workspace/desktop-portfolio run test:e2e:persistence"
+args = "pnpm --filter @workspace/os-portfolio run test:e2e:persistence"
 
 [workflows.workflow.metadata]
 isValidation = true

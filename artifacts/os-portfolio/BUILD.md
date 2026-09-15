@@ -1,0 +1,45 @@
+# Build and Release
+
+Run all commands from the repository root.
+
+## Verify
+
+```bash
+pnpm --filter @workspace/os-portfolio run typecheck
+pnpm --filter @workspace/os-portfolio run test:e2e:persistence
+pnpm --filter @workspace/os-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
+```
+
+## Build
+
+```bash
+pnpm --filter @workspace/os-portfolio run build
+```
+
+The generated static site is:
+
+```text
+artifacts/os-portfolio/dist/public/
+```
+
+The generated `index.html` references hashed JavaScript and CSS assets using relative URLs. Replace an older release as a complete set; do not mix `index.html` and assets from different builds.
+
+## Static or FTP deployment
+
+Upload the contents of `dist/public/` directly into the destination document root or nested site directory. Do not upload `artifacts/os-portfolio/public/`; that is Vite source input and is not a complete build.
+
+## Downloadable Claude bundle
+
+`claude-os-portfolio-source.zip` contains:
+
+- OS Portfolio and OS Portfolio DS source
+- Relevant repository and artifact Markdown documentation
+- Claude skill files
+- A top-level `public/` directory copied from the latest `dist/public/`
+- A top-level `DEPLOYMENT.md`
+
+The source portion excludes dependencies, package build output, Playwright reports/results, caches, environment files, and TypeScript build-info files. Validate the completed archive with:
+
+```bash
+unzip -tq claude-os-portfolio-source.zip
+```

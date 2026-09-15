@@ -10,9 +10,9 @@ The repository must publish fresh deployable OS Portfolio and OS Portfolio DS ZI
 ## Source of truth
 
 - Workflow: `.github/workflows/website-release.yml`
-- OS Portfolio package: `@workspace/desktop-portfolio`
+- OS Portfolio package: `@workspace/os-portfolio`
 - Deployable build directory: `artifacts/os-portfolio/dist/public/`
-- OS Portfolio DS package: `@workspace/portfolio-os-ds`
+- OS Portfolio DS package: `@workspace/os-portfolio-ds`
 - Deployable OS Portfolio DS build directory: `artifacts/os-portfolio-ds/dist/`
 - Claude source packaging script: `scripts/package-claude-source.sh`
 - Download location: the repository’s **Releases** section
@@ -24,15 +24,15 @@ The workflow must:
 1. Trigger automatically only on pushes to `main`.
 2. Allow manual `workflow_dispatch` runs, but guard the release job so it runs only when the selected ref is `main`.
 3. Install dependencies with the repository’s locked pnpm version and frozen lockfile.
-4. Typecheck `@workspace/desktop-portfolio`.
-5. Build `@workspace/desktop-portfolio`.
+4. Typecheck `@workspace/os-portfolio`.
+5. Build `@workspace/os-portfolio`.
 6. ZIP the contents of `dist/public`, not the directory itself.
 7. Put `index.html`, `assets/`, wallpapers, and other deployable files at the archive root.
 8. Name the deployable ZIP `site-package-vMM.NN.zip`, using the workflow run number to increment from `v01.01` through `v01.99`, then roll over to `v02.01`.
 9. Fail when the build or ZIP is missing.
 10. Never create prereleases.
 11. Publish `main` builds as standard GitHub releases.
-12. Typecheck and build `@workspace/portfolio-os-ds`.
+12. Typecheck and build `@workspace/os-portfolio-ds`.
 13. ZIP the contents of the design-system `dist` directory at the archive root.
 14. Name it `design-system-package-vMM.NN.zip` using the same release version.
 15. Create a Claude source package named exactly `claude-src-pack.zip`, with no version in its filename.
@@ -51,10 +51,10 @@ Production assets must remain relative so the ZIP can be extracted at a domain r
 Before asking for user approval, run:
 
 ```bash
-pnpm --filter @workspace/desktop-portfolio run typecheck
-pnpm --filter @workspace/desktop-portfolio run build
-pnpm --filter @workspace/portfolio-os-ds run typecheck
-pnpm --filter @workspace/portfolio-os-ds run build
+pnpm --filter @workspace/os-portfolio run typecheck
+pnpm --filter @workspace/os-portfolio run build
+pnpm --filter @workspace/os-portfolio-ds run typecheck
+pnpm --filter @workspace/os-portfolio-ds run build
 rm -f /tmp/os-portfolio-website-validation.zip
 (cd artifacts/os-portfolio/dist/public && zip -qr /tmp/os-portfolio-website-validation.zip .)
 unzip -tq /tmp/os-portfolio-website-validation.zip

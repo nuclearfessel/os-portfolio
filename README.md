@@ -44,7 +44,7 @@ docs/
 └── images/                 # Repository screenshots
 ```
 
-This is a pnpm workspace. Shared visual primitives belong to `@workspace/portfolio-os-ds`; portfolio behavior and persistence remain in `@workspace/desktop-portfolio`.
+This is a pnpm workspace. Shared visual primitives belong to `@workspace/os-portfolio-ds`; portfolio behavior and persistence remain in `@workspace/os-portfolio`.
 
 All resizable OS Portfolio windows with side navigation follow one responsive contract: when the window itself becomes narrow, the sidebar smoothly becomes a horizontal sub-navigation toolbar directly below the window toolbar without changing navigation order, state, or content geometry.
 
@@ -64,13 +64,13 @@ pnpm install
 ### Run the portfolio
 
 ```bash
-pnpm --filter @workspace/desktop-portfolio run dev
+pnpm --filter @workspace/os-portfolio run dev
 ```
 
 ### Run the design-system documentation
 
 ```bash
-pnpm --filter @workspace/portfolio-os-ds run dev
+pnpm --filter @workspace/os-portfolio-ds run dev
 ```
 
 ### Validate the workspace
@@ -83,7 +83,7 @@ pnpm run build
 ### Run portfolio end-to-end tests
 
 ```bash
-pnpm --filter @workspace/desktop-portfolio run test:e2e
+pnpm --filter @workspace/os-portfolio run test:e2e
 ```
 
 ### Automatic GitHub completion checklist
@@ -105,7 +105,7 @@ Feature and maintenance branch pushes never create release packages or prereleas
 Design tokens are defined in `artifacts/os-portfolio-ds/tokens.json` and generated before OS Portfolio DS builds and type checks.
 
 ```bash
-pnpm --filter @workspace/portfolio-os-ds run tokens
+pnpm --filter @workspace/os-portfolio-ds run tokens
 ```
 
 New shared components and patterns should include:

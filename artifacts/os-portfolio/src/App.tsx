@@ -48,6 +48,7 @@ type FolderPositions = Partial<Record<DesktopLauncherId, { left: number; top: nu
 type StickyItemId = 'sticky' | `sticky-${number}`;
 type DesktopLauncherDragId = `desktop-${DesktopLauncherId}`;
 type DesktopItemId = WindowId | StickyItemId | DesktopLauncherDragId;
+const isWindowId = (id: DesktopItemId): id is WindowId => ['about', 'work', 'contact', 'terminal', 'settings'].includes(id);
 type ItemPositions = Partial<Record<DesktopItemId, { left: number; top: number }>>;
 type ItemSizes = Partial<Record<DesktopItemId, { width: number; height: number }>>;
 type ResizeDirection = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
@@ -672,6 +673,7 @@ function WindowFrame({
   title,
   active,
   maximized,
+  dragging,
   children,
   onFocus,
   onClose,
@@ -690,6 +692,7 @@ function WindowFrame({
   title: string;
   active: boolean;
   maximized: boolean;
+  dragging: boolean;
   children: ReactNode;
   onFocus: () => void;
   onClose: () => void;
@@ -706,7 +709,7 @@ function WindowFrame({
 }) {
   return (
     <WindowSurface
-      className={`window portfolio-scrollbar-window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''}`}
+      className={`window portfolio-scrollbar-window ${id} ${active ? 'is-active' : ''} ${maximized ? 'is-maximized' : ''} ${dragging ? 'is-dragging' : ''}`}
       onMouseDown={onFocus}
       onContextMenu={(event) => {
         event.preventDefault();
@@ -2309,6 +2312,7 @@ function Home() {
     setTimeout(() => { systemBarDragRef.current = null; }, 50);
   };
   const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean; currentLeft: number; currentTop: number } | null>(null);
+  const [draggingWindowId, setDraggingWindowId] = useState<WindowId | null>(null);
   const maximizedDragRef = useRef<{
     id: WindowId;
     header: HTMLElement;
@@ -2340,6 +2344,7 @@ function Home() {
       resizeRef.current = null;
       rotateRef.current = null;
       dockDragRef.current = null;
+      setDraggingWindowId(null);
     };
     window.addEventListener('pointerup', clearPointerOperations);
     window.addEventListener('pointercancel', clearPointerOperations);
@@ -2754,6 +2759,7 @@ function Home() {
     if (!area) return;
     const draggableTarget = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     if (!draggableTarget) return;
+    if (isWindowId(id)) setDraggingWindowId(id);
     const target = draggableTarget.getBoundingClientRect();
     const areaRect = area.getBoundingClientRect();
     const currentPosition = dragPositions[id] ?? {
@@ -2776,6 +2782,7 @@ function Home() {
     if (event.button !== 0 || workspaceMode === 'managed') return;
     const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     if (!target) return;
+    setDraggingWindowId(id);
     const targetRect = target.getBoundingClientRect();
     maximizedDragRef.current = {
       id,
@@ -2873,6 +2880,7 @@ function Home() {
     }
     maximizedDragRef.current = null;
     dragRef.current = null;
+    setDraggingWindowId(null);
   };
   const endDesktopLauncherDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
     const drag = dragRef.current;
@@ -2899,6 +2907,7 @@ function Home() {
     const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
     const area = desktopAreaRef.current;
     if (!target || !area) return;
+    if (isWindowId(id)) setDraggingWindowId(id);
     const startLeft = dragPositions[id]?.left ?? target.offsetLeft;
     const startTop = dragPositions[id]?.top ?? target.offsetTop;
     setDragPositions((current) => ({ ...current, [id]: { left: startLeft, top: startTop } }));
@@ -2955,6 +2964,7 @@ function Home() {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
     resizeRef.current = null;
+    setDraggingWindowId(null);
   };
   const startRotate = (id: StickyItemId, rotation: number, event: ReactPointerEvent<HTMLButtonElement>) => {
     if (workspaceMode !== 'desktop' || coarsePointer) return;
@@ -3285,6 +3295,7 @@ function Home() {
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
     maximized: Boolean(maximizedWindows[id]),
+    dragging: draggingWindowId === id,
     onFocus: () => {
       setActiveWindow(id);
       setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);

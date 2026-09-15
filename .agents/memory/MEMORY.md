@@ -21,4 +21,4 @@
 - [Playwright WebKit on Replit](playwright-webkit-replit.md) — isolate Nix compatibility libraries to WebKit; never export the full closure to Node.
 - [Backdrop-filter build ordering](backdrop-filter-build-ordering.md) — list the WebKit-prefixed declaration before the standard one so production CSS retains browser-compatible blur.
 - [Design-token namespace](design-token-namespace.md) — OS Portfolio token names and generated custom properties use the `osp` namespace.
-- [Window overlap shadow artifacts](window-overlap-shadow-artifacts.md) — draggable translucent windows must avoid large external blur shadows over overlapping surfaces.
+- [Window overlap shadow artifacts](window-overlap-shadow-artifacts.md) — keep idle shadows, but suppress the moving window’s external blur during drag or resize.

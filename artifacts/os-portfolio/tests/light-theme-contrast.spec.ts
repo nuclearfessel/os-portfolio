@@ -268,8 +268,9 @@ test('primary, secondary, and tertiary actions use their theme-specific treatmen
   await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
   await expect(primaryAction).toHaveCSS('background-color', 'rgb(11, 102, 93)');
   await primaryAction.hover();
-  await expect(primaryAction).toHaveCSS('background-color', 'rgb(197, 79, 72)');
-  await expect(primaryAction).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(primaryAction).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(primaryAction).toHaveCSS('color', 'rgb(197, 79, 72)');
+  await expect(primaryAction).toHaveCSS('border-color', 'rgb(197, 79, 72)');
   await tertiaryAction.hover();
   await expect(tertiaryAction).toHaveCSS('background-color', 'rgb(150, 63, 53)');
   await expect(tertiaryAction).toHaveCSS('color', 'rgb(255, 255, 255)');

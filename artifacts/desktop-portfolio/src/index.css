@@ -326,7 +326,7 @@ button { cursor: pointer; }
 .traffic-lights .close:hover, .traffic-lights .close:focus-visible { color: #fff; background: #c84b55; }
 .window-control-tooltip { position: absolute; top: 35px; right: 0; z-index: 30; transform: translateY(-2px); }
 .traffic-lights button:hover .window-control-tooltip, .traffic-lights button:focus-visible .window-control-tooltip { opacity: 1; transform: translateY(0); }
-.window-title { min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--app-font-mono); color: #e8eaf4; }
+.window-title { min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--app-font-mono); color: #f7faf8; }
 .window-title strong { color: inherit; font-weight: 400; }
 .window-body { height: calc(100% - 44px); overflow: auto; padding: 24px; }
 .section-kicker { color: #e4ff5b; font: 10px var(--app-font-mono); text-transform: uppercase; letter-spacing: .12em; }
@@ -1366,7 +1366,7 @@ button { cursor: pointer; }
 .theme-light .window { color: #17213b; background: rgba(247,250,248,.98); border-color: rgba(26,83,91,.25); box-shadow: 0 24px 70px rgba(48,68,71,.24), 0 2px 0 rgba(255,255,255,.72) inset; }
 .theme-light .window.is-active { border-color: rgba(11,102,93,.62); }
 .theme-light .window-header { background: rgba(219,232,228,.92); border-bottom-color: rgba(26,83,91,.14); }
-.theme-light .window-title { color: #17233a; }
+.theme-light .window-title { color: #4f6269; }
 .theme-light .traffic-lights button { color: #52656d; }
 .theme-light .traffic-lights button:hover, .theme-light .traffic-lights button:focus-visible { color: #173847; background: rgba(22,72,78,.1); }
 .theme-light .traffic-lights .close:hover, .theme-light .traffic-lights .close:focus-visible { color: #fff; background: #a73543; }

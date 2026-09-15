@@ -968,14 +968,15 @@ test('uses 4 instead of backtick for the terminal shortcut', async ({ page }) =>
   await expect(terminalWindow).toBeVisible();
 
   await page.getByTestId('button-dock-shortcuts').click();
-  await expect(page.getByTestId('menu-mobile')).toContainText('Use 1–7 for Dock shortcuts.');
+  await expect(page.getByTestId('menu-mobile')).toContainText('Use 1–8 for Dock shortcuts.');
   await expect(page.getByTestId('button-menu-terminal')).toContainText('4terminal');
   await expect(page.getByTestId('button-menu-stickies')).toContainText('5stickies');
   await expect(page.getByTestId('button-menu-shortcuts')).toContainText('6shortcuts');
   await expect(page.getByTestId('button-menu-settings')).toContainText('7settings');
+  await expect(page.getByTestId('button-menu-guide')).toContainText('8guide');
 });
 
-test('uses 5 through 7 for Stickies, Shortcuts, and Settings', async ({ page }) => {
+test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', async ({ page }) => {
   const visibleStickies = page.locator('.desktop-note:visible');
   const stickyDock = page.getByTestId('button-dock-stickies');
   await expect(visibleStickies.first()).toBeVisible();
@@ -993,6 +994,14 @@ test('uses 5 through 7 for Stickies, Shortcuts, and Settings', async ({ page }) 
   await expect(page.getByTestId('window-settings')).toHaveCount(0);
   await page.keyboard.press('7');
   await expect(page.getByTestId('window-settings')).toBeVisible();
+
+  await expect(page.getByTestId('window-guide')).toHaveCount(0);
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+  await expect(guideWindow.getByRole('heading', { name: 'A calmer way to work' })).toBeVisible();
+  await page.getByTestId('guide-nav-customize').click();
+  await expect(guideWindow.getByRole('heading', { name: 'Make the desktop yours' })).toBeVisible();
 });
 
 test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {
@@ -1772,7 +1781,7 @@ test('saves the current desktop state as the default only after confirmation', a
   await expect.poll(async () => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), defaultStorageKey))
     .toMatchObject({
       showDesktopIcons: false,
-      windowStack: ['about', 'contact', 'terminal', 'settings', 'work'],
+       windowStack: ['about', 'contact', 'terminal', 'settings', 'guide', 'work'],
     });
 
   await page.getByTestId('window-about').dispatchEvent('mousedown');
@@ -1809,7 +1818,7 @@ test('saves the current desktop state as the default only after confirmation', a
         terminal: true,
       },
       activeWindow: 'work',
-      windowStack: ['about', 'settings', 'contact', 'terminal', 'work'],
+       windowStack: ['about', 'settings', 'guide', 'contact', 'terminal', 'work'],
       stickies: [{ id: 'sticky' }],
     });
 

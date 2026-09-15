@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
   Check, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
-  BookOpen, Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
+  BookOpen, Layers, Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
 } from '@keyline-icons/react';
 import { CircleUser as CircleUserFill } from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
@@ -858,6 +858,7 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
 }
 
 type SettingsSection = 'personalization' | 'accessibility';
+type GuideSection = 'overview' | 'windows' | 'customize' | 'technical' | 'shortcuts';
 
 // Settings toggle row component
 function SettingsToggle({
@@ -1538,6 +1539,197 @@ function SettingsWindow({
           )}
         </DialogContent>
       </Dialog>
+    </WindowFrame>
+  );
+}
+
+function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'>) {
+  const [activeSection, setActiveSection] = useState<GuideSection>('overview');
+  const guideContentRef = useRef<HTMLDivElement>(null);
+
+  const selectGuideSection = (section: GuideSection) => {
+    setActiveSection(section);
+    if (guideContentRef.current) guideContentRef.current.scrollTop = 0;
+  };
+
+  return (
+    <WindowFrame {...props} id="guide" title="User Guide">
+      <div className="window-body guide-body">
+        <div className="settings-layout guide-layout">
+          <nav className="settings-nav guide-nav" aria-label="User guide sections">
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'overview' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'overview' ? 'page' : undefined}
+              onClick={() => selectGuideSection('overview')}
+              data-testid="guide-nav-overview"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><BookOpen size={14} strokeWidth={1.8} /></span>
+              Overview
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'windows' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'windows' ? 'page' : undefined}
+              onClick={() => selectGuideSection('windows')}
+              data-testid="guide-nav-windows"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><SquareTerminal size={14} strokeWidth={1.8} /></span>
+              Windows
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'customize' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'customize' ? 'page' : undefined}
+              onClick={() => selectGuideSection('customize')}
+              data-testid="guide-nav-customize"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><Settings size={14} strokeWidth={1.8} /></span>
+              Customize
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'technical' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'technical' ? 'page' : undefined}
+              onClick={() => selectGuideSection('technical')}
+              data-testid="guide-nav-technical"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><Layers size={14} strokeWidth={1.8} /></span>
+              Tech notes
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'shortcuts' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'shortcuts' ? 'page' : undefined}
+              onClick={() => selectGuideSection('shortcuts')}
+              data-testid="guide-nav-shortcuts"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><Command size={14} strokeWidth={1.8} /></span>
+              Shortcuts
+            </button>
+          </nav>
+
+          <div ref={guideContentRef} className="settings-content guide-content">
+            {activeSection === 'overview' && (
+              <>
+                <SectionLabel className="section-kicker">user guide / start here</SectionLabel>
+                <h2 className="settings-heading">A calmer way to work</h2>
+                <p className="guide-intro">
+                  This desktop is a small, flexible workspace. Open the tools you need, arrange them around your work,
+                  and save the setup that feels right.
+                </p>
+                <div className="guide-card-grid">
+                  <article className="guide-card">
+                    <span className="guide-card-index">01</span>
+                    <h3>Open an app</h3>
+                    <p>Use the Dock, a desktop launcher, or a keyboard shortcut. The active app comes to the front.</p>
+                  </article>
+                  <article className="guide-card">
+                    <span className="guide-card-index">02</span>
+                    <h3>Shape your workspace</h3>
+                    <p>Drag windows, resize their edges, move the Dock, and place Stickies where you can see them.</p>
+                  </article>
+                  <article className="guide-card">
+                    <span className="guide-card-index">03</span>
+                    <h3>Make it yours</h3>
+                    <p>Settings controls the theme, wallpaper, accessibility, contrast, and the copy on the home screen.</p>
+                  </article>
+                </div>
+                <div className="guide-callout">
+                  <span className="guide-callout-label">quick start</span>
+                  <p>Press <kbd>8</kbd> any time to bring this guide to the front.</p>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'windows' && (
+              <>
+                <SectionLabel className="section-kicker">user guide / windows</SectionLabel>
+                <h2 className="settings-heading">Work with windows</h2>
+                <p className="guide-intro">Every app is a floating window. The title bar keeps the controls close and the workspace stays yours.</p>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Focus</h3><p>Click a window or its Dock item to bring it forward. The active window stays at the front of the stack.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>Move</h3><p>Drag the title bar to place a window anywhere on the desktop. Double-click the title bar to maximize or restore it.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>Resize</h3><p>Drag any edge or corner. Your position and size are remembered when you close and reopen the app.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div><h3>Minimize or close</h3><p>Use the title-bar controls to hide an app or remove it from the desktop. Reopen it from the Dock.</p></div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'customize' && (
+              <>
+                <SectionLabel className="section-kicker">user guide / customize</SectionLabel>
+                <h2 className="settings-heading">Make the desktop yours</h2>
+                <p className="guide-intro">Open Settings from the Dock to tune the atmosphere, readability, and behavior of the workspace.</p>
+                <div className="guide-card-grid guide-card-grid-two">
+                  <article className="guide-card">
+                    <span className="guide-card-index">01 / Settings</span>
+                    <h3>Personalization</h3>
+                    <p>Switch light or dark mode, choose a picture or solid wallpaper, adjust transparency, and edit the home-screen copy.</p>
+                  </article>
+                  <article className="guide-card">
+                    <span className="guide-card-index">02 / Settings</span>
+                    <h3>Accessibility</h3>
+                    <p>Keep scrollbars visible, tune transparency and blur, reduce motion, and use low or high contrast themes.</p>
+                  </article>
+                  <article className="guide-card">
+                    <span className="guide-card-index">03 / Desktop</span>
+                    <h3>Arrange the shell</h3>
+                    <p>Right-click the desktop to clean up or auto-arrange icons. Drag the Dock to an edge or right-click it to choose a position.</p>
+                  </article>
+                  <article className="guide-card">
+                    <span className="guide-card-index">04 / Desktop</span>
+                    <h3>Keep a baseline</h3>
+                    <p>Use Settings to save your current arrangement as the default, or reset the desktop back to the saved baseline.</p>
+                  </article>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'shortcuts' && (
+              <>
+                <SectionLabel className="section-kicker">user guide / shortcuts</SectionLabel>
+                <h2 className="settings-heading">Keyboard map</h2>
+                <p className="guide-intro">On the desktop, number keys open the matching Dock app. Escape closes menus and dialogs.</p>
+                <div className="guide-shortcut-list" aria-label="Keyboard shortcuts">
+                  {[
+                    ['1', 'About', 'Open the about window'],
+                    ['2', 'Work', 'Open the work portfolio'],
+                    ['3', 'Contact', 'Open the contact window'],
+                    ['4', 'Terminal', 'Open the terminal'],
+                    ['5', 'Stickies', 'Show or focus Stickies'],
+                    ['6', 'Shortcuts', 'Open the shortcut menu'],
+                    ['7', 'Settings', 'Open Settings'],
+                    ['8', 'Guide', 'Open this user guide'],
+                  ].map(([key, label, description]) => (
+                    <div className="guide-shortcut" key={key}>
+                      <kbd>{key}</kbd>
+                      <strong>{label}</strong>
+                      <span>{description}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="guide-callout">
+                  <span className="guide-callout-label">tip</span>
+                  <p>Use <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>X</kbd> to close the front window, or add <kbd>⌥</kbd> to close every open window.</p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </WindowFrame>
   );
 }
@@ -2466,7 +2658,7 @@ function Home() {
     setStickyOnTop(false);
     setContextMenu(null);
     setStickyMenu(null);
-    if (activeWindow !== 'terminal') return;
+    if (activeWindow !== 'terminal' && activeWindow !== 'guide') return;
     const fallback = (['work', 'about', 'contact'] as WindowId[]).find((id) => windows[id]) ?? 'work';
     if (!windows[fallback]) setWindows((current) => ({ ...current, [fallback]: true }));
     setActiveWindow(fallback);
@@ -2501,7 +2693,7 @@ function Home() {
       setDragPositions((current) => {
         let changed = false;
         const next = { ...current };
-        for (const id of ['about', 'work', 'contact', 'terminal', 'settings'] as WindowId[]) {
+        for (const id of ['about', 'work', 'contact', 'terminal', 'settings', 'guide'] as WindowId[]) {
           const element = area.querySelector<HTMLElement>(`[data-testid="window-${id}"]`);
           if (!element) continue;
           const position = current[id] ?? { left: element.offsetLeft, top: element.offsetTop };
@@ -2586,21 +2778,22 @@ function Home() {
       if (event.metaKey || event.ctrlKey) return;
       const target = event.target;
       const isColorValueField = target instanceof HTMLElement && Boolean(target.closest('.cp-field'));
-      if (isColorValueField && ['1', '2', '3', '4', '5', '6', '7'].includes(event.key)) return;
+      if (isColorValueField && ['1', '2', '3', '4', '5', '6', '7', '8'].includes(event.key)) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '4': 'terminal' };
       const id = shortcuts[event.key];
-      if (['4', '5', '6', '7'].includes(event.key) && workspaceMode !== 'desktop') return;
+      if (['4', '5', '6', '7', '8'].includes(event.key) && workspaceMode !== 'desktop') return;
       if (id) { event.preventDefault(); openWindow(id); }
       if (event.key === '5') { event.preventDefault(); handleStickyDock(); }
       if (event.key === '6') { event.preventDefault(); setMobileOpen((value) => !value); }
       if (event.key === '7') { event.preventDefault(); openWindow('settings'); }
+      if (event.key === '8') { event.preventDefault(); openWindow('guide'); }
     };
     window.addEventListener('keydown', handleShortcut);
     return () => window.removeEventListener('keydown', handleShortcut);
   });
 
   const openWindow = (id: WindowId) => {
-    if (id === 'terminal' && workspaceMode !== 'desktop') return;
+    if ((id === 'terminal' || id === 'guide') && workspaceMode !== 'desktop') return;
     setWindows((current) => ({ ...current, [id]: true }));
     setActiveWindow(id);
     setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
@@ -2868,7 +3061,7 @@ function Home() {
     const constrainedSticky = sticky && workspace && stickySize
       ? constrainStickyPosition({ left: nextLeft, top: nextTop }, stickySize, sticky.rotation, workspace)
       : null;
-    const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal', 'settings'].includes(drag.id);
+    const constrainsWindow = workspaceMode === 'tablet-landscape' && ['about', 'work', 'contact', 'terminal', 'settings', 'guide'].includes(drag.id);
     const left = constrainedSticky?.left ?? (staysOnDesktop || constrainsWindow ? Math.max(minLeft, Math.min(maxLeft, nextLeft)) : nextLeft);
     const top = constrainedSticky?.top ?? (staysOnDesktop || constrainsWindow ? Math.max(minTop, Math.min(maxTop, nextTop)) : Math.max(0, nextTop));
     if (Math.abs(left - (dragPositions[drag.id]?.left ?? left)) > 2 || Math.abs(top - (dragPositions[drag.id]?.top ?? top)) > 2) {
@@ -3650,6 +3843,9 @@ function Home() {
             onSetIntroCustomization={setIntroCustomization}
           />
         )}
+        {workspaceMode === 'desktop' && windows.guide && (
+          <GuideWindow {...windowProps('guide')} />
+        )}
       </div>
 
       {contextMenu?.target === 'desktop' && (
@@ -4002,6 +4198,7 @@ function Home() {
             <DockItem className="dock-item dock-app-stickies" active={stickyVisible} focused={stickyVisible && stickyOnTop} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
             <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
             <DockItem className="dock-item" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
+            <DockItem className="dock-item" active={windows.guide} focused={windows.guide && !stickyOnTop && activeWindow === 'guide'} onClick={() => openWindow('guide')} aria-label="Open user guide" data-testid="button-dock-guide"><BookOpen size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Guide · 8</DockItemLabel></DockItem>
           </>
         )}
       </nav>
@@ -4009,7 +4206,7 @@ function Home() {
       {mobileOpen && (
         <div ref={shortcutMenuRef} className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}`} data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
-          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–7 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
+          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–8 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
             <button className="quick-button" onClick={() => openWindow('about')} data-testid="button-menu-about"><span className="shortcut-number">1</span>about</button>
             <button className="quick-button" onClick={() => openWindow('work')} data-testid="button-menu-work"><span className="shortcut-number">2</span>work</button>
@@ -4018,6 +4215,7 @@ function Home() {
             <button className="quick-button" onClick={handleStickyDock} data-testid="button-menu-stickies"><span className="shortcut-number">5</span>stickies</button>
             <button className="quick-button" onClick={() => setMobileOpen(false)} data-testid="button-menu-shortcuts"><span className="shortcut-number">6</span>shortcuts</button>
             <button className="quick-button" onClick={() => openWindow('settings')} data-testid="button-menu-settings"><span className="shortcut-number">7</span>settings</button>
+            <button className="quick-button" onClick={() => openWindow('guide')} data-testid="button-menu-guide"><span className="shortcut-number">8</span>guide</button>
           </div>
         </div>
       )}

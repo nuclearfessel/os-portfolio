@@ -2052,7 +2052,7 @@ function Home() {
         })
         .sort((first, second) => second.score - first.score);
       const branded = rank(brandedCandidates)[0];
-      return branded.score >= 4.5 ? branded.color : rank(fallbackCandidates)[0].color;
+      return branded.score >= 7 ? branded.color : rank(fallbackCandidates)[0].color;
     };
     const solidBackground = accessibility.contrastTheme === 'high'
       ? '#000000'

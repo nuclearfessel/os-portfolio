@@ -50,8 +50,34 @@ The Portfolio OS desktop presents multiple floating windows simultaneously — e
 | Dragging | Product event handlers |
 | Resizing | Product event handlers / `ResizablePanelGroup` for in-window splits |
 | Window controls (close, minimize, maximize) | Product |
+| Maximized drag-to-restore | Product title-bar pointer handling |
+| Keyboard close commands | Product global keyboard handling |
 
 `WindowSurface` has no internal state — it is purely visual.
+
+### Maximized title-bar dragging
+
+When a user begins dragging a maximized window by its title bar, the product
+restores the window to its saved pre-maximize size and continues the same pointer
+gesture. Place the restored window so the grabbed title-bar point remains under
+the pointer. Do not require a separate restore click before dragging.
+
+### Window close shortcuts
+
+These shortcuts run only in desktop mode while the page has keyboard focus:
+
+| Action | macOS | Windows / Linux |
+|---|---|---|
+| Close topmost open product window | `Command + Shift + X` | `Control + Shift + X` |
+| Close all open product windows | `Command + Option + Shift + X` | `Control + Alt + Shift + X` |
+
+Topmost means the highest open entry in the product's current z-order. Closing
+through the keyboard uses the same geometry-preserving close path as the window
+control. Ignore repeated keydown events so holding the shortcut cannot close
+multiple windows unintentionally.
+
+These commands close Portfolio OS windows, not browser tabs. Do not attempt to
+override browser-reserved `Command/Control + W` or `Command/Control + E`.
 
 On freeform desktops, reserve the window stack above wallpaper, desktop
 content, launchers, and the complete sticky-note layer. Reordering active
@@ -105,6 +131,8 @@ When `data-transparency-enabled` + `--accessibility-transparency` are set by the
 - [ ] Focus returns to the launcher button when a window closes.
 - [ ] Resize handles have accessible names and keyboard support.
 - [ ] Every open window remains above every sticky note, including the active sticky.
+- [ ] Maximized title-bar drag restores and continues under the same pointer.
+- [ ] Product close shortcuts preserve geometry and follow current z-order.
 
 ---
 

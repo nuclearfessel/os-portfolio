@@ -37,6 +37,20 @@ The system uses Tailwind's standard named scale. All values below are as defined
 | `text-4xl` | 2.25rem (36px) | 1.11 | Large display headings |
 | `text-5xl+` | 3rem+ | 1.0 | Hero / display sizes |
 
+### Desktop introduction roles
+
+The desktop introduction uses dedicated semantic roles rather than inheriting the
+general `text-lg` line height:
+
+| Role | Size | Weight | Line height | Generated variable |
+|---|---:|---:|---:|---|
+| Primary heading spans | Responsive display size | 800 | Inherited from heading | `--desktop-intro-primary-weight` |
+| Intro body | 1.125rem (18px) | 400 | 1.25 | `--desktop-intro-body-size`, `--desktop-intro-body-weight`, `--desktop-intro-body-line-height` |
+
+These values come from `typography.desktopIntro` in `tokens.json`. Use them for
+the text block rendered directly over desktop wallpaper; do not substitute the
+general `text-lg` role, whose 1.56 line height serves longer-form content.
+
 ---
 
 ## Role conventions
@@ -76,6 +90,6 @@ Use for:
 |---|---|
 | Use `font-mono` for status labels, metadata, and compact kickers | Use `font-mono` for paragraph body copy |
 | Use `text-muted-foreground` for secondary/helper text | Use raw colors for text variants |
-| Set headings with `font-semibold` or `font-medium` + appropriate scale | Invent new weight utilities outside the Tailwind config |
+| Use the `desktopIntro` semantic role for the desktop introduction | Rebuild the intro role from unrelated type utilities |
 | Keep section labels `uppercase tracking-wide font-mono` for consistent orientation | Mix section-label patterns across the product |
 | Use `leading-relaxed` or explicit line-height for descriptions > 1 line | Leave long strings of body text without a comfortable line-height |

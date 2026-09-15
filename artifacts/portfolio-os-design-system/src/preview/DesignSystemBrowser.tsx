@@ -63,6 +63,25 @@ function NavigationItems({
   query: string;
   select: (id: string) => void;
 }) {
+  const foundationGroups = groups.filter((group) => group.name === 'Foundations');
+  const patternGroups = groups.filter((group) => group.name === 'Patterns');
+  const componentGroups = groups.filter(
+    (group) => group.name !== 'Foundations' && group.name !== 'Patterns',
+  );
+  const renderEntries = (group: NavGroup) => (
+    group.entries.map((entry) => (
+      <button
+        key={entry.id}
+        type="button"
+        onClick={() => select(entry.id)}
+        aria-current={entry.id === activeId ? 'page' : undefined}
+        className="block w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground"
+      >
+        {entry.name}
+      </button>
+    ))
+  );
+
   return (
     <nav aria-label="Design system navigation" className="space-y-5 py-2">
       {showOverview ? (
@@ -76,23 +95,44 @@ function NavigationItems({
         </button>
       ) : null}
 
-      {groups.map((group) => (
+      {foundationGroups.map((group) => (
         <div key={group.name}>
           <p className="px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {group.name}
           </p>
           <div className="mt-2 space-y-1 border-l pl-2">
-            {group.entries.map((entry) => (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => select(entry.id)}
-                aria-current={entry.id === activeId ? 'page' : undefined}
-                className="block w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground"
-              >
-                {entry.name}
-              </button>
+            {renderEntries(group)}
+          </div>
+        </div>
+      ))}
+
+      {componentGroups.length > 0 ? (
+        <div>
+          <p className="px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Components
+          </p>
+          <div className="mt-2 space-y-4 border-l pl-2">
+            {componentGroups.map((group) => (
+              <div key={group.name}>
+                <p className="px-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  {group.name}
+                </p>
+                <div className="mt-1 space-y-1 pl-2">
+                  {renderEntries(group)}
+                </div>
+              </div>
             ))}
+          </div>
+        </div>
+      ) : null}
+
+      {patternGroups.map((group) => (
+        <div key={group.name}>
+          <p className="px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {group.name}
+          </p>
+          <div className="mt-2 space-y-1 border-l pl-2">
+            {renderEntries(group)}
           </div>
         </div>
       ))}

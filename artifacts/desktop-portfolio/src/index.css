@@ -211,9 +211,9 @@ button { cursor: pointer; }
 .desktop-intro { max-width: 420px; position: relative; z-index: 2; animation: enter .16s ease-out both; }
 .eyebrow { color: #e4ff5b; font-family: var(--app-font-mono); text-transform: uppercase; letter-spacing: .14em; font-size: 10px; }
 .desktop-intro h1 { font-size: clamp(32px, 4vw, 60px); line-height: .98; letter-spacing: -.06em; margin: 14px 0 17px; max-width: 420px; }
-.desktop-intro h1 > span { font-weight: 800; }
+.desktop-intro h1 > span { font-weight: var(--desktop-intro-primary-weight); }
 .desktop-intro h1 em { color: #e4ff5b; font-style: normal; }
-.desktop-intro p { color: #aeb2cb; line-height: 1.25; font-size: 18px; font-weight: 400; max-width: 400px; }
+.desktop-intro p { color: #aeb2cb; line-height: var(--desktop-intro-body-line-height); font-size: var(--desktop-intro-body-size); font-weight: var(--desktop-intro-body-weight); max-width: 400px; }
 .quick-actions { margin-top: 24px; display: flex; gap: 9px; flex-wrap: wrap; }
 .quick-button, .window-control, .dock-item, .project-link, .contact-button {
   border: 1px solid rgba(212, 220, 255, .16); color: #dfe2f0; background: rgba(32, 35, 61, .72);
@@ -326,7 +326,8 @@ button { cursor: pointer; }
 .traffic-lights .close:hover, .traffic-lights .close:focus-visible { color: #fff; background: #c84b55; }
 .window-control-tooltip { position: absolute; top: 35px; right: 0; z-index: 30; transform: translateY(-2px); }
 .traffic-lights button:hover .window-control-tooltip, .traffic-lights button:focus-visible .window-control-tooltip { opacity: 1; transform: translateY(0); }
-.window-title { min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--app-font-mono); color: #a7a7a7; }
+.theme-dark { --window-title-foreground: var(--window-title-foreground-dark); }
+.window-title { min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--app-font-mono); color: hsl(var(--window-title-foreground)); }
 .window-title strong { color: inherit; font-weight: 400; }
 .window-body { height: calc(100% - 44px); overflow: auto; padding: 24px; }
 .section-kicker { color: #e4ff5b; font: 10px var(--app-font-mono); text-transform: uppercase; letter-spacing: .12em; }
@@ -1369,7 +1370,7 @@ button { cursor: pointer; }
 .theme-light .window { color: #17213b; background: rgba(247,250,248,.98); border-color: rgba(26,83,91,.25); box-shadow: 0 24px 70px rgba(48,68,71,.24), 0 2px 0 rgba(255,255,255,.72) inset; }
 .theme-light .window.is-active { border-color: rgba(11,102,93,.62); }
 .theme-light .window-header { background: rgba(219,232,228,.92); border-bottom-color: rgba(26,83,91,.14); }
-.theme-light .window-title { color: #505657; }
+.theme-light { --window-title-foreground: var(--window-title-foreground-light); }
 .theme-light .traffic-lights button { color: #52656d; }
 .theme-light .traffic-lights button:hover, .theme-light .traffic-lights button:focus-visible { color: #173847; background: rgba(22,72,78,.1); }
 .theme-light .traffic-lights .close:hover, .theme-light .traffic-lights .close:focus-visible { color: #fff; background: #a73543; }

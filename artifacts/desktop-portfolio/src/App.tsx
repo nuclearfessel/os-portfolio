@@ -1006,6 +1006,7 @@ function SettingsWindow({
 
   // Wallpaper controls disabled when contrast theme is active
   const wallpaperDisabled = accessibility.contrastTheme !== 'none';
+  const regularThemeDisabled = accessibility.contrastTheme !== 'none';
 
   const updateAccessibility = (patch: Partial<AccessibilityPrefs>) => {
     onSetAccessibility({ ...accessibility, ...patch });
@@ -1083,13 +1084,16 @@ function SettingsWindow({
                   <SettingsAccordionSection
                     value="theme"
                     label="Theme"
-                    description="Controls the overall color scheme of the desktop."
+                    description={regularThemeDisabled
+                      ? 'Light and dark themes are disabled while a contrast theme is active.'
+                      : 'Controls the overall color scheme of the desktop.'}
                   >
                   <div className="settings-theme-row">
                     <button
                       type="button"
                       className={`settings-theme-option ${theme === 'light' ? 'is-selected' : ''}`}
                       aria-pressed={theme === 'light'}
+                      disabled={regularThemeDisabled}
                       onClick={() => onSetTheme('light')}
                       data-testid="settings-theme-light"
                     >
@@ -1106,6 +1110,7 @@ function SettingsWindow({
                       type="button"
                       className={`settings-theme-option ${theme === 'dark' ? 'is-selected' : ''}`}
                       aria-pressed={theme === 'dark'}
+                      disabled={regularThemeDisabled}
                       onClick={() => onSetTheme('dark')}
                       data-testid="settings-theme-dark"
                     >
@@ -1910,6 +1915,9 @@ function Home() {
   const [wallpaperLight, setWallpaperLight] = useState<WallpaperConfig>(savedDesktopState.wallpaperLight ?? DEFAULT_WALLPAPER_LIGHT);
   const [wallpaperDark, setWallpaperDark] = useState<WallpaperConfig>(savedDesktopState.wallpaperDark ?? DEFAULT_WALLPAPER_DARK);
   const [accessibility, setAccessibility] = useState<AccessibilityPrefs>(savedDesktopState.accessibility ?? DEFAULT_ACCESSIBILITY_PREFS);
+  const setRegularTheme = (nextTheme: Theme) => {
+    if (accessibility.contrastTheme === 'none') setTheme(nextTheme);
+  };
   const [introCustomization, setIntroCustomization] = useState<IntroCustomization>(savedDesktopState.introCustomization ?? DEFAULT_INTRO_CUSTOMIZATION);
   const [automaticIntroColors, setAutomaticIntroColors] = useState<Partial<Record<IntroTextKey, string>>>({});
 
@@ -3533,12 +3541,12 @@ function Home() {
         {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
         {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
-        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setTheme} openWindows={windows} currentTheme={theme} />}
+        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} openWindows={windows} currentTheme={theme} />}
         {workspaceMode === 'desktop' && windows.settings && (
           <SettingsWindow
             {...windowProps('settings')}
             theme={theme}
-            onSetTheme={setTheme}
+            onSetTheme={setRegularTheme}
             wallpaperLight={wallpaperLight}
             wallpaperDark={wallpaperDark}
             onSetWallpaperLight={setWallpaperLight}
@@ -3881,7 +3889,8 @@ function Home() {
         {workspaceMode !== 'desktop' && (
             <DockItem
               className={`dock-item dock-mode-toggle mode-${theme}`}
-            onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')}
+            onClick={() => setRegularTheme(theme === 'light' ? 'dark' : 'light')}
+            disabled={accessibility.contrastTheme !== 'none'}
             aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             data-testid="button-dock-mode"
           >

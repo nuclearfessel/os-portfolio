@@ -107,7 +107,7 @@ jobs:
           DESIGN_SYSTEM_ZIP: ${{ steps.release.outputs.design_system_zip }}
           CLAUDE_ZIP: ${{ steps.release.outputs.claude_zip }}
         run: |
-           release_notes="Automated OS Portfolio site, OS Portfolio DS site, and Claude source packages for \`main\` at commit \`${GITHUB_SHA::7}\`."
+          release_notes="Automated OS Portfolio site, OS Portfolio DS site, and Claude source packages for \`main\` at commit \`${GITHUB_SHA::7}\`."
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" "$SITE_ZIP" "$DESIGN_SYSTEM_ZIP" "$CLAUDE_ZIP" --clobber

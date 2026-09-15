@@ -15,7 +15,7 @@
 - [Responsive window side navigation](responsive-window-side-navigation.md) — every narrow resizable window moves side navigation below its toolbar as horizontal sub-navigation.
 - [Desktop text personalization](desktop-text-personalization.md) — desktop copy is shared across themes; each element keeps separate light and dark colors.
 - [Main-only release packages](main-only-release-packages.md) — main releases contain portfolio, design-system, and Claude ZIPs; branches publish nothing.
-- [Approved branch documentation sync](approved-branch-documentation-sync.md) — before merging approved work, update README, Claude files, and package surfaces when applicable.
+- [Explicit GitHub approval](approved-branch-documentation-sync.md) — never commit, merge, push, or release without the user’s explicit approval.
 - [Approved Dock interaction language](approved-dock-interaction-language.md) — keep Dock feedback flat, spacing compact, and active state persistent rather than hover-driven.
 - [Design-system token consumption](design-system-token-consumption.md) — consume isolated shared values through generated tokens, not the full stylesheet.
 - [Playwright WebKit on Replit](playwright-webkit-replit.md) — isolate Nix compatibility libraries to WebKit; never export the full closure to Node.

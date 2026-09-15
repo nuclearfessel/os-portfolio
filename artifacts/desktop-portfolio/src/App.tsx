@@ -2230,6 +2230,17 @@ function Home() {
     setTimeout(() => { systemBarDragRef.current = null; }, 50);
   };
   const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean; currentLeft: number; currentTop: number } | null>(null);
+  const maximizedDragRef = useRef<{
+    id: WindowId;
+    header: HTMLElement;
+    startX: number;
+    startY: number;
+    currentX: number;
+    currentY: number;
+    ratioX: number;
+    offsetY: number;
+    restoring: boolean;
+  } | null>(null);
   const resizeRef = useRef<{
     id: DesktopItemId;
     direction: ResizeDirection;
@@ -2246,6 +2257,7 @@ function Home() {
   useEffect(() => {
     const clearPointerOperations = () => {
       dragRef.current = null;
+      maximizedDragRef.current = null;
       resizeRef.current = null;
       rotateRef.current = null;
       dockDragRef.current = null;
@@ -2459,8 +2471,8 @@ function Home() {
       if (event.metaKey || event.ctrlKey) return;
       const target = event.target;
       const isColorValueField = target instanceof HTMLElement && Boolean(target.closest('.cp-field'));
-      if (isColorValueField && ['1', '2', '3'].includes(event.key)) return;
-      const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '`': 'terminal' };
+      if (isColorValueField && ['1', '2', '3', '4'].includes(event.key)) return;
+      const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '4': 'terminal' };
       const id = shortcuts[event.key];
       if (id === 'terminal' && workspaceMode !== 'desktop') return;
       if (id) { event.preventDefault(); openWindow(id); }
@@ -2651,7 +2663,60 @@ function Home() {
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
+  const startMaximizedDrag = (id: WindowId, event: ReactPointerEvent<HTMLElement>) => {
+    if (event.button !== 0 || workspaceMode === 'managed') return;
+    const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
+    if (!target) return;
+    const targetRect = target.getBoundingClientRect();
+    maximizedDragRef.current = {
+      id,
+      header: event.currentTarget,
+      startX: event.clientX,
+      startY: event.clientY,
+      currentX: event.clientX,
+      currentY: event.clientY,
+      ratioX: Math.max(0, Math.min(1, (event.clientX - targetRect.left) / targetRect.width)),
+      offsetY: event.clientY - targetRect.top,
+      restoring: false,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
   const moveDrag = (event: ReactPointerEvent<HTMLElement>) => {
+    const maximizedDrag = maximizedDragRef.current;
+    if (maximizedDrag) {
+      maximizedDrag.currentX = event.clientX;
+      maximizedDrag.currentY = event.clientY;
+      if (!maximizedDrag.restoring) {
+        const distance = Math.hypot(
+          event.clientX - maximizedDrag.startX,
+          event.clientY - maximizedDrag.startY,
+        );
+        if (distance < 4) return;
+        maximizedDrag.restoring = true;
+        setMaximizedWindows((current) => ({ ...current, [maximizedDrag.id]: false }));
+        window.requestAnimationFrame(() => {
+          const pending = maximizedDragRef.current;
+          const area = desktopAreaRef.current;
+          const draggableTarget = pending?.header.closest('[data-draggable-item]') as HTMLElement | null;
+          if (!pending || pending !== maximizedDrag || !area || !draggableTarget) return;
+          const areaRect = area.getBoundingClientRect();
+          const restoredRect = draggableTarget.getBoundingClientRect();
+          const left = pending.currentX - areaRect.left - restoredRect.width * pending.ratioX;
+          const top = Math.max(0, pending.currentY - areaRect.top - pending.offsetY);
+          setDragPositions((current) => ({ ...current, [pending.id]: { left, top } }));
+          dragRef.current = {
+            id: pending.id,
+            offsetX: restoredRect.width * pending.ratioX,
+            offsetY: pending.offsetY,
+            moved: true,
+            currentLeft: left,
+            currentTop: top,
+          };
+          maximizedDragRef.current = null;
+        });
+      }
+      return;
+    }
     const drag = dragRef.current;
     const area = desktopAreaRef.current;
     if (!drag || !area) return;
@@ -2697,6 +2762,7 @@ function Home() {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
+    maximizedDragRef.current = null;
     dragRef.current = null;
   };
   const endDesktopLauncherDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
@@ -3131,7 +3197,8 @@ function Home() {
       setActiveWindow(id);
       setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
       setStickyOnTop(false);
-      if (!maximizedWindows[id]) startDrag(id, event);
+      if (maximizedWindows[id]) startMaximizedDrag(id, event);
+      else startDrag(id, event);
     },
     onPointerMove: moveDrag,
     onPointerUp: endDrag,
@@ -3796,7 +3863,7 @@ function Home() {
         )}
         {workspaceMode === 'desktop' && (
           <>
-            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · `</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-stickies" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies</DockItemLabel></DockItem>
             <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts</DockItemLabel></DockItem>
             <DockItem className="dock-item" active={windows.settings} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings</DockItemLabel></DockItem>
@@ -3807,9 +3874,9 @@ function Home() {
       {mobileOpen && (
         <div className="mobile-shortcut-menu" data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
-          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–3 to open a window. Press backtick for the terminal.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
+          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–4 to open a window.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
-            {(['about', 'work', 'contact'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span className="shortcut-number">{index + 1}</span>{id}</button>)}
+            {(['about', 'work', 'contact', 'terminal'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span className="shortcut-number">{index + 1}</span>{id}</button>)}
           </div>
         </div>
       )}

@@ -771,6 +771,53 @@ test('reopens a closed window at the same position and size', async ({ page }) =
   expect(afterReopen!.height).toBeCloseTo(beforeClose!.height, 0);
 });
 
+test('restores a maximized window into a continuous title-bar drag', async ({ page }) => {
+  const aboutWindow = page.getByTestId('window-about');
+  const aboutHeader = aboutWindow.locator('.window-header');
+  const floatingBox = await aboutWindow.boundingBox();
+  expect(floatingBox).not.toBeNull();
+
+  await page.getByTestId('button-maximize-about').click();
+  await expect(aboutWindow).toHaveClass(/is-maximized/);
+  const maximizedBox = await aboutWindow.boundingBox();
+  expect(maximizedBox).not.toBeNull();
+
+  const grabX = maximizedBox!.x + maximizedBox!.width * 0.65;
+  const grabY = maximizedBox!.y + 22;
+  await page.mouse.move(grabX, grabY);
+  await page.mouse.down();
+  await page.mouse.move(grabX - 140, grabY + 90, { steps: 8 });
+  await page.mouse.up();
+
+  await expect(aboutWindow).not.toHaveClass(/is-maximized/);
+  const restoredBox = await aboutWindow.boundingBox();
+  expect(restoredBox).not.toBeNull();
+  expect(restoredBox!.width).toBeCloseTo(floatingBox!.width, 0);
+  expect(restoredBox!.height).toBeCloseTo(floatingBox!.height, 0);
+  expect(restoredBox!.x).not.toBeCloseTo(floatingBox!.x, 0);
+  expect(restoredBox!.y).not.toBeCloseTo(floatingBox!.y, 0);
+
+  await aboutHeader.dblclick();
+  await expect(aboutWindow).toHaveClass(/is-maximized/);
+  await aboutHeader.dblclick();
+  await expect(aboutWindow).not.toHaveClass(/is-maximized/);
+});
+
+test('uses 4 instead of backtick for the terminal shortcut', async ({ page }) => {
+  const terminalWindow = page.getByTestId('window-terminal');
+  await expect(terminalWindow).toHaveCount(0);
+
+  await page.keyboard.press('Backquote');
+  await expect(terminalWindow).toHaveCount(0);
+
+  await page.keyboard.press('4');
+  await expect(terminalWindow).toBeVisible();
+
+  await page.getByTestId('button-dock-shortcuts').click();
+  await expect(page.getByTestId('menu-mobile')).toContainText('Use 1–4 to open a window.');
+  await expect(page.getByTestId('button-menu-terminal')).toContainText('4terminal');
+});
+
 test('falls back to safe defaults when saved data is corrupted', async ({ page }) => {
   await page.evaluate(([key, value]) => localStorage.setItem(key, value), [storageKey, '{not-json']);
   await page.reload();

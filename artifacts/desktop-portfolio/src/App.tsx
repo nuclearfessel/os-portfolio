@@ -3101,9 +3101,9 @@ function Home() {
       ? undefined
       : maximizedWindows[id]
       ? {
-        left: dockPosition === 'left' ? 82 : systemBarPosition === 'left' ? 140 : 12,
+        left: dockPosition === 'left' ? 82 : systemBarPosition === 'left' ? 60 : 12,
         top: dockPosition === 'top' ? 82 : systemBarPosition === 'top' ? 54 : 12,
-        right: dockPosition === 'right' ? 82 : systemBarPosition === 'right' ? 140 : 12,
+        right: dockPosition === 'right' ? 82 : systemBarPosition === 'right' ? 60 : 12,
         bottom: dockPosition === 'bottom' ? 82 : systemBarPosition === 'bottom' ? 54 : 12,
         width: 'auto',
         height: 'auto',
@@ -3124,6 +3124,7 @@ function Home() {
   const automaticContrastActive = (
     introCustomization.automaticContrast
   );
+  const [clockTime = '', clockPeriod = ''] = clock.split(' ');
   const introTextStyle = (key: IntroTextKey): React.CSSProperties => {
     const automaticColor = automaticContrastActive ? automaticIntroColors[key] : undefined;
     return {
@@ -3189,7 +3190,11 @@ function Home() {
           <StatusIndicator className="system-status" dotClassName="status-dot" />
           <Wifi className="system-network" size={14} />
           <BatteryMedium className="system-network" size={16} />
-          <span data-testid="text-system-clock">{clock}</span>
+          <span className="system-side-separator" aria-hidden="true" />
+          <span className="system-clock" data-testid="text-system-clock">
+            <span className="system-clock-time">{clockTime}</span>
+            <span className="system-clock-period">{clockPeriod}</span>
+          </span>
           <button className="mobile-menu" onClick={() => setMobileOpen((value) => !value)} aria-label="Open portfolio menu" data-testid="button-mobile-menu"><Menu size={17} /></button>
         </div>
       </header>

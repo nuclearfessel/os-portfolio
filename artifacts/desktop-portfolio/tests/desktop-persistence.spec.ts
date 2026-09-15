@@ -221,16 +221,36 @@ test('system bar repositions like the Dock and preserves its desktop edge', asyn
   const expectSideBarContentContained = async () => {
     const geometry = await systemBar.evaluate((element) => {
       const bar = element.getBoundingClientRect();
-      const status = element.querySelector('.system-status')!.getBoundingClientRect();
+      const statusElement = element.querySelector<HTMLElement>('.system-status')!;
+      const status = statusElement.getBoundingClientRect();
+      const separator = element.querySelector('.system-side-separator')!.getBoundingClientRect();
+      const clockTime = element.querySelector('.system-clock-time')!.getBoundingClientRect();
+      const clockPeriod = element.querySelector('.system-clock-period')!.getBoundingClientRect();
+      const statusFontSize = getComputedStyle(statusElement).fontSize;
+      const periodFontSize = getComputedStyle(element.querySelector('.system-clock-period')!).fontSize;
       const textWritingModes = Array.from(element.querySelectorAll('span'))
         .filter((item) => getComputedStyle(item).display !== 'none' && item.textContent?.trim())
         .map((item) => getComputedStyle(item).writingMode);
       return {
+        barWidth: bar.width,
         statusContained: status.left >= bar.left && status.right <= bar.right,
+        statusStacked: getComputedStyle(statusElement).flexDirection === 'column',
+        separatorVisible: separator.width > 0 && separator.height > 0,
+        clockStacked: clockTime.bottom <= clockPeriod.top,
+        statusMatchesPeriod: statusFontSize === periodFontSize,
+        logoVisible: getComputedStyle(element.querySelector('.system-logo')!).display !== 'none',
+        wordmarkHidden: getComputedStyle(element.querySelector('.system-mark')!).display === 'none',
         textWritingModes,
       };
     });
+    expect(geometry.barWidth).toBeCloseTo(48, 0);
     expect(geometry.statusContained).toBe(true);
+    expect(geometry.statusStacked).toBe(true);
+    expect(geometry.separatorVisible).toBe(true);
+    expect(geometry.clockStacked).toBe(true);
+    expect(geometry.statusMatchesPeriod).toBe(true);
+    expect(geometry.logoVisible).toBe(true);
+    expect(geometry.wordmarkHidden).toBe(true);
     expect(geometry.textWritingModes.every((mode) => mode === 'horizontal-tb')).toBe(true);
   };
   await expectSideBarContentContained();
@@ -268,9 +288,9 @@ test('system bar repositions like the Dock and preserves its desktop edge', asyn
     };
   });
   expect(leftEdgeGeometry.intro).toBeGreaterThanOrEqual(leftEdgeGeometry.barRight);
-  expect(leftEdgeGeometry.intro - rightEdgeGeometry.intro).toBeCloseTo(128, 0);
-  expect(leftEdgeGeometry.window - rightEdgeGeometry.window).toBeCloseTo(128, 0);
-  expect(leftEdgeGeometry.sticky - rightEdgeGeometry.sticky).toBeCloseTo(128, 0);
+  expect(leftEdgeGeometry.intro - rightEdgeGeometry.intro).toBeCloseTo(48, 0);
+  expect(leftEdgeGeometry.window - rightEdgeGeometry.window).toBeCloseTo(48, 0);
+  expect(leftEdgeGeometry.sticky - rightEdgeGeometry.sticky).toBeCloseTo(48, 0);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(systemBar).toHaveClass(/system-bar-top/);

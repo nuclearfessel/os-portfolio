@@ -2488,11 +2488,47 @@ button { cursor: pointer; }
 [data-contrast="low"] .settings-speed-group,
 [data-contrast="low"] .project-card,
 [data-contrast="low"] .desktop-context-menu,
-[data-contrast="low"] .context-menu-surface,
-[data-contrast="low"] .sticky-note-surface {
+[data-contrast="low"] .context-menu-surface {
   color: var(--contrast-text) !important;
   background: var(--contrast-surface-2) !important;
   border-color: var(--contrast-border) !important;
+}
+
+[data-contrast="low"] .desktop-note {
+  --sticky-bg: var(--sticky-low-bg) !important;
+  --sticky-text: #f0eee8 !important;
+  --sticky-muted: var(--sticky-low-accent) !important;
+  --sticky-accent: var(--sticky-low-accent) !important;
+  --sticky-border: var(--sticky-low-accent) !important;
+  --sticky-handle: var(--sticky-low-accent) !important;
+}
+
+[data-contrast="low"] .desktop-note-surface {
+  background: var(--sticky-bg) !important;
+  border: 2px solid var(--sticky-border) !important;
+  border-color: var(--sticky-low-accent) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[data-contrast="low"] .desktop-note::before {
+  background: color-mix(in srgb, var(--sticky-low-accent) 54%, #262838) !important;
+  border-color: var(--sticky-low-accent) !important;
+}
+
+[data-contrast="low"] .desktop-note .note-label,
+[data-contrast="low"] .desktop-note .note-signoff {
+  color: var(--sticky-low-accent) !important;
+}
+
+[data-contrast="low"] .desktop-note .sticky-text,
+[data-contrast="low"] .desktop-note .sticky-add-button,
+[data-contrast="low"] .desktop-note .sticky-delete-button {
+  color: var(--sticky-text) !important;
+}
+
+[data-contrast="low"] .sticky-color-option {
+  border-color: currentColor !important;
 }
 
 [data-contrast="low"] .system-bar {
@@ -2612,11 +2648,61 @@ button { cursor: pointer; }
 [data-contrast="high"] .system-bar,
 [data-contrast="high"] .project-card,
 [data-contrast="high"] .desktop-context-menu,
-[data-contrast="high"] .context-menu-surface,
-[data-contrast="high"] .sticky-note-surface {
+[data-contrast="high"] .context-menu-surface {
   color: var(--hc-text) !important;
   background: var(--hc-bg) !important;
   border-color: var(--hc-border) !important;
+}
+
+[data-contrast="high"] .desktop-note {
+  --sticky-bg: #000000 !important;
+  --sticky-text: #ffffff !important;
+  --sticky-muted: var(--sticky-high-accent) !important;
+  --sticky-accent: var(--sticky-high-accent) !important;
+  --sticky-border: var(--sticky-high-accent) !important;
+  --sticky-handle: var(--sticky-high-accent) !important;
+}
+
+[data-contrast="high"] .desktop-note-surface {
+  background: #000000 !important;
+  border: 3px solid var(--sticky-high-accent) !important;
+  border-color: var(--sticky-high-accent) !important;
+  box-shadow: 0 0 0 1px #000, 0 0 0 3px #fff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[data-contrast="high"] .desktop-note::before {
+  background: var(--sticky-high-accent) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #000 !important;
+}
+
+[data-contrast="high"] .desktop-note .note-label,
+[data-contrast="high"] .desktop-note .note-signoff {
+  color: var(--sticky-high-accent) !important;
+}
+
+[data-contrast="high"] .desktop-note .sticky-text,
+[data-contrast="high"] .desktop-note .sticky-add-button,
+[data-contrast="high"] .desktop-note .sticky-delete-button {
+  color: #ffffff !important;
+}
+
+[data-contrast="high"] .desktop-note .sticky-text::placeholder {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+[data-contrast="high"] .desktop-note .sticky-text:focus,
+[data-contrast="high"] .desktop-note .sticky-text:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+
+[data-contrast="high"] .sticky-color-option {
+  border-color: currentColor !important;
 }
 
 [data-contrast="high"] .system-bar {

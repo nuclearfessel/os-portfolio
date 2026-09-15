@@ -37,6 +37,8 @@ Renders as `<div>`. No built-in background color — the consumer applies a colo
 
 - Rotation, position, and z-order: consuming product.
 - Background color choice: consuming product.
+- Low/High Contrast color choice: use the generated fixed sticky palette tokens;
+  all ten product colors have a low background, low accent, and high accent.
 - Content (text, rich content): consuming product.
 - Persistence: consuming product (see [Saved-state ownership](../../patterns/saved-state-ownership.md)).
 
@@ -45,6 +47,11 @@ Renders as `<div>`. No built-in background color — the consumer applies a colo
 ## Accessibility
 
 Treat note content as readable text. The container itself has no semantic role. If notes are a list, wrap in `<ul>` and make each note an `<li>`.
+
+In High Contrast, use a black surface and white body text with the selected
+`--fixed-sticky-<color>-high-accent` for the border and secondary details. In
+Low Contrast, pair `--fixed-sticky-<color>-low-bg` with its matching
+`--fixed-sticky-<color>-low-accent`.
 
 ---
 

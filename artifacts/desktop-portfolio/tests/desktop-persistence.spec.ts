@@ -1330,6 +1330,69 @@ test('resets a sticky rotation in both themes and keeps it upright after reload'
   await expect.poll(readRotation).toBe('0deg');
 });
 
+test('all ten sticky colors have distinct Low and High Contrast variants', async ({ page }) => {
+  const colorNames = ['Lemon', 'Orange', 'Red', 'Cream', 'Teal', 'Blue', 'Purple', 'Berry', 'Forest', 'Charcoal'];
+  const sticky = page.getByTestId('sticky-sticky');
+  const surface = sticky.locator('.desktop-note-surface');
+  await page.getByTestId('button-dock-terminal').click();
+  const terminalInput = page.getByTestId('input-terminal-command');
+
+  const setContrast = async (command: string) => {
+    await terminalInput.fill(command);
+    await terminalInput.press('Enter');
+  };
+
+  const collectVariants = async (mode: 'low' | 'high') => {
+    const variants: { background: string; border: string; text: string }[] = [];
+    for (const name of colorNames) {
+      await openStickyMenu(page);
+      const option = page.getByRole('menuitemradio', { name });
+      const previewBorder = await option.evaluate((element) => getComputedStyle(element).borderColor);
+      await option.click();
+      await expect(sticky).toHaveAttribute('data-sticky-color', name.toLowerCase());
+      const computed = await surface.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { background: style.backgroundColor, border: style.borderColor, text: style.color };
+      });
+      expect(computed.border).toBe(previewBorder);
+      if (mode === 'high') {
+        expect(computed.background).toBe('rgb(0, 0, 0)');
+        expect(computed.text).toBe('rgb(255, 255, 255)');
+      }
+      variants.push(computed);
+    }
+    return variants;
+  };
+
+  await setContrast('set low contrast on');
+  const lowVariants = await collectVariants('low');
+  expect(new Set(lowVariants.map(({ background }) => background)).size).toBe(colorNames.length);
+  expect(new Set(lowVariants.map(({ border }) => border)).size).toBe(colorNames.length);
+
+  await setContrast('set high contrast on');
+  const highVariants = await collectVariants('high');
+  expect(new Set(highVariants.map(({ border }) => border)).size).toBe(colorNames.length);
+
+  const textarea = sticky.getByRole('textbox', { name: 'Sticky note 1 text' });
+  await textarea.focus();
+  await textarea.fill('Typing without a yellow focus box');
+  await expect.poll(() => textarea.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const placeholder = getComputedStyle(element, '::placeholder');
+    return {
+      outline: style.outlineStyle,
+      shadow: style.boxShadow,
+      placeholderColor: placeholder.color,
+      placeholderOpacity: placeholder.opacity,
+    };
+  })).toEqual({
+    outline: 'none',
+    shadow: 'none',
+    placeholderColor: 'rgb(255, 255, 255)',
+    placeholderOpacity: '1',
+  });
+});
+
 test('deletes only user-created stickies after confirmation and clears their saved layout', async ({ page }) => {
   const originalSticky = page.getByTestId('sticky-sticky');
   await expect(originalSticky.getByRole('button', { name: /Delete/ })).toHaveCount(0);

@@ -10,6 +10,7 @@ import { CircleUser as CircleUserFill } from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
 import { BsStickyFill } from 'react-icons/bs';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { tokens } from '@workspace/portfolio-os-design-system/tokens';
 import { Toaster } from '@workspace/portfolio-os-design-system/components/ui/toaster';
 import { TooltipProvider } from '@workspace/portfolio-os-design-system/components/ui/tooltip';
 import { Separator } from '@workspace/portfolio-os-design-system/components/ui/separator';
@@ -194,16 +195,16 @@ function fitStickySize(size: Size, rotation: number, workspace: WorkspaceBounds)
 }
 
 const stickyPalette = [
-  { id: 'lemon', label: 'Lemon', background: '#ffd84d', foreground: 'dark', handle: '#8f6900' },
-  { id: 'orange', label: 'Orange', background: '#ffb84d', foreground: 'dark', handle: '#9f5700' },
-  { id: 'coral', label: 'Coral', background: '#ffaaa3', foreground: 'dark', handle: '#9d4648' },
-  { id: 'cream', label: 'Cream', background: '#fff0d2', foreground: 'dark', handle: '#a88655' },
-  { id: 'teal', label: 'Teal', background: '#006456', foreground: 'light', handle: '#76dccb' },
-  { id: 'blue', label: 'Blue', background: '#0d56b3', foreground: 'light', handle: '#8ac4ff' },
-  { id: 'purple', label: 'Purple', background: '#6648b8', foreground: 'light', handle: '#c8b3ff' },
-  { id: 'berry', label: 'Berry', background: '#a93570', foreground: 'light', handle: '#ffb2d5' },
-  { id: 'forest', label: 'Forest', background: '#1e603d', foreground: 'light', handle: '#91d6aa' },
-  { id: 'charcoal', label: 'Charcoal', background: '#343b4f', foreground: 'light', handle: '#b8c2dd' },
+  { id: 'lemon', label: 'Lemon', background: '#ffd84d', foreground: 'dark', handle: '#8f6900', lowBackground: tokens.color.fixed.stickyLemonLowBackground, lowAccent: tokens.color.fixed.stickyLemonLowAccent, highAccent: tokens.color.fixed.stickyLemonHighAccent },
+  { id: 'orange', label: 'Orange', background: '#ffb84d', foreground: 'dark', handle: '#9f5700', lowBackground: tokens.color.fixed.stickyOrangeLowBackground, lowAccent: tokens.color.fixed.stickyOrangeLowAccent, highAccent: tokens.color.fixed.stickyOrangeHighAccent },
+  { id: 'red', label: 'Red', background: '#c9363e', foreground: 'light', handle: '#ffb3b6', lowBackground: tokens.color.fixed.stickyRedLowBackground, lowAccent: tokens.color.fixed.stickyRedLowAccent, highAccent: tokens.color.fixed.stickyRedHighAccent },
+  { id: 'cream', label: 'Cream', background: '#fff0d2', foreground: 'dark', handle: '#a88655', lowBackground: tokens.color.fixed.stickyCreamLowBackground, lowAccent: tokens.color.fixed.stickyCreamLowAccent, highAccent: tokens.color.fixed.stickyCreamHighAccent },
+  { id: 'teal', label: 'Teal', background: '#006456', foreground: 'light', handle: '#76dccb', lowBackground: tokens.color.fixed.stickyTealLowBackground, lowAccent: tokens.color.fixed.stickyTealLowAccent, highAccent: tokens.color.fixed.stickyTealHighAccent },
+  { id: 'blue', label: 'Blue', background: '#0d56b3', foreground: 'light', handle: '#8ac4ff', lowBackground: tokens.color.fixed.stickyBlueLowBackground, lowAccent: tokens.color.fixed.stickyBlueLowAccent, highAccent: tokens.color.fixed.stickyBlueHighAccent },
+  { id: 'purple', label: 'Purple', background: '#6648b8', foreground: 'light', handle: '#c8b3ff', lowBackground: tokens.color.fixed.stickyPurpleLowBackground, lowAccent: tokens.color.fixed.stickyPurpleLowAccent, highAccent: tokens.color.fixed.stickyPurpleHighAccent },
+  { id: 'berry', label: 'Berry', background: '#a93570', foreground: 'light', handle: '#ffb2d5', lowBackground: tokens.color.fixed.stickyBerryLowBackground, lowAccent: tokens.color.fixed.stickyBerryLowAccent, highAccent: tokens.color.fixed.stickyBerryHighAccent },
+  { id: 'forest', label: 'Forest', background: '#1e603d', foreground: 'light', handle: '#91d6aa', lowBackground: tokens.color.fixed.stickyForestLowBackground, lowAccent: tokens.color.fixed.stickyForestLowAccent, highAccent: tokens.color.fixed.stickyForestHighAccent },
+  { id: 'charcoal', label: 'Charcoal', background: '#343b4f', foreground: 'light', handle: '#b8c2dd', lowBackground: tokens.color.fixed.stickyCharcoalLowBackground, lowAccent: tokens.color.fixed.stickyCharcoalLowAccent, highAccent: tokens.color.fixed.stickyCharcoalHighAccent },
 ] as const;
 type StickyColorId = typeof stickyPalette[number]['id'];
 type StickyData = {
@@ -426,24 +427,29 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
         return size.width > 0 && size.height > 0;
       }),
     ) as ItemSizes;
+    const legacyStickyColor = parsed.stickyColor as string | undefined;
+    const migratedLegacyStickyColor = legacyStickyColor === 'coral' ? 'red' : legacyStickyColor;
     const stickies = Array.isArray(parsed.stickies)
-      ? parsed.stickies.flatMap((sticky) => (
-        Boolean(sticky)
-        && (sticky.id === 'sticky' || /^sticky-\d+$/.test(sticky.id))
-        && stickyPalette.some((color) => color.id === sticky.color)
-        && typeof sticky.text === 'string'
-          ? [{
-            ...sticky,
-            rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
-            author: sticky.author === 'user' ? 'user' as const : sticky.id === 'sticky' ? 'john' as const : 'user' as const,
-            createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt ? sticky.createdAt : sticky.id === 'sticky' ? '09:42' : 'saved',
-          }]
-          : []
-      ))
+      ? parsed.stickies.flatMap((sticky) => {
+        if (!sticky) return [];
+        const savedColor = (sticky as unknown as { color: string }).color;
+        const migratedColor = savedColor === 'coral' ? 'red' : savedColor;
+        return (sticky.id === 'sticky' || /^sticky-\d+$/.test(sticky.id))
+          && stickyPalette.some((color) => color.id === migratedColor)
+          && typeof sticky.text === 'string'
+            ? [{
+              ...sticky,
+              color: migratedColor as StickyColorId,
+              rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
+              author: sticky.author === 'user' ? 'user' as const : sticky.id === 'sticky' ? 'john' as const : 'user' as const,
+              createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt ? sticky.createdAt : sticky.id === 'sticky' ? '09:42' : 'saved',
+            }]
+            : [];
+      })
       : [{
         ...defaultSticky,
-        color: stickyPalette.some((color) => color.id === parsed.stickyColor)
-          ? parsed.stickyColor as StickyColorId
+        color: stickyPalette.some((color) => color.id === migratedLegacyStickyColor)
+          ? migratedLegacyStickyColor as StickyColorId
           : defaultSticky.color,
       }];
     const allWindowIds: WindowId[] = ['about', 'work', 'contact', 'terminal', 'settings'];
@@ -3014,6 +3020,9 @@ function Home() {
       '--sticky-accent': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-border': usesLightText ? 'rgba(255, 255, 255, .28)' : 'rgba(29, 36, 48, .25)',
       '--sticky-handle': selectedColor.handle,
+      '--sticky-low-bg': selectedColor.lowBackground,
+      '--sticky-low-accent': selectedColor.lowAccent,
+      '--sticky-high-accent': selectedColor.highAccent,
       '--sticky-rotation': `${managedLayout ? 0 : sticky.rotation}deg`,
     } as React.CSSProperties;
   };
@@ -3468,6 +3477,7 @@ function Home() {
             key={sticky.id}
             className="desktop-note"
             data-draggable-item
+            data-sticky-color={sticky.color}
             data-testid={`sticky-${sticky.id}`}
             style={stickyStyle(sticky)}
             onPointerDown={(event) => { setActiveStickyId(sticky.id); setStickyOnTop(true); startDrag(sticky.id, event); }}
@@ -3733,7 +3743,11 @@ function Home() {
                 type="button"
                 key={color.id}
                 className="sticky-color-option"
-                style={{ background: color.background, color: color.foreground === 'light' ? '#ffffff' : '#1d2430' }}
+                style={{
+                  background: accessibility.contrastTheme === 'high' ? '#000000' : accessibility.contrastTheme === 'low' ? color.lowBackground : color.background,
+                  color: accessibility.contrastTheme === 'high' ? color.highAccent : accessibility.contrastTheme === 'low' ? color.lowAccent : color.foreground === 'light' ? '#ffffff' : '#1d2430',
+                  borderColor: accessibility.contrastTheme === 'high' ? color.highAccent : accessibility.contrastTheme === 'low' ? color.lowAccent : undefined,
+                }}
                 role="menuitemradio"
                 aria-checked={stickies.find((sticky) => sticky.id === stickyMenu.id)?.color === color.id}
                 aria-label={color.label}

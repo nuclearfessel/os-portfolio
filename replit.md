@@ -49,9 +49,8 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 ### Source-control workflow
 
 - Start every update on a dedicated branch; never develop directly on `main`.
-- Leave completed work uncommitted while the user validates it.
-- The exact user response `Approved` is an immediate, mandatory workflow trigger. Do not acknowledge and stop or ask what it means: review and sync applicable docs/package surfaces, refresh both README screenshots, validate, commit, push the branch, merge into `main`, push `main`, and confirm the main-only release.
-- Any other wording must explicitly authorize approval before committing or merging.
+- Completed, validated work is automatically approved for GitHub. Do not wait for a separate approval response.
+- Completion immediately triggers the GitHub workflow: review and sync applicable docs/package surfaces, refresh both README screenshots, validate, commit, push the branch, merge into `main`, push `main`, and confirm the main-only release.
 
 - Build strictly on `artifacts/portfolio-os-design-system`; do not invent replacement tokens or duplicate shared primitives.
 - Keep launchers and their corresponding windows under separate position identities.

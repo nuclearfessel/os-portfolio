@@ -41,26 +41,23 @@ Every repository update must follow this process.
 When the work is ready:
 
 1. Run the relevant checks.
-2. Show the user a concise summary of the changes and validation results.
-3. State that the work is uncommitted and name the active branch.
-4. Wait for explicit approval such as “Approved,” “good to go,” or an equivalent confirmation.
-5. Treat requested corrections as continued work on the same branch, then repeat the validation handoff.
+2. Treat completed, validated work as automatically approved for GitHub.
+3. Continue immediately with the completion workflow below.
+4. Show the user a concise summary of the changes, validation results, merge, and release.
 
-Do not interpret silence, a new request, or a successful automated check as approval.
+## After validation
 
-## After explicit approval
-
-The exact response **“Approved”** is an immediate, mandatory trigger for every
-step below. Begin the workflow in the same turn. Never treat it as simple
-confirmation, stop after acknowledging it, or substitute a publish suggestion.
+Completion is an immediate, mandatory trigger for every step below. Begin the
+workflow in the same turn. Never wait for a separate approval response, stop
+after validation, or substitute a publish suggestion.
 
 1. Confirm only intended files changed.
-2. Review whether the approved change requires corresponding updates to `README.md`, Claude instruction/skill files, package metadata, package exports, or package documentation. Make and validate every applicable update before committing; do not change unrelated files merely to satisfy the checklist.
+2. Review whether the completed change requires corresponding updates to `README.md`, Claude instruction/skill files, package metadata, package exports, or package documentation. Make and validate every applicable update before committing; do not change unrelated files merely to satisfy the checklist.
 3. Refresh the two GitHub README screenshots from the current running previews:
    `docs/images/portfolio-os-portfolio.jpg` for the portfolio site and
    `docs/images/portfolio-os-design-system.jpg` for the design-system site.
    Confirm `README.md` embeds both files.
-4. Commit the approved work on its branch with a descriptive message.
+4. Commit the completed work on its branch with a descriptive message.
 5. Push the branch to `origin`.
 6. Update local `main` without rewriting history:
 
@@ -69,7 +66,7 @@ confirmation, stop after acknowledging it, or substitute a publish suggestion.
    git pull --ff-only origin main
    ```
 
-7. Merge the approved branch into `main`. Preserve the branch in history:
+7. Merge the completed branch into `main`. Preserve the branch in history:
 
    ```bash
    git merge --no-ff <branch-name> -m "Merge <short description>"
@@ -91,7 +88,7 @@ Do not delete the branch unless the user asks.
 ## Safety
 
 - Never force-push `main`.
-- Never bypass the user-validation step.
+- Never bypass the relevant validation checks.
 - Never commit unrelated files.
-- If `main` changed while awaiting approval, update it with `git pull --ff-only` and resolve any merge conflict on the feature branch before merging.
-- Replit may create automatic checkpoint commits. If that happens, report it clearly and use the existing checkpoint only after the user approves; do not create duplicate commits.
+- If `main` changed during development, update it with `git pull --ff-only` and resolve any merge conflict on the feature branch before merging.
+- Automatic checkpoint commits may appear. If that happens, report it clearly and use the existing checkpoint rather than creating duplicate commits.

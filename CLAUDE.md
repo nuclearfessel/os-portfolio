@@ -35,7 +35,7 @@ pnpm --filter @workspace/desktop-portfolio run build
 - After branch approval and before committing, review whether README, Claude files, package metadata/exports, or package documentation require matching updates. Apply only the updates relevant to the approved change.
 - Preserve the GitHub Releases website ZIP workflow for pushes to `main` only. Feature and maintenance branches must never publish release packages.
 - Website ZIPs must contain the deployable contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
-- Every `main` release must contain exactly two ZIP assets: a versioned deployable `site-package-vMM.NN.zip` and an unversioned Claude source package named exactly `claude-src-pack.zip`. Both are standard release assets; never create prereleases.
+- Every `main` release must contain exactly three ZIP assets: a versioned deployable `site-package-vMM.NN.zip`, a versioned deployable `design-system-package-vMM.NN.zip`, and an unversioned Claude source package named exactly `claude-src-pack.zip`. All are standard release assets; never create prereleases.
 - Preserve saved desktop positions and sizes when temporarily entering tablet or mobile layouts.
 - Keep launcher positions separate from the positions of their corresponding windows.
 - For every resizable window with side navigation, use the window container width to smoothly transform the sidebar into a horizontal sub-navigation toolbar directly below the window toolbar. Preserve item and keyboard order, active state, and non-overlapping content geometry.
@@ -56,6 +56,7 @@ Run the smallest relevant test during development. Before handing off a release,
 ## Generated files
 
 - Upload-ready build: `artifacts/desktop-portfolio/dist/public/`
+- Upload-ready design-system build: `artifacts/portfolio-os-design-system/dist/`
 - Downloadable source bundle: `claude-src-pack.zip`
 - The ZIP also contains a top-level `public/` copy of the latest production build and `DEPLOYMENT.md`.
 - Source portions of the ZIP exclude `node_modules`, package `dist` folders, Playwright reports/results, caches, environment files, and `*.tsbuildinfo`.

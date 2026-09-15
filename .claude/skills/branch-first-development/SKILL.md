@@ -78,8 +78,9 @@ confirmation, stop after acknowledging it, or substitute a publish suggestion.
    ```
 
 8. Confirm that `main` matches `origin/main` and the working tree is clean.
-9. Confirm the `main`-only GitHub release workflow completed and published both
-   required ZIP assets.
+9. Confirm the `main`-only GitHub release workflow completed and published all
+   three required ZIP assets: the portfolio site, design-system site, and Claude
+   source packages.
 
 Do not delete the branch unless the user asks.
 

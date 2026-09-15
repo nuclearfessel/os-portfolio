@@ -30,6 +30,7 @@ pnpm --filter @workspace/desktop-portfolio run build
 
 - Perform all work on a dedicated branch. Never develop directly on `main`.
 - Leave completed work uncommitted while the user validates it.
+- The exact user response `Approved` is an immediate, mandatory post-approval workflow trigger. Never merely acknowledge it and never substitute a publish suggestion: perform the sync review, validate, commit, push the branch, merge into `main`, push `main`, and confirm the main-only release.
 - Commit, merge into `main`, and push only after the user gives explicit approval.
 - After branch approval and before committing, review whether README, Claude files, package metadata/exports, or package documentation require matching updates. Apply only the updates relevant to the approved change.
 - Preserve the GitHub Releases website ZIP workflow for pushes to `main` only. Feature and maintenance branches must never publish release packages.

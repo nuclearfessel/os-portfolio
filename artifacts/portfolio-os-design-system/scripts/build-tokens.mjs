@@ -169,6 +169,26 @@ function buildCss(tokens) {
   replacements.__DS_FONT_MONO__ = toFontStack(
     resolveValue(tokens.typography.fontFamily.mono, tokens),
   );
+  replacements.__DS_DESKTOP_INTRO_PRIMARY_WEIGHT__ = resolveValue(
+    tokens.typography.desktopIntro.primaryWeight,
+    tokens,
+  );
+  replacements.__DS_DESKTOP_INTRO_BODY_SIZE__ = resolveValue(
+    tokens.typography.desktopIntro.bodySize,
+    tokens,
+  );
+  replacements.__DS_DESKTOP_INTRO_BODY_WEIGHT__ = resolveValue(
+    tokens.typography.desktopIntro.bodyWeight,
+    tokens,
+  );
+  replacements.__DS_DESKTOP_INTRO_BODY_LINE_HEIGHT__ = resolveValue(
+    tokens.typography.desktopIntro.bodyLineHeight,
+    tokens,
+  );
+  replacements.__DS_DESKTOP_INTRO_CONTRAST_TARGET__ = resolveValue(
+    tokens.accessibility.contrast.desktopIntroTarget,
+    tokens,
+  );
   replacements.__DS_RADIUS__ = resolveValue(tokens.radius.base, tokens);
   replacements.__DS_SPACING__ = resolveValue(tokens.spacing.base, tokens);
 
@@ -205,6 +225,19 @@ function buildTs(tokens) {
       sans: resolveValue(tokens.typography.fontFamily.sans, tokens),
       serif: resolveValue(tokens.typography.fontFamily.serif, tokens),
       mono: resolveValue(tokens.typography.fontFamily.mono, tokens),
+    },
+    typography: {
+      desktopIntro: {
+        primaryWeight: resolveValue(tokens.typography.desktopIntro.primaryWeight, tokens),
+        bodySize: resolveValue(tokens.typography.desktopIntro.bodySize, tokens),
+        bodyWeight: resolveValue(tokens.typography.desktopIntro.bodyWeight, tokens),
+        bodyLineHeight: resolveValue(tokens.typography.desktopIntro.bodyLineHeight, tokens),
+      },
+    },
+    accessibility: {
+      contrast: {
+        desktopIntroTarget: resolveValue(tokens.accessibility.contrast.desktopIntroTarget, tokens),
+      },
     },
     radius: resolveValue(tokens.radius.base, tokens),
     spacing: resolveValue(tokens.spacing.base, tokens),

@@ -745,7 +745,7 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
   const activeStudy = projects.find((project) => project.id === caseStudyId);
 
   return (
-    <WindowFrame {...props} id="work" title="Selected work">
+    <WindowFrame {...props} id="work" title="Work">
       {activeStudy ? (
         <div className="window-body case-study" data-testid={`case-study-${activeStudy.id}`}>
           <div className="case-study-topbar">
@@ -1884,6 +1884,7 @@ function Home() {
   const [windowStack, setWindowStack] = useState<WindowId[]>(savedDesktopState.windowStack ?? defaultDesktopState.windowStack ?? []);
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const shortcutMenuRef = useRef<HTMLDivElement | null>(null);
   const [stickyVisible, setStickyVisible] = useState(true);
   const [stickyOnTop, setStickyOnTop] = useState(false);
   const [maximizedWindows, setMaximizedWindows] = useState<Partial<Record<WindowId, boolean>>>({});
@@ -2031,10 +2032,32 @@ function Home() {
     const contrast = (first: number, second: number) => (
       (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05)
     );
-    const candidates = [
+    const brandedCandidates = [
       { color: '#111326', luminance: luminance(17, 19, 38) },
       { color: '#f7faf8', luminance: luminance(247, 250, 248) },
     ];
+    const fallbackCandidates = [
+      { color: '#000000', luminance: 0 },
+      { color: '#ffffff', luminance: 1 },
+    ];
+    const selectAccessibleColor = (backgroundLuminances: number[]) => {
+      const rank = (candidates: typeof brandedCandidates) => candidates
+        .map((candidate) => {
+          const ratios = backgroundLuminances
+            .map((background) => contrast(candidate.luminance, background))
+            .sort((a, b) => a - b);
+          return {
+            color: candidate.color,
+            score: ratios[Math.floor(ratios.length * 0.2)] ?? 0,
+          };
+        })
+        .sort((first, second) => second.score - first.score);
+      const branded = rank(brandedCandidates)[0];
+      if (branded.score >= 7) return branded.color;
+      const fallback = rank(fallbackCandidates)[0];
+      if (fallback.score >= 7) return fallback.color;
+      return theme === 'dark' ? '#ffffff' : '#000000';
+    };
     const solidBackground = accessibility.contrastTheme === 'high'
       ? '#000000'
       : accessibility.contrastTheme === 'low'
@@ -2045,12 +2068,8 @@ function Home() {
     if (solidBackground) {
       const channels = solidBackground.match(/[0-9a-f]{2}/gi)?.map((channel) => Number.parseInt(channel, 16));
       const backgroundLuminance = luminance(channels?.[0] ?? 0, channels?.[1] ?? 0, channels?.[2] ?? 0);
-      const selected = candidates.reduce((best, candidate) => (
-        contrast(candidate.luminance, backgroundLuminance) > contrast(best.luminance, backgroundLuminance)
-          ? candidate
-          : best
-      ));
-      setAutomaticIntroColors({ primary: selected.color, accent: selected.color, body: selected.color });
+      const selected = selectAccessibleColor([backgroundLuminance]);
+      setAutomaticIntroColors({ primary: selected, accent: selected, body: selected });
       return;
     }
 
@@ -2081,13 +2100,7 @@ function Home() {
             backgroundLuminances.push(luminance(pixel[0], pixel[1], pixel[2]));
           }
         }
-        const ranked = candidates.map((candidate) => {
-          const ratios = backgroundLuminances
-            .map((background) => contrast(candidate.luminance, background))
-            .sort((a, b) => a - b);
-          return { color: candidate.color, score: ratios[Math.floor(ratios.length * 0.2)] ?? 0 };
-        });
-        next[key] = ranked[1].score > ranked[0].score ? ranked[1].color : ranked[0].color;
+        next[key] = selectAccessibleColor(backgroundLuminances);
       });
       setAutomaticIntroColors(next);
     };
@@ -2218,6 +2231,17 @@ function Home() {
     setTimeout(() => { systemBarDragRef.current = null; }, 50);
   };
   const dragRef = useRef<{ id: DesktopItemId; offsetX: number; offsetY: number; moved: boolean; currentLeft: number; currentTop: number } | null>(null);
+  const maximizedDragRef = useRef<{
+    id: WindowId;
+    header: HTMLElement;
+    startX: number;
+    startY: number;
+    currentX: number;
+    currentY: number;
+    ratioX: number;
+    offsetY: number;
+    restoring: boolean;
+  } | null>(null);
   const resizeRef = useRef<{
     id: DesktopItemId;
     direction: ResizeDirection;
@@ -2234,6 +2258,7 @@ function Home() {
   useEffect(() => {
     const clearPointerOperations = () => {
       dragRef.current = null;
+      maximizedDragRef.current = null;
       resizeRef.current = null;
       rotateRef.current = null;
       dockDragRef.current = null;
@@ -2435,6 +2460,18 @@ function Home() {
   }, [defaultStateSaved]);
 
   useEffect(() => {
+    if (!mobileOpen) return;
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (shortcutMenuRef.current?.contains(target) || target.closest('[data-shortcut-menu-toggle]')) return;
+      setMobileOpen(false);
+    };
+    window.addEventListener('pointerdown', closeOnOutsidePointer, true);
+    return () => window.removeEventListener('pointerdown', closeOnOutsidePointer, true);
+  }, [mobileOpen]);
+
+  useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setMobileOpen(false);
@@ -2444,14 +2481,32 @@ function Home() {
         if (resetDialogOpen) closeResetDialog();
         if (saveDefaultDialogOpen) closeSaveDefaultDialog();
       }
+      const isSiteWindowCloseShortcut = (
+        workspaceMode === 'desktop'
+        && (event.metaKey || event.ctrlKey)
+        && event.shiftKey
+        && event.key.toLowerCase() === 'x'
+      );
+      if (isSiteWindowCloseShortcut) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.repeat) return;
+        const openWindowsByStack = [...windowStack].reverse().filter((id) => windows[id]);
+        if (event.altKey) openWindowsByStack.forEach((id) => closeWindow(id));
+        else if (openWindowsByStack[0]) closeWindow(openWindowsByStack[0]);
+        return;
+      }
       if (event.metaKey || event.ctrlKey) return;
       const target = event.target;
       const isColorValueField = target instanceof HTMLElement && Boolean(target.closest('.cp-field'));
-      if (isColorValueField && ['1', '2', '3'].includes(event.key)) return;
-      const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '`': 'terminal' };
+      if (isColorValueField && ['1', '2', '3', '4', '5', '6', '7'].includes(event.key)) return;
+      const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '4': 'terminal' };
       const id = shortcuts[event.key];
-      if (id === 'terminal' && workspaceMode !== 'desktop') return;
+      if (['4', '5', '6', '7'].includes(event.key) && workspaceMode !== 'desktop') return;
       if (id) { event.preventDefault(); openWindow(id); }
+      if (event.key === '5') { event.preventDefault(); handleStickyDock(); }
+      if (event.key === '6') { event.preventDefault(); setMobileOpen((value) => !value); }
+      if (event.key === '7') { event.preventDefault(); openWindow('settings'); }
     };
     window.addEventListener('keydown', handleShortcut);
     return () => window.removeEventListener('keydown', handleShortcut);
@@ -2639,7 +2694,60 @@ function Home() {
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
+  const startMaximizedDrag = (id: WindowId, event: ReactPointerEvent<HTMLElement>) => {
+    if (event.button !== 0 || workspaceMode === 'managed') return;
+    const target = event.currentTarget.closest('[data-draggable-item]') as HTMLElement | null;
+    if (!target) return;
+    const targetRect = target.getBoundingClientRect();
+    maximizedDragRef.current = {
+      id,
+      header: event.currentTarget,
+      startX: event.clientX,
+      startY: event.clientY,
+      currentX: event.clientX,
+      currentY: event.clientY,
+      ratioX: Math.max(0, Math.min(1, (event.clientX - targetRect.left) / targetRect.width)),
+      offsetY: event.clientY - targetRect.top,
+      restoring: false,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
   const moveDrag = (event: ReactPointerEvent<HTMLElement>) => {
+    const maximizedDrag = maximizedDragRef.current;
+    if (maximizedDrag) {
+      maximizedDrag.currentX = event.clientX;
+      maximizedDrag.currentY = event.clientY;
+      if (!maximizedDrag.restoring) {
+        const distance = Math.hypot(
+          event.clientX - maximizedDrag.startX,
+          event.clientY - maximizedDrag.startY,
+        );
+        if (distance < 4) return;
+        maximizedDrag.restoring = true;
+        setMaximizedWindows((current) => ({ ...current, [maximizedDrag.id]: false }));
+        window.requestAnimationFrame(() => {
+          const pending = maximizedDragRef.current;
+          const area = desktopAreaRef.current;
+          const draggableTarget = pending?.header.closest('[data-draggable-item]') as HTMLElement | null;
+          if (!pending || pending !== maximizedDrag || !area || !draggableTarget) return;
+          const areaRect = area.getBoundingClientRect();
+          const restoredRect = draggableTarget.getBoundingClientRect();
+          const left = pending.currentX - areaRect.left - restoredRect.width * pending.ratioX;
+          const top = Math.max(0, pending.currentY - areaRect.top - pending.offsetY);
+          setDragPositions((current) => ({ ...current, [pending.id]: { left, top } }));
+          dragRef.current = {
+            id: pending.id,
+            offsetX: restoredRect.width * pending.ratioX,
+            offsetY: pending.offsetY,
+            moved: true,
+            currentLeft: left,
+            currentTop: top,
+          };
+          maximizedDragRef.current = null;
+        });
+      }
+      return;
+    }
     const drag = dragRef.current;
     const area = desktopAreaRef.current;
     if (!drag || !area) return;
@@ -2685,6 +2793,7 @@ function Home() {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
+    maximizedDragRef.current = null;
     dragRef.current = null;
   };
   const endDesktopLauncherDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
@@ -3119,7 +3228,8 @@ function Home() {
       setActiveWindow(id);
       setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
       setStickyOnTop(false);
-      if (!maximizedWindows[id]) startDrag(id, event);
+      if (maximizedWindows[id]) startMaximizedDrag(id, event);
+      else startDrag(id, event);
     },
     onPointerMove: moveDrag,
     onPointerUp: endDrag,
@@ -3161,7 +3271,7 @@ function Home() {
     return {
       color: automaticColor ?? introCustomization.colors[theme][key],
       textShadow: automaticColor
-        ? automaticColor === '#111326'
+        ? automaticColor === '#111326' || automaticColor === '#000000'
           ? '0 1px 2px rgba(255, 255, 255, .58)'
           : '0 1px 3px rgba(0, 0, 0, .72)'
         : undefined,
@@ -3226,7 +3336,7 @@ function Home() {
             <span className="system-clock-time">{clockTime}</span>
             <span className="system-clock-period">{clockPeriod}</span>
           </span>
-          <button className="mobile-menu" onClick={() => setMobileOpen((value) => !value)} aria-label="Open portfolio menu" data-testid="button-mobile-menu"><Menu size={17} /></button>
+          <button className="mobile-menu" onClick={() => setMobileOpen((value) => !value)} aria-label="Open portfolio menu" data-shortcut-menu-toggle data-testid="button-mobile-menu"><Menu size={17} /></button>
         </div>
       </header>
 
@@ -3307,7 +3417,7 @@ function Home() {
         {showDesktopIcons && workspaceMode === 'desktop' && (
           <div className="desktop-folders" aria-label="Desktop applications and folders">
             <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} appIcon={<CircleUserFill size={31} data-testid="icon-about-circle-user-fill" />} />
-            <DesktopFolder singleTap={singleTapLaunch} id="work" label="selected work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} appIcon={<FolderGit2 size={31} strokeWidth={1.8} />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} appIcon={<FolderGit2 size={31} strokeWidth={1.8} />} />
             <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<SquareTerminal size={31} strokeWidth={1.7} data-testid="icon-terminal-square" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<RiMailSendFill size={30} data-testid="icon-contact-mail-fill" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<BsStickyFill size={30} data-testid="icon-stickies-bootstrap-fill" />} />
@@ -3765,7 +3875,7 @@ function Home() {
           });
         }}
       >
-        <DockItem className="dock-item dock-app-work" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open selected work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Selected work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-work" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
         <DockItem className="dock-item dock-app-about" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><CircleUserFill size={20} data-testid="icon-dock-about-circle-user-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
         <DockItem className="dock-item dock-app-contact" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><RiMailSendFill size={20} data-testid="icon-dock-contact-mail-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
         {workspaceMode !== 'desktop' && (
@@ -3784,20 +3894,26 @@ function Home() {
         )}
         {workspaceMode === 'desktop' && (
           <>
-            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · `</DockItemLabel></DockItem>
-            <DockItem className="dock-item dock-app-stickies" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies</DockItemLabel></DockItem>
-            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts</DockItemLabel></DockItem>
-            <DockItem className="dock-item" active={windows.settings} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-stickies" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
+            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
+            <DockItem className="dock-item" active={windows.settings} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
           </>
         )}
       </nav>
 
       {mobileOpen && (
-        <div className="mobile-shortcut-menu" data-testid="menu-mobile">
+        <div ref={shortcutMenuRef} className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}`} data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
-          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–3 to open a window. Press backtick for the terminal.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
+          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–7 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
-            {(['about', 'work', 'contact'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span className="shortcut-number">{index + 1}</span>{id}</button>)}
+            <button className="quick-button" onClick={() => openWindow('about')} data-testid="button-menu-about"><span className="shortcut-number">1</span>about</button>
+            <button className="quick-button" onClick={() => openWindow('work')} data-testid="button-menu-work"><span className="shortcut-number">2</span>work</button>
+            <button className="quick-button" onClick={() => openWindow('contact')} data-testid="button-menu-contact"><span className="shortcut-number">3</span>contact</button>
+            <button className="quick-button" onClick={() => openWindow('terminal')} data-testid="button-menu-terminal"><span className="shortcut-number">4</span>terminal</button>
+            <button className="quick-button" onClick={handleStickyDock} data-testid="button-menu-stickies"><span className="shortcut-number">5</span>stickies</button>
+            <button className="quick-button" onClick={() => setMobileOpen(false)} data-testid="button-menu-shortcuts"><span className="shortcut-number">6</span>shortcuts</button>
+            <button className="quick-button" onClick={() => openWindow('settings')} data-testid="button-menu-settings"><span className="shortcut-number">7</span>settings</button>
           </div>
         </div>
       )}

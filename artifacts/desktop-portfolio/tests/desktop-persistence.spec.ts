@@ -571,13 +571,13 @@ test('uses intentional cursors while allowing text selection only in stickies', 
 
 test('lists work files with names that match the selected projects', async ({ page }) => {
   const workLabel = page.getByTestId('button-folder-work').locator('.desktop-folder-label');
-  await expect(workLabel).toHaveText('selected work');
+  await expect(workLabel).toHaveText('work');
   await expect(workLabel).toHaveCSS('white-space', 'normal');
   expect(await workLabel.evaluate((element) => ({
     horizontallyClipped: element.scrollWidth > element.clientWidth,
     verticallyClipped: element.scrollHeight > element.clientHeight,
   }))).toEqual({ horizontallyClipped: false, verticallyClipped: false });
-  await expect(page.getByTestId('button-dock-work')).toContainText('Selected work');
+  await expect(page.getByTestId('button-dock-work')).toContainText('Work');
 
   await page.getByTestId('button-dock-terminal').click();
   const input = page.getByTestId('input-terminal-command');
@@ -591,7 +591,7 @@ test('lists work files with names that match the selected projects', async ({ pa
   await expect(output).toContainText('signal-operations-platform.md');
 });
 
-test('About and Selected Work use distinct saturated application icons instead of folders', async ({ page }) => {
+test('About and Work use distinct saturated application icons instead of folders', async ({ page }) => {
   const about = page.getByTestId('button-folder-about');
   const work = page.getByTestId('button-folder-work');
   const terminal = page.getByTestId('button-folder-terminal');
@@ -680,7 +680,7 @@ test('Contact uses a filled Remix mail-send icon with its own saturated app trea
   expect(otherBackgrounds).not.toContain(contactBackground);
 });
 
-test('Dock mirrors the saturated About, Selected Work, and filled Contact app identities', async ({ page }) => {
+test('Dock mirrors the saturated About, Work, and filled Contact app identities', async ({ page }) => {
   const dockLaunchers = [
     page.getByTestId('button-dock-about'),
     page.getByTestId('button-dock-work'),
@@ -769,6 +769,135 @@ test('reopens a closed window at the same position and size', async ({ page }) =
   expect(afterReopen!.y).toBeCloseTo(beforeClose!.y, 0);
   expect(afterReopen!.width).toBeCloseTo(beforeClose!.width, 0);
   expect(afterReopen!.height).toBeCloseTo(beforeClose!.height, 0);
+});
+
+test('restores a maximized window into a continuous title-bar drag', async ({ page }) => {
+  const aboutWindow = page.getByTestId('window-about');
+  const aboutHeader = aboutWindow.locator('.window-header');
+  const floatingBox = await aboutWindow.boundingBox();
+  expect(floatingBox).not.toBeNull();
+
+  await page.getByTestId('button-maximize-about').click();
+  await expect(aboutWindow).toHaveClass(/is-maximized/);
+  const maximizedBox = await aboutWindow.boundingBox();
+  expect(maximizedBox).not.toBeNull();
+
+  const grabX = maximizedBox!.x + maximizedBox!.width * 0.65;
+  const grabY = maximizedBox!.y + 22;
+  await page.mouse.move(grabX, grabY);
+  await page.mouse.down();
+  await page.mouse.move(grabX - 140, grabY + 90, { steps: 8 });
+  await page.mouse.up();
+
+  await expect(aboutWindow).not.toHaveClass(/is-maximized/);
+  const restoredBox = await aboutWindow.boundingBox();
+  expect(restoredBox).not.toBeNull();
+  expect(restoredBox!.width).toBeCloseTo(floatingBox!.width, 0);
+  expect(restoredBox!.height).toBeCloseTo(floatingBox!.height, 0);
+  expect(restoredBox!.x).not.toBeCloseTo(floatingBox!.x, 0);
+  expect(restoredBox!.y).not.toBeCloseTo(floatingBox!.y, 0);
+
+  await aboutHeader.dblclick();
+  await expect(aboutWindow).toHaveClass(/is-maximized/);
+  await aboutHeader.dblclick();
+  await expect(aboutWindow).not.toHaveClass(/is-maximized/);
+});
+
+test('uses 4 instead of backtick for the terminal shortcut', async ({ page }) => {
+  const terminalWindow = page.getByTestId('window-terminal');
+  await expect(terminalWindow).toHaveCount(0);
+
+  await page.keyboard.press('Backquote');
+  await expect(terminalWindow).toHaveCount(0);
+
+  await page.keyboard.press('4');
+  await expect(terminalWindow).toBeVisible();
+
+  await page.getByTestId('button-dock-shortcuts').click();
+  await expect(page.getByTestId('menu-mobile')).toContainText('Use 1–7 for Dock shortcuts.');
+  await expect(page.getByTestId('button-menu-terminal')).toContainText('4terminal');
+  await expect(page.getByTestId('button-menu-stickies')).toContainText('5stickies');
+  await expect(page.getByTestId('button-menu-shortcuts')).toContainText('6shortcuts');
+  await expect(page.getByTestId('button-menu-settings')).toContainText('7settings');
+});
+
+test('uses 5 through 7 for Stickies, Shortcuts, and Settings', async ({ page }) => {
+  const visibleStickies = page.locator('.desktop-note:visible');
+  const stickyDock = page.getByTestId('button-dock-stickies');
+  await expect(visibleStickies.first()).toBeVisible();
+  await expect(stickyDock).toHaveAttribute('aria-label', 'Open or focus Stickies');
+  await page.keyboard.press('5');
+  await expect(stickyDock).toHaveAttribute('aria-label', 'Minimize Stickies');
+  await page.keyboard.press('5');
+  await expect(visibleStickies).toHaveCount(0);
+
+  await page.keyboard.press('6');
+  await expect(page.getByTestId('menu-mobile')).toBeVisible();
+  await page.keyboard.press('6');
+  await expect(page.getByTestId('menu-mobile')).toHaveCount(0);
+
+  await expect(page.getByTestId('window-settings')).toHaveCount(0);
+  await page.keyboard.press('7');
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+});
+
+test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {
+  const drawer = page.getByTestId('menu-mobile');
+  await page.getByTestId('button-dock-shortcuts').click();
+  await expect(drawer).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(drawer).toHaveCount(0);
+
+  await page.getByTestId('button-dock-shortcuts').click();
+  await expect(drawer).toBeVisible();
+  await page.mouse.click(8, 700);
+  await expect(drawer).toHaveCount(0);
+});
+
+test('closes the topmost or all desktop windows with modifier shortcuts', async ({ page }) => {
+  await page.keyboard.press('3');
+  await expect(page.getByTestId('window-contact')).toBeVisible();
+  await page.keyboard.press('Control+Shift+X');
+  await expect(page.getByTestId('window-contact')).toHaveCount(0);
+  await expect(page.getByTestId('window-about')).toBeVisible();
+  await expect(page.getByTestId('window-work')).toBeVisible();
+
+  await page.keyboard.press('4');
+  await page.keyboard.press('7');
+  await expect(page.getByTestId('window-terminal')).toBeVisible();
+  await expect(page.getByTestId('window-settings')).toBeVisible();
+  await page.keyboard.press('Control+Alt+Shift+X');
+  await expect(page.locator('[data-testid^="window-"]')).toHaveCount(0);
+
+  await page.keyboard.press('1');
+  await expect(page.getByTestId('window-about')).toBeVisible();
+  await page.evaluate(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'x',
+      metaKey: true,
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
+    }));
+  });
+  await expect(page.getByTestId('window-about')).toHaveCount(0);
+});
+
+test('keeps the shortcuts drawer clear of every system bar position', async ({ page }) => {
+  for (const position of ['top', 'bottom', 'left', 'right'] as const) {
+    await page.evaluate(([key, systemBarPosition]) => {
+      const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
+      localStorage.setItem(key, JSON.stringify({ ...saved, systemBarPosition }));
+    }, [storageKey, position]);
+    await page.reload();
+    await page.getByTestId('button-dock-shortcuts').click();
+
+    const drawerBox = await page.getByTestId('menu-mobile').boundingBox();
+    expect(drawerBox).not.toBeNull();
+    expect(drawerBox!.y).toBeCloseTo(position === 'top' ? 58 : 16, 0);
+    if (position === 'left') expect(drawerBox!.x).toBeGreaterThanOrEqual(64);
+    if (position === 'right') expect(drawerBox!.x + drawerBox!.width).toBeLessThanOrEqual(1280 - 64);
+  }
 });
 
 test('falls back to safe defaults when saved data is corrupted', async ({ page }) => {
@@ -1734,9 +1863,9 @@ test('automatic desktop text contrast samples picture wallpaper and preserves pe
   await page.reload();
 
   const primaryHeadline = page.locator('.desktop-intro h1 > span');
-  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', /^#(?:111326|f7faf8)$/);
+  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', /^#(?:111326|f7faf8|000000|ffffff)$/);
   await expect.poll(() => primaryHeadline.evaluate((element) => getComputedStyle(element).color))
-    .toMatch(/^rgb\((?:17, 19, 38|247, 250, 248)\)$/);
+    .toMatch(/^rgb\((?:17, 19, 38|247, 250, 248|0, 0, 0|255, 255, 255)\)$/);
   await expect(primaryHeadline).not.toHaveCSS('color', 'rgb(255, 0, 255)');
 
   await page.evaluate((key) => {
@@ -1744,8 +1873,11 @@ test('automatic desktop text contrast samples picture wallpaper and preserves pe
     localStorage.setItem(key, JSON.stringify({ ...saved, theme: 'dark' }));
   }, storageKey);
   await page.reload();
-  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', /^#(?:111326|f7faf8)$/);
+  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', /^#(?:111326|f7faf8|000000|ffffff)$/);
   await expect(primaryHeadline).not.toHaveCSS('color', 'rgb(255, 0, 255)');
+  const bodyParagraph = page.locator('.desktop-intro > p');
+  await expect(bodyParagraph).toHaveAttribute('data-auto-contrast-color', '#ffffff');
+  await expect(bodyParagraph).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
 
   await page.evaluate((key) => {
     const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
@@ -1776,6 +1908,34 @@ test('automatic desktop text contrast samples picture wallpaper and preserves pe
   expect(await page.evaluate((key) => (
     JSON.parse(localStorage.getItem(key) ?? '{}').introCustomization.automaticContrast
   ), storageKey)).toBe(false);
+});
+
+test('automatic desktop text contrast meets AAA 7:1 on a solid wallpaper', async ({ page }) => {
+  await page.evaluate((key) => {
+    localStorage.setItem(key, JSON.stringify({
+      theme: 'light',
+      wallpaperLight: { mode: 'color', color: '#595959' },
+      introCustomization: { automaticContrast: true },
+    }));
+  }, storageKey);
+  await page.reload();
+
+  const primaryHeadline = page.locator('.desktop-intro h1 > span');
+  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', '#ffffff');
+  const contrastRatio = await primaryHeadline.evaluate((element) => {
+    const parse = (value: string) => value.match(/\d+/g)!.slice(0, 3).map(Number);
+    const luminance = (channels: number[]) => {
+      const linear = channels.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    };
+    const foreground = luminance(parse(getComputedStyle(element).color));
+    const background = luminance([89, 89, 89]);
+    return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+  });
+  expect(contrastRatio).toBeGreaterThanOrEqual(7);
 });
 
 test('settings sections collapse independently and allow multiple sections to stay open', async ({ page }) => {

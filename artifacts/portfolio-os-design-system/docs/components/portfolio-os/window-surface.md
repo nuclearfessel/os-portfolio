@@ -43,6 +43,8 @@ Renders as `<section>` (forwarded ref). Applies: `rounded-lg border border-borde
 > - Resizing (width, height)
 > - Z-order / focus management between windows
 > - Minimize / maximize / close controls
+> - Dragging a maximized title bar to restore the prior geometry under the pointer
+> - Keyboard commands that close the topmost or all product windows
 > - Persisting window geometry (see [Saved-state ownership](../../patterns/saved-state-ownership.md))
 
 `WindowSurface` is purely visual — it has no internal state.
@@ -67,12 +69,17 @@ The package CSS applies `backdrop-filter` and respects `--accessibility-transpar
 
 - Renders as `<section>` — add `aria-label` or `aria-labelledby` pointing to the window title.
 - The window's close/minimize controls (product-supplied) must have accessible names.
+- Window-title text uses the opaque `windowTitleForeground` theme token. Keep the
+  title-bar text near 6:1 contrast in both themes; do not lower contrast through
+  alpha or blend modes.
 
 ---
 
 ## Relevant tokens
 
-`bg-card`, `text-card-foreground`, `border-border`, `rounded-lg`, `shadow-xl`
+`bg-card`, `text-card-foreground`, `windowTitleForeground`,
+`--window-title-foreground`, `--window-title-foreground-light`,
+`--window-title-foreground-dark`, `border-border`, `rounded-lg`, `shadow-xl`
 
 ---
 

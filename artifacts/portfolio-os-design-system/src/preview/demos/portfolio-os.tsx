@@ -63,6 +63,29 @@ export function PortfolioOsDemo() {
         </div>
       </Surface>
 
+      <Surface className="space-y-4 p-5">
+        <SectionLabel>desktop / introduction</SectionLabel>
+        <div className="max-w-md">
+          <h2
+            className="text-4xl tracking-[-0.06em]"
+            style={{ fontWeight: 'var(--desktop-intro-primary-weight)' }}
+          >
+            John Doe designs.
+          </h2>
+          <p
+            className="mt-3 text-muted-foreground"
+            style={{
+              fontSize: 'var(--desktop-intro-body-size)',
+              fontWeight: 'var(--desktop-intro-body-weight)',
+              lineHeight: 'var(--desktop-intro-body-line-height)',
+            }}
+          >
+            Intro text targets 7:1 against wallpaper, falls back to the best
+            available foreground, and never adds a backing panel.
+          </p>
+        </div>
+      </Surface>
+
       <ProjectCard
         index="01"
         title="Northstar Commerce System"
@@ -82,7 +105,12 @@ export function PortfolioOsDemo() {
 
       <div className="grid gap-5 lg:grid-cols-2">
         <WindowSurface className="overflow-hidden">
-          <div className="border-b border-border px-4 py-3 font-mono text-xs">~/john/about</div>
+          <div
+            className="border-b border-border px-4 py-3 font-mono text-xs"
+            style={{ color: 'hsl(var(--window-title-foreground))' }}
+          >
+            ~/john/about
+          </div>
           <div className="space-y-2 p-5"><SectionLabel>component / window frame</SectionLabel><p className="text-sm text-muted-foreground">Owns the window surface while the product supplies movement, resizing, and controls.</p></div>
         </WindowSurface>
         <StickyNoteSurface className="rotate-[-1deg] bg-accent p-5 text-accent-foreground">
@@ -126,6 +154,31 @@ export function PortfolioOsDemo() {
           <div className="rounded px-2 py-1.5 hover:bg-secondary">Theme</div>
           <div className="rounded px-2 py-1.5 hover:bg-secondary">Reset desktop&hellip;</div>
         </ContextMenuSurface>
+      </Surface>
+
+      <Surface className="space-y-4 p-5">
+        <SectionLabel>desktop / keyboard contract</SectionLabel>
+        <div className="grid gap-2 text-sm sm:grid-cols-2">
+          {[
+            ['1', 'About'],
+            ['2', 'Work'],
+            ['3', 'Contact'],
+            ['4', 'Terminal'],
+            ['5', 'Stickies'],
+            ['6', 'Shortcuts'],
+            ['7', 'Settings'],
+          ].map(([key, label]) => (
+            <div key={key} className="flex items-center gap-3 rounded-md border border-border px-3 py-2">
+              <span className="min-w-6 font-mono text-primary">{key}</span>
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Escape or an outside pointer press closes the Shortcuts drawer.
+          Command/Control + Shift + X closes the topmost window; add Alt/Option
+          to close all product windows.
+        </p>
       </Surface>
 
       <CanonicalSpec md={combinedMd} />

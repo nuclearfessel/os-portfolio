@@ -81,6 +81,35 @@ The consuming product controls this switch based on viewport state or a CSS medi
 </DockItemLabel>
 ```
 
+## Portfolio desktop shortcut contract
+
+Shortcut behavior belongs to the consuming desktop product, not to `DockItem`.
+The canonical labels and assignments are:
+
+| Key | Dock item |
+|---:|---|
+| `1` | About |
+| `2` | Work |
+| `3` | Contact |
+| `4` | Terminal |
+| `5` | Stickies |
+| `6` | Shortcuts |
+| `7` | Settings |
+
+Desktop tooltip labels append the assigned number, for example `Work · 2`.
+Responsive inline labels omit shortcut numbers. Use **Work** consistently; do not
+expand it to “Selected Work.”
+
+The Shortcuts item opens a non-modal drawer that:
+
+- closes with `Escape`, an outside pointer press, or its trigger;
+- stays open when interacting inside it;
+- clears a top system bar by 16px and otherwise stays 16px from the viewport;
+- clears a left or right system rail by 16px;
+- lists all seven Dock assignments.
+
+Number shortcuts must not run while focus is inside a color-value input.
+
 ---
 
 ## Interactive states (DockItem)
@@ -136,6 +165,7 @@ items; their selected treatment remains unchanged under the pointer.
 | Apply hover feedback only to inactive items | Layer hover styling on top of the active treatment |
 | Use one shared 1px border color for every inactive item | Give each inactive branded tile a different border color |
 | Change utility foreground and background as a tested pair | Change only the foreground and assume contrast remains sufficient |
+| Show `1–7` in desktop Dock labels and the Shortcuts drawer | Show shortcut numbers in mobile or tablet inline labels |
 
 ---
 

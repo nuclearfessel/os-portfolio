@@ -36,7 +36,8 @@ export const tokens = {
       "sidebarPrimaryForeground": "#f7fbf9",
       "sidebarAccent": "#cfdfda",
       "sidebarAccentForeground": "#17233a",
-      "sidebarRing": "#0b665d"
+      "sidebarRing": "#0b665d",
+      "windowTitleForeground": "#505657"
     },
     "dark": {
       "background": "#111326",
@@ -70,7 +71,8 @@ export const tokens = {
       "sidebarPrimaryForeground": "#111326",
       "sidebarAccent": "#2b2f4a",
       "sidebarAccentForeground": "#e8eaf4",
-      "sidebarRing": "#e4ff5b"
+      "sidebarRing": "#e4ff5b",
+      "windowTitleForeground": "#a7a7a7"
     },
     "fixed": {
       "wallpaperLightDefault": "#e8f0ec",
@@ -105,6 +107,19 @@ export const tokens = {
       "DM Mono",
       "monospace"
     ]
+  },
+  "typography": {
+    "desktopIntro": {
+      "primaryWeight": 800,
+      "bodySize": "1.125rem",
+      "bodyWeight": 400,
+      "bodyLineHeight": 1.25
+    }
+  },
+  "accessibility": {
+    "contrast": {
+      "desktopIntroTarget": 7
+    }
   },
   "radius": "0.75rem",
   "spacing": "0.25rem"

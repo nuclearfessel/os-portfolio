@@ -146,10 +146,18 @@
   --chart-3: __DS_LIGHT_CHART3__;
   --chart-4: __DS_LIGHT_CHART4__;
   --chart-5: __DS_LIGHT_CHART5__;
+  --window-title-foreground-light: __DS_LIGHT_WINDOWTITLEFOREGROUND__;
+  --window-title-foreground-dark: __DS_DARK_WINDOWTITLEFOREGROUND__;
+  --window-title-foreground: var(--window-title-foreground-light);
 
   --app-font-sans: __DS_FONT_SANS__;
   --app-font-serif: __DS_FONT_SERIF__;
   --app-font-mono: __DS_FONT_MONO__;
+  --desktop-intro-primary-weight: __DS_DESKTOP_INTRO_PRIMARY_WEIGHT__;
+  --desktop-intro-body-size: __DS_DESKTOP_INTRO_BODY_SIZE__;
+  --desktop-intro-body-weight: __DS_DESKTOP_INTRO_BODY_WEIGHT__;
+  --desktop-intro-body-line-height: __DS_DESKTOP_INTRO_BODY_LINE_HEIGHT__;
+  --desktop-intro-contrast-target: __DS_DESKTOP_INTRO_CONTRAST_TARGET__;
   --radius: __DS_RADIUS__;
   --spacing: __DS_SPACING__;
 
@@ -178,6 +186,7 @@
   --badge-outline: rgba(255,255,255, .05);
 
   --opaque-button-border-intensity: 9;  /* In terms of percentages */
+  --window-title-foreground: var(--window-title-foreground-dark);
 
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);

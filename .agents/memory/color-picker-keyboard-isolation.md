@@ -7,4 +7,4 @@ When focus is inside a color-picker value field, number keys are text entry only
 
 **Why:** RGB, HSV, and HSL values require numeric typing; opening or focusing Dock apps during entry corrupts the editing flow.
 
-**How to apply:** Keep the `1`, `2`, and `3` desktop shortcuts inactive for color-picker fields while preserving normal input and validation behavior.
+**How to apply:** Keep the `1` through `7` desktop shortcuts inactive for color-picker fields while preserving normal input and validation behavior.

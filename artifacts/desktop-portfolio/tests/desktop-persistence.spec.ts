@@ -1778,18 +1778,18 @@ test('automatic desktop text contrast samples picture wallpaper and preserves pe
   ), storageKey)).toBe(false);
 });
 
-test('automatic desktop text contrast meets 4.5:1 on a mid-tone solid wallpaper', async ({ page }) => {
+test('automatic desktop text contrast meets AAA 7:1 on a solid wallpaper', async ({ page }) => {
   await page.evaluate((key) => {
     localStorage.setItem(key, JSON.stringify({
       theme: 'light',
-      wallpaperLight: { mode: 'color', color: '#777777' },
+      wallpaperLight: { mode: 'color', color: '#595959' },
       introCustomization: { automaticContrast: true },
     }));
   }, storageKey);
   await page.reload();
 
   const primaryHeadline = page.locator('.desktop-intro h1 > span');
-  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', '#000000');
+  await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', '#ffffff');
   const contrastRatio = await primaryHeadline.evaluate((element) => {
     const parse = (value: string) => value.match(/\d+/g)!.slice(0, 3).map(Number);
     const luminance = (channels: number[]) => {
@@ -1800,10 +1800,10 @@ test('automatic desktop text contrast meets 4.5:1 on a mid-tone solid wallpaper'
       return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
     };
     const foreground = luminance(parse(getComputedStyle(element).color));
-    const background = luminance([119, 119, 119]);
+    const background = luminance([89, 89, 89]);
     return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
   });
-  expect(contrastRatio).toBeGreaterThanOrEqual(4.5);
+  expect(contrastRatio).toBeGreaterThanOrEqual(7);
 });
 
 test('settings sections collapse independently and allow multiple sections to stay open', async ({ page }) => {

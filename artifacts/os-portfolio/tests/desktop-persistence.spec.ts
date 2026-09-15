@@ -1000,16 +1000,27 @@ test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', a
   const guideWindow = page.getByTestId('window-guide');
   await expect(guideWindow).toBeVisible();
   await expect(guideWindow.getByRole('heading', { name: 'A calmer way to work' })).toBeVisible();
+  await expect(guideWindow).toContainText('Your changes stay in this browser');
+  await page.getByTestId('guide-nav-windows').click();
+  await expect(guideWindow.getByRole('heading', { name: 'Work with windows' })).toBeVisible();
+  await expect(guideWindow).toContainText('Minimize hides the window but keeps the app open.');
   await page.getByTestId('guide-nav-customize').click();
   await expect(guideWindow.getByRole('heading', { name: 'Make the desktop yours' })).toBeVisible();
+  await expect(guideWindow).toContainText('Your changes are saved in this browser as you make them.');
+  await expect(guideWindow.getByRole('heading', { name: 'Change transparency and blur' })).toBeVisible();
   await expect(guideWindow).toContainText('If Window & dock transparency is set to None, you cannot change Blur. Your blur setting stays saved and returns when you add transparency.');
+  await expect(guideWindow.getByRole('heading', { name: 'Keep a layout you like' })).toBeVisible();
+  await expect(guideWindow).toContainText('You will be asked to confirm before anything is reset.');
   await page.getByTestId('guide-nav-technical').click();
   await expect(guideWindow.getByRole('heading', { name: 'A desktop built in the browser' })).toBeVisible();
-  await expect(guideWindow).toContainText('React components render the desktop');
-  await expect(guideWindow).toContainText('Vite bundles the React and TypeScript source');
-  await expect(guideWindow).toContainText('The Terminal window responds to its built-in command set');
-  await expect(guideWindow).toContainText('The browser sandbox prevents the page from acting like a general-purpose shell');
-  await expect(guideWindow).toContainText('Blur, transparency, shadows, pointer capture, scrollbars, and keyboard focus');
+  await expect(guideWindow).toContainText('Everything lives in one browser tab');
+  await expect(guideWindow).toContainText('React and TypeScript control what changes');
+  await expect(guideWindow).toContainText('The Terminal uses built-in commands');
+  await expect(guideWindow).toContainText('The browser keeps this page separate from private files');
+  await page.getByTestId('guide-nav-shortcuts').click();
+  await expect(guideWindow.getByRole('heading', { name: 'Keyboard shortcuts' })).toBeVisible();
+  await expect(guideWindow).toContainText('Shortcuts pause in text boxes');
+  await expect(guideWindow).toContainText('On Windows or Linux, use');
 });
 
 test('keeps Settings and the User Guide light navigation states consistent', async ({ page }) => {

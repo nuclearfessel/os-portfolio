@@ -1818,24 +1818,43 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     </p>
                   </div>
                 </div>
-                <div className="guide-section-label">First principles</div>
+                <div className="guide-section-label">Get started</div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Choose an app</h3><p>Select an icon in the Dock or on the desktop. The app opens in a window, or comes forward if it is already open.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>Move things around</h3><p>Drag a window by its top bar. Drag an edge or corner when you want more or less room.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>Try the desktop tools</h3><p>Open Settings to change the desktop. Use Stickies for short notes, or open Terminal to explore the built-in commands.</p></div>
+                  </div>
+                </div>
+                <div className="guide-section-label">Know your way around</div>
                 <div className="guide-topic-list" role="list">
                   <Surface elevation="flat" className="guide-topic" role="listitem">
-                    <span className="guide-card-index">01</span>
-                    <div><h3>Open an app</h3><p>Use the Dock, a desktop launcher, or a keyboard shortcut. The active app comes to the front and the window stack remembers the order.</p></div>
+                    <span className="guide-card-index">01 / Dock</span>
+                    <div><h3>Your main app bar</h3><p>The Dock shows the apps you can open. A mark below an icon means that app is open. Select an open app to bring it forward or hide it.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
-                    <span className="guide-card-index">02</span>
-                    <div><h3>Shape your workspace</h3><p>Drag windows, resize their edges, move the Dock, and place Stickies where you can see them. Your desktop is an arrangement, not a fixed page.</p></div>
+                    <span className="guide-card-index">02 / Windows</span>
+                    <div><h3>Apps share the desktop</h3><p>You can keep several windows open. Select any window to place it in front without closing the others.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
-                    <span className="guide-card-index">03</span>
-                    <div><h3>Make it yours</h3><p>Settings controls the theme, wallpaper, accessibility, contrast, and the copy on the home screen. Save a default when the setup feels right.</p></div>
+                    <span className="guide-card-index">03 / Desktop</span>
+                    <div><h3>A place for shortcuts and notes</h3><p>Desktop icons open apps just like the Dock. Stickies stay where you place them on larger screens.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">04 / Saving</span>
+                    <div><h3>Your changes stay in this browser</h3><p>Window positions, Stickies, and Settings are saved automatically. Use Save state as default when you want a setup you can return to later.</p></div>
                   </Surface>
                 </div>
                 <div className="guide-callout">
                   <span className="guide-callout-label">quick start</span>
-                  <p>Press <kbd>8</kbd> any time to bring this guide to the front. Start with <strong>Windows</strong> if you want to learn the workspace mechanics.</p>
+                  <p>Press <kbd>8</kbd> on a desktop keyboard to bring this guide forward. Open <strong>Windows</strong> next to learn each window control.</p>
                 </div>
               </>
             )}
@@ -1846,38 +1865,45 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   <div>
                     <SectionLabel className="section-kicker">user guide / windows</SectionLabel>
                     <h2 className="settings-heading">Work with windows</h2>
-                    <p className="guide-intro">Every app is a floating window. The title bar keeps the controls close and the workspace stays yours.</p>
+                    <p className="guide-intro">Each app opens in a window. You can move, resize, hide, maximize, and close windows without leaving the page.</p>
                   </div>
                 </div>
-                <div className="guide-section-label">Window lifecycle</div>
+                <div className="guide-section-label">Window controls</div>
                 <div className="guide-step-list">
                   <div className="guide-step">
                     <span className="guide-step-number">01</span>
-                    <div><h3>Focus</h3><p>Click a window or its Dock item to bring it forward. The active window stays at the front of the stack.</p></div>
+                    <div><h3>Bring a window forward</h3><p>Select any part of a window, or select its Dock icon. It moves in front of the other open windows.</p></div>
                   </div>
                   <div className="guide-step">
                     <span className="guide-step-number">02</span>
-                    <div><h3>Move</h3><p>Drag the title bar to place a window anywhere on the desktop. Double-click the title bar to maximize or restore it.</p></div>
+                    <div><h3>Move a window</h3><p>Drag the top bar and release it where you want the window to stay.</p></div>
                   </div>
                   <div className="guide-step">
                     <span className="guide-step-number">03</span>
-                    <div><h3>Resize</h3><p>Drag any edge or corner. Your position and size are remembered when you close and reopen the app.</p></div>
+                    <div><h3>Change its size</h3><p>Drag an edge or corner. The window remembers its size and position when you close and reopen it.</p></div>
                   </div>
                   <div className="guide-step">
                     <span className="guide-step-number">04</span>
-                    <div><h3>Minimize or close</h3><p>Use the title-bar controls to hide an app or remove it from the desktop. Reopen it from the Dock.</p></div>
+                    <div><h3>Fill the desktop</h3><p>Select the maximize button, or double-click the top bar. Repeat the action to return to the previous size.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">05</span>
+                    <div><h3>Hide or close a window</h3><p>Minimize hides the window but keeps the app open. Close removes the window. You can open it again from the Dock.</p></div>
                   </div>
                 </div>
-                <div className="guide-detail-grid">
-                  <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">Focus model</span>
-                    <h3>Frontmost is a state</h3>
-                    <p>Clicking a window changes its z-order without changing the other windows. The stack is saved with your desktop so reopening the page does not erase your arrangement.</p>
+                <div className="guide-section-label">Useful details</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">01 / Dock</span>
+                    <div><h3>Know which app is active</h3><p>The active app has a stronger mark on its Dock icon. Other open apps keep a smaller open mark.</p></div>
                   </Surface>
-                  <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">Maximize model</span>
-                    <h3>Chrome stays outside</h3>
-                    <p>A maximized window fills the available desktop area while keeping a 12px relationship to the system bar and Dock. Double-click its title bar to restore the previous geometry.</p>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">02 / Memory</span>
+                    <div><h3>Windows remember their place</h3><p>The desktop saves window size, position, open state, and front-to-back order in this browser.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">03 / Small screens</span>
+                    <div><h3>Phones and tablets arrange windows for you</h3><p>On smaller screens, windows use a simpler layout that is easier to read and touch. Your desktop arrangement returns on a larger screen.</p></div>
                   </Surface>
                 </div>
               </>
@@ -1889,26 +1915,78 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   <div>
                     <SectionLabel className="section-kicker">user guide / customize</SectionLabel>
                     <h2 className="settings-heading">Make the desktop yours</h2>
-                    <p className="guide-intro">Open Settings from the Dock to change how the desktop looks and works.</p>
+                    <p className="guide-intro">Open Settings from the Dock to change how the desktop looks, feels, and behaves. Your changes are saved in this browser as you make them.</p>
                   </div>
                 </div>
-                <div className="guide-section-label">What you can change</div>
+                <div className="guide-section-label">Start here</div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Open Settings</h3><p>Select the gear in the Dock. On a smaller screen, open the menu first and then choose Settings.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>Choose a page</h3><p>Use Personalization for appearance and desktop text. Use Accessibility for visibility, movement, and contrast.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>Open a section</h3><p>Select a section name to show its controls. You can keep more than one section open while comparing settings.</p></div>
+                  </div>
+                </div>
+
+                <div className="guide-section-label">Appearance</div>
                 <div className="guide-topic-list" role="list">
                   <Surface elevation="flat" className="guide-topic" role="listitem">
-                    <span className="guide-card-index">01 / Settings</span>
-                    <div><h3>Personalization</h3><p>Choose light or dark mode, pick a wallpaper, change transparency, and edit the text on the desktop. If Window &amp; dock transparency is set to None, you cannot change Blur. Your blur setting stays saved and returns when you add transparency.</p></div>
+                    <span className="guide-card-index">01 / Theme</span>
+                    <div><h3>Choose light or dark mode</h3><p>Open Personalization, then Theme. Choose the option that is most comfortable to read.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
-                    <span className="guide-card-index">02 / Settings</span>
-                    <div><h3>Accessibility</h3><p>Keep scrollbars visible, change transparency and blur, reduce movement, and choose a contrast theme.</p></div>
+                    <span className="guide-card-index">02 / Wallpaper</span>
+                    <div><h3>Pick a background</h3><p>Choose Picture to use the desktop image, or Solid color for a plain background. Light and dark mode remember their own color choices.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
-                    <span className="guide-card-index">03 / Desktop</span>
-                    <div><h3>Arrange the desktop</h3><p>Right-click the desktop to line up icons. Drag the Dock to an edge, or right-click it to choose where it sits.</p></div>
+                    <span className="guide-card-index">03 / Surface effects</span>
+                    <div><h3>Change transparency and blur</h3><p>Use Window &amp; dock transparency for windows and the Dock. Sticky transparency only changes notes. If Window &amp; dock transparency is set to None, you cannot change Blur. Your blur setting stays saved and returns when you add transparency.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
-                    <span className="guide-card-index">04 / Desktop</span>
-                    <div><h3>Save your layout</h3><p>Use Settings to save the current desktop as your default. You can return to it later with Reset desktop.</p></div>
+                    <span className="guide-card-index">04 / Desktop text</span>
+                    <div><h3>Make the welcome message your own</h3><p>Edit the large heading, highlighted words, and short introduction. You can choose separate text colors for light and dark mode.</p></div>
+                  </Surface>
+                </div>
+
+                <div className="guide-section-label">Comfort and readability</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">01 / Display</span>
+                    <div><h3>Make controls easier to see</h3><p>Keep scrollbars visible when you want a clear sign that a page can scroll. Turn transparency off for solid surfaces, or turn blur off for a sharper background.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">02 / Motion</span>
+                    <div><h3>Reduce movement</h3><p>Turn animations off, or choose a slower speed. This changes movement across windows, menus, and other controls.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">03 / Contrast</span>
+                    <div><h3>Choose clearer colors</h3><p>Try Low contrast for a softer look or High contrast for stronger separation. Choose Standard to return to your wallpaper and usual colors.</p></div>
+                  </Surface>
+                </div>
+
+                <div className="guide-section-label">Desktop layout</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">01 / Icons</span>
+                    <div><h3>Line up desktop items</h3><p>Right-click an empty part of the desktop. Choose Clean up to tidy the current positions, or Auto arrange to keep items lined up automatically.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">02 / Dock</span>
+                    <div><h3>Move the Dock</h3><p>Drag the Dock toward an edge of the screen. You can also right-click it and choose a position.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">03 / Save</span>
+                    <div><h3>Keep a layout you like</h3><p>Choose Save state as default in Settings. This remembers your layout, open windows, theme, wallpaper, and other choices.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">04 / Reset</span>
+                    <div><h3>Return to your saved layout</h3><p>Choose Reset desktop when you want to undo later changes. You will be asked to confirm before anything is reset.</p></div>
                   </Surface>
                 </div>
               </>
@@ -1920,87 +1998,81 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   <div>
                     <SectionLabel className="section-kicker">user guide / tech notes</SectionLabel>
                     <h2 className="settings-heading">A desktop built in the browser</h2>
-                    <p className="guide-intro">This interface borrows the language of an operating system, but it is still a web application. The stack below explains what is simulated, what the browser controls, and why some behaviors differ from a regular operating system.</p>
+                    <p className="guide-intro">This desktop is a website that looks and behaves like a small operating system. These notes explain how it works and what it can—and cannot—do.</p>
                   </div>
                 </div>
-                <div className="guide-section-label">What powers it</div>
-                <dl className="guide-definition-list">
-                  <div><dt>Interface</dt><dd>React components render the desktop, windows, Dock, system bar, Stickies, menus, and guide as one interactive page. Opening an app adds another visual region to the same document.</dd></div>
-                  <div><dt>Language</dt><dd>TypeScript describes window IDs, saved preferences, responsive modes, and pointer interactions. Those types make state changes explicit while the workspace is being rearranged.</dd></div>
-                  <div><dt>Build</dt><dd>Vite bundles the React and TypeScript source into static browser assets. The browser loads those assets into a tab; it does not start a native window manager or a separate process for each app.</dd></div>
-                  <div><dt>Styling</dt><dd>CSS handles the desktop geometry, themes, typography, surfaces, blur, shadows, responsive layouts, focus rings, and reduced-motion behavior. CSS effects are rendered by the browser rather than by a graphics compositor owned by the app.</dd></div>
-                  <div><dt>State</dt><dd>React state tracks open windows, frontmost order, window geometry, Dock placement, menus, Stickies, settings, and the current guide section. A state update causes the relevant DOM to render again.</dd></div>
-                  <div><dt>Browser APIs</dt><dd>Pointer Events support dragging and resizing, keyboard listeners support shortcuts, animation frames keep pointer movement responsive, and media queries report viewport and accessibility preferences.</dd></div>
-                  <div><dt>Persistence</dt><dd>Browser <code>localStorage</code> keeps the desktop snapshot on this device and browser profile: positions, sizes, theme, Dock placement, open windows, Stickies, and preferences.</dd></div>
-                </dl>
-                <div className="guide-section-label">How an interaction travels</div>
+                <div className="guide-section-label">What runs the desktop</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">01 / Page</span>
+                    <div><h3>Everything lives in one browser tab</h3><p>The desktop, windows, Dock, menus, Stickies, Settings, and this guide are all parts of one web page. Opening an app shows another part of that page.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">02 / Code</span>
+                    <div><h3>React and TypeScript control what changes</h3><p>React updates the parts you can see. TypeScript helps keep window names, settings, and saved information consistent.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">03 / Style</span>
+                    <div><h3>CSS controls the look and layout</h3><p>CSS sets colors, type, window sizes, movement, blur, shadows, and layouts for different screen sizes.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">04 / Saving</span>
+                    <div><h3>The browser remembers your setup</h3><p>The browser saves window positions, theme, Dock placement, Stickies, and other choices on this device.</p></div>
+                  </Surface>
+                </div>
+                <div className="guide-section-label">What happens when you use it</div>
                 <div className="guide-step-list">
                   <div className="guide-step">
                     <span className="guide-step-number">01</span>
-                    <div><h3>Input arrives in the page</h3><p>A click, key press, pointer move, resize gesture, or viewport change is delivered to the browser tab. The app only receives events that the browser exposes to the page.</p></div>
+                    <div><h3>The browser receives your action</h3><p>You select, type, drag, or resize something. The browser sends that action to the page.</p></div>
                   </div>
                   <div className="guide-step">
                     <span className="guide-step-number">02</span>
-                    <div><h3>State describes the change</h3><p>Handlers update focused window IDs, coordinates, dimensions, preferences, or menu visibility. The state model represents the desktop; it is not an operating-system process table.</p></div>
+                    <div><h3>The page updates its information</h3><p>The desktop records what changed, such as the active window, a new position, or a different setting.</p></div>
                   </div>
                   <div className="guide-step">
                     <span className="guide-step-number">03</span>
-                    <div><h3>React updates the DOM</h3><p>React reconciles the changed component tree and updates the relevant buttons, window surfaces, labels, and styles without navigating to a new page for every app.</p></div>
+                    <div><h3>The screen changes</h3><p>React updates only the buttons, windows, text, or styles that need to change. The browser then draws the result.</p></div>
                   </div>
                   <div className="guide-step">
                     <span className="guide-step-number">04</span>
-                    <div><h3>CSS and the browser paint it</h3><p>Layout, stacking, transforms, transitions, blur, shadows, scrollbars, and focus indicators are calculated and painted by the browser. Support and user preferences can change the result.</p></div>
-                  </div>
-                  <div className="guide-step">
-                    <span className="guide-step-number">05</span>
-                    <div><h3>The snapshot is saved when needed</h3><p>Persistent preferences and workspace changes are serialized to localStorage. A refresh can restore that snapshot, but only inside the same browser storage boundary.</p></div>
+                    <div><h3>Your setup is saved</h3><p>Changes that should last are saved in the browser. When you return, the page uses that saved information to rebuild your desktop.</p></div>
                   </div>
                 </div>
-                <div className="guide-section-label">Why it differs from a regular operating system</div>
-                <div className="guide-detail-grid">
-                  <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">01 / Process</span>
-                    <h3>Windows are visual layers</h3>
-                    <p>Apps are DOM sections in one tab, not independent operating-system processes. Closing a window changes the page state; it does not quit a program or release a native process.</p>
+                <div className="guide-section-label">Limits to know</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">01 / Apps</span>
+                    <div><h3>Windows are not separate programs</h3><p>Every app is part of the same page. Closing a window hides that part of the page; it does not quit a program on your computer.</p></div>
                   </Surface>
-                  <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">02 / Files</span>
-                    <h3>The terminal is a simulation</h3>
-                    <p>The Terminal window responds to its built-in command set and portfolio data. It cannot inspect the host computer, launch native programs, run arbitrary commands, or access a real file system.</p>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">02 / Terminal</span>
+                    <div><h3>The Terminal uses built-in commands</h3><p>It can explore this portfolio and change some desktop settings. It cannot view files on your computer, install software, or run other programs.</p></div>
                   </Surface>
-                  <Surface elevation="flat" className="guide-detail">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">03 / Storage</span>
-                    <h3>Saved data belongs to the browser</h3>
-                    <p>localStorage is scoped to a browser origin and profile. It is not a shared home directory, a sync service, or a guarantee that another device will have the same workspace.</p>
+                    <div><h3>Saved information stays in this browser</h3><p>Your setup does not automatically move to another browser, profile, or device. Private browsing may remove it when the private window closes.</p></div>
                   </Surface>
-                  <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">04 / Geometry</span>
-                    <h3>Small screens use managed layouts</h3>
-                    <p>Freeform desktop geometry is for larger pointer-driven viewports. Tablet and mobile layouts temporarily stack or manage windows so content stays usable, then restore the desktop arrangement later.</p>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">04 / Screens</span>
+                    <div><h3>Small screens arrange windows for you</h3><p>Phones and tablets use a simpler layout that is easier to read and touch. Your larger-screen arrangement remains saved.</p></div>
                   </Surface>
-                  <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">05 / Input</span>
-                    <h3>Focus and pointer capture are browser rules</h3>
-                    <p>Keyboard focus, pointer capture, touch behavior, browser chrome, and viewport changes can interrupt or constrain an interaction in ways a native desktop window manager would handle differently.</p>
-                  </Surface>
-                  <Surface elevation="flat" className="guide-detail">
-                    <span className="guide-card-index">06 / Rendering</span>
-                    <h3>Effects depend on the browser</h3>
-                    <p>Blur, transparency, shadows, pointer capture, scrollbars, and keyboard focus are browser-rendered effects. Accessibility preferences and browser support can reduce or change how they appear.</p>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">05 / Browser</span>
+                    <div><h3>Your browser controls some behavior</h3><p>Keyboard focus, touch, blur, transparency, and scrolling can look or work a little differently between browsers and devices.</p></div>
                   </Surface>
                 </div>
                 <div className="guide-section-label">What this means in practice</div>
                 <dl className="guide-definition-list">
-                  <div><dt>Focus</dt><dd>Only the app’s own window stack is reordered when you click a window. The browser tab, other tabs, and other applications remain outside this workspace’s control.</dd></div>
-                  <div><dt>Shortcuts</dt><dd>Number keys and command combinations are handled while the page can receive keyboard input. A focused text field, browser shortcut, or operating-system shortcut can take precedence.</dd></div>
-                  <div><dt>Refresh</dt><dd>Refreshing reconstructs the interface from code and then restores what was saved. In-memory details that were never persisted can disappear, just as unsaved work can be lost in another application.</dd></div>
-                  <div><dt>Responsive</dt><dd>Mobile and tablet layouts are managed for readability and touch targets. They are not a second native desktop; they are temporary browser layouts that protect the saved desktop geometry.</dd></div>
-                  <div><dt>Accessibility</dt><dd>Reduced motion, contrast settings, visible scrollbars, and browser focus behavior can intentionally change the appearance of the workspace. Those changes are part of the interface contract, not rendering failures.</dd></div>
-                  <div><dt>Security</dt><dd>The browser sandbox prevents the page from acting like a general-purpose shell. It can use the APIs made available to it, but it cannot silently browse private files or control unrelated applications.</dd></div>
+                  <div><dt>Clicking a window</dt><dd>Only changes the order of windows inside this page. It cannot move or control other browser tabs or programs.</dd></div>
+                  <div><dt>Keyboard shortcuts</dt><dd>Work when the page can receive your keys. They pause while you type in a text box, and browser shortcuts may take priority.</dd></div>
+                  <div><dt>Refreshing the page</dt><dd>Rebuilds the desktop and restores saved choices. Anything that was not saved may be lost.</dd></div>
+                  <div><dt>Accessibility settings</dt><dd>May change movement, colors, scrollbars, transparency, and blur on purpose.</dd></div>
+                  <div><dt>Security</dt><dd>The browser keeps this page separate from private files and unrelated programs on your computer.</dd></div>
                 </dl>
                 <div className="guide-callout">
                   <span className="guide-callout-label">important</span>
-                  <p>Clearing site data, using private browsing, changing browser profiles, or blocking storage can reset the saved workspace. The guide and Settings explain the interface, but the browser still owns the storage, security, input, and rendering boundaries.</p>
+                  <p>Clearing site data, changing browser profiles, blocking storage, or using private browsing can remove your saved desktop.</p>
                 </div>
               </>
             )}
@@ -2010,10 +2082,26 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 <div className="guide-page-header">
                   <div>
                     <SectionLabel className="section-kicker">user guide / shortcuts</SectionLabel>
-                    <h2 className="settings-heading">Keyboard map</h2>
-                    <p className="guide-intro">On the desktop, number keys open the matching Dock app. Escape closes menus and dialogs.</p>
+                    <h2 className="settings-heading">Keyboard shortcuts</h2>
+                    <p className="guide-intro">Use these keys when you want to move around the desktop without reaching for the pointer.</p>
                   </div>
                 </div>
+                <div className="guide-section-label">Before you start</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">01 / Number keys</span>
+                    <div><h3>Open or focus an app</h3><p>Press a number from <kbd>1</kbd> to <kbd>8</kbd>. If the app is closed, it opens. If it is already open, it comes forward or hides.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">02 / Typing</span>
+                    <div><h3>Shortcuts pause in text boxes</h3><p>Number shortcuts do not run while you are typing in a field. Select the desktop or a window before trying the shortcut again.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">03 / Escape</span>
+                    <div><h3>Close a menu or message</h3><p>Press <kbd>Esc</kbd> to close the open menu or dialog without changing its action.</p></div>
+                  </Surface>
+                </div>
+                <div className="guide-section-label">App numbers</div>
                 <Surface elevation="flat" className="guide-shortcuts-panel">
                   <div className="guide-shortcut-list" aria-label="Keyboard shortcuts">
                   {[
@@ -2035,8 +2123,8 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   </div>
                 </Surface>
                 <div className="guide-callout">
-                  <span className="guide-callout-label">tip</span>
-                  <p>Use <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>X</kbd> to close the front window, or add <kbd>⌥</kbd> to close every open window.</p>
+                  <span className="guide-callout-label">close windows</span>
+                  <p>On a Mac, press <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>X</kbd> to close the front window. On Windows or Linux, use <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>X</kbd>. Add <kbd>⌥</kbd> on Mac or <kbd>Alt</kbd> on Windows and Linux to close every open window.</p>
                 </div>
               </>
             )}

@@ -1,4 +1,4 @@
-# Portfolio OS DS — Documentation
+# OS Portfolio DS — Documentation
 
 Welcome to the documentation root for `@workspace/portfolio-os-ds`. Every spec, foundation, pattern, and reference lives here.
 

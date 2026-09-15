@@ -55,7 +55,7 @@ The top-level `public/` directory contains the built static website.
 
 Upload the contents of `public/` to the target web directory. Keep `index.html` and `assets/` together, and replace the previous build rather than mixing files from separate builds.
 
-The remaining files are the Claude-ready OS Portfolio source, Portfolio OS DS source, documentation, and repository guidance.
+The remaining files are the Claude-ready OS Portfolio source, OS Portfolio DS source, documentation, and repository guidance.
 EOF
 
 rm -f "$output"

@@ -1,6 +1,6 @@
 kind = "design-system"
 previewPath = "/portfolio-os-ds/"
-title = "Portfolio OS DS"
+title = "OS Portfolio DS"
 description = "The foundational tokens, reusable interface components, and interaction patterns for OS Portfolio across light, dark, desktop, tablet, and mobile experiences."
 version = "1.0.0"
 id = "artifacts/portfolio-os-ds"

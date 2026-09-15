@@ -1,5 +1,5 @@
 /**
- * Settings UI primitives — Portfolio OS DS
+ * Settings UI primitives — OS Portfolio DS
  *
  * Visual-only components for settings windows. Product behavior (localStorage,
  * wallpaper persistence, desktop orchestration) lives in consuming apps only.

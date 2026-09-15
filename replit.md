@@ -20,7 +20,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 ## Stack
 
 - React, Vite, and TypeScript in a pnpm workspace
-- Shared UI package: `@workspace/portfolio-os-ds` (Portfolio OS DS)
+- Shared UI package: `@workspace/portfolio-os-ds` (OS Portfolio DS)
 - Browser-local persistence; no backend or database dependency
 - Playwright interaction and responsive-layout coverage
 - Static production output with relative asset URLs
@@ -31,7 +31,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - `artifacts/desktop-portfolio/src/index.css` — responsive presentation, themes, and motion
 - `artifacts/desktop-portfolio/tests/` — persistence, interaction, responsive, and contrast checks
 - `artifacts/desktop-portfolio/dist/public/` — generated upload-ready static site
-- `artifacts/portfolio-os-ds/` — Portfolio OS DS shared tokens and visual primitives
+- `artifacts/portfolio-os-ds/` — OS Portfolio DS shared tokens and visual primitives
 - `CLAUDE.md` — concise collaborator instructions
 - `.claude/skills/os-portfolio/SKILL.md` — OS Portfolio maintenance rules
 - `.claude/skills/ftp-release/SKILL.md` — static release procedure

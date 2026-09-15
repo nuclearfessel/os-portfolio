@@ -3,7 +3,7 @@ name: OS Portfolio component ownership
 description: Approved boundary between shared visual components and portfolio-specific desktop behavior.
 ---
 
-Shared visual primitives and structural surfaces belong to the Portfolio OS DS package and should be consumed directly by OS Portfolio. Product-specific behavior—dragging, resizing, persistence, keyboard control, window focus, and responsive workspace state—stays in the portfolio.
+Shared visual primitives and structural surfaces belong to the OS Portfolio DS package and should be consumed directly by OS Portfolio. Product-specific behavior—dragging, resizing, persistence, keyboard control, window focus, and responsive workspace state—stays in the portfolio.
 
 **Why:** The user approved the source-backed pilot and its direct-consumption approach on September 13, 2026. This keeps the style guide authoritative without forcing application behavior into generic components.
 

@@ -12,7 +12,7 @@ import { cn } from "../../lib/utils"
 import { Button, buttonVariants } from "./button"
 
 /**
- * Calendar — Portfolio OS DS
+ * Calendar — OS Portfolio DS
  *
  * Key geometry decisions:
  * - Cell size: 44px (--rdp-day-width/height overridden on root)

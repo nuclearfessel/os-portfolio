@@ -1,19 +1,19 @@
 ---
 name: website-zip-action
-description: Maintains the GitHub workflow that publishes versioned deployable OS Portfolio and Portfolio OS DS ZIPs to GitHub Releases from main only. Use before changing CI, production builds, output paths, or release packaging.
+description: Maintains the GitHub workflow that publishes versioned deployable OS Portfolio and OS Portfolio DS ZIPs to GitHub Releases from main only. Use before changing CI, production builds, output paths, or release packaging.
 ---
 
 # Website ZIP action
 
-The repository must publish fresh deployable OS Portfolio and Portfolio OS DS ZIPs plus the Claude source ZIP to one standard GitHub release after pushes to `main` only. Feature and maintenance branches must never publish packages or prereleases.
+The repository must publish fresh deployable OS Portfolio and OS Portfolio DS ZIPs plus the Claude source ZIP to one standard GitHub release after pushes to `main` only. Feature and maintenance branches must never publish packages or prereleases.
 
 ## Source of truth
 
 - Workflow: `.github/workflows/website-release.yml`
 - OS Portfolio package: `@workspace/desktop-portfolio`
 - Deployable build directory: `artifacts/desktop-portfolio/dist/public/`
-- Portfolio OS DS package: `@workspace/portfolio-os-ds`
-- Deployable Portfolio OS DS build directory: `artifacts/portfolio-os-ds/dist/`
+- OS Portfolio DS package: `@workspace/portfolio-os-ds`
+- Deployable OS Portfolio DS build directory: `artifacts/portfolio-os-ds/dist/`
 - Claude source packaging script: `scripts/package-claude-source.sh`
 - Download location: the repository’s **Releases** section
 

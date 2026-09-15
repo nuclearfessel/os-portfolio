@@ -1,6 +1,6 @@
 # OS Portfolio
 
-OS Portfolio (OS.Portfolio) is a desktop-inspired portfolio for **John Doe**, built as an interactive operating-system workspace. The repository also contains Portfolio OS DS, the shared design system that defines the portfolio’s visual language, components, accessibility contracts, and interaction patterns.
+OS Portfolio (OS.Portfolio) is a desktop-inspired portfolio for **John Doe**, built as an interactive operating-system workspace. The repository also contains OS Portfolio DS, the shared design system that defines the portfolio’s visual language, components, accessibility contracts, and interaction patterns.
 
 ## Portfolio
 
@@ -18,15 +18,15 @@ The portfolio presents John’s work through draggable and resizable application
 - Accessibility controls for contrast, transparency, animation, and scrollbars
 - Keyboard interactions and semantic ARIA states
 
-## Portfolio OS DS
+## OS Portfolio DS
 
-![Portfolio OS DS documentation](docs/images/portfolio-os-ds.jpg)
+![OS Portfolio DS documentation](docs/images/portfolio-os-ds.jpg)
 
-The living Portfolio OS DS documentation site is built with the same tokens and components used by the portfolio. It includes:
+The living OS Portfolio DS documentation site is built with the same tokens and components used by the portfolio. It includes:
 
 - Five visual and accessibility foundations
 - Public documentation for components used by the portfolio
-- A consolidated Portfolio OS DS primitives directory
+- A consolidated OS Portfolio DS primitives directory
 - Twelve composed interaction patterns
 - Interactive examples, specifications, usage guidance, and copyable source
 - Registered deep links for internal catalog pages that are not publicly surfaced
@@ -102,7 +102,7 @@ Feature and maintenance branch pushes never create release packages or prereleas
 
 ## Design-system development
 
-Design tokens are defined in `artifacts/portfolio-os-ds/tokens.json` and generated before Portfolio OS DS builds and type checks.
+Design tokens are defined in `artifacts/portfolio-os-ds/tokens.json` and generated before OS Portfolio DS builds and type checks.
 
 ```bash
 pnpm --filter @workspace/portfolio-os-ds run tokens

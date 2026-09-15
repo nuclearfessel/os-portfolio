@@ -6,7 +6,7 @@
 
 ## Intent
 
-The Portfolio OS DS is a visual-only library. It has no internal persistence, no localStorage access, no desktop orchestration, and no concept of "the current desktop state." All of these are the exclusive responsibility of the consuming product.
+The OS Portfolio DS is a visual-only library. It has no internal persistence, no localStorage access, no desktop orchestration, and no concept of "the current desktop state." All of these are the exclusive responsibility of the consuming product.
 
 ---
 

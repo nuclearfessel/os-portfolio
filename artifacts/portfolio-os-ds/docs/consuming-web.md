@@ -1,4 +1,4 @@
-# Consuming Portfolio OS DS in web apps
+# Consuming OS Portfolio DS in web apps
 
 Read `artifacts/portfolio-os-ds/docs/AGENTS.md` first. This guide covers
 React/Vite and other shadcn/Tailwind web consumers. If the app already contains

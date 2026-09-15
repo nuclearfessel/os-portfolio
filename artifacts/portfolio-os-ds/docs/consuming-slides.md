@@ -1,4 +1,4 @@
-# Consuming Portfolio OS DS in slide decks
+# Consuming OS Portfolio DS in slide decks
 
 Read `artifacts/portfolio-os-ds/docs/AGENTS.md` first. Slide decks
 (SDM documents) do not consume CSS, Tailwind, or React components. Do NOT add

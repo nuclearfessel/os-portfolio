@@ -55,7 +55,7 @@ Run the smallest relevant test during development. Before handing off a release,
 ## Generated files
 
 - Upload-ready build: `artifacts/desktop-portfolio/dist/public/`
-- Upload-ready Portfolio OS DS build: `artifacts/portfolio-os-ds/dist/`
+- Upload-ready OS Portfolio DS build: `artifacts/portfolio-os-ds/dist/`
 - Downloadable source bundle: `claude-src-pack.zip`
 - The ZIP also contains a top-level `public/` copy of the latest production build and `DEPLOYMENT.md`.
 - Source portions of the ZIP exclude `node_modules`, package `dist` folders, Playwright reports/results, caches, environment files, and `*.tsbuildinfo`.

@@ -436,7 +436,7 @@ export type NavGroup = {
 };
 
 export const DESIGN_SYSTEM = {
-  title: 'Portfolio OS DS',
+  title: 'OS Portfolio DS',
   description:
     'Foundations, components, and interaction patterns for the John Doe desktop portfolio — portfolio-scoped public view. The package retains the full component catalog; only portfolio-used surfaces are surfaced here.',
 } as const;

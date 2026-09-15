@@ -1,4 +1,4 @@
-# Migrating Expo UI to Portfolio OS DS
+# Migrating Expo UI to OS Portfolio DS
 
 Read `artifacts/portfolio-os-ds/docs/AGENTS.md` and
 `artifacts/portfolio-os-ds/docs/consuming-expo.md` first. Use this guide

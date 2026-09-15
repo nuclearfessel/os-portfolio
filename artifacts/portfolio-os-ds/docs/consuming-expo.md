@@ -1,4 +1,4 @@
-# Consuming Portfolio OS DS in Expo apps
+# Consuming OS Portfolio DS in Expo apps
 
 Read `artifacts/portfolio-os-ds/docs/AGENTS.md` first. React Native does
 not consume the web CSS or DOM components. It imports portable tokens, native

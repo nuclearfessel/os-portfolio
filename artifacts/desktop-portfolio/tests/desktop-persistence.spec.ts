@@ -1746,6 +1746,9 @@ test('automatic desktop text contrast samples picture wallpaper and preserves pe
   await page.reload();
   await expect(primaryHeadline).toHaveAttribute('data-auto-contrast-color', /^#(?:111326|f7faf8|000000|ffffff)$/);
   await expect(primaryHeadline).not.toHaveCSS('color', 'rgb(255, 0, 255)');
+  const bodyParagraph = page.locator('.desktop-intro > p');
+  await expect(bodyParagraph).toHaveAttribute('data-auto-contrast-color', '#ffffff');
+  await expect(bodyParagraph).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
 
   await page.evaluate((key) => {
     const saved = JSON.parse(localStorage.getItem(key) ?? '{}');

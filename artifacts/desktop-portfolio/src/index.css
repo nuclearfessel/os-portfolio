@@ -2673,6 +2673,36 @@ button { cursor: pointer; }
   color: #000 !important;
 }
 
+[data-contrast="high"] .dock-item.dock-app-about {
+  color: #fff7fb !important;
+  background: linear-gradient(145deg, #d64f8c, #9e3d67 72%) !important;
+  border-color: #fff !important;
+}
+
+[data-contrast="high"] .dock-item.dock-app-work {
+  color: #f8f7ff !important;
+  background: linear-gradient(145deg, #7478b8, #50528d 72%) !important;
+  border-color: #fff !important;
+}
+
+[data-contrast="high"] .dock-item.dock-app-contact {
+  color: #c85c3a !important;
+  background: linear-gradient(145deg, #f7f2ec, #e7ded5 72%) !important;
+  border-color: #fff !important;
+}
+
+[data-contrast="high"] .dock-item.dock-app-terminal {
+  color: #cadb79 !important;
+  background: linear-gradient(145deg, #303747, #1b202a) !important;
+  border-color: #fff !important;
+}
+
+[data-contrast="high"] .dock-item.dock-app-stickies {
+  color: #573d72 !important;
+  background: linear-gradient(145deg, #ebca75, #c5963f) !important;
+  border-color: #fff !important;
+}
+
 /* Focus indicators — high contrast */
 [data-contrast="high"] *:focus-visible {
   outline: 3px solid var(--hc-focus) !important;
@@ -2694,6 +2724,10 @@ button { cursor: pointer; }
 
 [data-contrast="high"] .settings-nav-item-active {
   background: var(--hc-accent) !important;
+  color: #000 !important;
+}
+
+[data-contrast="high"] .settings-nav-item-active .settings-nav-icon {
   color: #000 !important;
 }
 

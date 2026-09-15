@@ -3656,8 +3656,8 @@ function Home() {
                   <button type="button" role="menuitemradio" aria-checked={iconSize === 'small'} onClick={() => { setIconSize('small'); setContextMenu(null); }}><span className="context-check">{iconSize === 'small' && <Check size={12} />}</span><span>Small icons</span></button>
                 </div>
               </div>
-              <button type="button" className="context-menu-button" role="menuitem" onClick={cleanupIcons}><span className="context-check" /><span>Cleanup icons</span></button>
               <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={snapToGrid} onClick={() => setSnapToGrid((value) => !value)}><span className="context-check">{snapToGrid && <Check size={12} />}</span><span>Snap to grid</span></button>
+              <button type="button" className="context-menu-button" role="menuitem" onClick={cleanupIcons}><span className="context-check" /><span>Cleanup icons</span></button>
               <button type="button" className="context-menu-button" role="menuitem" onClick={autoArrangeIcons}><span className="context-check" /><span>Auto arrange icons</span></button>
               <div className="context-menu-separator" />
             </>
@@ -3800,12 +3800,11 @@ function Home() {
           <div className="context-menu-separator" />
           <button
             type="button"
-            className="context-menu-button"
+            className="context-menu-button context-menu-button-no-icon"
             role="menuitem"
             onClick={() => resetStickyRotation(stickyMenu.id)}
             data-testid="button-reset-sticky-rotation"
           >
-            <span className="context-check" aria-hidden="true">0°</span>
             <span>Reset rotation</span>
           </button>
           {stickyMenu.id !== 'sticky' && (
@@ -3813,7 +3812,7 @@ function Home() {
               <div className="context-menu-separator" />
               <button
                 type="button"
-                className="context-menu-button context-menu-danger"
+                className="context-menu-button context-menu-button-no-icon context-menu-danger"
                 role="menuitem"
                 onClick={(event) => {
                   deleteDialogOpenerRef.current = event.currentTarget;
@@ -3822,7 +3821,6 @@ function Home() {
                 }}
                 data-testid="button-delete-sticky"
               >
-                <X size={14} aria-hidden="true" />
                 <span>Delete this sticky…</span>
               </button>
             </>

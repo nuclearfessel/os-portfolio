@@ -86,7 +86,7 @@ import { ActionButton } from '@workspace/os-portfolio-ds/components/ui/os-portfo
   tag="DESIGN SYSTEM / 2025"
   accent="#e4ff5b"
   action={
-    <ActionButton variant="primary">View case study</ActionButton>
+    <ActionButton>View case study</ActionButton>
   }
 />
 ```

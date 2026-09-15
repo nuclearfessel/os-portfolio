@@ -54,7 +54,10 @@ propagate through the component tier.
 
 | Component intent | Semantic aliases (light / dark) |
 |---|---|
-| `actionButton.background` | `primary` / `primary` |
+| `actionButton.background` | `background` / `secondary` |
+| `actionButton.foreground` | `accent` / `primary` |
+| `actionButton.hover` | `primary` / `primary` |
+| `actionButton.hoverForeground` | `primaryForeground` / `primaryForeground` |
 | `dialog.surface` | `card` / `card` |
 | `contextMenu.surface` | `popover` / `popover` |
 | `projectCard.surface` | `card` / `card` |
@@ -63,7 +66,11 @@ propagate through the component tier.
 | `contactCta.background` | `accent` / `accent` |
 
 The same intent names exist under both `color.component.light` and
-`color.component.dark`; only their semantic target changes with the theme.
+`color.component.dark`; their semantic targets can differ when the interaction
+needs theme-specific contrast. In-window action buttons use a transparent
+accent outline that fills with primary in light mode, and secondary-to-primary
+in dark mode. Desktop quick actions are a separate component treatment and do
+not use this mapping.
 
 ### Component coverage
 
@@ -99,13 +106,13 @@ hex value.
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `primary` | `#0b665d` (teal) | `#e4ff5b` (lime) | Primary actions, active states, focus rings, section labels |
+| `primary` | `#0b665d` (teal) | `#e4ff5b` (lime) | In-window action hover fills, active states, focus rings, section labels |
 | `primary-foreground` | `#f7fbf9` | `#111326` | Text on primary backgrounds |
-| `secondary` | `#dceae5` | `#2b2f4a` | Secondary action backgrounds |
+| `secondary` | `#dceae5` | `#2b2f4a` | Secondary surfaces; dark in-window action default background |
 | `secondary-foreground` | `#17233a` | `#e8eaf4` | Text on secondary backgrounds |
 | `muted` | `#e2ece8` | `#2b2f4a` | Muted/subtle backgrounds |
 | `muted-foreground` | `#536a72` | `#aeb2cb` | Secondary / helper text |
-| `accent` | `#c54f48` (red-orange) | `#ff8d79` (salmon) | Accent emphasis, not primary actions |
+| `accent` | `#c54f48` (red-orange) | `#ff8d79` (salmon) | Accent emphasis and light in-window action default background |
 | `accent-foreground` | `#ffffff` | `#111326` | Text on accent |
 
 ### Status

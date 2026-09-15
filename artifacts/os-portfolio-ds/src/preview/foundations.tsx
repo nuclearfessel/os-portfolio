@@ -41,7 +41,7 @@ const MAPPING_FLOW = [
     primitive: 'color.palette.teal.700',
     semantic: 'color.background.action.primary.default.light',
     semanticClass: 'bg-primary',
-    component: 'button.container.color.background.primary.default.light',
+    component: 'action-button.container.color.background.hover.light',
     componentClass: 'bg-primary',
   },
   {
@@ -65,7 +65,7 @@ const MAPPING_FLOW = [
     primitive: 'color.palette.coral.500',
     semantic: 'color.background.action.accent.default.light',
     semanticClass: 'bg-accent',
-    component: 'contact-cta.container.color.background.accent.default.light',
+    component: 'action-button.container.color.border.light',
     componentClass: 'bg-accent',
   },
 ] as const;

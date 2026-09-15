@@ -27,7 +27,7 @@ export function OsPortfolioActionButtonDemo() {
         <div>
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Common use cases</p>
           <div className="flex flex-wrap items-center gap-3">
-            <ActionButton variant="primary">View case study</ActionButton>
+            <ActionButton>View case study</ActionButton>
             <ActionButton>Close</ActionButton>
             <ActionButton>Reset desktop&hellip;</ActionButton>
             <ActionButton variant="danger">Delete note</ActionButton>

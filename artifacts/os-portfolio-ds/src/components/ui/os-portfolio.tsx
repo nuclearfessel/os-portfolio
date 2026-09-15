@@ -22,7 +22,8 @@ export const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
       className={classes(
         'inline-flex min-h-9 items-center justify-center gap-2 rounded-md border px-3 text-xs font-medium transition-colors duration-100 focus-visible:outline-2 focus-visible:outline-offset-2',
         variant === 'primary' && 'border-primary bg-primary text-primary-foreground hover:brightness-105',
-        variant === 'secondary' && 'border-border bg-secondary text-secondary-foreground hover:border-primary',
+        variant === 'secondary' &&
+          'border-[hsl(var(--component-action-button-border))] bg-transparent text-[hsl(var(--component-action-button-foreground))] hover:border-[hsl(var(--component-action-button-hover-border))] hover:bg-[hsl(var(--component-action-button-hover))] hover:text-[hsl(var(--component-action-button-hover-foreground))] dark:bg-[hsl(var(--component-action-button-background))]',
         variant === 'danger' && 'border-destructive bg-destructive text-destructive-foreground hover:brightness-110',
         className,
       )}

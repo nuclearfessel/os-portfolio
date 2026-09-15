@@ -124,6 +124,29 @@ const MAXIMIZED_WINDOW_GAP = 12;
 const MAXIMIZED_WINDOW_DOCK_INSET = 97;
 const MAXIMIZED_WINDOW_DOCK_INSET_WITH_SYSTEM_BAR = 87;
 
+function hexToHslChannels(hex: string) {
+  const normalized = hex.replace('#', '');
+  const red = Number.parseInt(normalized.slice(0, 2), 16) / 255;
+  const green = Number.parseInt(normalized.slice(2, 4), 16) / 255;
+  const blue = Number.parseInt(normalized.slice(4, 6), 16) / 255;
+  const maximum = Math.max(red, green, blue);
+  const minimum = Math.min(red, green, blue);
+  const lightness = (maximum + minimum) / 2;
+  const delta = maximum - minimum;
+  let hue = 0;
+  let saturation = 0;
+
+  if (delta !== 0) {
+    saturation = delta / (1 - Math.abs(2 * lightness - 1));
+    if (maximum === red) hue = 60 * (((green - blue) / delta) % 6);
+    else if (maximum === green) hue = 60 * ((blue - red) / delta + 2);
+    else hue = 60 * ((red - green) / delta + 4);
+  }
+
+  if (hue < 0) hue += 360;
+  return `${Math.round(hue)} ${Math.round(saturation * 1000) / 10}% ${Math.round(lightness * 1000) / 10}%`;
+}
+
 function readViewportProfile(): ViewportProfile {
   const width = window.innerWidth;
   const height = window.innerHeight;
@@ -3837,6 +3860,17 @@ function Home() {
   const currentWallpaperStyle = appliesSelectedWallpaper
     ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
     : undefined;
+  const actionButtonColors = tokens.color.component[presentationTheme].actionButton;
+  const shellStyle = {
+    ...currentWallpaperStyle,
+    '--component-action-button-background': hexToHslChannels(actionButtonColors.background),
+    '--component-action-button-foreground': hexToHslChannels(actionButtonColors.foreground),
+    '--component-action-button-border': hexToHslChannels(actionButtonColors.border),
+    '--component-action-button-hover': hexToHslChannels(actionButtonColors.hover),
+    '--component-action-button-hover-foreground': hexToHslChannels(actionButtonColors.hoverForeground),
+    '--component-action-button-hover-border': hexToHslChannels(actionButtonColors.hoverBorder),
+    '--component-action-button-focus': hexToHslChannels(actionButtonColors.focus),
+  } as React.CSSProperties;
   const automaticContrastActive = (
     introCustomization.automaticContrast
   );
@@ -3862,7 +3896,7 @@ function Home() {
       className={`osp-shell theme-${presentationTheme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} system-bar-at-${effectiveSystemBarPosition} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
-      style={currentWallpaperStyle}
+      style={shellStyle}
     >
       <header
         className={`system-bar system-bar-${effectiveSystemBarPosition}`}

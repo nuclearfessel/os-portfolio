@@ -29,7 +29,7 @@
 
 | Variant | Appearance | Use |
 |---|---|---|
-| `secondary` (default) | `bg-secondary border-border` → hover: `border-primary` | Most window actions, neutral choices |
+| `secondary` (default) | Theme-mapped in-window action: light transparent with an `accent` outline → solid `primary`; dark `secondary` with primary text/border → solid `primary` | Work, Settings, Guide, and other in-window actions |
 | `primary` | `bg-primary text-primary-foreground border-primary` → hover: `brightness-105` | Single primary call to action per view |
 | `danger` | `bg-destructive text-destructive-foreground border-destructive` → hover: `brightness-110` | Irreversible actions (delete, confirm removal) |
 
@@ -39,8 +39,8 @@
 
 | State | Visual |
 |---|---|
-| Default | As per variant |
-| Hover | `secondary`: border becomes `border-primary`; `primary`/`danger`: subtle brightness lift |
+| Default | Light mode is border-only with accent text; dark mode uses the secondary surface with primary text and border |
+| Hover | `secondary`: swaps to the theme's solid primary fill and primary foreground; `primary`/`danger`: subtle brightness lift |
 | Focus-visible | `outline-2 outline-offset-2` (uses `--color-ring`) |
 | Disabled | Pass `disabled` — browser default `pointer-events-none opacity-50` applies |
 
@@ -75,7 +75,7 @@
 
 ## Relevant tokens
 
-`bg-primary`, `text-primary-foreground`, `bg-secondary`, `text-secondary-foreground`, `border-border`, `border-primary`, `bg-destructive`, `text-destructive-foreground`, `ring`
+`--component-action-button-background`, `--component-action-button-foreground`, `--component-action-button-border`, `--component-action-button-hover`, `--component-action-button-hover-foreground`, `--component-action-button-hover-border`, `--component-action-button-focus`, plus the semantic `primary`, `secondary`, `accent`, and foreground roles they reference.
 
 ---
 
@@ -83,7 +83,7 @@
 
 | ✅ Do | ❌ Don't |
 |---|---|
-| Use `variant="primary"` for the single main action per window | Place two `primary` buttons side by side |
+| Use the default `secondary` variant for in-window actions that follow the shared theme mechanic | Reuse this treatment for desktop quick actions such as “open work” |
 | Use `variant="danger"` for destructive actions | Use `danger` for warnings or caution states |
 | Add `aria-label` to icon-only instances | Leave icon-only buttons without an accessible name |
 
@@ -97,9 +97,14 @@ import { ActionButton } from '@workspace/os-portfolio-ds/components/ui/os-portfo
 // Secondary (default)
 <ActionButton onClick={handleClose}>Close</ActionButton>
 
+// In-window action
+<ActionButton onClick={handleOpenCaseStudy}>
+  View case study
+</ActionButton>
+
 // Primary
 <ActionButton variant="primary" onClick={handleSubmit}>
-  View case study
+  Save changes
 </ActionButton>
 
 // Danger

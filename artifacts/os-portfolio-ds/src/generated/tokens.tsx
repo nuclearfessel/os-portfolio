@@ -162,10 +162,12 @@ export const tokens = {
     "component": {
       "light": {
         "actionButton": {
-          "background": "#0b665d",
-          "foreground": "#f7fbf9",
-          "border": "#0b665d",
-          "hover": "#c54f48",
+          "background": "#eaf3ef",
+          "foreground": "#c54f48",
+          "border": "#c54f48",
+          "hover": "#0b665d",
+          "hoverForeground": "#f7fbf9",
+          "hoverBorder": "#0b665d",
           "focus": "#0b665d"
         },
         "accordion": {
@@ -303,10 +305,12 @@ export const tokens = {
       },
       "dark": {
         "actionButton": {
-          "background": "#e4ff5b",
-          "foreground": "#111326",
+          "background": "#2b2f4a",
+          "foreground": "#e4ff5b",
           "border": "#e4ff5b",
-          "hover": "#ff8d79",
+          "hover": "#e4ff5b",
+          "hoverForeground": "#111326",
+          "hoverBorder": "#e4ff5b",
           "focus": "#e4ff5b"
         },
         "accordion": {

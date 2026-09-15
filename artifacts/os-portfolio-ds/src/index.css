@@ -151,10 +151,12 @@
   --window-title-foreground: var(--window-title-foreground-light);
 
   /* Component aliases intentionally reference semantic variables. */
-  --component-action-button-background: var(--primary);
-  --component-action-button-foreground: var(--primary-foreground);
-  --component-action-button-border: var(--primary);
-  --component-action-button-hover: var(--accent);
+  --component-action-button-background: var(--background);
+  --component-action-button-foreground: var(--accent);
+  --component-action-button-border: var(--accent);
+  --component-action-button-hover: var(--primary);
+  --component-action-button-hover-foreground: var(--primary-foreground);
+  --component-action-button-hover-border: var(--primary);
   --component-action-button-focus: var(--ring);
   --component-accordion-surface: var(--card);
   --component-accordion-foreground: var(--card-foreground);
@@ -440,10 +442,12 @@
   --chart-5: 36 88.4% 66.1%;
 
   /* Component aliases intentionally reference semantic variables. */
-  --component-action-button-background: var(--primary);
-  --component-action-button-foreground: var(--primary-foreground);
+  --component-action-button-background: var(--secondary);
+  --component-action-button-foreground: var(--primary);
   --component-action-button-border: var(--primary);
-  --component-action-button-hover: var(--accent);
+  --component-action-button-hover: var(--primary);
+  --component-action-button-hover-foreground: var(--primary-foreground);
+  --component-action-button-hover-border: var(--primary);
   --component-action-button-focus: var(--ring);
   --component-accordion-surface: var(--card);
   --component-accordion-foreground: var(--card-foreground);

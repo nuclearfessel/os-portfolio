@@ -120,3 +120,17 @@ jobs:
               --title "OS Portfolio packages ${RELEASE_VERSION}" \
               --notes "$release_notes"
           fi
+
+      - name: Prune old releases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mapfile -t old_releases < <(
+            gh release list --limit 100 --json tagName,publishedAt \
+              --jq 'sort_by(.publishedAt) | reverse | .[2:] | .[].tagName'
+          )
+          for tag in "${old_releases[@]}"; do
+            echo "Deleting old release: ${tag}"
+            gh release delete "$tag" --yes
+          done

@@ -829,7 +829,7 @@ test('keeps the shortcuts drawer clear of every system bar position', async ({ p
 
     const drawerBox = await page.getByTestId('menu-mobile').boundingBox();
     expect(drawerBox).not.toBeNull();
-    expect(drawerBox!.y).toBeCloseTo(50, 0);
+    expect(drawerBox!.y).toBeCloseTo(position === 'top' ? 50 : 8, 0);
     if (position === 'left') expect(drawerBox!.x).toBeGreaterThanOrEqual(62);
     if (position === 'right') expect(drawerBox!.x + drawerBox!.width).toBeLessThanOrEqual(1280 - 62);
   }

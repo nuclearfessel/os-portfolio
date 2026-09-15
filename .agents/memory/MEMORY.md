@@ -18,3 +18,4 @@
 - [Approved branch documentation sync](approved-branch-documentation-sync.md) — before merging approved work, update README, Claude files, and package surfaces when applicable.
 - [Approved Dock interaction language](approved-dock-interaction-language.md) — keep Dock feedback flat, spacing compact, and active state persistent rather than hover-driven.
 - [Design-system token consumption](design-system-token-consumption.md) — consume isolated shared values through generated tokens, not the full stylesheet.
+- [Playwright WebKit on Replit](playwright-webkit-replit.md) — isolate Nix compatibility libraries to WebKit; never export the full closure to Node.

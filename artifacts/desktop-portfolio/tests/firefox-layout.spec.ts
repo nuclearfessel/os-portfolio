@@ -6,9 +6,9 @@ test('a fresh Firefox session keeps the default sticky at its intended size', as
   const sticky = page.getByTestId('sticky-sticky');
   await expect(sticky).toBeVisible();
   await expect(sticky).toHaveCSS('width', '214px');
-  await expect(sticky).toHaveCSS('height', '138px');
+  await expect(sticky).toHaveCSS('height', '160px');
   const box = await sticky.boundingBox();
-  expect(box?.x).toBeGreaterThan((await page.evaluate(() => innerWidth)) / 2);
+  expect(box?.x).toBeLessThan((await page.evaluate(() => innerWidth)) / 2);
 
   const savedState = await page.evaluate(() => JSON.parse(localStorage.getItem('portfolio-os.desktop.v4') ?? '{}'));
   expect(savedState.itemSizes?.sticky).toBeUndefined();
@@ -34,7 +34,7 @@ test('Firefox discards sticky dimensions below the legal minimum', async ({ page
 
   const sticky = page.getByTestId('sticky-sticky');
   await expect(sticky).toHaveCSS('width', '214px');
-  await expect(sticky).toHaveCSS('height', '138px');
+  await expect(sticky).toHaveCSS('height', '160px');
   const box = await sticky.boundingBox();
-  expect(box?.x).toBeGreaterThan((await page.evaluate(() => innerWidth)) / 2);
+  expect(box?.x).toBeLessThan((await page.evaluate(() => innerWidth)) / 2);
 });

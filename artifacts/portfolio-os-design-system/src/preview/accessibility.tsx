@@ -125,11 +125,13 @@ function CssVarRow({ name, value, description }: { name: string; value: string; 
 export function AccessibilityPage() {
   const [scrollbars, setScrollbars] = useState(false);
   const [transparency, setTransparency] = useState(true);
+  const [blur, setBlur] = useState(true);
   const [transparencyLevel, setTransparencyLevel] = useState(20);
   const [animations, setAnimations] = useState(true);
   const [animSpeed, setAnimSpeed] = useState<AnimSpeed>('default');
   const [contrastTheme, setContrastTheme] = useState<ContrastTheme>('none');
   const [navSection, setNavSection] = useState<'display' | 'motion' | 'contrast'>('display');
+  const contrastActive = contrastTheme !== 'none';
 
   return (
     <div className="space-y-6">
@@ -180,17 +182,32 @@ export function AccessibilityPage() {
               <SettingsToggleRow
                 id="a11y-transparency"
                 label="Window transparency effects"
-                description="Enables blur and translucency on windows and dock."
-                checked={transparency}
+                description={contrastActive ? 'Disabled while a contrast theme is active.' : 'Enables translucency on windows and dock.'}
+                checked={!contrastActive && transparency}
                 onChange={setTransparency}
+                disabled={contrastActive}
                 data-testid="a11y-demo-transparency"
+              />
+              <SettingsToggleRow
+                id="a11y-blur"
+                label="Blur effects"
+                description={contrastActive
+                  ? 'Disabled while a contrast theme is active.'
+                  : !transparency
+                    ? 'Requires Window transparency effects.'
+                    : 'Enables backdrop blur on translucent surfaces.'}
+                checked={!contrastActive && transparency && blur}
+                onChange={setBlur}
+                disabled={contrastActive || !transparency}
+                data-testid="a11y-demo-blur"
               />
               <SettingsToggleRow
                 id="a11y-animations"
                 label="UI animations"
-                description="Enables transitions and motion effects."
-                checked={animations}
+                description={contrastActive ? 'Disabled while a contrast theme is active.' : 'Enables transitions and motion effects.'}
+                checked={!contrastActive && animations}
                 onChange={setAnimations}
+                disabled={contrastActive}
                 data-testid="a11y-demo-animations"
               />
               <SettingsToggleRow
@@ -207,10 +224,11 @@ export function AccessibilityPage() {
               <p className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-muted-foreground">Data attributes emitted</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {scrollbars && <DataAttributeChip attr="data-always-scrollbars" />}
-                {!transparency && <DataAttributeChip attr="data-no-transparency" />}
-                {transparency && <DataAttributeChip attr="data-transparency-enabled" />}
-                {!animations && <DataAttributeChip attr="data-no-animations" />}
-                {!scrollbars && transparency && animations && (
+                {(contrastActive || !transparency) && <DataAttributeChip attr="data-no-transparency" />}
+                {!contrastActive && transparency && <DataAttributeChip attr="data-transparency-enabled" />}
+                {(contrastActive || !transparency || !blur) && <DataAttributeChip attr="data-no-blur" />}
+                {(contrastActive || !animations) && <DataAttributeChip attr="data-no-animations" />}
+                {!scrollbars && !contrastActive && transparency && blur && animations && (
                   <span className="text-[0.625rem] text-muted-foreground">none active</span>
                 )}
               </div>
@@ -226,7 +244,7 @@ export function AccessibilityPage() {
               after the user stops dragging. Range guidance labels are{' '}
               <code className="font-mono">aria-hidden</code>.
             </p>
-            {transparency && (
+            {!contrastActive && transparency && (
               <SettingsSliderGroup
                 id="a11y-transparency-level"
                 label="Transparency level"
@@ -241,9 +259,9 @@ export function AccessibilityPage() {
                 data-testid="a11y-demo-transparency-level"
               />
             )}
-            {!transparency && (
+            {(contrastActive || !transparency) && (
               <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-                Enable "Window transparency effects" above to show the slider.
+                {contrastActive ? 'Transparency is disabled while a contrast theme is active.' : 'Enable "Window transparency effects" above to show the slider.'}
               </p>
             )}
             <div className="mt-2 rounded-md bg-muted p-3">
@@ -262,7 +280,7 @@ export function AccessibilityPage() {
               <code className="font-mono">role="radio"</code> and <code className="font-mono">aria-checked</code>.
               Visible labels, no icon-only controls.
             </p>
-            {animations && (
+            {!contrastActive && animations && (
               <SettingsSegmentedChoice
                 groupLabel="Animation speed"
                 options={ANIM_OPTIONS}
@@ -271,15 +289,15 @@ export function AccessibilityPage() {
                 data-testid="a11y-demo-anim-speed"
               />
             )}
-            {!animations && (
+            {(contrastActive || !animations) && (
               <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-                Enable "UI animations" above to show animation speed.
+                {contrastActive ? 'Motion is disabled while a contrast theme is active.' : 'Enable "UI animations" above to show animation speed.'}
               </p>
             )}
             <div className="mt-2 rounded-md bg-muted p-3">
               <p className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-muted-foreground">Data attribute emitted</p>
               <div className="mt-1">
-                {animations
+                {!contrastActive && animations
                   ? <DataAttributeChip attr="data-anim-speed" value={animSpeed === 'default' ? undefined : animSpeed} />
                   : <DataAttributeChip attr="data-no-animations" />}
               </div>

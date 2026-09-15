@@ -997,7 +997,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'pattern-launcher-grid',
         name: 'Desktop launcher grid',
-        description: 'User-arranged launcher icons that open/focus windows. Uses: DesktopLauncher, Surface.',
+        description: 'User-arranged launcher icons with anchored horizontal cleanup and independent auto-arrange behavior. Uses: DesktopLauncher, Surface.',
         Page: PatternDesktopLauncherGrid,
       },
       {

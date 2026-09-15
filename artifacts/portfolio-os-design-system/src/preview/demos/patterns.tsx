@@ -1,5 +1,5 @@
 /**
- * Pattern pages — all 12 docs/patterns/*.md rendered via the canonical Markdown renderer.
+ * Pattern pages — all docs/patterns/*.md rendered via the canonical Markdown renderer.
  *
  * Each exported function is a self-contained page registered in the registry
  * under the "Patterns" nav group.

@@ -60,10 +60,16 @@ import { ContextMenuSurface } from '@workspace/portfolio-os-design-system/compon
 ┌──────────────────────────────────┐  ← ContextMenuSurface / ContextMenuContent
 │  Theme                           │     bg-popover border-border shadow-xl rounded-md
 │  New sticky note                 │
+│  Cleanup icons                   │
+│  Snap to grid                    │
 │  ─────────────────────────────── │  ← Separator
 │  Reset desktop…                  │
 └──────────────────────────────────┘
 ```
+
+Place direct geometry actions in a predictable sequence. In the desktop menu,
+**Cleanup icons** appears immediately before the **Snap to grid** checkbox.
+Arrow-key navigation must follow the same visual order.
 
 ---
 
@@ -111,3 +117,4 @@ import { ContextMenuSurface } from '@workspace/portfolio-os-design-system/compon
 | Use Radix `ContextMenu` when the trigger can be wrapped | Build a custom positioned menu without keyboard handling |
 | Confirm destructive menu actions ("Reset desktop…") with `AlertDialog` | Execute destructive actions on a single menu click |
 | Close the menu on Escape | Leave the menu open until another click |
+| Keep keyboard order synchronized with visual item order | Add an item that arrow-key navigation skips |

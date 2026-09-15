@@ -3,7 +3,7 @@
 **Canonical index.** Every shipped component/export and every reusable pattern maps to a spec document and a living preview ID.
 
 Source authority: `package.json` exports + `src/components/ui/` files + `src/preview/registry.tsx`
-Last updated: post settings/accessibility update.
+Last updated: post workspace layout and launcher-cleanup update.
 
 ---
 

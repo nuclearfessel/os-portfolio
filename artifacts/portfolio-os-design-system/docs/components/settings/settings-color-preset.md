@@ -35,6 +35,7 @@ Light default  ← display name text
 | `name` | `string` | ✓ | Visible name shown below the swatch |
 | `selected` | `boolean` | ✓ | Whether this preset is currently selected |
 | `onSelect` | `() => void` | ✓ | Called when the preset is activated |
+| `disabled` | `boolean` | — | Makes the preset visible but inert, such as while a contrast theme is active |
 | `data-testid` | `string` | — | Applied to the root button |
 | `className` | `string` | — | Merged |
 
@@ -47,6 +48,7 @@ Light default  ← display name text
 | Unselected | `border-border/40` swatch border |
 | Selected | `border-2 border-primary` + primary shadow ring + check mark |
 | Focus-visible | `outline-2 outline-offset-4 outline-ring` on rounded container |
+| Disabled | Reduced opacity, not-allowed cursor, and native button disabled semantics |
 
 ---
 
@@ -62,6 +64,7 @@ The check mark color is automatically selected based on the swatch's perceived l
 
 - `aria-pressed={selected}` — announces pressed/unpressed state.
 - `aria-label={label}` — includes the color value for screen readers.
+- Native `disabled` prevents activation when wallpaper controls are unavailable.
 - Focus ring uses `outline` (not `ring`) so it appears outside the swatch without layout shift.
 
 ---
@@ -114,6 +117,7 @@ const PRESETS = [
       name={preset.name}
       selected={selectedColor === preset.color}
       onSelect={() => handlePresetSelect(preset.color)}
+      disabled={contrastTheme !== 'none'}
     />
   ))}
 </div>

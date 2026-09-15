@@ -1796,7 +1796,7 @@ function TerminalWindow({
           <div className="terminal-input-group">
             <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => { setCommand(event.target.value); setHistoryIndex(null); }} onKeyDown={handleInputKeyDown} aria-label="Terminal command" aria-describedby="terminal-prediction" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" spellCheck={false} />
             <span id="terminal-prediction" className="terminal-prediction" aria-live="polite" data-testid="terminal-prediction">
-              {predictedCommand && predictedCommand !== command ? <><kbd>Tab</kbd><span aria-hidden="true"> → </span>{predictedCommand}</> : 'Type a command to see a prediction.'}
+              {predictedCommand && predictedCommand !== command ? <><kbd>Tab</kbd><span aria-hidden="true"> → </span>{predictedCommand}</> : null}
             </span>
           </div>
         </form>

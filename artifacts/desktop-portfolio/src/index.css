@@ -2679,6 +2679,10 @@ button { cursor: pointer; }
   outline-offset: 2px !important;
 }
 
+[data-contrast="high"] .terminal-input:focus-visible {
+  outline: none !important;
+}
+
 [data-contrast="high"] .settings-nav {
   background: #000 !important;
   border-right: 2px solid #fff !important;

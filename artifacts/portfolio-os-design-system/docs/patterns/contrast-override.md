@@ -74,6 +74,8 @@ When any contrast theme is active:
 - Regular Light and Dark controls and wallpaper controls remain visible but disabled.
 - The saved regular theme and wallpaper preferences remain unchanged so Standard restores them exactly.
 - The product must remove or neutralize regular-theme presentation classes that can override the fixed contrast palette.
+- Branded Dock app tiles retain the same contrast-safe tile and glyph treatment as their matching desktop launchers; the Dock active marker communicates state without replacing app identity.
+- Icons inside an active yellow Settings navigation item inherit its black foreground. Broad contrast text rules must not force those nested icons white.
 
 ---
 
@@ -103,5 +105,7 @@ The `data-contrast` attribute re-maps semantic channel variables — so every pa
 | Disable transparency toggle when contrast is active | Allow translucency and contrast to coexist |
 | Preserve the saved regular theme while using an independent contrast presentation baseline | Leave the regular light-theme class active underneath contrast mode |
 | Keep regular theme controls visible but disabled | Let users switch Light or Dark while contrast mode is active |
+| Keep matching Dock and desktop launcher app icons visually consistent | Replace branded Dock app tiles with a generic active fill |
+| Make active Settings labels and icons black on yellow | Let a nested icon retain a white foreground on the active yellow surface |
 | Test all interactive states in high-contrast mode | Only test the base reading state |
 | Use `--hc-focus` (`#ffff00`) for focus in high contrast | Override focus rings with custom colors in high contrast |

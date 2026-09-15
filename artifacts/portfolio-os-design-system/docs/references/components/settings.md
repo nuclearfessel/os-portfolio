@@ -57,6 +57,8 @@ import { SettingsNavSection, SettingsNavItem } from '@workspace/portfolio-os-des
 `aria-current="page"`. Focus ring uses the `ring-ring` Tailwind utility
 (maps to `--color-ring`, the primary brand color) in both themes.
 Inactive hover uses `bg-muted`. Active state uses `bg-primary/10 text-primary`.
+The leading icon inherits the item foreground; in High Contrast, both the active
+label and icon must use the black foreground on the yellow active surface.
 
 ---
 

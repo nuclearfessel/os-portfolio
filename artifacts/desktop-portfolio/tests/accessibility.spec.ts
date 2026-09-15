@@ -639,7 +639,17 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await expect(shell).toHaveClass(/theme-dark/);
     await expect(shell).not.toHaveClass(/theme-light/);
     await expect(shell).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+    const desktopAboutIcon = page.locator('.desktop-launcher-about .desktop-app-icon');
+    const dockAboutIcon = page.getByTestId('button-dock-about');
+    await expect.poll(async () => ({
+      background: await dockAboutIcon.evaluate((element) => getComputedStyle(element).backgroundImage),
+      color: await dockAboutIcon.evaluate((element) => getComputedStyle(element).color),
+    })).toEqual({
+      background: await desktopAboutIcon.evaluate((element) => getComputedStyle(element).backgroundImage),
+      color: await desktopAboutIcon.evaluate((element) => getComputedStyle(element).color),
+    });
     await goToPersonalization(page);
+    await expect(page.locator('.settings-nav-item-active .settings-nav-icon')).toHaveCSS('color', 'rgb(0, 0, 0)');
     await page.getByTestId('settings-section-trigger-theme').click();
     await expect(lightTheme).toBeDisabled();
     await expect(darkTheme).toBeDisabled();

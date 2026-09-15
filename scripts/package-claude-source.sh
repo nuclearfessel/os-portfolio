@@ -13,6 +13,11 @@ if [[ ! -f "$repo_root/artifacts/os-portfolio/dist/public/index.html" ]]; then
   exit 1
 fi
 
+if [[ ! -f "$repo_root/artifacts/os-portfolio-ds/dist/index.html" ]]; then
+  echo "Build OS Portfolio DS before creating the Claude source package." >&2
+  exit 1
+fi
+
 stage="$(mktemp -d)"
 trap 'rm -rf "$stage"' EXIT
 
@@ -47,13 +52,20 @@ for file in CLAUDE.md README.md replit.md package.json pnpm-lock.yaml pnpm-works
 done
 
 cp -R "$repo_root/artifacts/os-portfolio/dist/public" "$stage/public"
+mkdir -p "$stage/public/os-portfolio-ds"
+cp -R "$repo_root/artifacts/os-portfolio-ds/dist/." "$stage/public/os-portfolio-ds/"
 
 cat > "$stage/DEPLOYMENT.md" <<'EOF'
 # Deploying OS Portfolio
 
-The top-level `public/` directory contains the built static website.
+The top-level `public/` directory contains the complete built static website:
 
-Upload the contents of `public/` to the target web directory. Keep `index.html` and `assets/` together, and replace the previous build rather than mixing files from separate builds.
+- `public/index.html` and `public/assets/` are the portfolio.
+- `public/os-portfolio-ds/` is the design-system site opened by the portfolio’s Design System button.
+
+Upload the contents of `public/` to the target web directory as one unit. Do not move or separately upload `os-portfolio-ds/`. Keep every `index.html` with its corresponding `assets/`, and replace the previous deployment rather than mixing files from separate builds.
+
+GitHub keeps no more than two releases at a time: the current release and one previous release. The release workflow deletes every older release after publishing.
 
 The remaining files are the Claude-ready OS Portfolio source, OS Portfolio DS source, documentation, and repository guidance.
 EOF

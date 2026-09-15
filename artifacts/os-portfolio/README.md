@@ -63,12 +63,21 @@ Run focused checks while editing and the relevant full suite before release.
 
 ## Production output
 
-The Vite build writes the static site to:
+Build both the portfolio and the design-system site:
 
-```text
-artifacts/os-portfolio/dist/public/
+```bash
+pnpm --filter @workspace/os-portfolio run build
+pnpm --filter @workspace/os-portfolio-ds run build
 ```
 
-Assets use relative URLs so the site can run at a domain root or nested static/FTP path. Upload the contents of `dist/public/`, not the source `public/` directory.
+The deployable site package combines both outputs:
+
+```text
+site-package/
+├── index.html and assets/       ← artifacts/os-portfolio/dist/public/
+└── os-portfolio-ds/             ← artifacts/os-portfolio-ds/dist/
+```
+
+Upload that combined directory as one unit. The Design System button opens `/os-portfolio-ds/`, so that directory must remain inside the site deployment at the domain root. Do not upload the source `public/` directory.
 
 See `BUILD.md` for release and ZIP details.

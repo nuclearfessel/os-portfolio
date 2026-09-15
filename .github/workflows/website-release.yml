@@ -86,7 +86,6 @@ jobs:
             echo "version=${version}"
             echo "tag=site-package-${version}"
             echo "site_zip=site-package-${version}.zip"
-            echo "design_system_zip=design-system-package-${version}.zip"
             echo "claude_zip=claude-src-pack.zip"
             echo "release_date=$(date -u +%Y-%m-%d)"
           } >> "$GITHUB_OUTPUT"
@@ -100,7 +99,6 @@ jobs:
         run: |
           bash scripts/validate-release-packages.sh \
             "${{ steps.release.outputs.site_zip }}" \
-            "${{ steps.release.outputs.design_system_zip }}" \
             "${{ steps.release.outputs.claude_zip }}"
 
       - name: Publish GitHub Release
@@ -110,24 +108,25 @@ jobs:
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SITE_ZIP: ${{ steps.release.outputs.site_zip }}
-          DESIGN_SYSTEM_ZIP: ${{ steps.release.outputs.design_system_zip }}
           CLAUDE_ZIP: ${{ steps.release.outputs.claude_zip }}
         run: |
-          release_notes="Automated OS Portfolio site, OS Portfolio DS site, and Claude source packages for \`main\` at commit \`${GITHUB_SHA::7}\`."
+          release_notes="Automated combined OS Portfolio site and Claude source packages for \`main\` at commit \`${GITHUB_SHA::7}\`. The site package includes OS Portfolio DS at \`/os-portfolio-ds/\`."
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" "$SITE_ZIP" "$DESIGN_SYSTEM_ZIP" "$CLAUDE_ZIP" --clobber
+            while IFS= read -r legacy_asset; do
+              [[ -n "$legacy_asset" ]] && gh release delete-asset "$RELEASE_TAG" "$legacy_asset" --yes
+            done < <(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name | select(startswith("design-system-package-"))')
+            gh release upload "$RELEASE_TAG" "$SITE_ZIP" "$CLAUDE_ZIP" --clobber
           else
             gh release create "$RELEASE_TAG" \
               "$SITE_ZIP" \
-              "$DESIGN_SYSTEM_ZIP" \
               "$CLAUDE_ZIP" \
               --target "$GITHUB_SHA" \
               --title "OS Portfolio packages ${RELEASE_VERSION}" \
               --notes "$release_notes"
           fi
 
-      - name: Prune old releases
+      - name: Keep only the current and previous releases
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}

@@ -92,13 +92,14 @@ Completed, validated work is automatically approved for GitHub; no separate appr
 
 ## Automated website releases
 
-Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio and design system, then publishes three assets in one standard GitHub release:
+Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio and design system, then publishes two assets in one standard GitHub release:
 
-- A versioned deployable site ZIP, such as `site-package-v01.01.zip`, containing the contents of `artifacts/os-portfolio/dist/public/` at the archive root.
-- A versioned deployable design-system ZIP, such as `design-system-package-v01.01.zip`, containing the contents of `artifacts/os-portfolio-ds/dist/` at the archive root.
-- An unversioned Claude source package named exactly `claude-src-pack.zip`, containing project source, documentation, Claude skills, and a top-level `public/` build.
+- A versioned deployable site ZIP, such as `site-package-v01.01.zip`, containing the portfolio at the archive root and the design-system site in `os-portfolio-ds/`.
+- An unversioned Claude source package named exactly `claude-src-pack.zip`, containing project source, documentation, Claude skills, and the same combined deployment in its top-level `public/` directory.
 
 Feature and maintenance branch pushes never create release packages or prereleases. Only `main` publishes standard releases.
+
+GitHub retains no more than two releases at a time: the newly published release and one previous release. After publishing, the workflow permanently deletes all older releases.
 
 ## Design-system development
 

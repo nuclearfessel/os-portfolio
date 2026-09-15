@@ -4,8 +4,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 site_zip="${1:-site-package-validation.zip}"
-design_system_zip="${2:-design-system-package-validation.zip}"
-claude_zip="${3:-claude-src-pack.zip}"
+claude_zip="${2:-claude-src-pack.zip}"
 
 absolute_output() {
   local output="$1"
@@ -18,7 +17,6 @@ absolute_output() {
 }
 
 site_zip="$(absolute_output "$site_zip")"
-design_system_zip="$(absolute_output "$design_system_zip")"
 claude_zip="$(absolute_output "$claude_zip")"
 
 cd "$repo_root"
@@ -38,11 +36,21 @@ if ! grep -REq '(^|[;{])backdrop-filter:blur\(' artifacts/os-portfolio-ds/dist/a
   exit 1
 fi
 
-rm -f "$site_zip" "$design_system_zip"
-(cd artifacts/os-portfolio/dist/public && zip -qr "$site_zip" .)
+stage="$(mktemp -d)"
+trap 'rm -rf "$stage"' EXIT
+
+cp -R artifacts/os-portfolio/dist/public/. "$stage/"
+mkdir -p "$stage/os-portfolio-ds"
+cp -R artifacts/os-portfolio-ds/dist/. "$stage/os-portfolio-ds/"
+
+rm -f "$site_zip"
+(cd "$stage" && zip -qr "$site_zip" .)
 bash scripts/package-claude-source.sh "$claude_zip"
-(cd artifacts/os-portfolio-ds/dist && zip -qr "$design_system_zip" .)
 
 unzip -tq "$site_zip"
-unzip -tq "$design_system_zip"
 unzip -tq "$claude_zip"
+
+unzip -Z1 "$site_zip" | grep -qx 'index.html'
+unzip -Z1 "$site_zip" | grep -qx 'os-portfolio-ds/index.html'
+unzip -Z1 "$claude_zip" | grep -qx 'public/index.html'
+unzip -Z1 "$claude_zip" | grep -qx 'public/os-portfolio-ds/index.html'

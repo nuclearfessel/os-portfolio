@@ -8,7 +8,7 @@
 
 ## Purpose
 
-A structured list item for portfolio work — displays a numbered index, title, description, category tag, and an optional action (e.g. "View case study"). Used in the "Selected Work" window.
+A structured list item for portfolio work — displays a numbered index, title, description, category tag, and an optional action (e.g. "View case study"). Used in the "Work" window.
 
 ---
 

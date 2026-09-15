@@ -6,7 +6,7 @@
 
 ## Intent
 
-The "Selected Work" window presents a vertical list of portfolio projects. Each entry has a numbered index, title, description, category tag, optional accent color, and a primary action button.
+The "Work" window presents a vertical list of portfolio projects. Each entry has a numbered index, title, description, category tag, optional accent color, and a primary action button.
 
 ---
 
@@ -25,7 +25,7 @@ The "Selected Work" window presents a vertical list of portfolio projects. Each 
 
 ```
 ┌────────────────────────────────────────────────────┐  WindowSurface
-│  ./selected-work    ← SectionLabel                 │
+│  ./work             ← SectionLabel                 │
 ├────────────────────────────────────────────────────┤
 │  ┌──────────────────────────────────────────────┐  │  ProjectCard
 │  │  01          ← .project-index (accent color) │  │
@@ -95,7 +95,7 @@ const projects = [
 
 <ScrollArea className="h-full">
   <div className="p-5 space-y-4">
-    <SectionLabel>./selected-work</SectionLabel>
+    <SectionLabel>./work</SectionLabel>
     <ul role="list" className="space-y-3">
       {projects.map((p) => (
         <li key={p.index}>

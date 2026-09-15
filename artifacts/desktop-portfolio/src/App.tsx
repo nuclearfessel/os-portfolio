@@ -1503,21 +1503,21 @@ const shellFiles: Record<string, ShellNode> = {
   '/': { type: 'directory' },
   '/home': { type: 'directory' },
   '/home/john': { type: 'directory' },
-  '/home/john/README.md': { type: 'file', content: 'John Doe\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd selected-work, cat README.md, open work' },
+  '/home/john/README.md': { type: 'file', content: 'John Doe\nA product-minded designer making things feel clear, capable, and a little more human.\n\nTry: ls, cd work, cat README.md, open work' },
   '/home/john/about': { type: 'directory' },
   '/home/john/about/bio.txt': { type: 'file', content: 'Design systems designer, product thinker, and detail obsessive. I turn complex systems into clear, capable interfaces.' },
   '/home/john/about/skills.txt': { type: 'file', content: 'TypeScript  React  CSS systems  Node.js  Postgres  Figma  Playwright' },
-  '/home/john/selected-work': { type: 'directory' },
-  '/home/john/selected-work/northstar-commerce-system.md': { type: 'file', content: 'Northstar Commerce System\nA flexible foundation that helped a growing commerce team ship consistent storefront and account experiences.\n2024 — 2025' },
-  '/home/john/selected-work/signal-operations-platform.md': { type: 'file', content: 'Signal Operations Platform\nA focused operations language for teams coordinating alerts, handoffs, and high-stakes daily work.\n2023 — 2024' },
-  '/home/john/selected-work/mosaic-health-toolkit.md': { type: 'file', content: 'Mosaic Health Toolkit\nAn accessible toolkit for designing clear, reassuring health journeys across devices and contexts.\n2022 — 2023' },
-  '/home/john/selected-work/fieldnote-collaboration-kit.md': { type: 'file', content: 'Fieldnote Collaboration Kit\nA lightweight collaboration system that helped distributed teams turn observations into shared decisions.\n2021 — 2022' },
+  '/home/john/work': { type: 'directory' },
+  '/home/john/work/northstar-commerce-system.md': { type: 'file', content: 'Northstar Commerce System\nA flexible foundation that helped a growing commerce team ship consistent storefront and account experiences.\n2024 — 2025' },
+  '/home/john/work/signal-operations-platform.md': { type: 'file', content: 'Signal Operations Platform\nA focused operations language for teams coordinating alerts, handoffs, and high-stakes daily work.\n2023 — 2024' },
+  '/home/john/work/mosaic-health-toolkit.md': { type: 'file', content: 'Mosaic Health Toolkit\nAn accessible toolkit for designing clear, reassuring health journeys across devices and contexts.\n2022 — 2023' },
+  '/home/john/work/fieldnote-collaboration-kit.md': { type: 'file', content: 'Fieldnote Collaboration Kit\nA lightweight collaboration system that helped distributed teams turn observations into shared decisions.\n2021 — 2022' },
   '/home/john/contact': { type: 'directory' },
   '/home/john/contact/contact.txt': { type: 'file', content: 'Email: hello@johndoe.design\nStatus: Open to thoughtful product partnerships.' },
 };
 
 const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd selected-work', 'cat ~/selected-work/northstar-commerce-system.md', 'open work', 'theme light', 'history', 'clear'];
+const shellExamples = ['ls', 'cd work', 'cat ~/work/northstar-commerce-system.md', 'open work', 'theme light', 'history', 'clear'];
 const shellArgumentOptions: Partial<Record<string, string[]>> = {
   open: ['about', 'work', 'contact', 'terminal'],
   close: ['about', 'work', 'contact', 'terminal', 'all'],

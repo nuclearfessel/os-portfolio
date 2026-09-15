@@ -98,7 +98,7 @@ The canonical labels and assignments are:
 
 Desktop tooltip labels append the assigned number, for example `Work · 2`.
 Responsive inline labels omit shortcut numbers. Use **Work** consistently; do not
-expand it to “Selected Work.”
+expand it to “Work.”
 
 The Shortcuts item opens a non-modal drawer that:
 

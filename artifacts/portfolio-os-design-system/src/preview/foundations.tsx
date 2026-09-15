@@ -239,7 +239,7 @@ export function FontsPage() {
         <div className="rounded-xl border bg-card p-6 font-mono text-card-foreground">
           <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Secondary / mono</p>
           <p className="mt-4 text-3xl font-medium leading-tight">DM Mono</p>
-          <p className="mt-3 text-sm leading-6">john@studio:~/selected-work$</p>
+          <p className="mt-3 text-sm leading-6">john@studio:~/work$</p>
           <dl className="mt-6 grid grid-cols-2 gap-3 border-t pt-4 text-xs">
             <div><dt className="text-muted-foreground">Token</dt><dd className="mt-1">font-mono</dd></div>
             <div><dt className="text-muted-foreground">Weights used</dt><dd className="mt-1">400 · 500</dd></div>

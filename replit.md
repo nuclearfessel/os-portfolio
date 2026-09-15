@@ -1,6 +1,6 @@
 # Portfolio OS Desktop Portfolio
 
-John Doe’s static React portfolio presents selected work inside a responsive desktop operating-system interface.
+John Doe’s static React portfolio presents work inside a responsive desktop operating-system interface.
 
 ## Run and validate
 

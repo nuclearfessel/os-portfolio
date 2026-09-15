@@ -100,6 +100,19 @@ test.describe('Settings sidebar navigation', () => {
     await expect(page.locator('.settings-heading').filter({ hasText: 'Accessibility' })).toBeVisible();
   });
 
+  test('shows the About page with release, system, workspace, and browser details', async ({ page }) => {
+    await openSettings(page);
+    await page.getByTestId('settings-nav-about').click();
+    await expect(page.getByTestId('settings-nav-about')).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByTestId('settings-about')).toBeVisible();
+    await expect(page.getByTestId('settings-about-version')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your environment' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'This release' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your current desktop' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Inside the browser' })).toBeVisible();
+    await expect(page.getByTestId('settings-about-open-design-system')).toHaveAttribute('href', '/os-portfolio-ds/');
+  });
+
   test('Accessibility nav item loses active class when switching back', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);

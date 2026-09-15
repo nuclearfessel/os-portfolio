@@ -37,19 +37,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Firefox and system dependencies
-        run: pnpm --filter @workspace/desktop-portfolio exec playwright install --with-deps firefox
+        run: pnpm --filter @workspace/os-portfolio exec playwright install --with-deps firefox
 
       - name: Run Firefox recovery checks
-        run: pnpm --filter @workspace/desktop-portfolio run test:e2e:firefox-recovery
+        run: pnpm --filter @workspace/os-portfolio run test:e2e:firefox-recovery
 
       - name: Upload Playwright diagnostics
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: desktop-firefox-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          name: os-portfolio-firefox-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            artifacts/desktop-portfolio/playwright-report/
-            artifacts/desktop-portfolio/test-results/
+            artifacts/os-portfolio/playwright-report/
+            artifacts/os-portfolio/test-results/
           if-no-files-found: warn
           retention-days: 7
 
@@ -77,18 +77,18 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install WebKit and system dependencies
-        run: pnpm --filter @workspace/desktop-portfolio exec playwright install --with-deps webkit
+        run: pnpm --filter @workspace/os-portfolio exec playwright install --with-deps webkit
 
       - name: Run WebKit recovery checks
-        run: pnpm --filter @workspace/desktop-portfolio run test:e2e:webkit-recovery
+        run: pnpm --filter @workspace/os-portfolio run test:e2e:webkit-recovery
 
       - name: Upload Playwright diagnostics
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: desktop-webkit-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          name: os-portfolio-webkit-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            artifacts/desktop-portfolio/playwright-report/
-            artifacts/desktop-portfolio/test-results/
+            artifacts/os-portfolio/playwright-report/
+            artifacts/os-portfolio/test-results/
           if-no-files-found: warn
           retention-days: 7

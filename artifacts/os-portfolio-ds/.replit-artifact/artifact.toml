@@ -1,0 +1,19 @@
+kind = "design-system"
+previewPath = "/os-portfolio-ds/"
+title = "OS Portfolio DS"
+description = "The foundational tokens, reusable interface components, and interaction patterns for OS Portfolio across light, dark, desktop, tablet, and mobile experiences."
+version = "1.0.0"
+id = "artifacts/os-portfolio-ds"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/os-portfolio-ds/" ]
+localPort = 26178
+
+[services.development]
+run = "pnpm --filter @workspace/os-portfolio-ds run dev"
+
+[services.env]
+PORT = "26178"
+BASE_PATH = "/os-portfolio-ds/"

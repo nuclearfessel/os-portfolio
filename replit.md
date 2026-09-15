@@ -1,6 +1,6 @@
-# Portfolio OS Desktop Portfolio
+# OS Portfolio
 
-John Doe’s static React portfolio presents work inside a responsive desktop operating-system interface.
+OS Portfolio is John Doe’s static React portfolio, presenting work inside a responsive desktop operating-system interface.
 
 ## Run and validate
 
@@ -8,32 +8,32 @@ Run commands from the repository root:
 
 ```bash
 pnpm install
-pnpm --filter @workspace/desktop-portfolio run dev
-pnpm --filter @workspace/desktop-portfolio run typecheck
-pnpm --filter @workspace/desktop-portfolio run test:e2e:persistence
-pnpm --filter @workspace/desktop-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
-pnpm --filter @workspace/desktop-portfolio run build
+pnpm --filter @workspace/os-portfolio run dev
+pnpm --filter @workspace/os-portfolio run typecheck
+pnpm --filter @workspace/os-portfolio run test:e2e:persistence
+pnpm --filter @workspace/os-portfolio exec playwright test tests/responsive-layout.spec.ts --project=chromium
+pnpm --filter @workspace/os-portfolio run build
 ```
 
-The managed Replit workflow is `artifacts/desktop-portfolio: web`.
+The managed Replit workflow is `artifacts/os-portfolio: web`.
 
 ## Stack
 
 - React, Vite, and TypeScript in a pnpm workspace
-- Shared UI package: `@workspace/portfolio-os-design-system`
+- Shared UI package: `@workspace/os-portfolio-ds` (OS Portfolio DS)
 - Browser-local persistence; no backend or database dependency
 - Playwright interaction and responsive-layout coverage
 - Static production output with relative asset URLs
 
 ## Project map
 
-- `artifacts/desktop-portfolio/src/App.tsx` — desktop behavior, content, Terminal, persistence, windows, Dock, and stickies
-- `artifacts/desktop-portfolio/src/index.css` — responsive presentation, themes, and motion
-- `artifacts/desktop-portfolio/tests/` — persistence, interaction, responsive, and contrast checks
-- `artifacts/desktop-portfolio/dist/public/` — generated upload-ready static site
-- `artifacts/portfolio-os-design-system/` — shared tokens and visual primitives
+- `artifacts/os-portfolio/src/App.tsx` — desktop behavior, content, Terminal, persistence, windows, Dock, and stickies
+- `artifacts/os-portfolio/src/index.css` — responsive presentation, themes, and motion
+- `artifacts/os-portfolio/tests/` — persistence, interaction, responsive, and contrast checks
+- `artifacts/os-portfolio/dist/public/` — generated upload-ready static site
+- `artifacts/os-portfolio-ds/` — OS Portfolio DS shared tokens and visual primitives
 - `CLAUDE.md` — concise collaborator instructions
-- `.claude/skills/desktop-portfolio/SKILL.md` — portfolio maintenance rules
+- `.claude/skills/os-portfolio/SKILL.md` — OS Portfolio maintenance rules
 - `.claude/skills/ftp-release/SKILL.md` — static release procedure
 
 ## Product behavior
@@ -52,7 +52,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - Completed, validated work is automatically approved for GitHub. Do not wait for a separate approval response.
 - Completion immediately triggers the GitHub workflow: review and sync applicable docs/package surfaces, refresh both README screenshots, validate, commit, push the branch, merge into `main`, push `main`, and confirm the main-only release.
 
-- Build strictly on `artifacts/portfolio-os-design-system`; do not invent replacement tokens or duplicate shared primitives.
+- Build strictly on `artifacts/os-portfolio-ds`; do not invent replacement tokens or duplicate shared primitives.
 - Keep launchers and their corresponding windows under separate position identities.
 - Do not persist temporary tablet or mobile geometry as desktop geometry.
 - Keep production asset URLs relative for nested static and FTP hosting.
@@ -64,6 +64,6 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 
 ## Release files
 
-Build output is generated at `artifacts/desktop-portfolio/dist/public/`. Upload the contents of that directory, not the source `public/` folder.
+Build output is generated at `artifacts/os-portfolio/dist/public/`. Upload the contents of that directory, not the source `public/` folder.
 
 The downloadable source bundle is `claude-src-pack.zip`. It includes source, relevant Markdown, Claude skills, and a top-level deployable `public/` directory. It excludes dependencies, intermediate `dist` directories, and test reports.

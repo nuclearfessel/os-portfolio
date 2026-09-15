@@ -1889,26 +1889,26 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   <div>
                     <SectionLabel className="section-kicker">user guide / customize</SectionLabel>
                     <h2 className="settings-heading">Make the desktop yours</h2>
-                    <p className="guide-intro">Open Settings from the Dock to tune the atmosphere, readability, and behavior of the workspace.</p>
+                    <p className="guide-intro">Open Settings from the Dock to change how the desktop looks and works.</p>
                   </div>
                 </div>
-                <div className="guide-section-label">Preference map</div>
+                <div className="guide-section-label">What you can change</div>
                 <div className="guide-topic-list" role="list">
                   <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">01 / Settings</span>
-                    <div><h3>Personalization</h3><p>Switch light or dark mode, choose a picture or solid wallpaper, adjust transparency, and edit the home-screen copy. When Window &amp; dock transparency is set to None, the Blur control is disabled without changing its saved value.</p></div>
+                    <div><h3>Personalization</h3><p>Choose light or dark mode, pick a wallpaper, change transparency, and edit the text on the desktop. If Window &amp; dock transparency is set to None, you cannot change Blur. Your blur setting stays saved and returns when you add transparency.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">02 / Settings</span>
-                    <div><h3>Accessibility</h3><p>Keep scrollbars visible, tune transparency and blur, reduce motion, and use low or high contrast themes.</p></div>
+                    <div><h3>Accessibility</h3><p>Keep scrollbars visible, change transparency and blur, reduce movement, and choose a contrast theme.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">03 / Desktop</span>
-                    <div><h3>Arrange the shell</h3><p>Right-click the desktop to clean up or auto-arrange icons. Drag the Dock to an edge or right-click it to choose a position.</p></div>
+                    <div><h3>Arrange the desktop</h3><p>Right-click the desktop to line up icons. Drag the Dock to an edge, or right-click it to choose where it sits.</p></div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">04 / Desktop</span>
-                    <div><h3>Keep a baseline</h3><p>Use Settings to save your current arrangement as the default, or reset the desktop back to the saved baseline.</p></div>
+                    <div><h3>Save your layout</h3><p>Use Settings to save the current desktop as your default. You can return to it later with Reset desktop.</p></div>
                   </Surface>
                 </div>
               </>

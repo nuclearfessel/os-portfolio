@@ -1002,7 +1002,7 @@ test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', a
   await expect(guideWindow.getByRole('heading', { name: 'A calmer way to work' })).toBeVisible();
   await page.getByTestId('guide-nav-customize').click();
   await expect(guideWindow.getByRole('heading', { name: 'Make the desktop yours' })).toBeVisible();
-  await expect(guideWindow).toContainText('When Window & dock transparency is set to None, the Blur control is disabled without changing its saved value.');
+  await expect(guideWindow).toContainText('If Window & dock transparency is set to None, you cannot change Blur. Your blur setting stays saved and returns when you add transparency.');
   await page.getByTestId('guide-nav-technical').click();
   await expect(guideWindow.getByRole('heading', { name: 'A desktop built in the browser' })).toBeVisible();
   await expect(guideWindow).toContainText('React components render the desktop');

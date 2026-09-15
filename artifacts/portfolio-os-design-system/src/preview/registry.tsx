@@ -676,7 +676,7 @@ export const NAV_GROUPS: NavGroup[] = [
       },
       {
         id: 'radio-group',
-        name: 'Radio group',
+        name: 'Radio',
         description: 'Exclusive choices with labels and disabled states.',
         Page: RadioGroupDemo,
       },

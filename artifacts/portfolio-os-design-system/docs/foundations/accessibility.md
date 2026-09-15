@@ -16,6 +16,24 @@
 
 Color alone must never carry selection state, status, or destructive meaning. Always pair color with text, icons, or ARIA attributes.
 
+### Text over wallpaper
+
+The desktop introduction is a special high-variability surface because users can
+select solid colors or images:
+
+- Target **7:1** contrast for each intro text role against the sampled wallpaper.
+- Prefer the role's branded color when it reaches the target.
+- Otherwise choose the highest-contrast available foreground, including black or
+  white candidates.
+- If no candidate reaches 7:1, use the best available candidate.
+- Do not add a backing panel, scrim, text shadow, or translucent plate behind the
+  introduction to manufacture contrast.
+- Recalculate when the wallpaper, theme, or intro text color changes.
+
+The preferred ratio is exposed as `--desktop-intro-contrast-target` and as
+`tokens.accessibility.contrast.desktopIntroTarget`. This strengthens the general
+WCAG AA baseline for content placed directly over arbitrary wallpaper.
+
 ### High-contrast mode
 When `data-contrast="high"` is active, all semantic tokens re-map to the fixed high-contrast palette (black/white/yellow). Focus rings become 3px yellow (`var(--hc-focus)`). See → [Contrast override behavior](../patterns/contrast-override.md).
 
@@ -26,8 +44,12 @@ When `data-contrast="high"` is active, all semantic tokens re-map to the fixed h
 - Every interactive element uses a **native HTML element** (`<button>`, `<input>`, `<a>`, `<select>`, `<textarea>`) or a Radix UI primitive with correct keyboard handling.
 - **Visible focus treatment** is required on every keyboard-operable control (`focus-visible:ring-2 focus-visible:ring-ring`).
 - `Escape` closes open menus, dialogs, sheets, drawers, and transient layers.
+- Pointer dismissal closes non-modal shortcut drawers when the pointer lands
+  outside the drawer; activating the drawer trigger again also closes it.
 - Dialogs and sheets trap focus until dismissed.
 - Modal dialogs restore focus to the trigger element on close.
+- Desktop numeric shortcuts are suspended while a color-value field has focus so
+  number entry cannot launch or focus Dock applications.
 
 ### Focus ring token
 `ring` maps to `primary` in both themes. In high-contrast mode it maps to `--hc-focus` (#ffff00) globally via `*:focus-visible`.

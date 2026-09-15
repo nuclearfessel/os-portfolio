@@ -256,7 +256,7 @@ export function AccessibilityPage() {
 
           {/* Segmented choice */}
           <div className="space-y-3 rounded-xl border bg-card p-5">
-            <SectionLabel>segmented choice / radio group</SectionLabel>
+            <SectionLabel>segmented choice / radio</SectionLabel>
             <p className="text-xs text-muted-foreground">
               Wraps a <code className="font-mono">role="radiogroup"</code> around pill buttons that each carry{' '}
               <code className="font-mono">role="radio"</code> and <code className="font-mono">aria-checked</code>.

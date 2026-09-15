@@ -312,6 +312,37 @@
   --hc-border:                          #ffffff;
   --hc-focus:                           #ffff00;
 
+  --fixed-sticky-lemon-low-bg:          #3b3826;
+  --fixed-sticky-lemon-low-accent:      #d8c76f;
+  --fixed-sticky-lemon-high-accent:     #ffff00;
+  --fixed-sticky-orange-low-bg:         #3d3124;
+  --fixed-sticky-orange-low-accent:     #d7aa72;
+  --fixed-sticky-orange-high-accent:    #ff9d00;
+  --fixed-sticky-red-low-bg:            #3d292b;
+  --fixed-sticky-red-low-accent:        #d99a9e;
+  --fixed-sticky-red-high-accent:       #ff3b30;
+  --fixed-sticky-cream-low-bg:          #3a352d;
+  --fixed-sticky-cream-low-accent:      #d8c9ae;
+  --fixed-sticky-cream-high-accent:     #fff0d2;
+  --fixed-sticky-teal-low-bg:           #263936;
+  --fixed-sticky-teal-low-accent:       #8fbeb5;
+  --fixed-sticky-teal-high-accent:      #00ffd5;
+  --fixed-sticky-blue-low-bg:           #283344;
+  --fixed-sticky-blue-low-accent:       #94acd1;
+  --fixed-sticky-blue-high-accent:      #66b3ff;
+  --fixed-sticky-purple-low-bg:         #322e42;
+  --fixed-sticky-purple-low-accent:     #aaa0cc;
+  --fixed-sticky-purple-high-accent:    #c4a7ff;
+  --fixed-sticky-berry-low-bg:          #3b2a35;
+  --fixed-sticky-berry-low-accent:      #c39aaf;
+  --fixed-sticky-berry-high-accent:     #ff78b4;
+  --fixed-sticky-forest-low-bg:         #29372f;
+  --fixed-sticky-forest-low-accent:     #9ab8a4;
+  --fixed-sticky-forest-high-accent:    #7dffa5;
+  --fixed-sticky-charcoal-low-bg:       #30333b;
+  --fixed-sticky-charcoal-low-accent:   #afb4c2;
+  --fixed-sticky-charcoal-high-accent:  #d5dcf0;
+
   /* High-contrast palette — HSL channels */
   --hc-bg-hsl:                          0 0% 0%;
   --hc-surface-hsl:                     0 0% 5.1%;

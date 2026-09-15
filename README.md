@@ -96,7 +96,7 @@ Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. T
 - A versioned deployable site ZIP, such as `site-package-v01.01.zip`, containing the contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
 - An unversioned Claude source package named exactly `claude-src-pack.zip`, containing project source, documentation, Claude skills, and a top-level `public/` build.
 
-Feature and maintenance branch pushes never create release packages or prereleases. Only `main` publishes standard releases. At most the three newest releases remain public; the workflow marks every older release as a draft so it is hidden without deleting its assets.
+Feature and maintenance branch pushes never create release packages or prereleases. Only `main` publishes standard releases.
 
 ## Design-system development
 

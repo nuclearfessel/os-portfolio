@@ -32,7 +32,6 @@ The workflow must:
 11. Publish `main` builds as standard GitHub releases.
 12. Create a Claude source package named exactly `claude-src-pack.zip`, with no version in its filename.
 13. Attach both ZIPs to the same release and replace both assets safely when rerunning the same workflow run.
-14. Keep only the three newest GitHub releases public. Mark every older release as a draft after publishing; do not delete its assets or tag.
 
 Do not package source files, `node_modules`, test reports, caches, or parent `dist` directories into the website ZIP.
 

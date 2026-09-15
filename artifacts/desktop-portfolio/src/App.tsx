@@ -2031,10 +2031,29 @@ function Home() {
     const contrast = (first: number, second: number) => (
       (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05)
     );
-    const candidates = [
+    const brandedCandidates = [
       { color: '#111326', luminance: luminance(17, 19, 38) },
       { color: '#f7faf8', luminance: luminance(247, 250, 248) },
     ];
+    const fallbackCandidates = [
+      { color: '#000000', luminance: 0 },
+      { color: '#ffffff', luminance: 1 },
+    ];
+    const selectAccessibleColor = (backgroundLuminances: number[]) => {
+      const rank = (candidates: typeof brandedCandidates) => candidates
+        .map((candidate) => {
+          const ratios = backgroundLuminances
+            .map((background) => contrast(candidate.luminance, background))
+            .sort((a, b) => a - b);
+          return {
+            color: candidate.color,
+            score: ratios[Math.floor(ratios.length * 0.2)] ?? 0,
+          };
+        })
+        .sort((first, second) => second.score - first.score);
+      const branded = rank(brandedCandidates)[0];
+      return branded.score >= 4.5 ? branded.color : rank(fallbackCandidates)[0].color;
+    };
     const solidBackground = accessibility.contrastTheme === 'high'
       ? '#000000'
       : accessibility.contrastTheme === 'low'
@@ -2045,12 +2064,8 @@ function Home() {
     if (solidBackground) {
       const channels = solidBackground.match(/[0-9a-f]{2}/gi)?.map((channel) => Number.parseInt(channel, 16));
       const backgroundLuminance = luminance(channels?.[0] ?? 0, channels?.[1] ?? 0, channels?.[2] ?? 0);
-      const selected = candidates.reduce((best, candidate) => (
-        contrast(candidate.luminance, backgroundLuminance) > contrast(best.luminance, backgroundLuminance)
-          ? candidate
-          : best
-      ));
-      setAutomaticIntroColors({ primary: selected.color, accent: selected.color, body: selected.color });
+      const selected = selectAccessibleColor([backgroundLuminance]);
+      setAutomaticIntroColors({ primary: selected, accent: selected, body: selected });
       return;
     }
 
@@ -2081,13 +2096,7 @@ function Home() {
             backgroundLuminances.push(luminance(pixel[0], pixel[1], pixel[2]));
           }
         }
-        const ranked = candidates.map((candidate) => {
-          const ratios = backgroundLuminances
-            .map((background) => contrast(candidate.luminance, background))
-            .sort((a, b) => a - b);
-          return { color: candidate.color, score: ratios[Math.floor(ratios.length * 0.2)] ?? 0 };
-        });
-        next[key] = ranked[1].score > ranked[0].score ? ranked[1].color : ranked[0].color;
+        next[key] = selectAccessibleColor(backgroundLuminances);
       });
       setAutomaticIntroColors(next);
     };
@@ -3161,7 +3170,7 @@ function Home() {
     return {
       color: automaticColor ?? introCustomization.colors[theme][key],
       textShadow: automaticColor
-        ? automaticColor === '#111326'
+        ? automaticColor === '#111326' || automaticColor === '#000000'
           ? '0 1px 2px rgba(255, 255, 255, .58)'
           : '0 1px 3px rgba(0, 0, 0, .72)'
         : undefined,

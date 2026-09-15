@@ -745,7 +745,7 @@ function WorkWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'child
   const activeStudy = projects.find((project) => project.id === caseStudyId);
 
   return (
-    <WindowFrame {...props} id="work" title="Selected work">
+    <WindowFrame {...props} id="work" title="Work">
       {activeStudy ? (
         <div className="window-body case-study" data-testid={`case-study-${activeStudy.id}`}>
           <div className="case-study-topbar">
@@ -1884,6 +1884,7 @@ function Home() {
   const [windowStack, setWindowStack] = useState<WindowId[]>(savedDesktopState.windowStack ?? defaultDesktopState.windowStack ?? []);
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const shortcutMenuRef = useRef<HTMLDivElement | null>(null);
   const [stickyVisible, setStickyVisible] = useState(true);
   const [stickyOnTop, setStickyOnTop] = useState(false);
   const [maximizedWindows, setMaximizedWindows] = useState<Partial<Record<WindowId, boolean>>>({});
@@ -2457,6 +2458,18 @@ function Home() {
     const timeout = window.setTimeout(() => setDefaultStateSaved(false), 4000);
     return () => window.clearTimeout(timeout);
   }, [defaultStateSaved]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (shortcutMenuRef.current?.contains(target) || target.closest('[data-shortcut-menu-toggle]')) return;
+      setMobileOpen(false);
+    };
+    window.addEventListener('pointerdown', closeOnOutsidePointer, true);
+    return () => window.removeEventListener('pointerdown', closeOnOutsidePointer, true);
+  }, [mobileOpen]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -3308,7 +3321,7 @@ function Home() {
             <span className="system-clock-time">{clockTime}</span>
             <span className="system-clock-period">{clockPeriod}</span>
           </span>
-          <button className="mobile-menu" onClick={() => setMobileOpen((value) => !value)} aria-label="Open portfolio menu" data-testid="button-mobile-menu"><Menu size={17} /></button>
+          <button className="mobile-menu" onClick={() => setMobileOpen((value) => !value)} aria-label="Open portfolio menu" data-shortcut-menu-toggle data-testid="button-mobile-menu"><Menu size={17} /></button>
         </div>
       </header>
 
@@ -3389,7 +3402,7 @@ function Home() {
         {showDesktopIcons && workspaceMode === 'desktop' && (
           <div className="desktop-folders" aria-label="Desktop applications and folders">
             <DesktopFolder singleTap={singleTapLaunch} id="about" label="about" open={windows.about} onToggle={() => handleDesktopWindowOpen('about')} onPointerDown={(event) => startDrag('desktop-about', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('about')} appIcon={<CircleUserFill size={31} data-testid="icon-about-circle-user-fill" />} />
-            <DesktopFolder singleTap={singleTapLaunch} id="work" label="selected work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} appIcon={<FolderGit2 size={31} strokeWidth={1.8} />} />
+            <DesktopFolder singleTap={singleTapLaunch} id="work" label="work" open={windows.work} onToggle={() => handleDesktopWindowOpen('work')} onPointerDown={(event) => startDrag('desktop-work', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('work')} appIcon={<FolderGit2 size={31} strokeWidth={1.8} />} />
             <DesktopFolder singleTap={singleTapLaunch} id="terminal" label="terminal" open={windows.terminal} onToggle={() => handleDesktopWindowOpen('terminal')} onPointerDown={(event) => startDrag('desktop-terminal', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('terminal')} appIcon={<SquareTerminal size={31} strokeWidth={1.7} data-testid="icon-terminal-square" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="contact" label="contact" open={windows.contact} onToggle={() => handleDesktopWindowOpen('contact')} onPointerDown={(event) => startDrag('desktop-contact', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('contact')} appIcon={<RiMailSendFill size={30} data-testid="icon-contact-mail-fill" />} />
             <DesktopFolder singleTap={singleTapLaunch} id="stickies-app" label="stickies" open={stickyVisible && stickyOnTop} onToggle={handleDesktopStickiesOpen} onPointerDown={(event) => startDrag('desktop-stickies-app', event)} onPointerMove={moveDrag} onPointerUp={endDesktopLauncherDrag} style={launcherStyle('stickies-app')} appIcon={<BsStickyFill size={30} data-testid="icon-stickies-bootstrap-fill" />} />
@@ -3847,7 +3860,7 @@ function Home() {
           });
         }}
       >
-        <DockItem className="dock-item dock-app-work" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open selected work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Selected work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
+        <DockItem className="dock-item dock-app-work" active={windows.work && (workspaceMode === 'desktop' || activeWindow === 'work')} onClick={() => openWindow('work')} aria-label="Open work" data-testid="button-dock-work"><FolderGit2 size={20} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Work{workspaceMode === 'desktop' ? ' · 2' : ''}</DockItemLabel></DockItem>
         <DockItem className="dock-item dock-app-about" active={windows.about && (workspaceMode === 'desktop' || activeWindow === 'about')} onClick={() => openWindow('about')} aria-label="Open about" data-testid="button-dock-about"><CircleUserFill size={20} data-testid="icon-dock-about-circle-user-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>About{workspaceMode === 'desktop' ? ' · 1' : ''}</DockItemLabel></DockItem>
         <DockItem className="dock-item dock-app-contact" active={windows.contact && (workspaceMode === 'desktop' || activeWindow === 'contact')} onClick={() => openWindow('contact')} aria-label="Open contact" data-testid="button-dock-contact"><RiMailSendFill size={20} data-testid="icon-dock-contact-mail-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Contact{workspaceMode === 'desktop' ? ' · 3' : ''}</DockItemLabel></DockItem>
         {workspaceMode !== 'desktop' && (
@@ -3868,19 +3881,19 @@ function Home() {
           <>
             <DockItem className="dock-item dock-app-terminal" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-stickies" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
-            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
+            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
             <DockItem className="dock-item" active={windows.settings} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
           </>
         )}
       </nav>
 
       {mobileOpen && (
-        <div className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}`} data-testid="menu-mobile">
+        <div ref={shortcutMenuRef} className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}`} data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
           <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–7 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
             <button className="quick-button" onClick={() => openWindow('about')} data-testid="button-menu-about"><span className="shortcut-number">1</span>about</button>
-            <button className="quick-button" onClick={() => openWindow('work')} data-testid="button-menu-work"><span className="shortcut-number">2</span>selected work</button>
+            <button className="quick-button" onClick={() => openWindow('work')} data-testid="button-menu-work"><span className="shortcut-number">2</span>work</button>
             <button className="quick-button" onClick={() => openWindow('contact')} data-testid="button-menu-contact"><span className="shortcut-number">3</span>contact</button>
             <button className="quick-button" onClick={() => openWindow('terminal')} data-testid="button-menu-terminal"><span className="shortcut-number">4</span>terminal</button>
             <button className="quick-button" onClick={handleStickyDock} data-testid="button-menu-stickies"><span className="shortcut-number">5</span>stickies</button>

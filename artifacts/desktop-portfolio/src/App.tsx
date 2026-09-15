@@ -3262,6 +3262,7 @@ function Home() {
   });
 
   const wallpaperConfig = theme === 'light' ? wallpaperLight : wallpaperDark;
+  const presentationTheme: Theme = accessibility.contrastTheme === 'none' ? theme : 'dark';
   // Picture wallpapers stay desktop-only, while the selected solid color follows
   // its theme into tablet and mobile. Contrast modes continue to own the managed
   // workspace background.
@@ -3292,7 +3293,7 @@ function Home() {
 
   return (
     <main
-      className={`os-shell theme-${theme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} system-bar-at-${effectiveSystemBarPosition} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
+      className={`os-shell theme-${presentationTheme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} system-bar-at-${effectiveSystemBarPosition} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
       style={currentWallpaperStyle}

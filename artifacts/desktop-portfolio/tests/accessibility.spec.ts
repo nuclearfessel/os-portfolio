@@ -630,17 +630,20 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await page.getByTestId('settings-section-trigger-theme').click();
     const lightTheme = page.getByTestId('settings-theme-light');
     const darkTheme = page.getByTestId('settings-theme-dark');
-    await darkTheme.click();
-    await expect(darkTheme).toHaveAttribute('aria-pressed', 'true');
+    await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
 
     await goToAccessibility(page);
     await page.getByTestId('settings-section-trigger-contrast').click();
     await page.getByTestId('settings-a11y-contrast-high').click();
+    const shell = page.locator('main.os-shell');
+    await expect(shell).toHaveClass(/theme-dark/);
+    await expect(shell).not.toHaveClass(/theme-light/);
+    await expect(shell).toHaveCSS('background-color', 'rgb(0, 0, 0)');
     await goToPersonalization(page);
     await page.getByTestId('settings-section-trigger-theme').click();
     await expect(lightTheme).toBeDisabled();
     await expect(darkTheme).toBeDisabled();
-    await expect(darkTheme).toHaveAttribute('aria-pressed', 'true');
+    await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
     await expect(
       page.locator('.settings-description').filter({ hasText: 'Light and dark themes are disabled' }),
     ).toBeVisible();
@@ -651,7 +654,7 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await goToPersonalization(page);
     await page.getByTestId('settings-section-trigger-theme').click();
     await expect(lightTheme).toBeDisabled();
-    await expect(darkTheme).toHaveAttribute('aria-pressed', 'true');
+    await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
 
     await goToAccessibility(page);
     await page.getByTestId('settings-section-trigger-contrast').click();
@@ -660,7 +663,8 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await page.getByTestId('settings-section-trigger-theme').click();
     await expect(lightTheme).toBeEnabled();
     await expect(darkTheme).toBeEnabled();
-    await expect(darkTheme).toHaveAttribute('aria-pressed', 'true');
+    await expect(lightTheme).toHaveAttribute('aria-pressed', 'true');
+    await expect(shell).toHaveClass(/theme-light/);
   });
 
   test('Low contrast hides wallpaper controls and shows notice', async ({ page }) => {

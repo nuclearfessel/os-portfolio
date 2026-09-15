@@ -8,6 +8,7 @@ on:
     paths:
       - .github/workflows/website-release.yml
       - scripts/package-claude-source.sh
+      - scripts/validate-release-packages.sh
   workflow_dispatch:
 
 permissions:
@@ -45,39 +46,8 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck portfolio
-        run: pnpm --filter @workspace/desktop-portfolio run typecheck
-
-      - name: Build portfolio
-        run: pnpm --filter @workspace/desktop-portfolio run build
-
-      - name: Typecheck design system
-        run: pnpm --filter @workspace/portfolio-os-design-system run typecheck
-
-      - name: Build design system
-        run: pnpm --filter @workspace/portfolio-os-design-system run build
-
-      - name: Package deployable website
-        shell: bash
-        run: |
-          cd artifacts/desktop-portfolio/dist/public
-          zip -qr "$GITHUB_WORKSPACE/site-package-validation.zip" .
-
-      - name: Package Claude source
-        shell: bash
-        run: bash scripts/package-claude-source.sh claude-src-pack.zip
-
-      - name: Package deployable design system
-        shell: bash
-        run: |
-          cd artifacts/portfolio-os-design-system/dist
-          zip -qr "$GITHUB_WORKSPACE/design-system-package-validation.zip" .
-
-      - name: Verify ZIP integrity
-        run: |
-          unzip -tq site-package-validation.zip
-          unzip -tq design-system-package-validation.zip
-          unzip -tq claude-src-pack.zip
+      - name: Validate release packages
+        run: bash scripts/validate-release-packages.sh
 
   release-website-zip:
     if: github.ref == 'refs/heads/main'
@@ -105,18 +75,6 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck portfolio
-        run: pnpm --filter @workspace/desktop-portfolio run typecheck
-
-      - name: Build portfolio
-        run: pnpm --filter @workspace/desktop-portfolio run build
-
-      - name: Typecheck design system
-        run: pnpm --filter @workspace/portfolio-os-design-system run typecheck
-
-      - name: Build design system
-        run: pnpm --filter @workspace/portfolio-os-design-system run build
-
       - name: Create release metadata
         id: release
         shell: bash
@@ -132,21 +90,12 @@ jobs:
             echo "claude_zip=claude-src-pack.zip"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Package deployable website
-        shell: bash
+      - name: Validate release packages
         run: |
-          cd artifacts/desktop-portfolio/dist/public
-          zip -r "$GITHUB_WORKSPACE/${{ steps.release.outputs.site_zip }}" .
-
-      - name: Package Claude source
-        shell: bash
-        run: bash scripts/package-claude-source.sh "${{ steps.release.outputs.claude_zip }}"
-
-      - name: Package deployable design system
-        shell: bash
-        run: |
-          cd artifacts/portfolio-os-design-system/dist
-          zip -r "$GITHUB_WORKSPACE/${{ steps.release.outputs.design_system_zip }}" .
+          bash scripts/validate-release-packages.sh \
+            "${{ steps.release.outputs.site_zip }}" \
+            "${{ steps.release.outputs.design_system_zip }}" \
+            "${{ steps.release.outputs.claude_zip }}"
 
       - name: Publish GitHub Release
         shell: bash

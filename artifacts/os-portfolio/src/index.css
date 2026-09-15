@@ -481,6 +481,7 @@ button { cursor: pointer; }
 .desktop-context-menu { position: fixed; z-index: 100; width: 218px; padding: 6px; color: #edf0f8; background: rgba(29,32,54,.98); border: 1px solid rgba(210,218,255,.2); border-radius: 8px; box-shadow: 0 18px 55px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.05); backdrop-filter: none; font: 12px var(--app-font-sans); animation: context-in .08s ease-out both; }
 .context-menu-row { position: relative; }
 .context-menu-row > button, .context-menu-button, .context-submenu button { width: 100%; min-height: 30px; display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 7px; padding: 5px 8px; color: inherit; background: transparent; border: 0; border-radius: 5px; text-align: left; }
+.context-menu-button-no-icon { grid-template-columns: minmax(0, 1fr) auto; }
 .context-menu-row > button:hover, .context-menu-row:focus-within > button, .context-menu-button:hover, .context-menu-button:focus-visible, .context-submenu button:hover, .context-submenu button:focus-visible { color: #111326; background: #e4ff5b; outline: none; }
 .context-menu-danger { color: #ff8d79; }
 .context-menu-danger:hover, .context-menu-danger:focus-visible { color: #fff; background: #b63f4d; }

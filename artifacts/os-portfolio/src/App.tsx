@@ -7,7 +7,7 @@ import {
   BookOpen, Layers, Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
 } from '@keyline-icons/react';
 import {
-  BookOpen as BookOpenFill,
+  Book as BookFill,
   CircleUser as CircleUserFill,
 } from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
@@ -4318,7 +4318,7 @@ function Home() {
             <DockItem className="dock-item dock-app-stickies" active={stickyVisible} focused={stickyVisible && stickyOnTop} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
             <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-settings" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><BsGearWideConnected size={20} data-testid="icon-dock-settings-gear-wide-connected-fill" /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
-            <DockItem className="dock-item dock-app-guide" active={windows.guide} focused={windows.guide && !stickyOnTop && activeWindow === 'guide'} onClick={() => openWindow('guide')} aria-label="Open user guide" data-testid="button-dock-guide"><BookOpenFill size={20} data-testid="icon-dock-guide-book-open-fill" /><DockItemLabel presentation="tooltip">Guide · 8</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-guide" active={windows.guide} focused={windows.guide && !stickyOnTop && activeWindow === 'guide'} onClick={() => openWindow('guide')} aria-label="Open user guide" data-testid="button-dock-guide"><BookFill size={20} data-testid="icon-dock-guide-book-fill" /><DockItemLabel presentation="tooltip">Guide · 8</DockItemLabel></DockItem>
           </>
         )}
       </nav>

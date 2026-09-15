@@ -48,7 +48,7 @@ pnpm install
 pnpm --filter @workspace/desktop-portfolio run dev
 ```
 
-The development server binds to Replit’s `PORT` environment variable.
+The development server binds to the `PORT` environment variable.
 
 ## Validation
 

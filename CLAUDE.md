@@ -29,10 +29,9 @@ pnpm --filter @workspace/desktop-portfolio run build
 ## Non-negotiable constraints
 
 - Perform all work on a dedicated branch. Never develop directly on `main`.
-- Leave completed work uncommitted while the user validates it.
-- The exact user response `Approved` is an immediate, mandatory post-approval workflow trigger. Never merely acknowledge it and never substitute a publish suggestion: perform the sync review, validate, refresh both GitHub README screenshots from the running portfolio and design-system previews, commit, push the branch, merge into `main`, push `main`, and confirm the main-only release.
-- Commit, merge into `main`, and push only after the user gives explicit approval.
-- After branch approval and before committing, review whether README, Claude files, package metadata/exports, or package documentation require matching updates. Apply only the updates relevant to the approved change.
+- Completed, validated work is automatically approved for GitHub; do not wait for a separate approval response.
+- Completion is an immediate, mandatory GitHub workflow trigger. Never stop after the validation summary or substitute a publish suggestion: perform the sync review, refresh both GitHub README screenshots from the running portfolio and design-system previews, commit, push the branch, merge into `main`, push `main`, and confirm the main-only release.
+- Before committing completed work, review whether README, Claude files, package metadata/exports, or package documentation require matching updates. Apply only the updates relevant to the completed change.
 - Preserve the GitHub Releases website ZIP workflow for pushes to `main` only. Feature and maintenance branches must never publish release packages.
 - Website ZIPs must contain the deployable contents of `artifacts/desktop-portfolio/dist/public/` at the archive root.
 - Every `main` release must contain exactly three ZIP assets: a versioned deployable `site-package-vMM.NN.zip`, a versioned deployable `design-system-package-vMM.NN.zip`, and an unversioned Claude source package named exactly `claude-src-pack.zip`. All are standard release assets; never create prereleases.

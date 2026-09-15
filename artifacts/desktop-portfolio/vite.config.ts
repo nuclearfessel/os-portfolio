@@ -3,8 +3,6 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
-import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
-
 const rawPort = process.env.PORT;
 const port = rawPort ? Number(rawPort) : 5173;
 
@@ -13,7 +11,7 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 // Relative production assets let the static build run from any FTP directory.
-// Replit preview workflows can still provide an absolute artifact base path.
+// Preview environments can still provide an absolute artifact base path.
 const basePath = process.env.BASE_PATH ?? './';
 
 export default defineConfig({
@@ -21,20 +19,6 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== 'production' &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import('@replit/vite-plugin-cartographer').then((m) =>
-            m.cartographer({
-              root: path.resolve(import.meta.dirname, '..'),
-            }),
-          ),
-          await import('@replit/vite-plugin-dev-banner').then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
   ],
   resolve: {
     alias: {

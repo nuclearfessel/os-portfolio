@@ -218,6 +218,22 @@ test('system bar repositions like the Dock and preserves its desktop edge', asyn
   await page.getByRole('menuitemradio', { name: 'Right' }).click();
   await expect(systemBar).toHaveClass(/system-bar-right/);
   await expect(page.locator('.desktop-area')).toHaveClass(/system-bar-space-right/);
+  const expectSideBarContentContained = async () => {
+    const geometry = await systemBar.evaluate((element) => {
+      const bar = element.getBoundingClientRect();
+      const status = element.querySelector('.system-status')!.getBoundingClientRect();
+      const textWritingModes = Array.from(element.querySelectorAll('span'))
+        .filter((item) => getComputedStyle(item).display !== 'none' && item.textContent?.trim())
+        .map((item) => getComputedStyle(item).writingMode);
+      return {
+        statusContained: status.left >= bar.left && status.right <= bar.right,
+        textWritingModes,
+      };
+    });
+    expect(geometry.statusContained).toBe(true);
+    expect(geometry.textWritingModes.every((mode) => mode === 'horizontal-tb')).toBe(true);
+  };
+  await expectSideBarContentContained();
 
   await expect.poll(async () => page.evaluate((key) => (
     JSON.parse(localStorage.getItem(key) ?? '{}').systemBarPosition
@@ -241,6 +257,7 @@ test('system bar repositions like the Dock and preserves its desktop edge', asyn
   await page.mouse.move(4, 400, { steps: 8 });
   await page.mouse.up();
   await expect(systemBar).toHaveClass(/system-bar-left/);
+  await expectSideBarContentContained();
   const leftEdgeGeometry = await page.evaluate(() => {
     const readLeft = (selector: string) => document.querySelector(selector)!.getBoundingClientRect().left;
     return {
@@ -251,9 +268,9 @@ test('system bar repositions like the Dock and preserves its desktop edge', asyn
     };
   });
   expect(leftEdgeGeometry.intro).toBeGreaterThanOrEqual(leftEdgeGeometry.barRight);
-  expect(leftEdgeGeometry.intro - rightEdgeGeometry.intro).toBeCloseTo(42, 0);
-  expect(leftEdgeGeometry.window - rightEdgeGeometry.window).toBeCloseTo(42, 0);
-  expect(leftEdgeGeometry.sticky - rightEdgeGeometry.sticky).toBeCloseTo(42, 0);
+  expect(leftEdgeGeometry.intro - rightEdgeGeometry.intro).toBeCloseTo(128, 0);
+  expect(leftEdgeGeometry.window - rightEdgeGeometry.window).toBeCloseTo(128, 0);
+  expect(leftEdgeGeometry.sticky - rightEdgeGeometry.sticky).toBeCloseTo(128, 0);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(systemBar).toHaveClass(/system-bar-top/);

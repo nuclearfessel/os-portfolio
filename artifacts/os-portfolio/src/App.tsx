@@ -1666,6 +1666,15 @@ function SettingsWindow({
                       <button type="button" className="settings-about-link" onClick={() => onOpenWindow('guide')} data-testid="settings-about-open-guide">
                         Open User Guide <ArrowUpRight size={13} />
                       </button>
+                      <a
+                        className="settings-about-link"
+                        href="/os-portfolio-ds/"
+                        target="_blank"
+                        rel="noreferrer"
+                        data-testid="settings-about-open-design-system"
+                      >
+                        Explore Design System <ArrowUpRight size={13} />
+                      </a>
                     </div>
                     <p className="settings-about-credit">Designed and built by John Doe. OS Portfolio and OS Portfolio DS share the same tokens, components, and accessibility contracts.</p>
                   </section>

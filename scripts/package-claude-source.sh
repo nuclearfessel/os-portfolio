@@ -9,7 +9,7 @@ mkdir -p "$output_dir"
 output="$(cd "$output_dir" && pwd)/$(basename "$output")"
 
 if [[ ! -f "$repo_root/artifacts/desktop-portfolio/dist/public/index.html" ]]; then
-  echo "Build the desktop portfolio before creating the Claude source package." >&2
+  echo "Build OS Portfolio before creating the Claude source package." >&2
   exit 1
 fi
 
@@ -25,7 +25,7 @@ copy_source() {
 }
 
 copy_source artifacts/desktop-portfolio/
-copy_source artifacts/portfolio-os-design-system/
+copy_source artifacts/portfolio-os-ds/
 copy_source .claude/
 copy_source docs/
 
@@ -49,13 +49,13 @@ done
 cp -R "$repo_root/artifacts/desktop-portfolio/dist/public" "$stage/public"
 
 cat > "$stage/DEPLOYMENT.md" <<'EOF'
-# Deploying the portfolio
+# Deploying OS Portfolio
 
 The top-level `public/` directory contains the built static website.
 
 Upload the contents of `public/` to the target web directory. Keep `index.html` and `assets/` together, and replace the previous build rather than mixing files from separate builds.
 
-The remaining files are the Claude-ready project source, shared design system, documentation, and repository guidance.
+The remaining files are the Claude-ready OS Portfolio source, Portfolio OS DS source, documentation, and repository guidance.
 EOF
 
 rm -f "$output"

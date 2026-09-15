@@ -8,8 +8,8 @@
  */
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'portfolio-os.desktop.v4';
-const defaultStorageKey = 'portfolio-os.desktop.default.v1';
+const storageKey = 'os-portfolio.desktop.v4';
+const defaultStorageKey = 'os-portfolio.desktop.default.v1';
 
 async function openSettingsColorPicker(page: Page) {
   // Open settings
@@ -25,7 +25,7 @@ async function openSettingsColorPicker(page: Page) {
 
   // Switch to Solid color wallpaper mode
   // Determine current theme (light or dark) to click the right button
-  const shell = page.locator('.os-shell');
+  const shell = page.locator('.osp-shell');
   const isLight = await shell.evaluate((el) => el.classList.contains('theme-light'));
   const themeLabel = isLight ? 'light' : 'dark';
 
@@ -45,7 +45,7 @@ async function getWallpaperColor(page: Page): Promise<string> {
 }
 
 async function getDesktopBackground(page: Page): Promise<string> {
-  return page.locator('.os-shell').evaluate((el) => (el as HTMLElement).style.background || window.getComputedStyle(el).background);
+  return page.locator('.osp-shell').evaluate((el) => (el as HTMLElement).style.background || window.getComputedStyle(el).background);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -520,10 +520,10 @@ test('desktop wallpaper updates live when color picker value changes', async ({ 
   await page.waitForTimeout(200);
 
   // The shell background should now use the new color
-  const shellStyle = await page.locator('.os-shell').evaluate((el) => {
+  const shellStyle = await page.locator('.osp-shell').evaluate((el) => {
     const style = (el as HTMLElement).style;
     return style.background || style.backgroundColor;
   });
   // The wallpaper-color class should be on the shell
-  await expect(page.locator('.os-shell')).toHaveClass(/wallpaper-color/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/wallpaper-color/);
 });

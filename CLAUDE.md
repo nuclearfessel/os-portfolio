@@ -1,10 +1,10 @@
-# Desktop Portfolio
+# OS Portfolio
 
-This repository contains a React and Vite portfolio styled as a desktop operating system. The application is in `artifacts/desktop-portfolio`.
+This repository contains OS Portfolio (OS.Portfolio), a React and Vite portfolio styled as a desktop operating system. The application is in `artifacts/desktop-portfolio`.
 
 ## Start here
 
-Read `.claude/skills/branch-first-development/SKILL.md` before making any repository change. Read `.claude/skills/desktop-portfolio/SKILL.md` before changing the portfolio. Read `.claude/skills/website-zip-action/SKILL.md` before changing CI, build output, or release packaging. Read `.claude/skills/ftp-release/SKILL.md` before preparing or uploading a release.
+Read `.claude/skills/branch-first-development/SKILL.md` before making any repository change. Read `.claude/skills/os-portfolio/SKILL.md` before changing the portfolio. Read `.claude/skills/website-zip-action/SKILL.md` before changing CI, build output, or release packaging. Read `.claude/skills/ftp-release/SKILL.md` before preparing or uploading a release.
 
 ## Common commands
 
@@ -55,7 +55,7 @@ Run the smallest relevant test during development. Before handing off a release,
 ## Generated files
 
 - Upload-ready build: `artifacts/desktop-portfolio/dist/public/`
-- Upload-ready design-system build: `artifacts/portfolio-os-design-system/dist/`
+- Upload-ready Portfolio OS DS build: `artifacts/portfolio-os-ds/dist/`
 - Downloadable source bundle: `claude-src-pack.zip`
 - The ZIP also contains a top-level `public/` copy of the latest production build and `DEPLOYMENT.md`.
 - Source portions of the ZIP exclude `node_modules`, package `dist` folders, Playwright reports/results, caches, environment files, and `*.tsbuildinfo`.

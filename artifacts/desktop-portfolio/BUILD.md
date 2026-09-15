@@ -32,7 +32,7 @@ Upload the contents of `dist/public/` directly into the destination document roo
 
 `claude-desktop-portfolio-source.zip` contains:
 
-- Portfolio OS and shared design-system source
+- OS Portfolio and Portfolio OS DS source
 - Relevant repository and artifact Markdown documentation
 - Claude skill files
 - A top-level `public/` directory copied from the latest `dist/public/`

@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-const storageKey = 'portfolio-os.desktop.v4';
+const storageKey = 'os-portfolio.desktop.v4';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -17,7 +17,7 @@ async function openDesktopMenu(page: Page) {
 async function switchToLightTheme(page: Page) {
   await openThemeSettings(page);
   await page.getByTestId('settings-theme-light').click();
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
   await page.getByTestId('button-close-settings').click();
 }
 
@@ -141,7 +141,7 @@ test('light theme representative text meets WCAG AA contrast', async ({ page }) 
     }));
   }, [storageKey]);
   await page.goto('/');
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
 
   await page.getByTestId('button-dock-terminal').click();
   await expect(page.getByTestId('window-terminal')).toBeVisible();
@@ -175,7 +175,7 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
     }));
   }, [storageKey]);
   await page.goto('/');
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
 
   const states: Array<{ name: string; locator: Locator }> = [
     { name: 'secondary quick action hover', locator: page.getByTestId('button-open-contact') },
@@ -234,7 +234,7 @@ test('Dock hover and focus preserve app identity and keep utility controls legib
     if (theme === 'light') {
       await openThemeSettings(page);
       await page.getByTestId('settings-theme-light').click();
-      await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+      await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
       await page.getByTestId('button-close-settings').click();
     }
 
@@ -327,7 +327,7 @@ test('Dock open apps use active rings while only the focused app uses the edge p
     if (theme === 'light') {
       await openThemeSettings(page);
       await page.getByTestId('settings-theme-light').click();
-      await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+      await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
     }
 
     await page.getByTestId('button-dock-work').click();
@@ -367,9 +367,9 @@ test('tablet and mobile Dock icons meet non-text contrast in every orientation',
     await expect(page.locator('.dock-mobile-menu, .dock-tablet-menu')).toBeVisible();
 
     for (const theme of ['dark', 'light'] as const) {
-      const isLight = await page.locator('.os-shell').evaluate((element) => element.classList.contains('theme-light'));
+      const isLight = await page.locator('.osp-shell').evaluate((element) => element.classList.contains('theme-light'));
       if ((theme === 'light') !== isLight) await page.getByTestId('button-dock-mode').click();
-      await expect(page.locator('.os-shell')).toHaveClass(theme === 'light' ? /theme-light/ : /theme-dark/);
+      await expect(page.locator('.osp-shell')).toHaveClass(theme === 'light' ? /theme-light/ : /theme-dark/);
 
       for (const id of iconIds) {
         const item = page.getByTestId(`button-dock-${id}`);
@@ -394,7 +394,7 @@ test('light theme About, Contact, and case study windows meet WCAG AA contrast',
     }));
   }, [storageKey]);
   await page.goto('/');
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
 
   await page.getByTestId('button-dock-about').click();
   await expect(page.getByTestId('window-about')).toBeVisible();

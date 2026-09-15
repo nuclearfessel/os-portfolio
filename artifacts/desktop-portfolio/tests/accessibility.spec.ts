@@ -6,8 +6,8 @@
  */
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'portfolio-os.desktop.v4';
-const defaultStorageKey = 'portfolio-os.desktop.default.v1';
+const storageKey = 'os-portfolio.desktop.v4';
+const defaultStorageKey = 'os-portfolio.desktop.default.v1';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -657,7 +657,7 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await openSettings(page);
     await page.getByTestId('button-dock-terminal').click();
     const input = page.getByTestId('input-terminal-command');
-    const shell = page.locator('main.os-shell');
+    const shell = page.locator('main.osp-shell');
     const root = page.locator('html');
 
     const runCommand = async (command: string, expectedOutput: string) => {
@@ -697,7 +697,7 @@ test.describe('Contrast themes disable wallpaper controls', () => {
 
     await goToAccessibility(page);
     await page.getByTestId('settings-a11y-contrast-high').click();
-    const shell = page.locator('main.os-shell');
+    const shell = page.locator('main.osp-shell');
     await expect(shell).toHaveClass(/theme-dark/);
     await expect(shell).not.toHaveClass(/theme-light/);
     await expect(shell).toHaveCSS('background-color', 'rgb(0, 0, 0)');

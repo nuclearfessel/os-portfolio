@@ -1,4 +1,4 @@
-# Portfolio OS Desktop Portfolio
+# OS Portfolio Desktop Portfolio
 
 A responsive, static React portfolio for John Doe presented as a desktop operating system.
 

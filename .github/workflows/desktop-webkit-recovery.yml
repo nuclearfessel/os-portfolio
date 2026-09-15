@@ -46,7 +46,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: desktop-firefox-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          name: os-portfolio-firefox-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             artifacts/desktop-portfolio/playwright-report/
             artifacts/desktop-portfolio/test-results/
@@ -86,7 +86,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: desktop-webkit-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          name: os-portfolio-webkit-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             artifacts/desktop-portfolio/playwright-report/
             artifacts/desktop-portfolio/test-results/

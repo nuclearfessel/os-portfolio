@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'portfolio-os.desktop.v4';
+const storageKey = 'os-portfolio.desktop.v4';
 
 async function resetStorage(page: Page) {
   await page.goto('/');
@@ -67,8 +67,8 @@ test('desktop-only apps disappear outside desktop mode', async ({ page }) => {
     { width: 844, height: 390, device: 'mobile', orientation: 'portrait' },
   ]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    await expect(page.locator('.os-shell')).toHaveClass(new RegExp(`device-${viewport.device}`));
-    await expect(page.locator('.os-shell')).toHaveClass(new RegExp(`orientation-${viewport.orientation}`));
+    await expect(page.locator('.osp-shell')).toHaveClass(new RegExp(`device-${viewport.device}`));
+    await expect(page.locator('.osp-shell')).toHaveClass(new RegExp(`orientation-${viewport.orientation}`));
     await expect(page.getByTestId('button-dock-stickies')).toHaveCount(0);
     await expect(page.getByTestId('button-dock-terminal')).toHaveCount(0);
     await expect(page.getByTestId('button-dock-mode')).toBeVisible();
@@ -90,7 +90,7 @@ test('non-desktop dock is fixed, labeled, and focuses the selected app', async (
   await expect(page.getByTestId('button-dock-mode').getByText('Mode')).toBeVisible();
 
   await page.getByTestId('button-dock-mode').click();
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
   await expect(page.getByTestId('button-dock-mode')).toHaveAttribute('aria-label', 'Switch to light mode');
 
   await page.getByTestId('button-dock-about').click();
@@ -154,13 +154,13 @@ test('reset in managed mode clears the preserved desktop geometry', async ({ pag
   await expect(page.getByTestId('window-work')).toHaveCSS('left', '177px');
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator('.os-shell')).toHaveClass(/workspace-managed/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/workspace-managed/);
   await openDesktopMenu(page);
   await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
   await page.getByTestId('button-confirm-reset').click();
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await expect(page.locator('.os-shell')).toHaveClass(/workspace-desktop/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/workspace-desktop/);
   await expect.poll(async () => page.evaluate((key) => {
     const state = JSON.parse(localStorage.getItem(key) ?? '{}');
     return { positions: state.itemPositions, sizes: state.itemSizes };

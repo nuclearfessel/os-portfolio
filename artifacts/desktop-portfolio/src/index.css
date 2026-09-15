@@ -55,9 +55,9 @@ body {
 }
 button, input { font: inherit; }
 button { cursor: pointer; }
-.os-shell svg { display: block; }
+.osp-shell svg { display: block; }
 
-.os-shell {
+.osp-shell {
   min-height: 100dvh;
   overflow: hidden;
   position: relative;
@@ -69,7 +69,7 @@ button { cursor: pointer; }
     radial-gradient(circle at 8% 88%, rgba(72, 43, 82, .28), transparent 26rem),
     #111326;
 }
-.os-shell::before {
+.osp-shell::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -1296,17 +1296,17 @@ button { cursor: pointer; }
    Wallpaper on desktop
    ========================================================= */
 /* When a picture wallpaper is set on desktop, override the default gradient */
-.os-shell.wallpaper-picture,
-.os-shell.wallpaper-color {
+.osp-shell.wallpaper-picture,
+.osp-shell.wallpaper-color {
   /* The inline style on the <main> handles background; suppress the ::before grid overlay a bit */
 }
 
-.os-shell.wallpaper-picture::before {
+.osp-shell.wallpaper-picture::before {
   opacity: .12;
   mix-blend-mode: overlay;
 }
 
-.os-shell.wallpaper-color::before {
+.osp-shell.wallpaper-color::before {
   opacity: .18;
 }
 

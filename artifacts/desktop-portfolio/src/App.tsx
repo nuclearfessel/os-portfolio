@@ -10,19 +10,19 @@ import { CircleUser as CircleUserFill } from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
 import { BsStickyFill } from 'react-icons/bs';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { tokens } from '@workspace/portfolio-os-design-system/tokens';
-import { Toaster } from '@workspace/portfolio-os-design-system/components/ui/toaster';
-import { TooltipProvider } from '@workspace/portfolio-os-design-system/components/ui/tooltip';
-import { Separator } from '@workspace/portfolio-os-design-system/components/ui/separator';
+import { tokens } from '@workspace/portfolio-os-ds/tokens';
+import { Toaster } from '@workspace/portfolio-os-ds/components/ui/toaster';
+import { TooltipProvider } from '@workspace/portfolio-os-ds/components/ui/tooltip';
+import { Separator } from '@workspace/portfolio-os-ds/components/ui/separator';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@workspace/portfolio-os-design-system/components/ui/accordion';
+} from '@workspace/portfolio-os-ds/components/ui/accordion';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
-} from '@workspace/portfolio-os-design-system/components/ui/dialog';
+} from '@workspace/portfolio-os-ds/components/ui/dialog';
 import {
   ActionButton,
   ContextMenuSurface,
@@ -35,7 +35,7 @@ import {
   StickyNoteSurface,
   Surface,
   WindowSurface,
-} from '@workspace/portfolio-os-design-system/components/ui/portfolio-os';
+} from '@workspace/portfolio-os-ds/components/ui/os-portfolio';
 
 const queryClient = new QueryClient();
 
@@ -268,8 +268,10 @@ type SavedDesktopState = {
   introCustomization?: IntroCustomization;
 };
 
-const DESKTOP_STORAGE_KEY = 'portfolio-os.desktop.v4';
-const DESKTOP_DEFAULT_STORAGE_KEY = 'portfolio-os.desktop.default.v1';
+const DESKTOP_STORAGE_KEY = 'os-portfolio.desktop.v4';
+const DESKTOP_DEFAULT_STORAGE_KEY = 'os-portfolio.desktop.default.v1';
+const LEGACY_DESKTOP_STORAGE_KEY = 'portfolio-os.desktop.v4';
+const LEGACY_DESKTOP_DEFAULT_STORAGE_KEY = 'portfolio-os.desktop.default.v1';
 const DESKTOP_GRID_SIZE = 8;
 const DEFAULT_INTRO_CUSTOMIZATION: IntroCustomization = {
   text: {
@@ -380,13 +382,24 @@ function parseAccessibilityPrefs(raw: unknown): AccessibilityPrefs {
 }
 
 function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
-  let savedState = '{}';
+  const legacyStorageKey = storageKey === DESKTOP_STORAGE_KEY
+    ? LEGACY_DESKTOP_STORAGE_KEY
+    : storageKey === DESKTOP_DEFAULT_STORAGE_KEY
+      ? LEGACY_DESKTOP_DEFAULT_STORAGE_KEY
+      : undefined;
+  let savedState: string | null = null;
+  let migratedFromLegacy = false;
   try {
-    savedState = window.localStorage.getItem(storageKey) ?? '{}';
+    savedState = window.localStorage.getItem(storageKey);
+    if (savedState === null && legacyStorageKey) {
+      savedState = window.localStorage.getItem(legacyStorageKey);
+      migratedFromLegacy = savedState !== null;
+    }
   } catch {
     storageUnavailableDuringLoad = true;
     return defaultDesktopState;
   }
+  if (savedState === null) savedState = '{}';
   try {
     const parsed = JSON.parse(savedState) as Partial<SavedDesktopState> & { stickyColor?: StickyColorId };
     const folderPositions = Object.fromEntries(
@@ -487,7 +500,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       ? parsed.activeStickyId as StickyItemId
       : stickies[0]?.id ?? 'sticky';
 
-    return {
+    const normalizedState: SavedDesktopState = {
       folderPositions,
       itemPositions,
       itemSizes,
@@ -510,6 +523,15 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       accessibility: parseAccessibilityPrefs(parsed.accessibility),
       introCustomization: parseIntroCustomization(parsed.introCustomization),
     };
+    if (migratedFromLegacy && legacyStorageKey) {
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(normalizedState));
+        window.localStorage.removeItem(legacyStorageKey);
+      } catch {
+        // Keep the legacy snapshot when migration cannot be committed.
+      }
+    }
+    return normalizedState;
   } catch {
     return defaultDesktopState;
   }
@@ -2131,7 +2153,7 @@ function Home() {
 
     const analyze = () => {
       if (cancelled || !context || !image.naturalWidth || !image.naturalHeight) return;
-      const shell = document.querySelector<HTMLElement>('.os-shell');
+      const shell = document.querySelector<HTMLElement>('.osp-shell');
       if (!shell) return;
       const shellRect = shell.getBoundingClientRect();
       const scale = Math.max(shellRect.width / image.naturalWidth, shellRect.height / image.naturalHeight);
@@ -3344,7 +3366,7 @@ function Home() {
 
   return (
     <main
-      className={`os-shell theme-${presentationTheme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} system-bar-at-${effectiveSystemBarPosition} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
+      className={`osp-shell theme-${presentationTheme} icons-${iconSize} workspace-${workspaceMode} device-${deviceMode} orientation-${orientation} system-bar-at-${effectiveSystemBarPosition} ${coarsePointer ? 'pointer-coarse' : 'pointer-fine'} ${appliesSelectedWallpaper ? wallpaperClass : ''}`}
       onPointerDown={() => { setContextMenu(null); setStickyMenu(null); }}
       onContextMenu={(event) => event.preventDefault()}
       style={currentWallpaperStyle}
@@ -3380,7 +3402,7 @@ function Home() {
       >
         <div className="system-left">
           <Apple className="system-logo" size={14} strokeWidth={1.8} aria-hidden="true" />
-          <span className="system-mark">PORTFOLIO.OS</span>
+          <span className="system-mark">OS.Portfolio</span>
           <span className="system-separator">/</span>
           <span className="system-location">Seattle, WA</span>
           <span className="system-separator">/</span>

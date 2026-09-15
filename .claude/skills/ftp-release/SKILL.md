@@ -1,6 +1,6 @@
 ---
 name: ftp-release
-description: Build and release the static desktop portfolio to a configured FTP subfolder. Use when preparing deployment files, diagnosing blank pages, or updating the hosted site.
+description: Build and release the static OS Portfolio site to a configured FTP subfolder. Use when preparing deployment files, diagnosing blank pages, or updating the hosted site.
 ---
 
 # FTP Release
@@ -70,7 +70,7 @@ Do not add browser-path routing to solve FTP hosting. Production uses relative a
 
 `claude-src-pack.zip` is the downloadable handoff bundle. Its filename is never versioned. Regenerate it after source, documentation, skill, or production-build changes.
 
-- Include portfolio and design-system source, `CLAUDE.md`, `replit.md`, Markdown documentation, `.claude/skills/`, and a top-level `public/` copy of `dist/public/`.
+- Include OS Portfolio and Portfolio OS DS source, `CLAUDE.md`, `replit.md`, Markdown documentation, `.claude/skills/`, and a top-level `public/` copy of `dist/public/`.
 - Include `DEPLOYMENT.md` explaining that the top-level `public/` folder is deployable.
 - Exclude `node_modules`, package `dist` folders from the source portion, test reports/results, caches, environment files, and `*.tsbuildinfo`.
 - Run `bash scripts/package-claude-source.sh claude-src-pack.zip` to build it.

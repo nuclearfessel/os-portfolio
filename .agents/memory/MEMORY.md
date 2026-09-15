@@ -1,7 +1,7 @@
 - [Desktop drag state isolation](desktop-drag-state-isolation.md) — launchers and their corresponding windows must use separate position identities.
 - [Playwright validation environment](playwright-validation-environment.md) — desktop E2E dependencies and browsers may need restoring from the workspace cache.
 - [Responsive desktop geometry](responsive-desktop-geometry.md) — responsive reflow is temporary; preserve and restore the user’s desktop layout.
-- [Portfolio OS component ownership](portfolio-os-component-ownership.md) — shared visual primitives belong to the design-system package; product behavior stays in the portfolio.
+- [OS Portfolio component ownership](os-portfolio-component-ownership.md) — shared visual primitives belong to the design-system package; product behavior stays in the portfolio.
 - [Firefox sticky initialization](firefox-sticky-initialization.md) — never persist first-render sticky geometry measured before CSS is ready.
 - [Firefox launcher pointer capture](firefox-launcher-pointer-capture.md) — release launcher capture when Firefox reports no primary button during a captured move.
 - [Responsive Dock labels](responsive-dock-labels.md) — desktop labels use tooltip surfaces; mobile and tablet labels remain plain inline text.
@@ -20,4 +20,4 @@
 - [Design-system token consumption](design-system-token-consumption.md) — consume isolated shared values through generated tokens, not the full stylesheet.
 - [Playwright WebKit on Replit](playwright-webkit-replit.md) — isolate Nix compatibility libraries to WebKit; never export the full closure to Node.
 - [Backdrop-filter build ordering](backdrop-filter-build-ordering.md) — list the WebKit-prefixed declaration before the standard one so production CSS retains browser-compatible blur.
-- [Design-token namespace](design-token-namespace.md) — Portfolio OS token names and generated custom properties use the `os` namespace, never `pos`.
+- [Design-token namespace](design-token-namespace.md) — OS Portfolio token names and generated custom properties use the `osp` namespace.

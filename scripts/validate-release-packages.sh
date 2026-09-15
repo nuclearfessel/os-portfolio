@@ -25,15 +25,15 @@ cd "$repo_root"
 
 pnpm --filter @workspace/desktop-portfolio run typecheck
 pnpm --filter @workspace/desktop-portfolio run build
-pnpm --filter @workspace/portfolio-os-design-system run typecheck
-pnpm --filter @workspace/portfolio-os-design-system run build
+pnpm --filter @workspace/portfolio-os-ds run typecheck
+pnpm --filter @workspace/portfolio-os-ds run build
 
 if ! grep -REq '(^|[;{])backdrop-filter:blur\(' artifacts/desktop-portfolio/dist/public/assets/*.css; then
   printf 'Desktop production CSS is missing the standard backdrop-filter blur declaration.\n' >&2
   exit 1
 fi
 
-if ! grep -REq '(^|[;{])backdrop-filter:blur\(' artifacts/portfolio-os-design-system/dist/assets/*.css; then
+if ! grep -REq '(^|[;{])backdrop-filter:blur\(' artifacts/portfolio-os-ds/dist/assets/*.css; then
   printf 'Design-system production CSS is missing the standard backdrop-filter blur declaration.\n' >&2
   exit 1
 fi
@@ -41,7 +41,7 @@ fi
 rm -f "$site_zip" "$design_system_zip"
 (cd artifacts/desktop-portfolio/dist/public && zip -qr "$site_zip" .)
 bash scripts/package-claude-source.sh "$claude_zip"
-(cd artifacts/portfolio-os-design-system/dist && zip -qr "$design_system_zip" .)
+(cd artifacts/portfolio-os-ds/dist && zip -qr "$design_system_zip" .)
 
 unzip -tq "$site_zip"
 unzip -tq "$design_system_zip"

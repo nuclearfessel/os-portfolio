@@ -54,8 +54,8 @@ after validation, or substitute a publish suggestion.
 1. Confirm only intended files changed.
 2. Review whether the completed change requires corresponding updates to `README.md`, Claude instruction/skill files, package metadata, package exports, or package documentation. Make and validate every applicable update before committing; do not change unrelated files merely to satisfy the checklist.
 3. Refresh the two GitHub README screenshots from the current running previews:
-   `docs/images/portfolio-os-portfolio.jpg` for the portfolio site and
-   `docs/images/portfolio-os-design-system.jpg` for the design-system site.
+   `docs/images/os-portfolio.jpg` for the OS Portfolio site and
+   `docs/images/portfolio-os-ds.jpg` for the Portfolio OS DS site.
    Confirm `README.md` embeds both files.
 4. Commit the completed work on its branch with a descriptive message.
 5. Push the branch to `origin`.
@@ -80,7 +80,7 @@ after validation, or substitute a publish suggestion.
 
 9. Confirm that `main` matches `origin/main` and the working tree is clean.
 10. Confirm the `main`-only GitHub release workflow completed and published all
-   three required ZIP assets: the portfolio site, design-system site, and Claude
+    three required ZIP assets: the OS Portfolio site, Portfolio OS DS site, and Claude
    source packages.
 
 Do not delete the branch unless the user asks.

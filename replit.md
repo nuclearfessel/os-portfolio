@@ -1,6 +1,6 @@
-# Portfolio OS Desktop Portfolio
+# OS Portfolio
 
-John Doe’s static React portfolio presents work inside a responsive desktop operating-system interface.
+OS Portfolio is John Doe’s static React portfolio, presenting work inside a responsive desktop operating-system interface.
 
 ## Run and validate
 
@@ -20,7 +20,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 ## Stack
 
 - React, Vite, and TypeScript in a pnpm workspace
-- Shared UI package: `@workspace/portfolio-os-design-system`
+- Shared UI package: `@workspace/portfolio-os-ds` (Portfolio OS DS)
 - Browser-local persistence; no backend or database dependency
 - Playwright interaction and responsive-layout coverage
 - Static production output with relative asset URLs
@@ -31,9 +31,9 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - `artifacts/desktop-portfolio/src/index.css` — responsive presentation, themes, and motion
 - `artifacts/desktop-portfolio/tests/` — persistence, interaction, responsive, and contrast checks
 - `artifacts/desktop-portfolio/dist/public/` — generated upload-ready static site
-- `artifacts/portfolio-os-design-system/` — shared tokens and visual primitives
+- `artifacts/portfolio-os-ds/` — Portfolio OS DS shared tokens and visual primitives
 - `CLAUDE.md` — concise collaborator instructions
-- `.claude/skills/desktop-portfolio/SKILL.md` — portfolio maintenance rules
+- `.claude/skills/os-portfolio/SKILL.md` — OS Portfolio maintenance rules
 - `.claude/skills/ftp-release/SKILL.md` — static release procedure
 
 ## Product behavior
@@ -52,7 +52,7 @@ The managed Replit workflow is `artifacts/desktop-portfolio: web`.
 - Completed, validated work is automatically approved for GitHub. Do not wait for a separate approval response.
 - Completion immediately triggers the GitHub workflow: review and sync applicable docs/package surfaces, refresh both README screenshots, validate, commit, push the branch, merge into `main`, push `main`, and confirm the main-only release.
 
-- Build strictly on `artifacts/portfolio-os-design-system`; do not invent replacement tokens or duplicate shared primitives.
+- Build strictly on `artifacts/portfolio-os-ds`; do not invent replacement tokens or duplicate shared primitives.
 - Keep launchers and their corresponding windows under separate position identities.
 - Do not persist temporary tablet or mobile geometry as desktop geometry.
 - Keep production asset URLs relative for nested static and FTP hosting.

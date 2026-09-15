@@ -1,7 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const storageKey = 'portfolio-os.desktop.v4';
-const defaultStorageKey = 'portfolio-os.desktop.default.v1';
+const storageKey = 'os-portfolio.desktop.v4';
+const defaultStorageKey = 'os-portfolio.desktop.default.v1';
+const legacyStorageKey = 'portfolio-os.desktop.v4';
+const legacyDefaultStorageKey = 'portfolio-os.desktop.default.v1';
 
 async function openDesktopMenu(page: Page) {
   await page.locator('.desktop-area').evaluate((element) => {
@@ -78,11 +80,44 @@ async function openSystemBarMenu(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.evaluate(([currentKey, savedDefaultKey]) => {
-    localStorage.removeItem(currentKey);
-    localStorage.removeItem(savedDefaultKey);
-  }, [storageKey, defaultStorageKey]);
+  await page.evaluate((keys) => {
+    keys.forEach((key) => localStorage.removeItem(key));
+  }, [storageKey, defaultStorageKey, legacyStorageKey, legacyDefaultStorageKey]);
   await page.reload();
+});
+
+test('migrates the legacy desktop snapshot to the renamed storage key', async ({ page }) => {
+  await page.evaluate(([currentKey, oldKey, value]) => {
+    localStorage.removeItem(currentKey as string);
+    localStorage.setItem(oldKey as string, JSON.stringify(value));
+  }, [storageKey, legacyStorageKey, { theme: 'dark', showDesktopIcons: false }] as const);
+  await page.reload();
+
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
+  await expect(page.getByTestId('button-folder-about')).toBeHidden();
+  await expect.poll(async () => page.evaluate(([currentKey, oldKey]) => ({
+    current: localStorage.getItem(currentKey),
+    legacy: localStorage.getItem(oldKey),
+  }), [storageKey, legacyStorageKey])).toEqual({
+    current: expect.stringContaining('"theme":"dark"'),
+    legacy: null,
+  });
+});
+
+test('migrates the legacy saved default snapshot to the renamed storage key', async ({ page }) => {
+  await page.evaluate(([currentKey, oldKey, value]) => {
+    localStorage.removeItem(currentKey as string);
+    localStorage.setItem(oldKey as string, JSON.stringify(value));
+  }, [defaultStorageKey, legacyDefaultStorageKey, { theme: 'dark', showDesktopIcons: false }] as const);
+  await page.reload();
+
+  await expect.poll(async () => page.evaluate(([currentKey, oldKey]) => ({
+    current: localStorage.getItem(currentKey),
+    legacy: localStorage.getItem(oldKey),
+  }), [defaultStorageKey, legacyDefaultStorageKey])).toEqual({
+    current: expect.stringContaining('"theme":"dark"'),
+    legacy: null,
+  });
 });
 
 test('migrates legacy persisted intro names in the current desktop state', async ({ page }) => {
@@ -385,8 +420,8 @@ test('persists moved icons and every desktop preference across reloads', async (
   await openDesktopMenu(page);
   await page.getByRole('menuitemcheckbox', { name: 'Show desktop icons' }).click();
 
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/icons-small/);
   await expect(page.getByTestId('button-folder-about')).toBeHidden();
 
   const savedBeforeReload = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
@@ -400,8 +435,8 @@ test('persists moved icons and every desktop preference across reloads', async (
 
   await page.reload();
 
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/icons-small/);
   await expect(page.getByTestId('button-folder-about')).toBeHidden();
   const savedAfterReload = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
   expect(savedAfterReload).toEqual(savedBeforeReload);
@@ -924,8 +959,8 @@ test('falls back to safe defaults when saved data is corrupted', async ({ page }
   await page.evaluate(([key, value]) => localStorage.setItem(key, value), [storageKey, '{not-json']);
   await page.reload();
 
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
 
   await openDesktopMenu(page);
@@ -966,8 +1001,8 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   });
   await page.reload();
 
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
   const storageNotice = page.getByTestId('notice-storage-unavailable');
   const storageRestored = page.getByTestId('notice-storage-restored');
@@ -1043,8 +1078,8 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await openDockMenu(page);
   await page.getByRole('menuitemradio', { name: 'Right' }).click();
 
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/icons-small/);
   await expect(aboutFolder).toBeHidden();
   await expect(page.locator('.desktop-area')).toHaveClass(/dock-space-right/);
   await expect(storageNotice).toHaveCount(1);
@@ -1078,8 +1113,8 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await expect(storageNotice).toHaveCount(1);
   await expect(storageRestored).toHaveCount(0);
   await expect(recoveryGuidance).toBeVisible();
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/icons-small/);
   await expect(aboutFolder).toBeHidden();
   await expect(page.locator('.desktop-area')).toHaveClass(/dock-space-right/);
   await expect(sticky.getByRole('textbox', { name: 'Sticky note 1 text' })).toHaveValue(inMemoryState.stickyText);
@@ -1140,8 +1175,8 @@ test('stays usable when browser storage reads, writes, and removals fail', async
   await page.reload();
 
   await expect(page.getByTestId('notice-storage-unavailable')).toHaveCount(0);
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-small/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/icons-small/);
   await expect(page.getByTestId('button-folder-about')).toBeHidden();
   await expect(page.locator('.desktop-area')).toHaveClass(/dock-space-right/);
   await page.getByTestId('button-dock-contact').click();
@@ -1315,7 +1350,7 @@ test('resets a sticky rotation in both themes and keeps it upright after reload'
   await expect.poll(readRotation).toBe('0deg');
 
   await openSettingsAndSetTheme(page, 'Dark');
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
 
   await openStickyMenu(page);
   await expect(page.getByTestId('button-reset-sticky-rotation')).toBeVisible();
@@ -1326,7 +1361,7 @@ test('resets a sticky rotation in both themes and keeps it upright after reload'
   }, storageKey)).toBe(0);
 
   await page.reload();
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
   await expect.poll(readRotation).toBe('0deg');
 });
 
@@ -1491,7 +1526,7 @@ test('keeps stickies hidden on mobile and tablet workspaces', async ({ page }) =
     await page.setViewportSize(viewport);
     await page.reload();
 
-    await expect(page.locator('.os-shell')).toHaveClass(viewport.workspaceClass);
+  await expect(page.locator('.osp-shell')).toHaveClass(viewport.workspaceClass);
     await expect(page.locator('[data-testid^="sticky-"]')).toHaveCount(0);
     await expect(page.getByTestId('button-dock-stickies')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /sticky/i })).toHaveCount(0);
@@ -1558,8 +1593,8 @@ test('Reset desktop restores every default after confirmation', async ({ page })
   await page.getByTestId('button-confirm-reset').click();
   await expect(desktop).toBeFocused();
 
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
-  await expect(page.locator('.os-shell')).toHaveClass(/icons-large/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/icons-large/);
   await expect(page.getByTestId('button-folder-about')).toBeVisible();
   await expect(page.getByTestId('window-work')).toBeVisible();
   await expect(page.getByTestId('window-about')).toHaveClass(/is-active/);
@@ -1742,19 +1777,19 @@ test('Settings window changes theme and persists across reload', async ({ page }
   await openSettingsSection(page, 'theme');
 
   // Start in light theme; switch to dark via Settings
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
   await page.getByTestId('settings-theme-dark').click();
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
 
   // Switch back to light
   await page.getByTestId('settings-theme-light').click();
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-light/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
 
   // Dark persists across reload
   await page.getByTestId('settings-theme-dark').click();
   await page.getByTestId('button-close-settings').click();
   await page.reload();
-  await expect(page.locator('.os-shell')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.osp-shell')).toHaveClass(/theme-dark/);
   await expect.poll(() => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}').theme, storageKey))
     .toBe('dark');
 });
@@ -1764,7 +1799,7 @@ test('Settings wallpaper mode: picture uses background image on desktop', async 
   await expect(page.getByTestId('window-settings')).toBeVisible();
 
   // Default is picture mode; main element should have a backgroundImage style
-  const desktop = page.locator('main.os-shell');
+  const desktop = page.locator('main.osp-shell');
   const bgImage = await desktop.evaluate((el) => (el as HTMLElement).style.backgroundImage);
   expect(bgImage).toMatch(/wallpaper-light/);
 
@@ -1795,7 +1830,7 @@ test('Settings wallpaper mode: color removes background image and applies solid 
   await page.getByTestId('button-close-settings').click();
 
   // Desktop background should now be a solid color, not a picture
-  const shell = page.locator('main.os-shell');
+  const shell = page.locator('main.osp-shell');
   const bgImage = await shell.evaluate((el) => (el as HTMLElement).style.backgroundImage);
   // In color mode the backgroundImage inline style is explicitly cleared to 'none'
   expect(bgImage).toBe('none');
@@ -1811,7 +1846,7 @@ test('Settings wallpaper mode: color removes background image and applies solid 
 });
 
 test('selected light and dark solid wallpaper colors persist in tablet and mobile layouts', async ({ page }) => {
-  const shell = page.locator('main.os-shell');
+  const shell = page.locator('main.osp-shell');
 
   await page.getByTestId('button-dock-settings').click();
   await openSettingsSection(page, 'wallpaper');
@@ -2112,7 +2147,7 @@ test('wallpaper choice persists across page reload', async ({ page }) => {
   await page.getByTestId('settings-theme-dark').click();
   await expect(page.getByTestId('settings-wallpaper-mode-color-dark')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('cp-field-hex')).toHaveValue('111326');
-  await expect(page.locator('main.os-shell')).toHaveCSS('background-color', 'rgb(17, 19, 38)');
+  await expect(page.locator('main.osp-shell')).toHaveCSS('background-color', 'rgb(17, 19, 38)');
 
   await page.getByTestId('button-close-settings').click();
 
@@ -2153,7 +2188,7 @@ test('save state as default includes wallpaper config, and reset restores it', a
   await page.getByTestId('settings-wallpaper-mode-picture-light').click();
   await page.getByTestId('button-close-settings').click();
 
-  const desktop = page.locator('main.os-shell');
+  const desktop = page.locator('main.osp-shell');
   const bgImageAfterSwitch = await desktop.evaluate((el) => (el as HTMLElement).style.backgroundImage);
   expect(bgImageAfterSwitch).toMatch(/wallpaper-light/);
 

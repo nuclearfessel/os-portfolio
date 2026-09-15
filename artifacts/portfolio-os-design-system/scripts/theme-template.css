@@ -468,15 +468,15 @@
 .portfolio-surface-translucent {
   --accessibility-transparency: 0.2;
   background-color: hsl(var(--card) / calc(1 - var(--accessibility-transparency)));
-  backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
   -webkit-backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
+  backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
 }
 
 /* Consuming app enables transparency and sets the desired level */
 [data-transparency-enabled] .portfolio-surface-translucent {
   background-color: hsl(var(--card) / calc(1 - var(--accessibility-transparency, 0.2)));
-  backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
   -webkit-backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
+  backdrop-filter: blur(var(--surface-blur, 12px)) saturate(1.4);
 }
 
 /* Consuming app disables transparency — fully opaque */
@@ -486,8 +486,8 @@
 
 /* Blur is an independent accessibility preference. */
 [data-no-blur] .portfolio-surface-translucent {
-  backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -610,8 +610,8 @@
    reduced in opacity by backdrop-filter alpha. */
 [data-contrast="low"] .portfolio-surface-translucent {
   background-color: hsl(var(--card));
-  backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 /* 5b. High contrast */
@@ -668,8 +668,8 @@
    to also set data-no-transparency when a contrast theme is active. */
 [data-contrast="high"] .portfolio-surface-translucent {
   background-color: hsl(var(--card));
-  backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 /* Both contrast modes enforce an opaque, blur-free, motion-free presentation.
@@ -692,8 +692,8 @@
 [data-contrast="low"] .portfolio-surface-translucent,
 [data-contrast="high"] .portfolio-surface-translucent {
   background-color: hsl(var(--card));
-  backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 
 /* High-contrast: all focus rings become 3px yellow for maximum visibility */

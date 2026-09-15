@@ -2481,6 +2481,21 @@ function Home() {
         if (resetDialogOpen) closeResetDialog();
         if (saveDefaultDialogOpen) closeSaveDefaultDialog();
       }
+      const isSiteWindowCloseShortcut = (
+        workspaceMode === 'desktop'
+        && (event.metaKey || event.ctrlKey)
+        && event.shiftKey
+        && event.key.toLowerCase() === 'x'
+      );
+      if (isSiteWindowCloseShortcut) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.repeat) return;
+        const openWindowsByStack = [...windowStack].reverse().filter((id) => windows[id]);
+        if (event.altKey) openWindowsByStack.forEach((id) => closeWindow(id));
+        else if (openWindowsByStack[0]) closeWindow(openWindowsByStack[0]);
+        return;
+      }
       if (event.metaKey || event.ctrlKey) return;
       const target = event.target;
       const isColorValueField = target instanceof HTMLElement && Boolean(target.closest('.cp-field'));

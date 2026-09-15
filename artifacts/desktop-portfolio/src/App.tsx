@@ -2962,6 +2962,37 @@ function Home() {
       target: 'desktop'
     });
   };
+  const cleanupIcons = () => {
+    const area = desktopAreaRef.current;
+    if (!area) return;
+    const launcherIds: DesktopLauncherId[] = ['about', 'work', 'terminal', 'contact', 'stickies-app'];
+    const column = iconSize === 'large' ? 88 : 72;
+    const current = launcherIds.map((id) => {
+      const dragId: DesktopLauncherDragId = `desktop-${id}`;
+      const element = area.querySelector<HTMLElement>(`[data-testid="button-folder-${id}"]`);
+      return {
+        dragId,
+        left: dragPositions[dragId]?.left ?? element?.offsetLeft ?? 0,
+        top: dragPositions[dragId]?.top ?? element?.offsetTop ?? 0,
+      };
+    }).sort((first, second) => first.left - second.left || first.top - second.top);
+    const anchor = current[0];
+    const cleanedPositions = current.reduce<ItemPositions>((positions, icon, index) => {
+      positions[icon.dragId] = { left: anchor.left + column * index, top: anchor.top };
+      return positions;
+    }, { ...dragPositions });
+    desktopGeometryRef.current = {
+      ...desktopGeometryRef.current,
+      dragPositions: {
+        ...desktopGeometryRef.current.dragPositions,
+        ...cleanedPositions,
+      },
+      folderPositions: {},
+    };
+    setFolderPositions({});
+    setDragPositions(cleanedPositions);
+    setContextMenu(null);
+  };
   const autoArrangeIcons = () => {
     const area = desktopAreaRef.current;
     if (!area) return;
@@ -3432,6 +3463,7 @@ function Home() {
                   <button type="button" role="menuitemradio" aria-checked={iconSize === 'small'} onClick={() => { setIconSize('small'); setContextMenu(null); }}><span className="context-check">{iconSize === 'small' && <Check size={12} />}</span><span>Small icons</span></button>
                 </div>
               </div>
+              <button type="button" className="context-menu-button" role="menuitem" onClick={cleanupIcons}><span className="context-check" /><span>Cleanup icons</span></button>
               <button type="button" className="context-menu-button" role="menuitemcheckbox" aria-checked={snapToGrid} onClick={() => setSnapToGrid((value) => !value)}><span className="context-check">{snapToGrid && <Check size={12} />}</span><span>Snap to grid</span></button>
               <button type="button" className="context-menu-button" role="menuitem" onClick={autoArrangeIcons}><span className="context-check" /><span>Auto arrange icons</span></button>
               <div className="context-menu-separator" />

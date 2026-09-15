@@ -3101,9 +3101,9 @@ function Home() {
       ? undefined
       : maximizedWindows[id]
       ? {
-        left: dockPosition === 'left' ? 82 : systemBarPosition === 'left' ? 54 : 12,
+        left: dockPosition === 'left' ? 82 : systemBarPosition === 'left' ? 140 : 12,
         top: dockPosition === 'top' ? 82 : systemBarPosition === 'top' ? 54 : 12,
-        right: dockPosition === 'right' ? 82 : systemBarPosition === 'right' ? 54 : 12,
+        right: dockPosition === 'right' ? 82 : systemBarPosition === 'right' ? 140 : 12,
         bottom: dockPosition === 'bottom' ? 82 : systemBarPosition === 'bottom' ? 54 : 12,
         width: 'auto',
         height: 'auto',

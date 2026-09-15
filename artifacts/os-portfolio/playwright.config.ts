@@ -35,6 +35,12 @@ export default defineConfig({
       use: { ...devices["Desktop Firefox"] },
     },
     {
+      name: "firefox-overlap-windows",
+      testMatch: /desktop-persistence\.spec\.ts/,
+      grep: /keeps stacked windows locally painted while moving and dragging across them/,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
       name: "webkit-storage-recovery",
       testMatch: /desktop-persistence\.spec\.ts/,
       grep: /stays usable when browser storage reads, writes, and removals fail|reflows storage recovery help with enlarged text without clipping controls/,

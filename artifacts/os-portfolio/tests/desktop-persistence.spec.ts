@@ -826,6 +826,90 @@ test('reopens a closed window at the same position and size', async ({ page }) =
   expect(afterReopen!.height).toBeCloseTo(beforeClose!.height, 0);
 });
 
+test('keeps stacked windows locally painted while moving and dragging across them', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const aboutWindow = page.getByTestId('window-about');
+  const workWindow = page.getByTestId('window-work');
+  const settingsWindow = page.getByTestId('window-settings');
+
+  await page.getByTestId('button-dock-settings').click();
+  await expect(aboutWindow).toBeVisible();
+  await expect(workWindow).toBeVisible();
+  await expect(settingsWindow).toBeVisible();
+
+  const initialGeometry = await Promise.all([aboutWindow, workWindow, settingsWindow].map(async (window) => {
+    const box = await window.boundingBox();
+    expect(box).not.toBeNull();
+    return box!;
+  }));
+  const expectOverlap = (first: NonNullable<typeof initialGeometry[number]>, second: NonNullable<typeof initialGeometry[number]>) => {
+    expect(first.x).toBeLessThan(second.x + second.width);
+    expect(second.x).toBeLessThan(first.x + first.width);
+    expect(first.y).toBeLessThan(second.y + second.height);
+    expect(second.y).toBeLessThan(first.y + first.height);
+  };
+  expectOverlap(initialGeometry[0], initialGeometry[1]);
+  expectOverlap(initialGeometry[0], initialGeometry[2]);
+  expectOverlap(initialGeometry[1], initialGeometry[2]);
+
+  const expectLocalShadow = async (window: ReturnType<typeof page.getByTestId>) => {
+    await expect.poll(() => window.evaluate((element) => {
+      const shadow = getComputedStyle(element).boxShadow;
+      const withoutColor = shadow.replace(/(?:rgba?|hsla?)\([^)]*\)/g, '').trim();
+      return {
+        shadow,
+        isInsetOnly: shadow !== 'none'
+          && shadow.endsWith('inset')
+          && /^(?:-?\d+(?:\.\d+)?px\s+){3,4}inset$/.test(withoutColor),
+      };
+    })).toMatchObject({ isInsetOnly: true });
+  };
+  for (const window of [aboutWindow, workWindow, settingsWindow]) {
+    await expectLocalShadow(window);
+  }
+
+  const overlapX = Math.max(initialGeometry[0].x, initialGeometry[1].x, initialGeometry[2].x) + 40;
+  const overlapY = Math.max(initialGeometry[0].y, initialGeometry[1].y, initialGeometry[2].y) + 60;
+  await page.mouse.move(overlapX - 180, overlapY - 120, { steps: 8 });
+  await page.mouse.move(overlapX, overlapY, { steps: 12 });
+  await page.mouse.move(overlapX + 160, overlapY + 110, { steps: 12 });
+
+  const settingsBeforeDrag = await settingsWindow.boundingBox();
+  expect(settingsBeforeDrag).not.toBeNull();
+  const aboutBeforeDrag = await aboutWindow.boundingBox();
+  const workBeforeDrag = await workWindow.boundingBox();
+  expect(aboutBeforeDrag).not.toBeNull();
+  expect(workBeforeDrag).not.toBeNull();
+
+  const dragDelta = { x: 96, y: 64 };
+  const header = settingsWindow.locator('.window-header');
+  const headerBox = await header.boundingBox();
+  expect(headerBox).not.toBeNull();
+  const startX = headerBox!.x + headerBox!.width * 0.4;
+  const startY = headerBox!.y + headerBox!.height / 2;
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(startX + dragDelta.x, startY + dragDelta.y, { steps: 12 });
+  await page.mouse.up();
+
+  const settingsAfterDrag = await settingsWindow.boundingBox();
+  const aboutAfterDrag = await aboutWindow.boundingBox();
+  const workAfterDrag = await workWindow.boundingBox();
+  expect(settingsAfterDrag).not.toBeNull();
+  expect(aboutAfterDrag).not.toBeNull();
+  expect(workAfterDrag).not.toBeNull();
+  expect(settingsAfterDrag!.x).toBeCloseTo(settingsBeforeDrag!.x + dragDelta.x, 0);
+  expect(settingsAfterDrag!.y).toBeCloseTo(settingsBeforeDrag!.y + dragDelta.y, 0);
+  expect(aboutAfterDrag!.x).toBeCloseTo(aboutBeforeDrag!.x, 0);
+  expect(aboutAfterDrag!.y).toBeCloseTo(aboutBeforeDrag!.y, 0);
+  expect(workAfterDrag!.x).toBeCloseTo(workBeforeDrag!.x, 0);
+  expect(workAfterDrag!.y).toBeCloseTo(workBeforeDrag!.y, 0);
+
+  for (const window of [aboutWindow, workWindow, settingsWindow]) {
+    await expectLocalShadow(window);
+  }
+});
+
 test('restores a maximized window into a continuous title-bar drag', async ({ page }) => {
   const aboutWindow = page.getByTestId('window-about');
   const aboutHeader = aboutWindow.locator('.window-header');

@@ -1007,7 +1007,7 @@ test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', a
   await expect(guideWindow).toContainText('React components render the desktop');
 });
 
-test('gives Settings and the User Guide distinct light navigation states', async ({ page }) => {
+test('keeps Settings and the User Guide light navigation states consistent', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   const settingsActive = page.getByTestId('settings-nav-personalization');
   const settingsHover = page.getByTestId('settings-nav-accessibility');
@@ -1041,10 +1041,11 @@ test('gives Settings and the User Guide distinct light navigation states', async
     };
   });
 
-  expect(guideColors.activeColor).not.toBe(settingsColors.activeColor);
-  expect(guideColors.activeBackground).not.toBe(settingsColors.activeBackground);
-  expect(guideColors.hoverColor).not.toBe(settingsColors.hoverColor);
-  expect(guideColors.hoverBackground).not.toBe(settingsColors.hoverBackground);
+  expect(guideColors.activeColor).toBe(settingsColors.activeColor);
+  expect(guideColors.activeBackground).toBe(settingsColors.activeBackground);
+  expect(guideColors.hoverColor).toBe(settingsColors.hoverColor);
+  expect(guideColors.hoverBackground).toBe(settingsColors.hoverBackground);
+  expect(guideColors.activeBackground).toBe('rgba(11, 102, 93, 0.14)');
 });
 
 test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {

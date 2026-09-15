@@ -1078,7 +1078,7 @@ function SettingsWindow({
       <div className="window-body settings-body">
         <div className="settings-layout">
           {/* Sidebar */}
-          <nav className="settings-nav settings-window-nav" aria-label="Settings sections">
+          <nav className="settings-nav" aria-label="Settings sections">
             <button
               type="button"
               className={`settings-nav-item${activeSection === 'personalization' ? ' settings-nav-item-active' : ''}`}

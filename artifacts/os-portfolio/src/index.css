@@ -587,7 +587,7 @@ button { cursor: pointer; }
 
 .theme-light .settings-nav-item-active {
   color: #0b665d;
-  background: rgba(11,102,93,.1);
+  background: rgba(11,102,93,.14) !important;
 }
 
 /* Settings content area */
@@ -2261,28 +2261,9 @@ button { cursor: pointer; }
   color: #3a5260 !important;
 }
 
-.theme-light .settings-window-nav .settings-nav-item:hover:not(.settings-nav-item-active) {
-  background: rgba(11, 102, 93, .1) !important;
+.theme-light .settings-nav-item:hover:not(.settings-nav-item-active) {
+  background: rgba(11, 102, 93, .08) !important;
   color: #0b665d !important;
-}
-
-.theme-light .settings-window-nav .settings-nav-item-active {
-  background: rgba(11, 102, 93, .1) !important;
-  color: #0b665d !important;
-}
-
-.theme-light .guide-nav .settings-nav-item:hover:not(.settings-nav-item-active) {
-  background: rgba(25, 113, 140, .1) !important;
-  color: #19718c !important;
-}
-
-.theme-light .guide-nav .settings-nav-item-active {
-  background: rgba(165, 77, 61, .1) !important;
-  color: #a54d3d !important;
-}
-
-.theme-light .guide-nav .settings-nav-item:focus-visible {
-  outline-color: #19718c;
 }
 
 /* =========================================================

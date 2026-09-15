@@ -1612,41 +1612,48 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
           <div ref={guideContentRef} className="settings-content guide-content">
             {activeSection === 'overview' && (
               <>
-                <SectionLabel className="section-kicker">user guide / start here</SectionLabel>
-                <h2 className="settings-heading">A calmer way to work</h2>
-                <p className="guide-intro">
-                  This desktop is a small, flexible workspace. Open the tools you need, arrange them around your work,
-                  and save the setup that feels right.
-                </p>
-                <div className="guide-card-grid">
-                  <article className="guide-card">
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / start here</SectionLabel>
+                    <h2 className="settings-heading">A calmer way to work</h2>
+                    <p className="guide-intro">
+                      This desktop is a small, flexible workspace. Open the tools you need, arrange them around your work,
+                      and save the setup that feels right.
+                    </p>
+                  </div>
+                </div>
+                <div className="guide-section-label">First principles</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">01</span>
-                    <h3>Open an app</h3>
-                    <p>Use the Dock, a desktop launcher, or a keyboard shortcut. The active app comes to the front.</p>
-                  </article>
-                  <article className="guide-card">
+                    <div><h3>Open an app</h3><p>Use the Dock, a desktop launcher, or a keyboard shortcut. The active app comes to the front and the window stack remembers the order.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">02</span>
-                    <h3>Shape your workspace</h3>
-                    <p>Drag windows, resize their edges, move the Dock, and place Stickies where you can see them.</p>
-                  </article>
-                  <article className="guide-card">
+                    <div><h3>Shape your workspace</h3><p>Drag windows, resize their edges, move the Dock, and place Stickies where you can see them. Your desktop is an arrangement, not a fixed page.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">03</span>
-                    <h3>Make it yours</h3>
-                    <p>Settings controls the theme, wallpaper, accessibility, contrast, and the copy on the home screen.</p>
-                  </article>
+                    <div><h3>Make it yours</h3><p>Settings controls the theme, wallpaper, accessibility, contrast, and the copy on the home screen. Save a default when the setup feels right.</p></div>
+                  </Surface>
                 </div>
                 <div className="guide-callout">
                   <span className="guide-callout-label">quick start</span>
-                  <p>Press <kbd>8</kbd> any time to bring this guide to the front.</p>
+                  <p>Press <kbd>8</kbd> any time to bring this guide to the front. Start with <strong>Windows</strong> if you want to learn the workspace mechanics.</p>
                 </div>
               </>
             )}
 
             {activeSection === 'windows' && (
               <>
-                <SectionLabel className="section-kicker">user guide / windows</SectionLabel>
-                <h2 className="settings-heading">Work with windows</h2>
-                <p className="guide-intro">Every app is a floating window. The title bar keeps the controls close and the workspace stays yours.</p>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / windows</SectionLabel>
+                    <h2 className="settings-heading">Work with windows</h2>
+                    <p className="guide-intro">Every app is a floating window. The title bar keeps the controls close and the workspace stays yours.</p>
+                  </div>
+                </div>
+                <div className="guide-section-label">Window lifecycle</div>
                 <div className="guide-step-list">
                   <div className="guide-step">
                     <span className="guide-step-number">01</span>
@@ -1665,45 +1672,110 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <div><h3>Minimize or close</h3><p>Use the title-bar controls to hide an app or remove it from the desktop. Reopen it from the Dock.</p></div>
                   </div>
                 </div>
+                <div className="guide-detail-grid">
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">Focus model</span>
+                    <h3>Frontmost is a state</h3>
+                    <p>Clicking a window changes its z-order without changing the other windows. The stack is saved with your desktop so reopening the page does not erase your arrangement.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">Maximize model</span>
+                    <h3>Chrome stays outside</h3>
+                    <p>A maximized window fills the available desktop area while keeping a 12px relationship to the system bar and Dock. Double-click its title bar to restore the previous geometry.</p>
+                  </Surface>
+                </div>
               </>
             )}
 
             {activeSection === 'customize' && (
               <>
-                <SectionLabel className="section-kicker">user guide / customize</SectionLabel>
-                <h2 className="settings-heading">Make the desktop yours</h2>
-                <p className="guide-intro">Open Settings from the Dock to tune the atmosphere, readability, and behavior of the workspace.</p>
-                <div className="guide-card-grid guide-card-grid-two">
-                  <article className="guide-card">
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / customize</SectionLabel>
+                    <h2 className="settings-heading">Make the desktop yours</h2>
+                    <p className="guide-intro">Open Settings from the Dock to tune the atmosphere, readability, and behavior of the workspace.</p>
+                  </div>
+                </div>
+                <div className="guide-section-label">Preference map</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">01 / Settings</span>
-                    <h3>Personalization</h3>
-                    <p>Switch light or dark mode, choose a picture or solid wallpaper, adjust transparency, and edit the home-screen copy.</p>
-                  </article>
-                  <article className="guide-card">
+                    <div><h3>Personalization</h3><p>Switch light or dark mode, choose a picture or solid wallpaper, adjust transparency, and edit the home-screen copy.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">02 / Settings</span>
-                    <h3>Accessibility</h3>
-                    <p>Keep scrollbars visible, tune transparency and blur, reduce motion, and use low or high contrast themes.</p>
-                  </article>
-                  <article className="guide-card">
+                    <div><h3>Accessibility</h3><p>Keep scrollbars visible, tune transparency and blur, reduce motion, and use low or high contrast themes.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">03 / Desktop</span>
-                    <h3>Arrange the shell</h3>
-                    <p>Right-click the desktop to clean up or auto-arrange icons. Drag the Dock to an edge or right-click it to choose a position.</p>
-                  </article>
-                  <article className="guide-card">
+                    <div><h3>Arrange the shell</h3><p>Right-click the desktop to clean up or auto-arrange icons. Drag the Dock to an edge or right-click it to choose a position.</p></div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
                     <span className="guide-card-index">04 / Desktop</span>
-                    <h3>Keep a baseline</h3>
-                    <p>Use Settings to save your current arrangement as the default, or reset the desktop back to the saved baseline.</p>
-                  </article>
+                    <div><h3>Keep a baseline</h3><p>Use Settings to save your current arrangement as the default, or reset the desktop back to the saved baseline.</p></div>
+                  </Surface>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'technical' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / tech notes</SectionLabel>
+                    <h2 className="settings-heading">A desktop built in the browser</h2>
+                    <p className="guide-intro">This interface borrows the language of an operating system, but it is still a web application. Knowing where those boundaries are makes its behavior easier to understand.</p>
+                  </div>
+                </div>
+                <div className="guide-section-label">What powers it</div>
+                <dl className="guide-definition-list">
+                  <div><dt>Interface</dt><dd>React components render the desktop, windows, Dock, system bar, Stickies, menus, and guide as one interactive page.</dd></div>
+                  <div><dt>Language</dt><dd>TypeScript describes window IDs, saved preferences, responsive modes, and pointer interactions so the workspace can stay consistent as it changes.</dd></div>
+                  <div><dt>Build</dt><dd>Vite bundles the application into static browser assets. There is no native window manager or separate process behind each app.</dd></div>
+                  <div><dt>Persistence</dt><dd>Browser <code>localStorage</code> keeps the desktop snapshot on this device and browser profile: positions, sizes, theme, Dock placement, open windows, Stickies, and preferences.</dd></div>
+                  <div><dt>Interaction</dt><dd>Pointer Events, keyboard listeners, CSS layout, and animation frames create dragging, resizing, focus, snapping, and responsive transitions.</dd></div>
+                </dl>
+                <div className="guide-section-label">Why it feels different from a regular OS</div>
+                <div className="guide-detail-grid">
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">Browser boundary</span>
+                    <h3>Windows are visual layers</h3>
+                    <p>Apps are DOM sections in one tab, not independent operating-system processes. Closing a window changes the page state; it does not quit a program or release a native process.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">Browser boundary</span>
+                    <h3>The terminal is a simulation</h3>
+                    <p>The Terminal window responds to its built-in command set and portfolio data. It cannot inspect the host computer, launch native programs, or access a real file system.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">Responsive boundary</span>
+                    <h3>Small screens use managed layouts</h3>
+                    <p>Freeform desktop geometry is for larger pointer-driven viewports. Tablet and mobile layouts temporarily stack or manage windows so content stays usable, then restore the desktop arrangement later.</p>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-detail">
+                    <span className="guide-card-index">Rendering boundary</span>
+                    <h3>Effects depend on the browser</h3>
+                    <p>Blur, transparency, shadows, pointer capture, scrollbars, and keyboard focus are browser-rendered effects. Accessibility preferences and browser support can reduce or change how they appear.</p>
+                  </Surface>
+                </div>
+                <div className="guide-callout">
+                  <span className="guide-callout-label">important</span>
+                  <p>Clearing site data, using private browsing, changing browser profiles, or blocking storage can reset the saved workspace. The guide and Settings explain the interface, but the browser still owns the storage boundary.</p>
                 </div>
               </>
             )}
 
             {activeSection === 'shortcuts' && (
               <>
-                <SectionLabel className="section-kicker">user guide / shortcuts</SectionLabel>
-                <h2 className="settings-heading">Keyboard map</h2>
-                <p className="guide-intro">On the desktop, number keys open the matching Dock app. Escape closes menus and dialogs.</p>
-                <div className="guide-shortcut-list" aria-label="Keyboard shortcuts">
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / shortcuts</SectionLabel>
+                    <h2 className="settings-heading">Keyboard map</h2>
+                    <p className="guide-intro">On the desktop, number keys open the matching Dock app. Escape closes menus and dialogs.</p>
+                  </div>
+                </div>
+                <Surface elevation="flat" className="guide-shortcuts-panel">
+                  <div className="guide-shortcut-list" aria-label="Keyboard shortcuts">
                   {[
                     ['1', 'About', 'Open the about window'],
                     ['2', 'Work', 'Open the work portfolio'],
@@ -1720,7 +1792,8 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                       <span>{description}</span>
                     </div>
                   ))}
-                </div>
+                  </div>
+                </Surface>
                 <div className="guide-callout">
                   <span className="guide-callout-label">tip</span>
                   <p>Use <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>X</kbd> to close the front window, or add <kbd>⌥</kbd> to close every open window.</p>

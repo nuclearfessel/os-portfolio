@@ -649,10 +649,10 @@ button { cursor: pointer; }
 }
 
 .window.guide {
-  top: 10%;
-  left: 22%;
-  width: min(760px, calc(100vw - 80px));
-  height: min(560px, calc(100dvh - 160px));
+  top: 8%;
+  left: 18%;
+  width: min(820px, calc(100vw - 64px));
+  height: min(620px, calc(100dvh - 132px));
   overflow: hidden;
   container-type: inline-size;
   container-name: settings-window;
@@ -666,6 +666,7 @@ button { cursor: pointer; }
 }
 
 .guide-content {
+  padding: 30px 34px 44px;
   color: #d9dced;
 }
 
@@ -674,11 +675,11 @@ button { cursor: pointer; }
 }
 
 .guide-intro {
-  max-width: 620px;
-  margin: -8px 0 22px;
+  max-width: 590px;
+  margin: 0;
   color: #aeb2cb;
-  font-size: 13px;
-  line-height: 1.65;
+  font-size: 14px;
+  line-height: 1.75;
 }
 
 .theme-light .guide-intro {
@@ -686,15 +687,12 @@ button { cursor: pointer; }
 }
 
 .guide-page-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--osp-spacing-semantic-section-gap);
-  align-items: end;
-  margin-bottom: var(--osp-spacing-semantic-section-gap);
+  display: block;
+  margin-bottom: 36px;
 }
 
 .guide-page-header .settings-heading {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .guide-hero-meta {

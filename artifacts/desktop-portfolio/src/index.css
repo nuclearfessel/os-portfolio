@@ -107,7 +107,7 @@ button { cursor: pointer; }
 .workspace-desktop .system-bar-right {
   top: 0;
   bottom: 0;
-  width: 128px;
+  width: 48px;
   height: 100dvh;
   flex-direction: column;
   padding: 12px 0;
@@ -126,25 +126,50 @@ button { cursor: pointer; }
 .workspace-desktop .system-bar-left .system-location,
 .workspace-desktop .system-bar-left .system-separator,
 .workspace-desktop .system-bar-left .system-network,
+.workspace-desktop .system-bar-left .system-mark,
 .workspace-desktop .system-bar-right .system-location,
 .workspace-desktop .system-bar-right .system-separator,
-.workspace-desktop .system-bar-right .system-network {
+.workspace-desktop .system-bar-right .system-network,
+.workspace-desktop .system-bar-right .system-mark {
   display: none;
 }
-.workspace-desktop .system-bar-left .system-mark,
 .workspace-desktop .system-bar-left [data-testid="text-system-clock"],
-.workspace-desktop .system-bar-right .system-mark,
 .workspace-desktop .system-bar-right [data-testid="text-system-clock"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
   max-width: 100%;
   writing-mode: horizontal-tb;
   white-space: nowrap;
 }
 .workspace-desktop .system-bar-left .system-status,
 .workspace-desktop .system-bar-right .system-status {
+  flex-direction: column;
   width: 100%;
   min-width: 0;
+  gap: 5px;
   justify-content: center;
   white-space: nowrap;
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+.system-side-separator { display: none; }
+.workspace-desktop .system-bar-left .system-side-separator,
+.workspace-desktop .system-bar-right .system-side-separator {
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: rgba(79, 84, 108, .56);
+}
+.system-clock { display: inline-flex; align-items: baseline; }
+.system-clock-period { margin-left: 4px; }
+.workspace-desktop .system-bar-left .system-clock-period,
+.workspace-desktop .system-bar-right .system-clock-period {
+  margin-left: 0;
+  color: #7f859d;
+  font-size: 9px;
+  letter-spacing: .08em;
 }
 .system-left, .system-right { display: flex; align-items: center; gap: 15px; }
 .system-logo { color: #e4ff5b; }
@@ -174,14 +199,14 @@ button { cursor: pointer; }
   margin-top: 42px;
 }
 .workspace-desktop .desktop-area.system-bar-space-right {
-  width: calc(100% - 128px);
+  width: calc(100% - 48px);
 }
 .workspace-desktop .desktop-area.system-bar-space-bottom {
   height: calc(100dvh - 42px);
 }
 .workspace-desktop .desktop-area.system-bar-space-left {
-  width: calc(100% - 128px);
-  margin-left: 128px;
+  width: calc(100% - 48px);
+  margin-left: 48px;
 }
 .desktop-intro { max-width: 420px; position: relative; z-index: 2; animation: enter .16s ease-out both; }
 .eyebrow { color: #e4ff5b; font-family: var(--app-font-mono); text-transform: uppercase; letter-spacing: .14em; font-size: 10px; }
@@ -394,9 +419,9 @@ button { cursor: pointer; }
 .dock.dock-left { left: 22px; top: 50%; transform: translateY(-50%); flex-direction: column; align-items: center; }
 .dock.dock-right { right: 22px; top: 50%; transform: translateY(-50%); flex-direction: column; align-items: center; }
 .workspace-desktop.system-bar-at-top .dock.dock-top { top: 64px; }
-.workspace-desktop.system-bar-at-right .dock.dock-right { right: 150px; }
+.workspace-desktop.system-bar-at-right .dock.dock-right { right: 70px; }
 .workspace-desktop.system-bar-at-bottom .dock.dock-bottom { bottom: 64px; }
-.workspace-desktop.system-bar-at-left .dock.dock-left { left: 150px; }
+.workspace-desktop.system-bar-at-left .dock.dock-left { left: 70px; }
 .dock-item { position: relative; width: 45px; height: 45px; display: grid; place-items: center; align-content: center; justify-content: center; padding: 0; line-height: 0; border-radius: 11px; color: #b9bfd8; transition: background .1s ease, border-color .1s ease, color .1s ease, box-shadow .1s ease, filter .1s ease, transform .1s ease; }.dock-item > svg { width: 20px; height: 20px; }.dock-item.active::after { content: ''; position: absolute; width: 18px; height: 4px; border-radius: 999px; background: #e4ff5b; box-shadow: 0 0 0 1px rgba(17,19,38,.72), 0 0 8px rgba(228,255,91,.48); }
 .dock-item.dock-app-about { color: #fff7fb; background: linear-gradient(145deg, #d64f8c, #9e3d67 72%); border-color: #dc94b4; }
 .dock-item.dock-app-work { color: #f8f7ff; background: linear-gradient(145deg, #7478b8, #50528d 72%); border-color: #aaaed3; }

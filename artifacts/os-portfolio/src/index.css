@@ -786,6 +786,14 @@ button { cursor: pointer; }
   background: linear-gradient(90deg, rgba(25, 113, 140, .06), rgba(218, 232, 229, .52) 24%);
 }
 
+.guide-topic {
+  border-left-color: var(--guide-accent);
+}
+
+.theme-light .guide-topic {
+  border-left-color: var(--guide-accent);
+}
+
 .guide-topic .guide-card-index {
   color: var(--guide-accent);
 }
@@ -2251,6 +2259,20 @@ button { cursor: pointer; }
 .theme-light .settings-nav-item:hover:not(.settings-nav-item-active) {
   background: rgba(26, 83, 91, .08);
   color: #3a5260;
+}
+
+.theme-light .guide-nav .settings-nav-item:hover:not(.settings-nav-item-active) {
+  background: rgba(25, 113, 140, .1);
+  color: #19718c;
+}
+
+.theme-light .guide-nav .settings-nav-item-active {
+  background: rgba(165, 77, 61, .1);
+  color: #a54d3d;
+}
+
+.theme-light .guide-nav .settings-nav-item:focus-visible {
+  outline-color: #19718c;
 }
 
 /* =========================================================

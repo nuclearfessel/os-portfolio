@@ -1007,6 +1007,46 @@ test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', a
   await expect(guideWindow).toContainText('React components render the desktop');
 });
 
+test('gives Settings and the User Guide distinct light navigation states', async ({ page }) => {
+  await page.getByTestId('button-dock-settings').click();
+  const settingsActive = page.getByTestId('settings-nav-personalization');
+  const settingsHover = page.getByTestId('settings-nav-accessibility');
+  await expect(settingsActive).toBeVisible();
+  await settingsHover.hover();
+  const settingsColors = await page.evaluate(() => {
+    const active = document.querySelector('[data-testid="settings-nav-personalization"]');
+    const hover = document.querySelector('[data-testid="settings-nav-accessibility"]');
+    return {
+      activeColor: active ? getComputedStyle(active).color : '',
+      activeBackground: active ? getComputedStyle(active).backgroundColor : '',
+      hoverColor: hover ? getComputedStyle(hover).color : '',
+      hoverBackground: hover ? getComputedStyle(hover).backgroundColor : '',
+    };
+  });
+
+  await page.getByTestId('button-close-settings').click();
+  await page.getByTestId('button-dock-guide').click();
+  const guideActive = page.getByTestId('guide-nav-overview');
+  const guideHover = page.getByTestId('guide-nav-windows');
+  await expect(guideActive).toBeVisible();
+  await guideHover.hover();
+  const guideColors = await page.evaluate(() => {
+    const active = document.querySelector('[data-testid="guide-nav-overview"]');
+    const hover = document.querySelector('[data-testid="guide-nav-windows"]');
+    return {
+      activeColor: active ? getComputedStyle(active).color : '',
+      activeBackground: active ? getComputedStyle(active).backgroundColor : '',
+      hoverColor: hover ? getComputedStyle(hover).color : '',
+      hoverBackground: hover ? getComputedStyle(hover).backgroundColor : '',
+    };
+  });
+
+  expect(guideColors.activeColor).not.toBe(settingsColors.activeColor);
+  expect(guideColors.activeBackground).not.toBe(settingsColors.activeBackground);
+  expect(guideColors.hoverColor).not.toBe(settingsColors.hoverColor);
+  expect(guideColors.hoverBackground).not.toBe(settingsColors.hoverBackground);
+});
+
 test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {
   const drawer = page.getByTestId('menu-mobile');
   await page.getByTestId('button-dock-shortcuts').click();

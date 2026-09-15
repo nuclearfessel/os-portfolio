@@ -22,3 +22,4 @@
 - [Backdrop-filter build ordering](backdrop-filter-build-ordering.md) — list the WebKit-prefixed declaration before the standard one so production CSS retains browser-compatible blur.
 - [Design-token namespace](design-token-namespace.md) — OS Portfolio token names and generated custom properties use the `osp` namespace.
 - [Window overlap shadow artifacts](window-overlap-shadow-artifacts.md) — keep idle shadows, but suppress the moving window’s external blur during drag or resize.
+- [Guide documentation spacing](guide-documentation-spacing.md) — keep guide content editorial and spacious; avoid compact dashboard grids for explanatory material.

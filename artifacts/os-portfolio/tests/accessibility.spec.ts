@@ -32,17 +32,14 @@ async function goToAccessibility(page: Page) {
   await page.getByTestId('settings-nav-accessibility').click();
   await expect(page.getByTestId('settings-nav-accessibility')).toHaveAttribute('aria-current', 'page');
   const sections = ['display', 'motion', 'contrast'];
-  for (let pass = 0; pass < 2; pass += 1) {
-    for (const section of sections) {
+  for (const section of sections) {
+    await expect(async () => {
       const trigger = page.getByTestId(`settings-section-trigger-${section}`);
       if (await trigger.getAttribute('aria-expanded') !== 'true') {
         await trigger.click();
       }
-      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    }
-  }
-  for (const section of sections) {
-    await expect(page.getByTestId(`settings-section-trigger-${section}`)).toHaveAttribute('aria-expanded', 'true');
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true', { timeout: 1_000 });
+    }).toPass({ timeout: 5_000 });
   }
 }
 

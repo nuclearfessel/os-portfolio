@@ -24,6 +24,21 @@ The virtual `~/selected-work` directory contains:
 - `mosaic-health-toolkit.md`
 - `fieldnote-collaboration-kit.md`
 
+## Desktop keyboard shortcuts
+
+- `1` — About
+- `2` — Work
+- `3` — Contact
+- `4` — Terminal
+- `5` — Stickies
+- `6` — Shortcuts
+- `7` — Settings
+- `Command/Control + Shift + X` — close the topmost portfolio window
+- `Command/Control + Alt/Option + Shift + X` — close all portfolio windows
+
+The Shortcuts drawer closes with `Escape`, an outside click, or its Dock trigger.
+Number shortcuts remain inactive while editing a color value.
+
 ## Development
 
 From the repository root:

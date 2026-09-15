@@ -814,8 +814,31 @@ test('uses 4 instead of backtick for the terminal shortcut', async ({ page }) =>
   await expect(terminalWindow).toBeVisible();
 
   await page.getByTestId('button-dock-shortcuts').click();
-  await expect(page.getByTestId('menu-mobile')).toContainText('Use 1–4 to open a window.');
+  await expect(page.getByTestId('menu-mobile')).toContainText('Use 1–7 for Dock shortcuts.');
   await expect(page.getByTestId('button-menu-terminal')).toContainText('4terminal');
+  await expect(page.getByTestId('button-menu-stickies')).toContainText('5stickies');
+  await expect(page.getByTestId('button-menu-shortcuts')).toContainText('6shortcuts');
+  await expect(page.getByTestId('button-menu-settings')).toContainText('7settings');
+});
+
+test('uses 5 through 7 for Stickies, Shortcuts, and Settings', async ({ page }) => {
+  const visibleStickies = page.locator('.desktop-note:visible');
+  const stickyDock = page.getByTestId('button-dock-stickies');
+  await expect(visibleStickies.first()).toBeVisible();
+  await expect(stickyDock).toHaveAttribute('aria-label', 'Open or focus Stickies');
+  await page.keyboard.press('5');
+  await expect(stickyDock).toHaveAttribute('aria-label', 'Minimize Stickies');
+  await page.keyboard.press('5');
+  await expect(visibleStickies).toHaveCount(0);
+
+  await page.keyboard.press('6');
+  await expect(page.getByTestId('menu-mobile')).toBeVisible();
+  await page.keyboard.press('6');
+  await expect(page.getByTestId('menu-mobile')).toHaveCount(0);
+
+  await expect(page.getByTestId('window-settings')).toHaveCount(0);
+  await page.keyboard.press('7');
+  await expect(page.getByTestId('window-settings')).toBeVisible();
 });
 
 test('keeps the shortcuts drawer clear of every system bar position', async ({ page }) => {

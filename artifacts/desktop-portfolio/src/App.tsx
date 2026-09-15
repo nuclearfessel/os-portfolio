@@ -2471,11 +2471,14 @@ function Home() {
       if (event.metaKey || event.ctrlKey) return;
       const target = event.target;
       const isColorValueField = target instanceof HTMLElement && Boolean(target.closest('.cp-field'));
-      if (isColorValueField && ['1', '2', '3', '4'].includes(event.key)) return;
+      if (isColorValueField && ['1', '2', '3', '4', '5', '6', '7'].includes(event.key)) return;
       const shortcuts: Record<string, WindowId> = { '1': 'about', '2': 'work', '3': 'contact', '4': 'terminal' };
       const id = shortcuts[event.key];
-      if (id === 'terminal' && workspaceMode !== 'desktop') return;
+      if (['4', '5', '6', '7'].includes(event.key) && workspaceMode !== 'desktop') return;
       if (id) { event.preventDefault(); openWindow(id); }
+      if (event.key === '5') { event.preventDefault(); handleStickyDock(); }
+      if (event.key === '6') { event.preventDefault(); setMobileOpen((value) => !value); }
+      if (event.key === '7') { event.preventDefault(); openWindow('settings'); }
     };
     window.addEventListener('keydown', handleShortcut);
     return () => window.removeEventListener('keydown', handleShortcut);
@@ -3864,9 +3867,9 @@ function Home() {
         {workspaceMode === 'desktop' && (
           <>
             <DockItem className="dock-item dock-app-terminal" active={windows.terminal} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><SquareTerminal size={20} data-testid="icon-dock-terminal-square" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
-            <DockItem className="dock-item dock-app-stickies" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies</DockItemLabel></DockItem>
-            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts</DockItemLabel></DockItem>
-            <DockItem className="dock-item" active={windows.settings} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-stickies" active={stickyVisible} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
+            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-testid="button-dock-shortcuts"><Command size={19} /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
+            <DockItem className="dock-item" active={windows.settings} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><Settings size={20} strokeWidth={1.8} /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
           </>
         )}
       </nav>
@@ -3874,9 +3877,15 @@ function Home() {
       {mobileOpen && (
         <div className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}`} data-testid="menu-mobile">
           <div className="section-kicker">keyboard map</div>
-          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–4 to open a window.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
+          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–7 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>
-            {(['about', 'work', 'contact', 'terminal'] as WindowId[]).map((id, index) => <button key={id} className="quick-button" onClick={() => openWindow(id)} data-testid={`button-menu-${id}`}><span className="shortcut-number">{index + 1}</span>{id}</button>)}
+            <button className="quick-button" onClick={() => openWindow('about')} data-testid="button-menu-about"><span className="shortcut-number">1</span>about</button>
+            <button className="quick-button" onClick={() => openWindow('work')} data-testid="button-menu-work"><span className="shortcut-number">2</span>selected work</button>
+            <button className="quick-button" onClick={() => openWindow('contact')} data-testid="button-menu-contact"><span className="shortcut-number">3</span>contact</button>
+            <button className="quick-button" onClick={() => openWindow('terminal')} data-testid="button-menu-terminal"><span className="shortcut-number">4</span>terminal</button>
+            <button className="quick-button" onClick={handleStickyDock} data-testid="button-menu-stickies"><span className="shortcut-number">5</span>stickies</button>
+            <button className="quick-button" onClick={() => setMobileOpen(false)} data-testid="button-menu-shortcuts"><span className="shortcut-number">6</span>shortcuts</button>
+            <button className="quick-button" onClick={() => openWindow('settings')} data-testid="button-menu-settings"><span className="shortcut-number">7</span>settings</button>
           </div>
         </div>
       )}

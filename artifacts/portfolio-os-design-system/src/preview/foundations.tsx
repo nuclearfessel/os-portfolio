@@ -37,32 +37,66 @@ const SUPPORTING_SWATCHES = [
 
 const MAPPING_FLOW = [
   {
-    primitive: 'teal',
-    semantic: 'primary',
+    primitiveKey: 'teal',
+    primitive: 'color.palette.teal.700',
+    semantic: 'color.background.action.primary.default.light',
     semanticClass: 'bg-primary',
-    component: 'actionButton.background',
+    component: 'button.container.color.background.primary.default.light',
     componentClass: 'bg-primary',
   },
   {
-    primitive: 'paper',
-    semantic: 'card',
+    primitiveKey: 'paper',
+    primitive: 'color.palette.sage.025',
+    semantic: 'color.background.surface.default.light',
     semanticClass: 'bg-card',
-    component: 'projectCard.surface',
+    component: 'project-card.container.color.background.default.light',
     componentClass: 'bg-card',
   },
   {
-    primitive: 'lightPopover',
-    semantic: 'popover',
+    primitiveKey: 'lightPopover',
+    primitive: 'color.palette.sage.050',
+    semantic: 'color.background.overlay.default.light',
     semanticClass: 'bg-popover',
-    component: 'contextMenu.surface',
+    component: 'context-menu.container.color.background.default.light',
     componentClass: 'bg-popover',
   },
   {
-    primitive: 'coral',
-    semantic: 'accent',
+    primitiveKey: 'coral',
+    primitive: 'color.palette.coral.500',
+    semantic: 'color.background.action.accent.default.light',
     semanticClass: 'bg-accent',
-    component: 'contactCta.background',
+    component: 'contact-cta.container.color.background.accent.default.light',
     componentClass: 'bg-accent',
+  },
+] as const;
+
+const TAXONOMY_LEVELS = [
+  { level: 'Namespace', value: 'pos', note: 'Generated CSS only' },
+  { level: 'Object', value: 'button.container', note: 'Group, component, element' },
+  { level: 'Category', value: 'color', note: 'Visual style family' },
+  { level: 'Property', value: 'background', note: 'Styled attribute' },
+  { level: 'Concept', value: 'action', note: 'Purpose or intent' },
+  { level: 'Variant', value: 'primary', note: 'Alternative treatment' },
+  { level: 'State', value: 'hover', note: 'Interaction condition' },
+  { level: 'Scale', value: '700', note: 'Primitive palettes only' },
+  { level: 'Mode', value: 'light', note: 'Always last' },
+] as const;
+
+const TOKEN_TEMPLATES = [
+  {
+    layer: 'Primitive',
+    pattern: 'color.palette.<family>.<scale>',
+    example: 'color.palette.teal.700',
+  },
+  {
+    layer: 'Semantic',
+    pattern: 'color.<property>.<concept>.<variant?>.<state?>.<mode>',
+    example: 'color.background.action.primary.hover.light',
+  },
+  {
+    layer: 'Component',
+    pattern: '<component>.<element>.color.<property>.<variant?>.<state?>.<mode>',
+    example: 'button.container.color.background.primary.hover.light',
   },
 ] as const;
 
@@ -273,12 +307,47 @@ export function ColorsPage() {
       </div>
       <section className="space-y-5 rounded-xl border bg-card p-6 text-card-foreground">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Token architecture</p>
-          <h2 className="mt-2 font-semibold">One palette, three purposeful layers</h2>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Proposed token architecture</p>
+          <h2 className="mt-2 font-semibold">Namespace → object → base → modifiers</h2>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Raw palette values feed semantic roles, then component intent. The
-            semantic middle layer keeps light, dark, and contrast remapping in
-            sync without coupling components to hex values.
+            Based on the EightShapes naming model. Objects establish context,
+            category/property/concept form the base, and variant/state/scale/mode
+            modifiers finish the name. Inapplicable levels are omitted.
+          </p>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {TAXONOMY_LEVELS.map((entry) => (
+            <div key={entry.level} className="rounded-lg border bg-background p-3">
+              <p className="text-[0.625rem] font-medium uppercase tracking-wide text-muted-foreground">
+                {entry.level}
+              </p>
+              <code className="mt-2 block break-words font-mono text-xs text-primary">
+                {entry.value}
+              </code>
+              <p className="mt-1 text-[0.6875rem] leading-4 text-muted-foreground">
+                {entry.note}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="grid gap-3 lg:grid-cols-3">
+          {TOKEN_TEMPLATES.map((entry) => (
+            <div key={entry.layer} className="rounded-lg border bg-muted/50 p-4">
+              <p className="text-xs font-medium">{entry.layer}</p>
+              <code className="mt-2 block break-words font-mono text-[0.6875rem] text-muted-foreground">
+                {entry.pattern}
+              </code>
+              <code className="mt-3 block break-words border-t pt-3 font-mono text-[0.6875rem] text-primary">
+                {entry.example}
+              </code>
+            </div>
+          ))}
+        </div>
+        <div className="border-t pt-5">
+          <h3 className="text-sm font-semibold">Proposed mapping flow</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Preview names only. The staged token source and generated API have
+            not been renamed.
           </p>
         </div>
         <div className="space-y-3">
@@ -290,11 +359,11 @@ export function ColorsPage() {
               <div className="flex min-w-0 items-center gap-3">
                 <span
                   className="h-9 w-9 shrink-0 rounded-md border"
-                  style={{ backgroundColor: tokens.color.primitive[entry.primitive] }}
+                  style={{ backgroundColor: tokens.color.primitive[entry.primitiveKey] }}
                 />
                 <div className="min-w-0">
                   <p className="truncate text-xs font-medium">Primitive</p>
-                  <code className="font-mono text-[0.6875rem] text-muted-foreground">color.primitive.{entry.primitive}</code>
+                  <code className="break-all font-mono text-[0.6875rem] text-muted-foreground">{entry.primitive}</code>
                 </div>
               </div>
               <span className="hidden text-muted-foreground sm:block" aria-hidden="true">→</span>
@@ -302,7 +371,7 @@ export function ColorsPage() {
                 <span className={`h-9 w-9 shrink-0 rounded-md border ${entry.semanticClass}`} />
                 <div className="min-w-0">
                   <p className="truncate text-xs font-medium">Semantic</p>
-                  <code className="font-mono text-[0.6875rem] text-muted-foreground">color.light.{entry.semantic}</code>
+                  <code className="break-all font-mono text-[0.6875rem] text-muted-foreground">{entry.semantic}</code>
                 </div>
               </div>
               <span className="hidden text-muted-foreground sm:block" aria-hidden="true">→</span>
@@ -310,15 +379,16 @@ export function ColorsPage() {
                 <span className={`h-9 w-9 shrink-0 rounded-md border ${entry.componentClass}`} />
                 <div className="min-w-0">
                   <p className="truncate text-xs font-medium">Component intent</p>
-                  <code className="font-mono text-[0.6875rem] text-primary">component.light.{entry.component}</code>
+                  <code className="break-all font-mono text-[0.6875rem] text-primary">{entry.component}</code>
                 </div>
               </div>
             </div>
           ))}
         </div>
         <p className="font-mono text-[0.6875rem] text-muted-foreground">
-          component aliases resolve to semantic CSS variables, so contrast modes
-          continue to flow through the same contract.
+          Proposed generated CSS namespace: --pos-. Mode stays last; scale is
+          reserved for primitive palettes; component decisions stay local until
+          three or more components demonstrably share the same role.
         </p>
       </section>
       <section className="rounded-xl border bg-card p-6 text-card-foreground">

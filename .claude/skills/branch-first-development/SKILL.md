@@ -43,12 +43,16 @@ When the work is ready:
 1. Run the relevant checks.
 2. Show the user a concise summary of the changes and validation results.
 3. State that the work is uncommitted and name the active branch.
-4. Wait for explicit approval such as “approved,” “good to go,” or an equivalent confirmation.
+4. Wait for explicit approval such as “Approved,” “good to go,” or an equivalent confirmation.
 5. Treat requested corrections as continued work on the same branch, then repeat the validation handoff.
 
 Do not interpret silence, a new request, or a successful automated check as approval.
 
 ## After explicit approval
+
+The exact response **“Approved”** is an immediate, mandatory trigger for every
+step below. Begin the workflow in the same turn. Never treat it as simple
+confirmation, stop after acknowledging it, or substitute a publish suggestion.
 
 1. Confirm only intended files changed.
 2. Review whether the approved change requires corresponding updates to `README.md`, Claude instruction/skill files, package metadata, package exports, or package documentation. Make and validate every applicable update before committing; do not change unrelated files merely to satisfy the checklist.
@@ -74,6 +78,8 @@ Do not interpret silence, a new request, or a successful automated check as appr
    ```
 
 8. Confirm that `main` matches `origin/main` and the working tree is clean.
+9. Confirm the `main`-only GitHub release workflow completed and published both
+   required ZIP assets.
 
 Do not delete the branch unless the user asks.
 

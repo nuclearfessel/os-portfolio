@@ -116,6 +116,7 @@ const STICKY_VIEWPORT_GAP = 2;
 const DOCK_SAFE_INSET = 70;
 const MAXIMIZED_WINDOW_GAP = 12;
 const MAXIMIZED_WINDOW_DOCK_INSET = 97;
+const MAXIMIZED_WINDOW_DOCK_INSET_WITH_SYSTEM_BAR = 87;
 
 function readViewportProfile(): ViewportProfile {
   const width = window.innerWidth;
@@ -3294,6 +3295,9 @@ function Home() {
     }
     setSaveDefaultDialogOpen(false);
   };
+  const maximizedWindowDockInset = dockPosition === systemBarPosition
+    ? MAXIMIZED_WINDOW_DOCK_INSET_WITH_SYSTEM_BAR
+    : MAXIMIZED_WINDOW_DOCK_INSET;
   const windowProps = (id: WindowId) => ({
     active: activeWindow === id,
     maximized: Boolean(maximizedWindows[id]),
@@ -3336,10 +3340,10 @@ function Home() {
       ? undefined
       : maximizedWindows[id]
       ? {
-        left: dockPosition === 'left' ? MAXIMIZED_WINDOW_DOCK_INSET : MAXIMIZED_WINDOW_GAP,
-        top: dockPosition === 'top' ? MAXIMIZED_WINDOW_DOCK_INSET : MAXIMIZED_WINDOW_GAP,
-        right: dockPosition === 'right' ? MAXIMIZED_WINDOW_DOCK_INSET : MAXIMIZED_WINDOW_GAP,
-        bottom: dockPosition === 'bottom' ? MAXIMIZED_WINDOW_DOCK_INSET : MAXIMIZED_WINDOW_GAP,
+        left: dockPosition === 'left' ? maximizedWindowDockInset : MAXIMIZED_WINDOW_GAP,
+        top: dockPosition === 'top' ? maximizedWindowDockInset : MAXIMIZED_WINDOW_GAP,
+        right: dockPosition === 'right' ? maximizedWindowDockInset : MAXIMIZED_WINDOW_GAP,
+        bottom: dockPosition === 'bottom' ? maximizedWindowDockInset : MAXIMIZED_WINDOW_GAP,
         width: 'auto',
         height: 'auto',
         zIndex: 10 + windowStack.indexOf(id),

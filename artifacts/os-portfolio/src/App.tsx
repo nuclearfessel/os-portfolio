@@ -3,7 +3,7 @@ import { ColorPicker } from '@/components/color-picker';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Sparkle as Apple, ArrowLeft, ArrowUpRight, BatteryMedium, ChevronRight,
-  Check, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
+  Check, CircleUser, Keyboard as Command, GitGraph as FolderGit2, Mail, Maximize2, Menu, Minus,
   BookOpen, Layers, Moon, Plus, Settings, Sun, SquareTerminal, Wifi, Eye, X,
 } from '@keyline-icons/react';
 import {
@@ -15,6 +15,7 @@ import {
 import { RiMailSendFill } from 'react-icons/ri';
 import { BsGearWideConnected, BsStickyFill } from 'react-icons/bs';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { RELEASE_CHANNEL, RELEASE_COMMIT, RELEASE_DATE, RELEASE_VERSION } from '@/release';
 import { tokens } from '@workspace/os-portfolio-ds/tokens';
 import { Toaster } from '@workspace/os-portfolio-ds/components/ui/toaster';
 import { TooltipProvider } from '@workspace/os-portfolio-ds/components/ui/tooltip';
@@ -862,7 +863,7 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
   );
 }
 
-type SettingsSection = 'personalization' | 'accessibility';
+type SettingsSection = 'personalization' | 'accessibility' | 'about';
 type GuideSection = 'overview' | 'windows' | 'customize' | 'technical' | 'shortcuts';
 
 // Settings toggle row component
@@ -1016,6 +1017,13 @@ function SettingsWindow({
   onSetAccessibility,
   introCustomization,
   onSetIntroCustomization,
+  onOpenWindow,
+  openWindows,
+  windowStack,
+  stickiesCount,
+  deviceMode,
+  workspaceMode,
+  dockPosition,
   ...props
 }: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
   theme: Theme;
@@ -1028,9 +1036,17 @@ function SettingsWindow({
   onSetAccessibility: (prefs: AccessibilityPrefs) => void;
   introCustomization: IntroCustomization;
   onSetIntroCustomization: (value: IntroCustomization) => void;
+  onOpenWindow: (id: WindowId) => void;
+  openWindows: WindowState;
+  windowStack: WindowId[];
+  stickiesCount: number;
+  deviceMode: DeviceMode;
+  workspaceMode: WorkspaceMode;
+  dockPosition: DockPosition;
 }) {
   const [activeSection, setActiveSection] = useState<SettingsSection>('personalization');
   const [textColorTarget, setTextColorTarget] = useState<IntroTextKey | null>(null);
+  const [viewportSize, setViewportSize] = useState({ width: window.innerWidth, height: window.innerHeight });
   const settingsContentRef = useRef<HTMLDivElement>(null);
 
   const currentWallpaper = theme === 'light' ? wallpaperLight : wallpaperDark;
@@ -1077,6 +1093,29 @@ function SettingsWindow({
       },
     });
   };
+  useEffect(() => {
+    const handleResize = () => setViewportSize({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const browserName = /Firefox/i.test(navigator.userAgent)
+    ? 'Firefox'
+    : /Edg/i.test(navigator.userAgent)
+      ? 'Edge'
+      : /Chrome/i.test(navigator.userAgent)
+        ? 'Chrome'
+        : /Safari/i.test(navigator.userAgent)
+          ? 'Safari'
+          : 'Browser';
+  const openWindowLabels = windowStack
+    .filter((id) => openWindows[id])
+    .map((id) => ({ about: 'About', work: 'Work', contact: 'Contact', terminal: 'Terminal', settings: 'Settings', guide: 'Guide' })[id]);
+  const systemModeLabel = workspaceMode === 'desktop'
+    ? 'Desktop workspace'
+    : workspaceMode === 'tablet-landscape'
+      ? 'Tablet landscape'
+      : 'Managed layout';
 
   return (
     <WindowFrame {...props} id="settings" title="Settings">
@@ -1107,6 +1146,18 @@ function SettingsWindow({
                 <Eye size={14} strokeWidth={1.8} />
               </span>
               Accessibility
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'about' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'about' ? 'page' : undefined}
+              onClick={() => selectSettingsSection('about')}
+              data-testid="settings-nav-about"
+            >
+              <span className="settings-nav-icon" aria-hidden="true">
+                <CircleUser size={14} strokeWidth={1.8} />
+              </span>
+              About
             </button>
           </nav>
 
@@ -1520,6 +1571,106 @@ function SettingsWindow({
                   </SettingsAccordionSection>
                 </Accordion>
               </>
+            )}
+
+            {activeSection === 'about' && (
+              <div className="settings-about" data-testid="settings-about">
+                <SectionLabel className="section-kicker">about / os portfolio</SectionLabel>
+                <section className="settings-about-hero" aria-labelledby="settings-about-title">
+                  <div className="settings-about-mark" aria-hidden="true">
+                    <CircleUserFill size={34} />
+                  </div>
+                  <div className="settings-about-hero-copy">
+                    <h2 id="settings-about-title" className="settings-heading">OS Portfolio</h2>
+                    <p>A thoughtful browser-based desktop for exploring John Doe’s work, systems, and process.</p>
+                  </div>
+                  <div className="settings-about-version" data-testid="settings-about-version">
+                    <strong>{RELEASE_VERSION}</strong>
+                    <span>{RELEASE_CHANNEL}</span>
+                  </div>
+                </section>
+
+                <div className="settings-about-grid">
+                  <section className="settings-about-panel" aria-labelledby="settings-about-system">
+                    <div className="settings-about-panel-heading">
+                      <span className="section-kicker">01 / system</span>
+                      <h3 id="settings-about-system">Your environment</h3>
+                    </div>
+                    <dl className="settings-about-details">
+                      <div><dt>Browser</dt><dd>{browserName}</dd></div>
+                      <div><dt>Viewport</dt><dd>{viewportSize.width} × {viewportSize.height}</dd></div>
+                      <div><dt>Workspace</dt><dd>{systemModeLabel}</dd></div>
+                      <div><dt>Device</dt><dd>{deviceMode[0].toUpperCase() + deviceMode.slice(1)}</dd></div>
+                    </dl>
+                  </section>
+
+                  <section className="settings-about-panel" aria-labelledby="settings-about-release">
+                    <div className="settings-about-panel-heading">
+                      <span className="section-kicker">02 / release</span>
+                      <h3 id="settings-about-release">This release</h3>
+                    </div>
+                    <dl className="settings-about-details">
+                      <div><dt>Version</dt><dd>{RELEASE_VERSION}</dd></div>
+                      <div><dt>Published</dt><dd>{RELEASE_DATE}</dd></div>
+                      <div><dt>Commit</dt><dd>{RELEASE_COMMIT === 'local' ? 'Local build' : RELEASE_COMMIT.slice(0, 7)}</dd></div>
+                      <div><dt>Status</dt><dd><span className="settings-about-status"><span aria-hidden="true" />{RELEASE_CHANNEL}</span></dd></div>
+                    </dl>
+                  </section>
+
+                  <section className="settings-about-panel" aria-labelledby="settings-about-workspace">
+                    <div className="settings-about-panel-heading">
+                      <span className="section-kicker">03 / workspace</span>
+                      <h3 id="settings-about-workspace">Your current desktop</h3>
+                    </div>
+                    <dl className="settings-about-details">
+                      <div><dt>Open windows</dt><dd>{openWindowLabels.length} · {openWindowLabels.join(', ') || 'None'}</dd></div>
+                      <div><dt>Sticky notes</dt><dd>{stickiesCount}</dd></div>
+                      <div><dt>Dock position</dt><dd>{dockPosition}</dd></div>
+                      <div><dt>Theme</dt><dd>{theme === 'light' ? 'Light' : 'Dark'}</dd></div>
+                    </dl>
+                  </section>
+
+                  <section className="settings-about-panel settings-about-panel-wide" aria-labelledby="settings-about-capabilities">
+                    <div className="settings-about-panel-heading">
+                      <span className="section-kicker">04 / capabilities</span>
+                      <h3 id="settings-about-capabilities">What this desktop can do</h3>
+                    </div>
+                    <ul className="settings-about-list">
+                      <li>Arrange, resize, and layer desktop windows</li>
+                      <li>Save themes, wallpapers, Dock preferences, and layout</li>
+                      <li>Keep sticky notes available across sessions</li>
+                      <li>Adapt the workspace for desktop, tablet, and mobile screens</li>
+                      <li>Support keyboard shortcuts and accessibility preferences</li>
+                    </ul>
+                  </section>
+
+                  <section className="settings-about-panel settings-about-panel-wide settings-about-boundary" aria-labelledby="settings-about-boundary">
+                    <div className="settings-about-panel-heading">
+                      <span className="section-kicker">05 / browser OS</span>
+                      <h3 id="settings-about-boundary">Inside the browser</h3>
+                    </div>
+                    <p>
+                      OS Portfolio is an interactive desktop experience, not a native operating system. Windows and the Terminal are simulated in the browser, and workspace preferences are saved in this browser’s local storage.
+                    </p>
+                    <p>
+                      It does not run native commands, access arbitrary files, or send your workspace preferences to a server.
+                    </p>
+                  </section>
+
+                  <section className="settings-about-panel settings-about-panel-wide" aria-labelledby="settings-about-links">
+                    <div className="settings-about-panel-heading">
+                      <span className="section-kicker">06 / credits & links</span>
+                      <h3 id="settings-about-links">Keep exploring</h3>
+                    </div>
+                    <div className="settings-about-actions">
+                      <button type="button" className="settings-about-link" onClick={() => onOpenWindow('guide')} data-testid="settings-about-open-guide">
+                        Open User Guide <ArrowUpRight size={13} />
+                      </button>
+                    </div>
+                    <p className="settings-about-credit">Designed and built by John Doe. OS Portfolio and OS Portfolio DS share the same tokens, components, and accessibility contracts.</p>
+                  </section>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -3963,6 +4114,13 @@ function Home() {
             onSetAccessibility={setAccessibility}
             introCustomization={introCustomization}
             onSetIntroCustomization={setIntroCustomization}
+            onOpenWindow={openWindow}
+            openWindows={windows}
+            windowStack={windowStack}
+            stickiesCount={stickies.length}
+            deviceMode={deviceMode}
+            workspaceMode={workspaceMode}
+            dockPosition={effectiveDockPosition}
           />
         )}
         {workspaceMode === 'desktop' && windows.guide && (

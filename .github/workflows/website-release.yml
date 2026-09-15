@@ -88,9 +88,15 @@ jobs:
             echo "site_zip=site-package-${version}.zip"
             echo "design_system_zip=design-system-package-${version}.zip"
             echo "claude_zip=claude-src-pack.zip"
+            echo "release_date=$(date -u +%Y-%m-%d)"
           } >> "$GITHUB_OUTPUT"
 
       - name: Validate release packages
+        env:
+          VITE_APP_VERSION: ${{ steps.release.outputs.version }}
+          VITE_RELEASE_CHANNEL: Stable
+          VITE_RELEASE_COMMIT: ${{ github.sha }}
+          VITE_RELEASE_DATE: ${{ steps.release.outputs.release_date }}
         run: |
           bash scripts/validate-release-packages.sh \
             "${{ steps.release.outputs.site_zip }}" \

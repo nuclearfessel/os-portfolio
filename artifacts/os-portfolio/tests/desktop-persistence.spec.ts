@@ -1019,6 +1019,7 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
     return {
       activeColor: active ? getComputedStyle(active).color : '',
       activeBackground: active ? getComputedStyle(active).backgroundColor : '',
+      activeShadow: active ? getComputedStyle(active).boxShadow : '',
       hoverColor: hover ? getComputedStyle(hover).color : '',
       hoverBackground: hover ? getComputedStyle(hover).backgroundColor : '',
     };
@@ -1036,6 +1037,7 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
     return {
       activeColor: active ? getComputedStyle(active).color : '',
       activeBackground: active ? getComputedStyle(active).backgroundColor : '',
+      activeShadow: active ? getComputedStyle(active).boxShadow : '',
       hoverColor: hover ? getComputedStyle(hover).color : '',
       hoverBackground: hover ? getComputedStyle(hover).backgroundColor : '',
     };
@@ -1045,7 +1047,8 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   expect(guideColors.activeBackground).toBe(settingsColors.activeBackground);
   expect(guideColors.hoverColor).toBe(settingsColors.hoverColor);
   expect(guideColors.hoverBackground).toBe(settingsColors.hoverBackground);
-  expect(guideColors.activeBackground).toBe('rgba(11, 102, 93, 0.2)');
+  expect(guideColors.activeBackground).toBe('rgba(11, 102, 93, 0.18)');
+  expect(guideColors.activeShadow).toBe('none');
 });
 
 test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {

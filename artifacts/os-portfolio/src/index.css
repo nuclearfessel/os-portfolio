@@ -586,14 +586,13 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav-item-active {
-  color: #0b665d;
-  background: rgba(11,102,93,.2) !important;
-  box-shadow: inset 3px 0 0 #0b665d;
+  color: #064f47;
+  background: rgba(11,102,93,.18) !important;
   font-weight: 600;
 }
 
 .theme-light .settings-nav-item-active .settings-nav-icon {
-  color: #0b665d;
+  color: #064f47;
 }
 
 /* Settings content area */

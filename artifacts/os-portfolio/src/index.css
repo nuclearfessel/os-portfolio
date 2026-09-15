@@ -221,8 +221,9 @@ button { cursor: pointer; }
 }
 .quick-button { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: 7px; padding: 9px 12px; font-size: 12px; }
 .quick-button > svg { width: 15px; height: 15px; flex: 0 0 15px; }
-.quick-button:hover, .contact-button:hover { border-color: rgba(228,255,91,.7); color: #e4ff5b; background: rgba(55, 61, 87, .8); }
-.quick-button.primary { color: #111326; background: #e4ff5b; border-color: #e4ff5b; font-weight: 600; }
+.quick-button:hover, .contact-button:hover { color: hsl(var(--component-desktop-primary-action-hover-foreground)); background: hsl(var(--component-desktop-primary-action-hover)); border-color: hsl(var(--component-desktop-primary-action-hover-border)); }
+.quick-button.desktop-primary { color: hsl(var(--component-desktop-primary-action-foreground)); background: hsl(var(--component-desktop-primary-action-background)); border-color: hsl(var(--component-desktop-primary-action-border)); font-weight: 600; }
+.quick-button.desktop-primary:hover, .quick-button.desktop-primary:focus-visible { color: hsl(var(--component-desktop-primary-action-hover-foreground)); background: hsl(var(--component-desktop-primary-action-hover)); border-color: hsl(var(--component-desktop-primary-action-hover-border)); }
 .desktop-folders { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .desktop-folder { position: absolute; width: 88px; display: grid; justify-items: center; gap: 7px; padding: 5px 4px; color: #e8eaf4; border: 0; background: transparent; text-align: center; cursor: grab; pointer-events: auto; transition: color .1s; touch-action: none; user-select: none; -webkit-user-select: none; }
 .desktop-folder:nth-child(1) { left: 46px; bottom: 150px; }
@@ -2226,8 +2227,9 @@ button { cursor: pointer; }
 .theme-light .desktop-folder.is-open .desktop-folder-label { color: #fff; background: #0b665d; text-shadow: none; }
 .theme-light .quick-button { color: #24354a; background: rgba(248,251,249,.74); border-color: rgba(29,71,78,.18); }
 .theme-light .quick-button, .theme-light .contact-button { transition-property: border-color; }
-.theme-light .quick-button.primary { color: #f7fbf8; background: #0b665d; border-color: #0b665d; }
-.theme-light .quick-button:hover, .theme-light .contact-button:hover { color: #fff; background: #963f35; border-color: #963f35; }
+.theme-light .quick-button.desktop-primary { color: hsl(var(--component-desktop-primary-action-foreground)); background: hsl(var(--component-desktop-primary-action-background)); border-color: hsl(var(--component-desktop-primary-action-border)); }
+.theme-light .quick-button:hover, .theme-light .contact-button:hover,
+.theme-light .quick-button.desktop-primary:hover, .theme-light .quick-button.desktop-primary:focus-visible { color: hsl(var(--component-desktop-primary-action-hover-foreground)); background: hsl(var(--component-desktop-primary-action-hover)); border-color: hsl(var(--component-desktop-primary-action-hover-border)); }
 .theme-light .desktop-note { color: var(--sticky-text, #1d2430); background: transparent; border-color: transparent; box-shadow: none; }
 .theme-light .desktop-note-surface { color: var(--sticky-text, #1d2430); background: var(--sticky-bg, rgba(255,216,77,.9)); border-color: var(--sticky-border, rgba(29,36,48,.25)); box-shadow: 12px 16px 40px rgba(60,50,27,.16); }
 .theme-light .desktop-note::before { background: rgba(245,232,193,.68); border-color: rgba(122,105,69,.16); }

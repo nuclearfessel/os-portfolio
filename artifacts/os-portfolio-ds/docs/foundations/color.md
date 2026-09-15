@@ -58,6 +58,10 @@ propagate through the component tier.
 | `actionButton.foreground` | `accent` / `primary` |
 | `actionButton.hover` | `primary` / `primary` |
 | `actionButton.hoverForeground` | `primaryForeground` / `primaryForeground` |
+| `desktopPrimaryAction.background` | `primary` / `primary` |
+| `desktopPrimaryAction.foreground` | `primaryForeground` / `primaryForeground` |
+| `desktopPrimaryAction.hover` | `accent` / `secondary` |
+| `desktopPrimaryAction.hoverForeground` | `accentForeground` / `primary` |
 | `dialog.surface` | `card` / `card` |
 | `contextMenu.surface` | `popover` / `popover` |
 | `projectCard.surface` | `card` / `card` |
@@ -70,7 +74,8 @@ The same intent names exist under both `color.component.light` and
 needs theme-specific contrast. In-window action buttons use a transparent
 accent outline that fills with primary in light mode, and secondary-to-primary
 in dark mode. Desktop quick actions are a separate component treatment and do
-not use this mapping.
+not use this mapping. The desktop primary action starts with the primary fill,
+then shares the adjacent secondary quick action's hover treatment in each theme.
 
 ### Component coverage
 

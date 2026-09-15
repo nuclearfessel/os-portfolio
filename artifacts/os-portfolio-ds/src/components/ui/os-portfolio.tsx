@@ -11,7 +11,7 @@ function classes(...values: Array<string | false | null | undefined>) {
 }
 
 export type ActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'desktopPrimary' | 'danger';
 };
 
 export const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
@@ -24,6 +24,8 @@ export const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
         variant === 'primary' && 'border-primary bg-primary text-primary-foreground hover:brightness-105',
         variant === 'secondary' &&
           'border-[hsl(var(--component-action-button-border))] bg-transparent text-[hsl(var(--component-action-button-foreground))] hover:border-[hsl(var(--component-action-button-hover-border))] hover:bg-[hsl(var(--component-action-button-hover))] hover:text-[hsl(var(--component-action-button-hover-foreground))] dark:bg-[hsl(var(--component-action-button-background))]',
+        variant === 'desktopPrimary' &&
+          'border-[hsl(var(--component-desktop-primary-action-border))] bg-[hsl(var(--component-desktop-primary-action-background))] text-[hsl(var(--component-desktop-primary-action-foreground))] hover:border-[hsl(var(--component-desktop-primary-action-hover-border))] hover:bg-[hsl(var(--component-desktop-primary-action-hover))] hover:text-[hsl(var(--component-desktop-primary-action-hover-foreground))]',
         variant === 'danger' && 'border-destructive bg-destructive text-destructive-foreground hover:brightness-110',
         className,
       )}

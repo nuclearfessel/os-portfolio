@@ -223,7 +223,7 @@ test('light theme interactive hover and focus states meet WCAG AA contrast', asy
   expect(terminalFocusRatio, `terminal example focus contrast ${terminalFocusRatio.toFixed(2)}:1 should meet WCAG AA`).toBeGreaterThanOrEqual(4.5);
 });
 
-test('in-window actions swap default and hover colors without changing the desktop primary action', async ({ page }) => {
+test('desktop and in-window actions use their theme-specific default and hover colors', async ({ page }) => {
   await page.addInitScript(([key]) => {
     localStorage.setItem(key, JSON.stringify({
       theme: 'dark',
@@ -233,8 +233,18 @@ test('in-window actions swap default and hover colors without changing the deskt
   await page.goto('/');
 
   const desktopAction = page.getByTestId('button-open-work');
+  const desktopSecondaryAction = page.getByTestId('button-open-contact');
   const projectAction = page.getByTestId('button-open-project-01');
+  await page.locator('.desktop-note').evaluateAll((notes) => {
+    for (const note of notes) (note as HTMLElement).style.pointerEvents = 'none';
+  });
   await expect(desktopAction).toHaveCSS('background-color', 'rgb(228, 255, 91)');
+  await desktopAction.hover();
+  await expect(desktopAction).toHaveCSS('background-color', 'rgb(43, 47, 74)');
+  await expect(desktopAction).toHaveCSS('color', 'rgb(228, 255, 91)');
+  await desktopSecondaryAction.hover();
+  await expect(desktopSecondaryAction).toHaveCSS('background-color', 'rgb(43, 47, 74)');
+  await expect(desktopSecondaryAction).toHaveCSS('color', 'rgb(228, 255, 91)');
   await expect(projectAction).toHaveCSS('background-color', 'rgb(43, 47, 74)');
   await expect(projectAction).toHaveCSS('color', 'rgb(228, 255, 91)');
   await projectAction.hover();
@@ -255,6 +265,13 @@ test('in-window actions swap default and hover colors without changing the deskt
   if (await themeTrigger.getAttribute('aria-expanded') !== 'true') await themeTrigger.click();
   await page.getByTestId('settings-theme-light').click();
   await expect(page.locator('.osp-shell')).toHaveClass(/theme-light/);
+  await expect(desktopAction).toHaveCSS('background-color', 'rgb(11, 102, 93)');
+  await desktopAction.hover();
+  await expect(desktopAction).toHaveCSS('background-color', 'rgb(197, 78, 72)');
+  await expect(desktopAction).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await desktopSecondaryAction.hover();
+  await expect(desktopSecondaryAction).toHaveCSS('background-color', 'rgb(197, 78, 72)');
+  await expect(desktopSecondaryAction).toHaveCSS('color', 'rgb(255, 255, 255)');
 
   await page.getByTestId('settings-nav-about').click();
   await expect(settingsAction).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');

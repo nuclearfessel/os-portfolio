@@ -158,6 +158,13 @@
   --component-action-button-hover-foreground: var(--primary-foreground);
   --component-action-button-hover-border: var(--primary);
   --component-action-button-focus: var(--ring);
+  --component-desktop-primary-action-background: var(--primary);
+  --component-desktop-primary-action-foreground: var(--primary-foreground);
+  --component-desktop-primary-action-border: var(--primary);
+  --component-desktop-primary-action-hover: var(--accent);
+  --component-desktop-primary-action-hover-foreground: var(--accent-foreground);
+  --component-desktop-primary-action-hover-border: var(--accent);
+  --component-desktop-primary-action-focus: var(--ring);
   --component-accordion-surface: var(--card);
   --component-accordion-foreground: var(--card-foreground);
   --component-accordion-border: var(--border);
@@ -449,6 +456,13 @@
   --component-action-button-hover-foreground: var(--primary-foreground);
   --component-action-button-hover-border: var(--primary);
   --component-action-button-focus: var(--ring);
+  --component-desktop-primary-action-background: var(--primary);
+  --component-desktop-primary-action-foreground: var(--primary-foreground);
+  --component-desktop-primary-action-border: var(--primary);
+  --component-desktop-primary-action-hover: var(--secondary);
+  --component-desktop-primary-action-hover-foreground: var(--primary);
+  --component-desktop-primary-action-hover-border: var(--primary);
+  --component-desktop-primary-action-focus: var(--ring);
   --component-accordion-surface: var(--card);
   --component-accordion-foreground: var(--card-foreground);
   --component-accordion-border: var(--border);

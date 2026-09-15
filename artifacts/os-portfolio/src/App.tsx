@@ -3861,6 +3861,7 @@ function Home() {
     ? desktopBackground(theme, wallpaperLight, wallpaperDark, accessibility.contrastTheme)
     : undefined;
   const actionButtonColors = tokens.color.component[presentationTheme].actionButton;
+  const desktopPrimaryActionColors = tokens.color.component[presentationTheme].desktopPrimaryAction;
   const shellStyle = {
     ...currentWallpaperStyle,
     '--component-action-button-background': hexToHslChannels(actionButtonColors.background),
@@ -3870,6 +3871,13 @@ function Home() {
     '--component-action-button-hover-foreground': hexToHslChannels(actionButtonColors.hoverForeground),
     '--component-action-button-hover-border': hexToHslChannels(actionButtonColors.hoverBorder),
     '--component-action-button-focus': hexToHslChannels(actionButtonColors.focus),
+    '--component-desktop-primary-action-background': hexToHslChannels(desktopPrimaryActionColors.background),
+    '--component-desktop-primary-action-foreground': hexToHslChannels(desktopPrimaryActionColors.foreground),
+    '--component-desktop-primary-action-border': hexToHslChannels(desktopPrimaryActionColors.border),
+    '--component-desktop-primary-action-hover': hexToHslChannels(desktopPrimaryActionColors.hover),
+    '--component-desktop-primary-action-hover-foreground': hexToHslChannels(desktopPrimaryActionColors.hoverForeground),
+    '--component-desktop-primary-action-hover-border': hexToHslChannels(desktopPrimaryActionColors.hoverBorder),
+    '--component-desktop-primary-action-focus': hexToHslChannels(desktopPrimaryActionColors.focus),
   } as React.CSSProperties;
   const automaticContrastActive = (
     introCustomization.automaticContrast
@@ -4018,7 +4026,7 @@ function Home() {
             {introCustomization.text.body}
           </p>
           <div className="quick-actions">
-            <ActionButton className="quick-button primary" variant="primary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></ActionButton>
+            <ActionButton className="quick-button desktop-primary" variant="desktopPrimary" onClick={() => openWindow('work')} data-testid="button-open-work">open work <ChevronRight size={13} /></ActionButton>
             <ActionButton className="quick-button" onClick={() => openWindow('contact')} data-testid="button-open-contact">say hello <Mail size={13} /></ActionButton>
           </div>
         </div>

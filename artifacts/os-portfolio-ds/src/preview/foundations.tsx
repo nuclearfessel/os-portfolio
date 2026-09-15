@@ -68,6 +68,14 @@ const MAPPING_FLOW = [
     component: 'action-button.container.color.border.light',
     componentClass: 'bg-accent',
   },
+  {
+    primitiveKey: 'coral',
+    primitive: 'color.palette.coral.500',
+    semantic: 'color.background.action.accent.default.light',
+    semanticClass: 'bg-accent',
+    component: 'desktop-primary-action.container.color.background.hover.light',
+    componentClass: 'bg-accent',
+  },
 ] as const;
 
 const TAXONOMY_LEVELS = [

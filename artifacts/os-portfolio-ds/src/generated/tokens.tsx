@@ -170,6 +170,15 @@ export const tokens = {
           "hoverBorder": "#0b665d",
           "focus": "#0b665d"
         },
+        "desktopPrimaryAction": {
+          "background": "#0b665d",
+          "foreground": "#f7fbf9",
+          "border": "#0b665d",
+          "hover": "#c54f48",
+          "hoverForeground": "#ffffff",
+          "hoverBorder": "#c54f48",
+          "focus": "#0b665d"
+        },
         "accordion": {
           "surface": "#f7fbf9",
           "foreground": "#17233a",
@@ -310,6 +319,15 @@ export const tokens = {
           "border": "#e4ff5b",
           "hover": "#e4ff5b",
           "hoverForeground": "#111326",
+          "hoverBorder": "#e4ff5b",
+          "focus": "#e4ff5b"
+        },
+        "desktopPrimaryAction": {
+          "background": "#e4ff5b",
+          "foreground": "#111326",
+          "border": "#e4ff5b",
+          "hover": "#2b2f4a",
+          "hoverForeground": "#e4ff5b",
           "hoverBorder": "#e4ff5b",
           "focus": "#e4ff5b"
         },

@@ -1,0 +1,4 @@
+# Release automation changes require explicit maintainer review.
+/.github/CODEOWNERS @nuclearfessel
+/.github/workflows/ @nuclearfessel
+/.github/dependabot.yml @nuclearfessel

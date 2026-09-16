@@ -610,7 +610,7 @@ button { cursor: pointer; }
   overflow-y: auto;
 }
 
-@container settings-window (max-width: 560px) {
+@container settings-window (max-width: 620px) {
   .settings-layout {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
@@ -3458,6 +3458,14 @@ button { cursor: pointer; }
 
   .guide-terminal-command-row {
     grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px;
+    min-height: 0;
+    padding: 10px 0;
+  }
+
+  .guide-terminal-command-row > .guide-terminal-cmd-badge,
+  .guide-terminal-command-row > span {
+    grid-column: 1;
   }
 
   .guide-visual-launcher-states {

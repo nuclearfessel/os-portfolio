@@ -26,6 +26,12 @@ pnpm --filter @workspace/os-portfolio run build
 pnpm --filter @workspace/os-portfolio-ds run typecheck
 pnpm --filter @workspace/os-portfolio-ds run build
 
+if [[ -n "${VITE_APP_VERSION:-}" ]] \
+  && ! grep -Fq -- "$VITE_APP_VERSION" artifacts/os-portfolio/dist/public/assets/*.js; then
+  printf 'Portfolio production bundle is missing release version %s.\n' "$VITE_APP_VERSION" >&2
+  exit 1
+fi
+
 if ! grep -REq '(^|[;{])backdrop-filter:blur\(' artifacts/os-portfolio/dist/public/assets/*.css; then
   printf 'Desktop production CSS is missing the standard backdrop-filter blur declaration.\n' >&2
   exit 1
@@ -50,7 +56,12 @@ bash scripts/package-claude-source.sh "$claude_zip"
 unzip -tq "$site_zip"
 unzip -tq "$claude_zip"
 
-unzip -Z1 "$site_zip" | grep -qx 'index.html'
-unzip -Z1 "$site_zip" | grep -qx 'os-portfolio-ds/index.html'
-unzip -Z1 "$claude_zip" | grep -qx 'public/index.html'
-unzip -Z1 "$claude_zip" | grep -qx 'public/os-portfolio-ds/index.html'
+site_manifest="$stage/site-manifest.txt"
+claude_manifest="$stage/claude-manifest.txt"
+unzip -Z1 "$site_zip" > "$site_manifest"
+unzip -Z1 "$claude_zip" > "$claude_manifest"
+
+grep -Fxq 'index.html' "$site_manifest"
+grep -Fxq 'os-portfolio-ds/index.html' "$site_manifest"
+grep -Fxq 'public/index.html' "$claude_manifest"
+grep -Fxq 'public/os-portfolio-ds/index.html' "$claude_manifest"

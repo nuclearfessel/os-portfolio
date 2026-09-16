@@ -1045,6 +1045,59 @@ test('Guide Overview documents the complete desktop context menu', async ({ page
   await expect(guideWindow).toContainText('Escape to close it');
 });
 
+test('Guide Overview diagram keeps a stable structure at normal and narrow widths', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  for (const [width, layout] of [[820, 'columns'], [430, 'rows']] as const) {
+    await guideWindow.evaluate((element, nextWidth) => {
+      element.style.width = `${nextWidth}px`;
+      element.style.height = '700px';
+    }, width);
+
+    const geometry = await guideWindow.locator('.guide-visual-desktop-overview').evaluate((root) => {
+      const rect = (selector: string) => {
+        const bounds = root.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
+        return {
+          top: bounds.top,
+          right: bounds.right,
+          bottom: bounds.bottom,
+          left: bounds.left,
+          width: bounds.width,
+          height: bounds.height,
+        };
+      };
+      return {
+        crop: rect('.gvc-overview-crop'),
+        systemBar: rect('.gvc-overview-sysbar'),
+        desktop: rect('.gvc-overview-desktop'),
+        about: rect('.gvc-overview-window-about'),
+        work: rect('.gvc-overview-window-work'),
+        sticky: rect('.gvc-overview-sticky'),
+        dock: rect('.gvc-overview-dock'),
+      };
+    });
+
+    expect(geometry.crop.height).toBeGreaterThanOrEqual(layout === 'rows' ? 360 : 300);
+    expect(geometry.systemBar.top).toBeGreaterThanOrEqual(geometry.crop.top);
+    expect(geometry.desktop.height).toBeGreaterThanOrEqual(layout === 'rows' ? 250 : 180);
+    expect(geometry.about.width).toBeGreaterThan(80);
+    expect(geometry.about.height).toBeGreaterThan(70);
+    expect(geometry.work.width).toBeGreaterThan(80);
+    expect(geometry.work.height).toBeGreaterThan(70);
+    expect(geometry.sticky.width).toBeGreaterThan(55);
+    expect(geometry.dock.top).toBeGreaterThanOrEqual(geometry.desktop.bottom - 1);
+    expect(geometry.dock.bottom).toBeLessThanOrEqual(geometry.crop.bottom + 1);
+
+    if (layout === 'columns') {
+      expect(geometry.work.left).toBeGreaterThan(geometry.about.right);
+    } else {
+      expect(geometry.work.top).toBeGreaterThan(geometry.about.bottom);
+    }
+  }
+});
+
 test('all Guide page content meets WCAG AA contrast in light and dark themes', async ({ page }) => {
   const sections = [
     'overview',

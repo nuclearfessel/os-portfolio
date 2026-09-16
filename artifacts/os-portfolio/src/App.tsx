@@ -1880,38 +1880,47 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     {/* System bar */}
                     <div className="gvc-overview-sysbar">
                       <span className="gvc-sysbar-logo" />
+                      <span className="gvc-overview-sysbar-title">workspace</span>
                       <span style={{ flex: 1 }} />
                       <span className="gvc-sysbar-clock">10:42 am</span>
                       <span className="gvc-dot-badge">A</span>
                     </div>
                     {/* Desktop area */}
                     <div className="gvc-overview-desktop">
-                      {/* Window 1 */}
-                      <div className="gvc-overview-window" style={{ left: '6%', top: '8%', width: '42%', height: '52%' }}>
-                        <AbstractWindow title="~/about">
-                          <div className="gvc-content-line" style={{ width: '60%', height: 4 }} />
-                          <div className="gvc-content-line" style={{ width: '90%', height: 4 }} />
-                          <div className="gvc-content-line" style={{ width: '75%', height: 4 }} />
-                        </AbstractWindow>
+                      <div className="gvc-overview-window gvc-overview-window-about">
+                        <div className="gvc-overview-window-bar">
+                          <span>~/about</span>
+                          <span className="gvc-overview-window-controls" aria-hidden="true"><i /><i /><i /></span>
+                        </div>
+                        <div className="gvc-overview-window-body">
+                          <div className="gvc-content-line" style={{ width: '52%' }} />
+                          <div className="gvc-content-line" style={{ width: '88%' }} />
+                          <div className="gvc-content-line" style={{ width: '70%' }} />
+                        </div>
+                      </div>
+                      <div className="gvc-overview-window gvc-overview-window-work">
+                        <div className="gvc-overview-window-bar">
+                          <span>~/work</span>
+                          <span className="gvc-overview-window-controls" aria-hidden="true"><i /><i /><i /></span>
+                        </div>
+                        <div className="gvc-overview-window-body">
+                          <div className="gvc-content-line" style={{ width: '46%' }} />
+                          <div className="gvc-content-line" style={{ width: '82%' }} />
+                          <div className="gvc-content-line" style={{ width: '62%' }} />
+                        </div>
                         <span className="gvc-dot-badge">B</span>
                       </div>
-                      {/* Window 2 */}
-                      <div className="gvc-overview-window" style={{ left: '44%', top: '18%', width: '50%', height: '46%' }}>
-                        <AbstractWindow title="~/work">
-                          <div className="gvc-content-line" style={{ width: '50%', height: 4 }} />
-                          <div className="gvc-content-line" style={{ width: '80%', height: 4 }} />
-                        </AbstractWindow>
-                      </div>
-                      {/* Sticky note */}
-                      <div className="gvc-overview-sticky" style={{ left: '6%', top: '66%' }}>
-                        <div className="gvc-overview-sticky-tape" />
-                        <div className="gvc-text-line" style={{ width: '85%', background: 'rgba(143,105,0,.28)' }} />
-                        <div className="gvc-text-line" style={{ width: '65%', background: 'rgba(143,105,0,.28)', marginTop: 4 }} />
-                        <span className="gvc-dot-badge">C</span>
-                      </div>
-                      {/* Desktop icon */}
-                      <div className="gvc-overview-icon" style={{ right: '5%', bottom: '18%' }}>
-                        <div className="gvc-overview-icon-tile" />
+                      <div className="gvc-overview-side">
+                        <div className="gvc-overview-icon">
+                          <div className="gvc-overview-icon-tile" />
+                          <span>about</span>
+                        </div>
+                        <div className="gvc-overview-sticky">
+                          <div className="gvc-overview-sticky-tape" />
+                          <div className="gvc-overview-sticky-line" />
+                          <div className="gvc-overview-sticky-line gvc-overview-sticky-line-short" />
+                          <span className="gvc-dot-badge">C</span>
+                        </div>
                       </div>
                     </div>
                     {/* Dock */}

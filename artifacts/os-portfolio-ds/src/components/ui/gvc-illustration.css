@@ -121,7 +121,7 @@
   border-radius: 50%;
   background: var(--gv-primary);
   color: var(--gv-marker-fg);
-  font: 700 8px var(--app-font-mono, monospace);
+  font: 400 8px var(--app-font-mono, monospace);
   flex: 0 0 16px;
   line-height: 1;
   pointer-events: none;

@@ -1081,6 +1081,8 @@ test('Guide Overview diagram keeps a stable structure at normal and narrow width
 
     expect(geometry.crop.height).toBeGreaterThanOrEqual(layout === 'rows' ? 360 : 300);
     expect(geometry.systemBar.top).toBeGreaterThanOrEqual(geometry.crop.top);
+    expect(Math.abs(geometry.systemBar.left - geometry.crop.left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(geometry.systemBar.right - geometry.crop.right)).toBeLessThanOrEqual(1);
     expect(geometry.desktop.height).toBeGreaterThanOrEqual(layout === 'rows' ? 250 : 180);
     expect(geometry.about.width).toBeGreaterThan(80);
     expect(geometry.about.height).toBeGreaterThan(70);
@@ -1095,6 +1097,24 @@ test('Guide Overview diagram keeps a stable structure at normal and narrow width
     } else {
       expect(geometry.work.top).toBeGreaterThan(geometry.about.bottom);
     }
+  }
+});
+
+test('Guide diagram markers use regular font weight', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+  const sections = ['overview', 'windows', 'stickies', 'dock', 'systembar', 'terminal', 'customize'];
+
+  for (const section of sections) {
+    await page.getByTestId(section === 'terminal' ? 'guide-nav-terminal' : `guide-nav-${section}`).click();
+    const markerWeights = await guideWindow.locator('.gvc-dot-badge').evaluateAll((markers) =>
+      markers.map((marker) => getComputedStyle(marker).fontWeight),
+    );
+    expect(markerWeights.length, `${section} contains round diagram markers`).toBeGreaterThan(0);
+    expect(markerWeights, `${section} round marker weights`).toEqual(
+      markerWeights.map(() => '400'),
+    );
   }
 });
 

@@ -2153,6 +2153,8 @@ button { cursor: pointer; }
   display: grid;
   grid-template-rows: 28px minmax(190px, 1fr) 46px;
   align-items: stretch;
+  justify-items: stretch;
+  justify-content: stretch;
   min-height: 310px;
   aspect-ratio: auto;
 }
@@ -2161,6 +2163,8 @@ button { cursor: pointer; }
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
   padding: 0 10px;
   background: var(--gv-surface-base);
   border-bottom: 1px solid var(--gv-primary-ring);

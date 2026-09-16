@@ -325,7 +325,7 @@ export type PublicVisibility = boolean;
 
 export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
   // ── Guide illustration components ──────────────────────────────────────────────────
-  'gvc-illustration': true,
+  'gvc-illustration': false,
   // ── OS Portfolio unified directory — single public nav entry ───────────────────────
   'os-portfolio-primitives': true,
   // ── OS Portfolio family overviews — deep-linkable but not in sidebar/search ────────

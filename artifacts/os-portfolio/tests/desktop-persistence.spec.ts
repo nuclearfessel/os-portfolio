@@ -719,6 +719,44 @@ test('Terminal predicts and completes commands, arguments, and paths with Tab', 
   await expect(input).toHaveValue('cat ~/work/northstar-commerce-system.md');
 });
 
+test('Terminal controls transparency, blur, and motion effects', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('button-dock-terminal').click();
+
+  const input = page.getByTestId('input-terminal-command');
+  const run = async (command: string) => {
+    await input.fill(command);
+    await input.press('Enter');
+  };
+
+  await run('set transparency off');
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-transparency'))).toBe(true);
+
+  await run('set transparency on');
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-transparency'))).toBe(false);
+
+  await run('set blur off');
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-blur'))).toBe(true);
+
+  await run('set blur on');
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-blur'))).toBe(false);
+
+  await run('set motion off');
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-animations'))).toBe(true);
+
+  await run('set motion on');
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-animations'))).toBe(false);
+
+  await expect(page.locator('.terminal-entry')).toContainText([
+    'Transparency effects turned off.',
+    'Transparency effects turned on.',
+    'Blur effects turned off.',
+    'Blur effects turned on.',
+    'Motion effects turned off.',
+    'Motion effects turned on.',
+  ]);
+});
+
 test('Contact uses a filled Remix mail-send icon with its own saturated app treatment', async ({ page }) => {
   const contact = page.getByTestId('button-folder-contact');
   const contactIcon = contact.locator('.desktop-app-icon');

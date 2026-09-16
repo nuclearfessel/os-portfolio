@@ -2724,6 +2724,9 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                       ['theme dark', 'Switch to dark mode'],
                       ['theme light', 'Switch to light mode'],
                       ['set high contrast on', 'Enable high contrast mode'],
+                      ['set transparency on|off', 'Turn window, Dock, menu, and sticky transparency on or off'],
+                      ['set blur on|off', 'Turn backdrop blur on or off while transparency is enabled'],
+                      ['set motion on|off', 'Turn interface animations and motion effects on or off'],
                       ['history', 'Show the last commands you ran'],
                       ['clear', 'Clear the terminal output'],
                       ['help', 'List all available commands'],
@@ -3216,8 +3219,20 @@ const shellFiles: Record<string, ShellNode> = {
 };
 
 const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'set', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd work', 'cat ~/work/northstar-commerce-system.md', 'open work', 'theme light', 'set high contrast on', 'history', 'clear'];
-const shellContrastOptions = ['high contrast on', 'high contrast off', 'low contrast on', 'low contrast off', 'standard on'];
+const shellExamples = ['ls', 'cd work', 'cat ~/work/northstar-commerce-system.md', 'open work', 'theme light', 'set transparency off', 'set motion off', 'history', 'clear'];
+const shellSetOptions = [
+  'high contrast on',
+  'high contrast off',
+  'low contrast on',
+  'low contrast off',
+  'standard on',
+  'transparency on',
+  'transparency off',
+  'blur on',
+  'blur off',
+  'motion on',
+  'motion off',
+];
 const shellArgumentOptions: Partial<Record<string, string[]>> = {
   open: ['about', 'work', 'contact', 'terminal'],
   close: ['about', 'work', 'contact', 'terminal', 'all'],
@@ -3269,7 +3284,7 @@ function predictShellCommand(input: string, cwd: string) {
   const commandPrefix = value.slice(0, value.length - token.length);
   if (verb === 'set') {
     const argumentInput = value.slice(verb.length).trimStart().toLowerCase();
-    const match = shellContrastOptions.find((item) => item.startsWith(argumentInput));
+    const match = shellSetOptions.find((item) => item.startsWith(argumentInput));
     return match ? `${leadingWhitespace}set ${match}` : '';
   }
   const argumentOptions = shellArgumentOptions[verb];
@@ -3295,18 +3310,20 @@ function TerminalWindow({
   onCloseWindow,
   onSetTheme,
   onSetContrastTheme,
+  onSetAccessibility,
   openWindows,
   currentTheme,
-  contrastTheme,
+  accessibility,
   ...props
 }: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
   onOpenWindow: (id: WindowId) => void;
   onCloseWindow: (id: WindowId) => void;
   onSetTheme: (theme: Theme) => void;
   onSetContrastTheme: (contrastTheme: ContrastTheme) => void;
+  onSetAccessibility: (patch: Partial<AccessibilityPrefs>) => void;
   openWindows: WindowState;
   currentTheme: Theme;
-  contrastTheme: ContrastTheme;
+  accessibility: AccessibilityPrefs;
 }) {
   const [command, setCommand] = useState('');
   const [entries, setEntries] = useState<ShellEntry[]>([]);
@@ -3363,7 +3380,7 @@ function TerminalWindow({
       return;
     }
     if (verb === 'help') {
-      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme in Standard mode\n  set high contrast on|off\n  set low contrast on|off\n  set standard on\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
+      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme in Standard mode\n  set high contrast on|off\n  set low contrast on|off\n  set standard on\n  set transparency on|off\n  set blur on|off\n  set motion on|off\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
       return;
     }
     if (verb === 'pwd') {
@@ -3430,7 +3447,7 @@ function TerminalWindow({
     if (verb === 'theme') {
       const mode = rawArgs[0]?.toLowerCase();
       if (mode !== 'light' && mode !== 'dark') appendEntry(raw, 'theme: expected light or dark', true);
-      else if (contrastTheme !== 'none') appendEntry(raw, 'Light and dark themes are disabled while a contrast theme is active.');
+      else if (accessibility.contrastTheme !== 'none') appendEntry(raw, 'Light and dark themes are disabled while a contrast theme is active.');
       else if (mode === currentTheme) appendEntry(raw, `${mode} theme is already active.`);
       else {
         onSetTheme(mode);
@@ -3449,8 +3466,34 @@ function TerminalWindow({
       } else if (setting === 'standard on' || setting === 'high contrast off' || setting === 'low contrast off') {
         onSetContrastTheme('none');
         appendEntry(raw, 'Standard theme restored.');
+      } else if (setting === 'transparency on' || setting === 'transparency off') {
+        if (accessibility.contrastTheme !== 'none') {
+          appendEntry(raw, 'Transparency is disabled while a contrast theme is active. Run set standard on first.', true);
+        } else {
+          const enabled = setting.endsWith(' on');
+          onSetAccessibility({ windowTransparency: enabled });
+          appendEntry(raw, `Transparency effects turned ${enabled ? 'on' : 'off'}.`);
+        }
+      } else if (setting === 'blur on' || setting === 'blur off') {
+        if (accessibility.contrastTheme !== 'none') {
+          appendEntry(raw, 'Blur is disabled while a contrast theme is active. Run set standard on first.', true);
+        } else if (setting === 'blur on' && !accessibility.windowTransparency) {
+          appendEntry(raw, 'Blur requires transparency. Run set transparency on first.', true);
+        } else {
+          const enabled = setting.endsWith(' on');
+          onSetAccessibility({ blurEffects: enabled });
+          appendEntry(raw, `Blur effects turned ${enabled ? 'on' : 'off'}.`);
+        }
+      } else if (setting === 'motion on' || setting === 'motion off') {
+        if (accessibility.contrastTheme !== 'none') {
+          appendEntry(raw, 'Motion is disabled while a contrast theme is active. Run set standard on first.', true);
+        } else {
+          const enabled = setting.endsWith(' on');
+          onSetAccessibility({ uiAnimations: enabled });
+          appendEntry(raw, `Motion effects turned ${enabled ? 'on' : 'off'}.`);
+        }
       } else {
-        appendEntry(raw, 'set: expected high contrast on|off, low contrast on|off, or standard on', true);
+        appendEntry(raw, 'set: expected high contrast on|off, low contrast on|off, standard on, transparency on|off, blur on|off, or motion on|off', true);
       }
       return;
     }
@@ -5329,7 +5372,7 @@ function Home() {
         {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
         {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
-        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} onSetContrastTheme={setContrastTheme} openWindows={windows} currentTheme={theme} contrastTheme={accessibility.contrastTheme} />}
+        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} onSetContrastTheme={setContrastTheme} onSetAccessibility={(patch) => setAccessibility((current) => ({ ...current, ...patch }))} openWindows={windows} currentTheme={theme} accessibility={accessibility} />}
         {workspaceMode === 'desktop' && windows.settings && (
           <SettingsWindow
             {...windowProps('settings')}

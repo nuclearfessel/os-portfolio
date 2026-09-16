@@ -158,7 +158,7 @@ export function MotionTokensPage() {
         }
         @keyframes osp-token-step-preview {
           0%, 49.999% { transform: translateX(0); }
-          50%, 100% { transform: translateX(88px); }
+          50%, 100% { transform: translateX(76px); }
         }
       `}</style>
       <CanonicalSpec

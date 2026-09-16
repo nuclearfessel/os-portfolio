@@ -6,7 +6,7 @@ export function OsPortfolioWindowSurfaceDemo() {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Window surface shell</p>
+        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Window shell · default elevation · static</p>
         <WindowSurface className="overflow-hidden">
           <div className="flex items-center gap-2 border-b border-border bg-muted/30 px-4 py-3">
             <div className="flex gap-1.5">
@@ -27,7 +27,7 @@ export function OsPortfolioWindowSurfaceDemo() {
       </div>
 
       <div className="space-y-4">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Compact window (narrower)</p>
+        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Compact presentation · static</p>
         <WindowSurface className="max-w-xs overflow-hidden">
           <div className="border-b border-border px-3 py-2 font-mono text-xs text-muted-foreground">~/john/terminal</div>
           <div className="bg-black p-4 font-mono text-xs text-green-400">

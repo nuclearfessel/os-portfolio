@@ -10,7 +10,7 @@ export function ToastDemo() {
   return (
     <div className="space-y-8">
       <div className="rounded-xl border bg-card p-6">
-        <Row label="Notifications">
+        <Row label="Default · Success toast trigger">
           <Button
             onClick={() =>
               toast({
@@ -21,6 +21,8 @@ export function ToastDemo() {
           >
             Show toast
           </Button>
+        </Row>
+        <Row label="Destructive · Error toast with action">
           <Button
             variant="destructive"
             onClick={() =>

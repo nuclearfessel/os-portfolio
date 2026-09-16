@@ -1,6 +1,8 @@
 # Pattern: Transparency Surfaces
 
-**Preview:** `os-portfolio-settings` (transparency controls)
+- **Specimen:** Static reference — `os-portfolio-settings` transparency controls
+- **Variants:** Default translucency; enabled translucency; opaque/no-transparency; no-blur; low contrast; high contrast
+- **States:** Enabled; disabled; preserved; opaque; blur-free
 
 ---
 

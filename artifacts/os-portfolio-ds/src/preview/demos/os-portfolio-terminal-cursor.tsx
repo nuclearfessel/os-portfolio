@@ -6,7 +6,7 @@ export function OsPortfolioTerminalCursorDemo() {
   return (
     <div className="space-y-8">
       <div className="space-y-3 rounded-lg border border-border bg-card p-6">
-        <SectionLabel>terminal cursor</SectionLabel>
+        <SectionLabel>terminal cursor · block / active-input static</SectionLabel>
         <p className="text-xs text-muted-foreground">
           Functional block caret shown at the active native-input selection.
         </p>

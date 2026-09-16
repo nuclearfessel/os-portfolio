@@ -9,10 +9,12 @@ import {
 } from '../../components/ui/card';
 import { CanonicalSpec } from '../md-renderer';
 import { mdCard } from '../docs-map';
+import { Stack } from '../parts';
 
 export function CardDemo() {
   return (
     <div className="space-y-8">
+      <Stack label="Default surface · Static">
       <Card className="max-w-md">
         <CardHeader>
           <CardTitle>Weekly report</CardTitle>
@@ -34,6 +36,7 @@ export function CardDemo() {
           <Button variant="outline">View report</Button>
         </CardFooter>
       </Card>
+      </Stack>
       <CanonicalSpec md={mdCard} />
     </div>
   );

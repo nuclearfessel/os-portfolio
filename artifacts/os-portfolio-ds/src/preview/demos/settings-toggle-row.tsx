@@ -12,29 +12,38 @@ export function SettingsToggleRowDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive toggles</p>
-          <div className="space-y-2">
-            <SettingsToggleRow
-              id="demo-scrollbars"
-              label="Always show scrollbars"
-              description="Keeps scrollbar tracks permanently visible instead of hiding when idle."
-              checked={scrollbars}
-              onChange={setScrollbars}
-            />
-            <SettingsToggleRow
-              id="demo-transparency"
-              label="Window transparency effects"
-              description="Enables blur and translucency on windows, the dock, and menus."
-              checked={transparency}
-              onChange={setTransparency}
-            />
-            <SettingsToggleRow
-              id="demo-animations"
-              label="UI animations"
-              description="Enables transitions, keyframe animations, and motion effects."
-              checked={animations}
-              onChange={setAnimations}
-            />
+           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive · toggle variant · live checked/unchecked state</p>
+           <div className="space-y-3">
+             <div>
+               <SettingsToggleRow
+                 id="demo-scrollbars"
+                 label="Always show scrollbars"
+                 description="Keeps scrollbar tracks permanently visible instead of hiding when idle."
+                 checked={scrollbars}
+                 onChange={setScrollbars}
+               />
+               <p className="mt-1 text-xs text-muted-foreground">State: <span className="text-primary font-medium">{scrollbars ? 'Checked' : 'Unchecked'}</span></p>
+             </div>
+             <div>
+               <SettingsToggleRow
+                 id="demo-transparency"
+                 label="Window transparency effects"
+                 description="Enables blur and translucency on windows, the dock, and menus."
+                 checked={transparency}
+                 onChange={setTransparency}
+               />
+               <p className="mt-1 text-xs text-muted-foreground">State: <span className="text-primary font-medium">{transparency ? 'Checked' : 'Unchecked'}</span></p>
+             </div>
+             <div>
+               <SettingsToggleRow
+                 id="demo-animations"
+                 label="UI animations"
+                 description="Enables transitions, keyframe animations, and motion effects."
+                 checked={animations}
+                 onChange={setAnimations}
+               />
+               <p className="mt-1 text-xs text-muted-foreground">State: <span className="text-primary font-medium">{animations ? 'Checked' : 'Unchecked'}</span></p>
+             </div>
           </div>
         </div>
 

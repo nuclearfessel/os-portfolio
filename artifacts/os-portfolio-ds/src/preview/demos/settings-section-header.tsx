@@ -7,7 +7,7 @@ export function SettingsSectionHeaderDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">With description</p>
+           <p className="mb-4 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Static · section header variant · with description</p>
           <div className="max-w-md space-y-4">
             <SettingsSectionHeader
               label="Display"
@@ -27,7 +27,7 @@ export function SettingsSectionHeaderDemo() {
         </div>
 
         <div>
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Label only (no description)</p>
+           <p className="mb-4 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Static · section header variant · label only</p>
           <div className="max-w-md space-y-3">
             <SettingsSectionHeader label="Desktop wallpaper" />
             <SettingsSectionHeader label="Animation speed" />
@@ -36,7 +36,7 @@ export function SettingsSectionHeaderDemo() {
         </div>
 
         <div>
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">In context — above a control</p>
+           <p className="mb-4 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Static · section header variant · above control</p>
           <div className="max-w-md space-y-3 rounded-md border border-border bg-card/40 p-4">
             <SettingsSectionHeader
               label="Animation speed"

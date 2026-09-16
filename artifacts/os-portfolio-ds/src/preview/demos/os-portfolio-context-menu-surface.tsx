@@ -7,27 +7,27 @@ export function OsPortfolioContextMenuSurfaceDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <SectionLabel>desktop context menu</SectionLabel>
+          <SectionLabel>desktop context menu · default / static</SectionLabel>
           <p className="mt-1 mb-3 text-xs text-muted-foreground">Right-click context menu for the desktop canvas. Items and interaction logic live in the consuming product.</p>
           <ContextMenuSurface className="w-52 p-1.5 text-sm">
-            <div className="rounded px-3 py-1.5 text-foreground hover:bg-secondary cursor-default">Theme</div>
-            <div className="rounded px-3 py-1.5 text-foreground hover:bg-secondary cursor-default">Wallpaper&hellip;</div>
+            <div className="rounded px-3 py-1.5 text-foreground">Theme</div>
+            <div className="rounded px-3 py-1.5 text-foreground">Wallpaper&hellip;</div>
             <hr className="my-1 border-border/50" />
-            <div className="rounded px-3 py-1.5 text-foreground hover:bg-secondary cursor-default">Icon size</div>
-            <div className="rounded px-3 py-1.5 text-foreground hover:bg-secondary cursor-default">Sort by&hellip;</div>
+            <div className="rounded px-3 py-1.5 text-foreground">Icon size</div>
+            <div className="rounded px-3 py-1.5 text-foreground">Sort by&hellip;</div>
             <hr className="my-1 border-border/50" />
-            <div className="rounded px-3 py-1.5 text-muted-foreground hover:bg-secondary cursor-default">Reset desktop&hellip;</div>
+            <div className="rounded px-3 py-1.5 text-muted-foreground">Reset desktop&hellip;</div>
           </ContextMenuSurface>
         </div>
 
         <div>
-          <SectionLabel>sticky note context menu</SectionLabel>
+          <SectionLabel>sticky note context menu · compact / static</SectionLabel>
           <p className="mt-1 mb-3 text-xs text-muted-foreground">Shorter menu for sticky note actions.</p>
           <ContextMenuSurface className="w-44 p-1.5 text-sm">
-            <div className="rounded px-3 py-1.5 text-foreground hover:bg-secondary cursor-default">Change color</div>
-            <div className="rounded px-3 py-1.5 text-foreground hover:bg-secondary cursor-default">Duplicate</div>
+            <div className="rounded px-3 py-1.5 text-foreground">Change color</div>
+            <div className="rounded px-3 py-1.5 text-foreground">Duplicate</div>
             <hr className="my-1 border-border/50" />
-            <div className="rounded px-3 py-1.5 text-destructive hover:bg-secondary cursor-default">Delete note</div>
+            <div className="rounded px-3 py-1.5 text-destructive">Delete note</div>
           </ContextMenuSurface>
         </div>
       </div>

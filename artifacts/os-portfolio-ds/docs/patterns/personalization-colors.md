@@ -1,6 +1,8 @@
 # Pattern: Personalization Color Presets & Custom Picker
 
-**Preview:** `os-portfolio-settings` (Personalization section)
+- **Specimen:** Static reference — `os-portfolio-settings` Personalization section
+- **Variants:** Light default; dark default; custom color
+- **States:** Selected; unselected; custom-selected
 
 ---
 

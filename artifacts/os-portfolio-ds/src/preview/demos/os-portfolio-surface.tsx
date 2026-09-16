@@ -7,7 +7,7 @@ export function OsPortfolioSurfaceDemo() {
     <div className="space-y-8">
       <div className="space-y-6">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Elevation levels</p>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Elevation variants · static</p>
           <div className="grid gap-4 sm:grid-cols-3">
             <Surface elevation="flat" className="p-4">
               <SectionLabel>elevation / flat</SectionLabel>

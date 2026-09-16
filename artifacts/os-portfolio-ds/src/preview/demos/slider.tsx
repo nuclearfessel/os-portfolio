@@ -8,6 +8,7 @@ export function SliderDemo() {
   const [value, setValue] = useState([40]);
   const [range, setRange] = useState([25, 75]);
   const [stepped, setStepped] = useState([60]);
+  const [steppedRange, setSteppedRange] = useState([20, 80]);
 
   return (
     <div className="space-y-8">
@@ -26,7 +27,8 @@ export function SliderDemo() {
             value={range}
             onValueChange={setRange}
             max={100}
-            step={5}
+            step={1}
+            minStepsBetweenThumbs={1}
             aria-label="Range"
           />
         </Stack>
@@ -37,6 +39,16 @@ export function SliderDemo() {
             max={100}
             step={10}
             aria-label="Stepped value"
+          />
+        </Stack>
+        <Stack label={`Stepped range · ${steppedRange[0]}–${steppedRange[1]}`}>
+          <Slider
+            value={steppedRange}
+            onValueChange={setSteppedRange}
+            max={100}
+            step={10}
+            minStepsBetweenThumbs={1}
+            aria-label="Stepped range"
           />
         </Stack>
       </div>

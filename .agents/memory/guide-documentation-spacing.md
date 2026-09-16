@@ -21,6 +21,12 @@ Every surfaced component and pattern page needs a complete reference, but must n
 
 **How to apply:** Surface dedicated references covering purpose, anatomy, behavior, states, accessibility, usage, and Do/Don’t. Suppress Tokens and Tokens / contracts sections outside foundations.
 
+Every design-system specimen must visibly identify its variant and state. Interactive specimens must demonstrate real state changes; static references must be explicitly labeled and non-operable.
+
+**Why:** Unlabeled examples forced readers to infer states such as disabled, selected, or active, while inert controls could look interactive.
+
+**How to apply:** Use concise `variant · state` captions that stay truthful after interaction. Add controlled behavior where applicable; do not invent hover or pressed behavior for static primitives.
+
 Guide instructions should use plain language and break each topic into short, specific actions. Explain necessary technical terms where they appear instead of assuming the reader already knows them.
 
 **Why:** The user wants the Guide to offer more detail without becoming jargon-heavy or difficult to scan.

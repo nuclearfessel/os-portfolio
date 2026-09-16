@@ -16,6 +16,7 @@ import {
 } from '../../components/ui/context-menu';
 import { CanonicalSpec } from '../md-renderer';
 import { mdContextMenu } from '../docs-map';
+import { Stack } from '../parts';
 
 export function ContextMenuDemo() {
   const [favorite, setFavorite] = useState(true);
@@ -23,10 +24,11 @@ export function ContextMenuDemo() {
 
   return (
     <div className="space-y-8">
-      <ContextMenu>
-        <ContextMenuTrigger className="flex h-40 max-w-lg items-center justify-center rounded-xl border border-dashed bg-card text-sm text-muted-foreground">
-          Right-click this area
-        </ContextMenuTrigger>
+      <Stack label="Default · Right-click to open">
+        <ContextMenu>
+          <ContextMenuTrigger className="flex h-40 max-w-lg items-center justify-center rounded-xl border border-dashed bg-card text-sm text-muted-foreground">
+            Right-click this area
+          </ContextMenuTrigger>
         <ContextMenuContent className="w-56">
           <ContextMenuLabel>Document</ContextMenuLabel>
           <ContextMenuItem>
@@ -50,7 +52,8 @@ export function ContextMenuDemo() {
             </ContextMenuSubContent>
           </ContextMenuSub>
         </ContextMenuContent>
-      </ContextMenu>
+        </ContextMenu>
+      </Stack>
       <CanonicalSpec md={mdContextMenu} />
     </div>
   );

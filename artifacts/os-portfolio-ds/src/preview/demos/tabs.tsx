@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -6,12 +7,16 @@ import {
 } from '../../components/ui/tabs';
 import { CanonicalSpec } from '../md-renderer';
 import { mdTabs } from '../docs-map';
+import { Stack } from '../parts';
 
 export function TabsDemo() {
+  const [tab, setTab] = useState('overview');
+
   return (
     <div className="space-y-8">
       <div className="max-w-lg rounded-xl border bg-card p-6">
-        <Tabs defaultValue="overview">
+        <Stack label={`Underline tabs · ${tab === 'overview' ? 'Overview selected' : 'Activity selected'}`}>
+        <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
@@ -26,6 +31,7 @@ export function TabsDemo() {
             Latest changes from your team.
           </TabsContent>
         </Tabs>
+        </Stack>
       </div>
       <CanonicalSpec md={mdTabs} />
     </div>

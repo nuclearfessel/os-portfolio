@@ -57,17 +57,17 @@ export function OsPortfolioStickyNoteDemo() {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Standard / all 10 colors</p>
+        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Standard tone · rotated surface · static</p>
         <StickyPaletteRow mode="standard" />
       </div>
 
       <div className="space-y-4">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Low Contrast / all 10 colors</p>
+        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Low contrast tone · rotated surface · static</p>
         <StickyPaletteRow mode="low" />
       </div>
 
       <div className="space-y-4">
-        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">High Contrast / all 10 colors</p>
+        <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">High contrast tone · rotated surface · static</p>
         <StickyPaletteRow mode="high" />
       </div>
 

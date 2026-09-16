@@ -10,7 +10,7 @@ export function SettingsNavDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive sidebar nav</p>
+           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive · icon nav · {active} active</p>
           <div className="flex gap-4">
             <div className="w-48 rounded-lg border border-border bg-sidebar p-2">
               <SettingsNavSection label="Settings sections">
@@ -62,20 +62,20 @@ export function SettingsNavDemo() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Item states reference</p>
+           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Static states · active/inactive/icon variants</p>
           <div className="max-w-[180px] rounded-lg border border-border bg-sidebar p-2">
             <SettingsNavSection label="States reference">
-              <SettingsNavItem active icon={
+               <SettingsNavItem active icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <circle cx="12" cy="12" r="5" />
                 </svg>
-              }>Active item</SettingsNavItem>
+               }>Active · with icon</SettingsNavItem>
               <SettingsNavItem icon={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <circle cx="12" cy="4" r="2" /><line x1="12" y1="22" x2="12" y2="12" />
                 </svg>
-              }>Inactive item</SettingsNavItem>
-              <SettingsNavItem>No icon item</SettingsNavItem>
+               }>Inactive · with icon</SettingsNavItem>
+               <SettingsNavItem>No icon · inactive</SettingsNavItem>
             </SettingsNavSection>
           </div>
         </div>

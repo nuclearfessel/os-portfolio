@@ -1,6 +1,8 @@
 # Pattern: Desktop Window Workspace
 
-**Preview:** `os-portfolio-pilot` (WindowSurface demo)
+- **Specimen:** Static reference — `os-portfolio-pilot` WindowSurface demo
+- **Variants:** Desktop freeform; tablet managed; mobile single-window or bottom-sheet
+- **States:** Open; minimized; closed; focused; active; dragging; resizing; maximized
 
 ---
 

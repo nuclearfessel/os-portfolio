@@ -1,6 +1,8 @@
 # Pattern: Sticky Notes
 
-**Preview:** `os-portfolio-pilot` (StickyNoteSurface demo)
+- **Specimen:** Static reference — `os-portfolio-pilot` StickyNoteSurface demo
+- **Variants:** Desktop free-floating; tablet fixed or hidden; mobile list or hidden; low-contrast; high-contrast
+- **States:** Active; inactive; dragged; stacked; persisted
 
 ---
 

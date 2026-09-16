@@ -1,6 +1,8 @@
 # Pattern: Accessibility Preference Panel
 
-**Preview:** `os-portfolio-settings` (Accessibility section), `accessibility` (foundation page)
+- **Specimen:** Static reference — `os-portfolio-settings` Accessibility section and `accessibility` foundation page
+- **Variants:** Standard; low contrast; high contrast; light; dark
+- **States:** Enabled; disabled; selected; unselected; dependent
 
 ---
 

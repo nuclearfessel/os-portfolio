@@ -1,6 +1,8 @@
 # Pattern: Saved-State Ownership
 
-**Preview:** N/A (cross-cutting concern)
+- **Specimen:** No visual specimen — cross-cutting ownership reference
+- **Variants:** Design-system-owned visual state; product-owned persisted state
+- **States:** Ephemeral; persisted; saved; restored
 
 ---
 

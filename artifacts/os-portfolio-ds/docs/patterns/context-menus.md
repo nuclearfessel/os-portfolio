@@ -1,6 +1,8 @@
 # Pattern: Context Menus
 
-**Preview:** `os-portfolio-pilot` (ContextMenuSurface), `context-menu` (full Radix implementation)
+- **Specimen:** Static reference — `os-portfolio-pilot` ContextMenuSurface and `context-menu` Radix implementation
+- **Variants:** Radix recommended tier; custom-positioned tier
+- **States:** Open; closed; focused; right-click; long-press
 
 ---
 

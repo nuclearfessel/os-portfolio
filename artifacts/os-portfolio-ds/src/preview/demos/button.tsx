@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ArrowRight, Loader2, Mail, Settings } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Row } from '../parts';
@@ -13,38 +14,70 @@ import {
 } from '../doc-renderer';
 
 export function ButtonDemo() {
+  const [pressed, setPressed] = useState(false);
+
   return (
     <div className="space-y-8">
       <div className="space-y-6 rounded-xl border bg-card p-6 text-card-foreground">
-        <Row label="Variants">
+        <Row label="Default · Idle">
           <Button>Default</Button>
+        </Row>
+        <Row label="Secondary · Idle">
           <Button variant="secondary">Secondary</Button>
+        </Row>
+        <Row label="Outline · Idle">
           <Button variant="outline">Outline</Button>
+        </Row>
+        <Row label="Ghost · Idle">
           <Button variant="ghost">Ghost</Button>
+        </Row>
+        <Row label="Link · Idle">
           <Button variant="link">Link</Button>
+        </Row>
+        <Row label="Destructive · Idle">
           <Button variant="destructive">Destructive</Button>
         </Row>
-        <Row label="Sizes">
+        <Row label="Small · Idle">
           <Button size="sm">Small</Button>
+        </Row>
+        <Row label="Default size · Idle">
           <Button size="default">Default</Button>
+        </Row>
+        <Row label="Large · Idle">
           <Button size="lg">Large</Button>
+        </Row>
+        <Row label="Icon · Idle">
           <Button size="icon" aria-label="Mail">
             <Mail />
           </Button>
         </Row>
-        <Row label="With icon">
+        <Row label="Default + icon · Idle">
           <Button>
             <Mail /> Email
           </Button>
+        </Row>
+        <Row label="Secondary + icon · Idle">
           <Button variant="secondary">
             Continue <ArrowRight />
           </Button>
+        </Row>
+        <Row label="Outline + icon · Idle">
           <Button variant="outline">
             <Settings /> Settings
           </Button>
         </Row>
-        <Row label="States">
+        <Row label={`Default · ${pressed ? 'Pressed' : 'Idle'}`}>
+          <Button
+            aria-pressed={pressed}
+            onClick={() => setPressed((current) => !current)}
+          >
+            {pressed ? 'Active' : 'Press me'}
+          </Button>
+        </Row>
+        <Row label="Default · Disabled">
           <Button disabled>Disabled</Button>
+        </Row>
+        <Row label="Default · Loading">
           <Button disabled>
             <Loader2 className="animate-spin" /> Loading
           </Button>

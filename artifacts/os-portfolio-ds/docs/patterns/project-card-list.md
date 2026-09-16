@@ -1,6 +1,8 @@
 # Pattern: Project-Card List
 
-**Preview:** `os-portfolio-pilot` (ProjectCard demo), `item` (Item family)
+- **Specimen:** Static reference — `os-portfolio-pilot` ProjectCard demo and `item` family
+- **Variants:** Accent-color card; indexed list; desktop list; tablet modal/sheet; mobile full-width list
+- **States:** Hover; focus; selected; action
 
 ---
 

@@ -16,7 +16,7 @@ export function SettingsContrastCardDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive — contrast theme selection</p>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive · contrast variants · selected: {selected}</p>
           <div role="radiogroup" aria-label="Contrast theme" className="flex flex-wrap gap-3">
             {CARDS.map(({ variant, label, description }) => (
               <SettingsContrastCard
@@ -33,7 +33,7 @@ export function SettingsContrastCardDemo() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Each variant selected — static reference</p>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Static · each contrast variant · selected state</p>
           <div className="space-y-4">
             {CARDS.map(({ variant, label, description }) => (
               <div key={variant} className="space-y-1">
@@ -46,7 +46,7 @@ export function SettingsContrastCardDemo() {
                       label={card.label}
                       description={card.description}
                       selected={card.variant === variant}
-                      onSelect={() => {}}
+                      disabled
                     />
                   ))}
                 </div>

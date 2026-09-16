@@ -7,7 +7,7 @@ export function OsPortfolioSectionLabelDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Common contexts</p>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Presentation variants · static</p>
           <div className="space-y-5">
             <div className="space-y-1">
               <SectionLabel>readme.md</SectionLabel>
@@ -29,7 +29,7 @@ export function OsPortfolioSectionLabelDemo() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">In context — heading pairing</p>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Heading pairing · kicker presentation · static</p>
           <div className="rounded-md border border-border bg-card p-4">
             <SectionLabel>case study / product systems / 2024</SectionLabel>
             <h2 className="mt-1 text-2xl font-semibold tracking-tight">Signal Operations Platform</h2>
@@ -38,7 +38,7 @@ export function OsPortfolioSectionLabelDemo() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Color override via className</p>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Color variants · static</p>
           <div className="flex flex-wrap gap-4">
             <SectionLabel>default (primary)</SectionLabel>
             <SectionLabel className="text-muted-foreground">muted override</SectionLabel>

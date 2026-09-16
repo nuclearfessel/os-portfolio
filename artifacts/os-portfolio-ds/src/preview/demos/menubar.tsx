@@ -16,6 +16,7 @@ import {
 } from '../../components/ui/menubar';
 import { CanonicalSpec } from '../md-renderer';
 import { mdMenubar } from '../docs-map';
+import { Stack } from '../parts';
 
 export function MenubarDemo() {
   const [showToolbar, setShowToolbar] = useState(true);
@@ -24,7 +25,8 @@ export function MenubarDemo() {
   return (
     <div className="space-y-8">
       <div className="max-w-lg rounded-xl border bg-card p-6">
-        <Menubar>
+        <Stack label="Default · Idle; menu triggers hover/focus/open">
+          <Menubar>
           <MenubarMenu>
             <MenubarTrigger>File</MenubarTrigger>
             <MenubarContent>
@@ -57,7 +59,8 @@ export function MenubarDemo() {
               </MenubarSub>
             </MenubarContent>
           </MenubarMenu>
-        </Menubar>
+          </Menubar>
+        </Stack>
       </div>
       <CanonicalSpec md={mdMenubar} />
     </div>

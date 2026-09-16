@@ -1,6 +1,8 @@
 # Pattern: Desktop Launcher Grid
 
-**Preview:** `os-portfolio-pilot` (DesktopLauncher demo)
+- **Specimen:** Static reference — `os-portfolio-pilot` DesktopLauncher demo
+- **Variants:** Desktop freeform grid; tablet fixed or hidden; mobile hidden
+- **States:** Open; closed; focused; selected; dragged; user-arranged; auto-arranged
 
 ---
 

@@ -1,6 +1,8 @@
 # Pattern: Settings Window & Sidebar
 
-**Preview:** `os-portfolio-settings`
+- **Specimen:** Static reference — `os-portfolio-settings` Settings window
+- **Variants:** Desktop two-pane; tablet modal/sheet; mobile full-screen
+- **States:** Active section; inactive section; open; closed; changed preference
 
 ---
 

@@ -490,7 +490,8 @@ export type SettingsContrastCardProps = {
   label: string;
   description?: string;
   selected: boolean;
-  onSelect: () => void;
+  onSelect?: () => void;
+  disabled?: boolean;
   'data-testid'?: string;
   className?: string;
 };
@@ -527,6 +528,7 @@ export function SettingsContrastCard({
   description,
   selected,
   onSelect,
+  disabled = false,
   'data-testid': testId,
   className,
 }: SettingsContrastCardProps) {
@@ -535,11 +537,12 @@ export function SettingsContrastCard({
       type="button"
       role="radio"
       aria-checked={selected}
+      disabled={disabled}
       onClick={onSelect}
       data-testid={testId}
       className={classes(
         'portfolio-settings-contrast-card flex min-w-24 max-w-[148px] flex-1 flex-col items-start gap-1.5 rounded-md p-0 text-left outline-none',
-        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55',
         className,
       )}
     >
@@ -657,7 +660,7 @@ export type SettingsColorPresetProps = {
   /** Display name shown below the swatch */
   name: string;
   selected: boolean;
-  onSelect: () => void;
+  onSelect?: () => void;
   disabled?: boolean;
   'data-testid'?: string;
   className?: string;

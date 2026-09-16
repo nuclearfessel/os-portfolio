@@ -23,7 +23,7 @@ export function SettingsSegmentedChoiceDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive — animation speed</p>
+           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive · segmented choice · selected: {speed}</p>
           <SettingsSegmentedChoice
             groupLabel="Animation speed"
             options={SPEED_OPTIONS}
@@ -34,7 +34,7 @@ export function SettingsSegmentedChoiceDemo() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive — icon size</p>
+           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive · segmented choice · selected: {size}</p>
           <SettingsSegmentedChoice
             groupLabel="Icon size"
             options={SIZE_OPTIONS}

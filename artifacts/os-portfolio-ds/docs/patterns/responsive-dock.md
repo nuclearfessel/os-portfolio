@@ -1,6 +1,8 @@
 # Pattern: Responsive Dock Navigation
 
-**Preview:** `os-portfolio-pilot` (DockItem + DockItemLabel demos)
+- **Specimen:** Static reference — `os-portfolio-pilot` DockItem + DockItemLabel demos
+- **Variants:** Desktop tooltip; tablet inline; mobile inline
+- **States:** Active; inactive; hover; focus; open/focus
 
 ---
 

@@ -11,7 +11,7 @@ export function SettingsSliderGroupDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive — transparency level</p>
+           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive · stepped slider · current {level}%</p>
           <SettingsSliderGroup
             id="demo-transparency"
             label="Transparency level"
@@ -26,7 +26,7 @@ export function SettingsSliderGroupDemo() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive — custom unit</p>
+           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive · percentage slider · current {brightness}%</p>
           <SettingsSliderGroup
             id="demo-brightness"
             label="Display brightness"
@@ -42,7 +42,7 @@ export function SettingsSliderGroupDemo() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Static reference — various values</p>
+           <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Static · stepped slider · low/mid/high values</p>
           <div className="space-y-3">
             <SettingsSliderGroup
               id="ref-low"

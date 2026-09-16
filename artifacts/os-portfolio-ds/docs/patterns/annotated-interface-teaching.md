@@ -1,6 +1,8 @@
 # Pattern: Annotated Interface Teaching
 
-**Preview:** `gvc-illustration` (AnnotatedFrame, AbstractWindow, PositionGrid demos)
+- **Specimen:** Static reference — `gvc-illustration` AnnotatedFrame, AbstractWindow, and PositionGrid demos
+- **Variants:** Annotated frame; abstract window; position grid; fixed teaching strip
+- **States:** Selected position; visible legend; contained labels; hidden decorative content
 
 ---
 

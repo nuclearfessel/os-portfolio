@@ -19,7 +19,7 @@ export function SettingsColorPresetDemo() {
     <div className="space-y-8">
       <div className="space-y-6 rounded-lg border border-border bg-card p-6">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive — wallpaper preset selection</p>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Interactive · color preset variants · selected: {selected ?? 'custom'}</p>
           <div className="flex flex-wrap gap-3" aria-label="Wallpaper color presets">
             {PRESETS.map((preset) => (
               <SettingsColorPreset
@@ -55,7 +55,7 @@ export function SettingsColorPresetDemo() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Both default presets — static reference</p>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Static · default color presets · selected/unselected states</p>
           <div className="flex gap-3">
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Selected</p>
@@ -64,7 +64,7 @@ export function SettingsColorPresetDemo() {
                 label="Light default, #e8f0ec"
                 name="Light default"
                 selected={true}
-                onSelect={() => {}}
+                disabled
               />
             </div>
             <div className="space-y-1">
@@ -74,7 +74,7 @@ export function SettingsColorPresetDemo() {
                 label="Dark default, #111326"
                 name="Dark default"
                 selected={false}
-                onSelect={() => {}}
+                disabled
               />
             </div>
           </div>

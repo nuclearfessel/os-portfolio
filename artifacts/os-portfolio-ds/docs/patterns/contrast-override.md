@@ -1,6 +1,8 @@
 # Pattern: Contrast Override Behavior
 
-**Preview:** `os-portfolio-settings` (SettingsContrastCard), `accessibility`
+- **Specimen:** Static reference — `os-portfolio-settings` SettingsContrastCard and `accessibility` foundation page
+- **Variants:** Standard contrast; low contrast; high contrast
+- **States:** Selected; unselected; disabled; restored
 
 ---
 

@@ -947,7 +947,7 @@ button { cursor: pointer; }
 .window.guide {
   top: 8%;
   left: 18%;
-  width: min(820px, calc(100vw - 64px));
+  width: 320px !important;
   height: min(620px, calc(100dvh - 132px));
   overflow: hidden;
   container-type: inline-size;

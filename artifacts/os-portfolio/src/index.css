@@ -4229,11 +4229,17 @@ button { cursor: pointer; }
   inset: auto;
   width: 218px;
   max-height: calc(100dvh - 32px);
+  padding: 10px;
   box-sizing: border-box;
   overflow: visible;
   visibility: hidden;
 }
 .desktop-shortcut-drawer.is-positioned { visibility: visible; }
+.shortcut-menu-description { margin: 9px 0 14px; font-size: 12px; }
+.shortcut-menu-grid { display: grid; gap: 8px; }
+.desktop-shortcut-drawer .shortcut-menu-description { margin: 5px 0 7px; line-height: 1.3; }
+.desktop-shortcut-drawer .shortcut-menu-grid { gap: 3px; }
+.desktop-shortcut-drawer .quick-button { min-height: 30px; padding: 5px 10px; }
 .desktop-shortcut-drawer::before,
 .desktop-shortcut-drawer::after {
   content: '';

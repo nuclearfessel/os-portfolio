@@ -2120,10 +2120,15 @@ test('anchors the shortcuts drawer and beak to its Dock item on every desktop ed
     expect(triggerBox).not.toBeNull();
     expect(drawerBox!.width).toBeCloseTo(218, 0);
 
-    if (position === 'bottom') expect(triggerBox!.y - (drawerBox!.y + drawerBox!.height)).toBeCloseTo(16, 0);
-    if (position === 'top') expect(drawerBox!.y - (triggerBox!.y + triggerBox!.height)).toBeCloseTo(16, 0);
-    if (position === 'left') expect(drawerBox!.x - (triggerBox!.x + triggerBox!.width)).toBeCloseTo(16, 0);
-    if (position === 'right') expect(triggerBox!.x - (drawerBox!.x + drawerBox!.width)).toBeCloseTo(16, 0);
+    const panelGap = position === 'bottom'
+      ? triggerBox!.y - (drawerBox!.y + drawerBox!.height)
+      : position === 'top'
+        ? drawerBox!.y - (triggerBox!.y + triggerBox!.height)
+        : position === 'left'
+          ? drawerBox!.x - (triggerBox!.x + triggerBox!.width)
+          : triggerBox!.x - (drawerBox!.x + drawerBox!.width);
+    expect(panelGap, `${position} Dock panel gap`).toBeCloseTo(32, 0);
+    expect(panelGap - 16, 'beak tip should remain 16px from the Shortcut Dock item').toBeCloseTo(16, 0);
 
     const beakOffset = await drawer.evaluate((element) => (
       Number.parseFloat(getComputedStyle(element).getPropertyValue('--shortcut-beak-offset'))
@@ -2133,6 +2138,26 @@ test('anchors the shortcuts drawer and beak to its Dock item on every desktop ed
       : triggerBox!.y + triggerBox!.height / 2 - drawerBox!.y;
     expect(beakOffset).toBeCloseTo(expectedBeakOffset, 0);
   }
+});
+
+test('keeps the desktop shortcuts drawer vertically compact', async ({ page }) => {
+  await page.getByTestId('button-dock-shortcuts').click();
+  const drawer = page.getByTestId('menu-mobile');
+  const buttons = drawer.locator('.quick-button');
+  await expect(buttons).toHaveCount(8);
+
+  const geometry = await drawer.evaluate((element) => {
+    const button = element.querySelector<HTMLElement>('.quick-button')!;
+    const grid = element.querySelector<HTMLElement>('.shortcut-menu-grid')!;
+    return {
+      drawerHeight: element.getBoundingClientRect().height,
+      buttonHeight: button.getBoundingClientRect().height,
+      gridGap: Number.parseFloat(getComputedStyle(grid).rowGap),
+    };
+  });
+  expect(geometry.buttonHeight).toBeCloseTo(30, 0);
+  expect(geometry.gridGap).toBeCloseTo(3, 0);
+  expect(geometry.drawerHeight).toBeLessThan(350);
 });
 
 test('falls back to safe defaults when saved data is corrupted', async ({ page }) => {

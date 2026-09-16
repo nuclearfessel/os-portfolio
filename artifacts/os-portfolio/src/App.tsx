@@ -4417,7 +4417,9 @@ function Home() {
       const triggerRect = trigger.getBoundingClientRect();
       const menuRect = menu.getBoundingClientRect();
       const viewportPadding = 16;
-      const triggerGap = 16;
+      const beakDepth = 16;
+      const beakToTriggerGap = 16;
+      const triggerGap = beakDepth + beakToTriggerGap;
       const triggerCenterX = triggerRect.left + triggerRect.width / 2;
       const triggerCenterY = triggerRect.top + triggerRect.height / 2;
       let left = triggerCenterX - menuRect.width / 2;
@@ -5985,8 +5987,8 @@ function Home() {
             : undefined}
         >
           <div className="section-kicker">keyboard map</div>
-          <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–8 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
-          <div style={{ display: 'grid', gap: 8 }}>
+          <p className="shortcut-menu-description">{workspaceMode === 'desktop' ? 'Use 1–8 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
+          <div className="shortcut-menu-grid">
             <button className="quick-button" onClick={() => openWindow('about')} data-testid="button-menu-about"><span className="shortcut-number">1</span>about</button>
             <button className="quick-button" onClick={() => openWindow('work')} data-testid="button-menu-work"><span className="shortcut-number">2</span>work</button>
             <button className="quick-button" onClick={() => openWindow('contact')} data-testid="button-menu-contact"><span className="shortcut-number">3</span>contact</button>

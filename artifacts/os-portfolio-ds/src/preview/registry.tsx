@@ -446,6 +446,8 @@ export type PreviewEntry = {
   name: string;
   description: string;
   Page: ComponentType;
+  /** Optional visual nesting level in the design-system navigation. */
+  navLevel?: 1 | 2;
 };
 
 export type NavGroup = {
@@ -615,7 +617,7 @@ export const NAV_GROUPS: NavGroup[] = [
     entries: [
       {
         id: 'color-roles',
-        name: 'Color roles',
+        name: 'Color',
         description: 'Brand, semantic, text, background, and border colors.',
         Page: ColorsPage,
       },
@@ -624,6 +626,7 @@ export const NAV_GROUPS: NavGroup[] = [
         name: 'Color tokens',
         description: 'All primitive, semantic, and component color tokens with EightShapes taxonomy names, swatches, hex values, and complete alias chains.',
         Page: ColorTokensPage,
+        navLevel: 2,
       },
       {
         id: 'type-scale',

@@ -89,7 +89,11 @@ function NavigationItems({
         type="button"
         onClick={() => select(entry.id)}
         aria-current={entry.id === activeId ? 'page' : undefined}
-        className="block w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground"
+        className={`block w-full rounded-md py-1.5 text-left transition-colors hover:bg-muted aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground ${
+          entry.navLevel === 2
+            ? 'px-4 text-xs text-muted-foreground'
+            : 'px-2 text-sm'
+        }`}
       >
         {entry.name}
       </button>

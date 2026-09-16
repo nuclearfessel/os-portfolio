@@ -347,14 +347,16 @@ export function MarkdownDocSpec({
   markdown,
   md,
   title = 'Component reference',
+  separated = true,
 }: {
   markdown?: string;
   md?: string;
   title?: string;
+  separated?: boolean;
 }) {
   const source = markdown ?? md ?? '';
   return (
-    <div className="mt-10 border-t pt-10">
+    <div className={separated ? 'mt-10 border-t pt-10' : ''}>
       <div className="mb-8">
         <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
           Specification &amp; guidelines
@@ -375,12 +377,14 @@ export function CanonicalSpec({
   md,
   markdown,
   title = 'Component reference',
+  separated = true,
 }: {
   md?: string;
   markdown?: string;
   title?: string;
+  separated?: boolean;
 }) {
-  return <MarkdownDocSpec md={md ?? markdown ?? ''} title={title} />;
+  return <MarkdownDocSpec md={md ?? markdown ?? ''} title={title} separated={separated} />;
 }
 
 /**

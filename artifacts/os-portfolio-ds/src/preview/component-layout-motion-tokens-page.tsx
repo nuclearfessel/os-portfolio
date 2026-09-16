@@ -133,7 +133,11 @@ function ComponentTokenFamily({ family, title, description }: { family: Family; 
 export function SpacingRadiusTokensPage() {
   return (
     <div className="space-y-12">
-      <CanonicalSpec md={mdFoundationSpacingRadius} title="Spacing & radius guidance" />
+      <CanonicalSpec
+        md={mdFoundationSpacingRadius}
+        title="Spacing & radius guidance"
+        separated={false}
+      />
       <ComponentTokenFamily
         family="spacing"
         title="Spacing contracts"
@@ -164,6 +168,7 @@ export function MotionTokensPage() {
       <CanonicalSpec
         md={extractSection(mdFoundationIconographyMotion, 'Motion')}
         title="Motion guidance"
+        separated={false}
       />
       <ComponentTokenFamily
         family="motion"

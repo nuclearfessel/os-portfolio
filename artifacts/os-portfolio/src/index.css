@@ -622,8 +622,9 @@ button { cursor: pointer; }
   .settings-nav {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    padding: 8px 10px;
+    column-gap: 6px;
+    row-gap: 4px;
+    padding: 6px 10px;
     overflow: hidden;
     border-right: 0;
     border-bottom: 1px solid rgba(214,221,255,.1);
@@ -638,6 +639,7 @@ button { cursor: pointer; }
   .settings-nav-item {
     min-width: 0;
     justify-content: center;
+    padding-block: 6px;
     padding-inline: 8px;
     text-align: center;
   }

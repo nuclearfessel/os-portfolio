@@ -734,6 +734,34 @@ test('Terminal uses the same blinking block cursor shown in the User Guide', asy
   expect(typedCursorLeft).toBeGreaterThan(initialCursorLeft);
 });
 
+test('Terminal focuses its command cursor whenever it opens or becomes active', async ({ page }) => {
+  const input = page.getByTestId('input-terminal-command');
+  const terminalWindow = page.getByTestId('window-terminal');
+
+  await page.getByTestId('button-folder-terminal').dblclick();
+  await expect(input).toBeFocused();
+
+  await page.getByTestId('button-dock-about').click();
+  await expect(page.getByTestId('window-about')).toHaveClass(/is-active/);
+  await page.getByTestId('button-dock-terminal').click();
+  await expect(input).toBeFocused();
+
+  await page.getByTestId('button-dock-about').focus();
+  await expect(input).not.toBeFocused();
+  await terminalWindow.locator('.window-header').click();
+  await expect(input).toBeFocused();
+
+  await page.getByTestId('button-dock-about').focus();
+  await page.getByTestId('button-dock-terminal').click();
+  await expect(terminalWindow).toBeVisible();
+  await expect(input).toBeFocused();
+
+  await page.getByTestId('button-minimize-terminal').click();
+  await expect(terminalWindow).toHaveCount(0);
+  await page.getByTestId('button-dock-terminal').click();
+  await expect(input).toBeFocused();
+});
+
 test('Terminal predicts and completes commands, arguments, and paths with Tab', async ({ page }) => {
   await page.goto('/');
   await page.getByTestId('button-dock-terminal').click();

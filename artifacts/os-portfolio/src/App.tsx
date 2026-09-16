@@ -794,7 +794,7 @@ function WindowFrame({
   maximized: boolean;
   dragging: boolean;
   children: ReactNode;
-  onFocus: () => void;
+  onFocus: (event: ReactMouseEvent<HTMLElement>) => void;
   onClose: () => void;
   onMinimize: () => void;
   onMaximize: () => void;
@@ -3392,6 +3392,9 @@ function TerminalWindow({
   openWindows,
   currentTheme,
   accessibility,
+  focusRequest,
+  active,
+  onFocus,
   ...props
 }: Omit<React.ComponentProps<typeof WindowFrame>, 'children' | 'title' | 'id'> & {
   onOpenWindow: (id: WindowId) => void;
@@ -3402,6 +3405,7 @@ function TerminalWindow({
   openWindows: WindowState;
   currentTheme: Theme;
   accessibility: AccessibilityPrefs;
+  focusRequest: number;
 }) {
   const [command, setCommand] = useState('');
   const [caretIndex, setCaretIndex] = useState(0);
@@ -3413,6 +3417,12 @@ function TerminalWindow({
   const inputRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const nextEntryId = useRef(1);
+
+  useEffect(() => {
+    if (!active) return;
+    const frame = window.requestAnimationFrame(() => inputRef.current?.focus({ preventScroll: true }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [active, focusRequest]);
 
   useEffect(() => {
     if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
@@ -3684,7 +3694,17 @@ function TerminalWindow({
   };
 
   return (
-    <WindowFrame {...props} id="terminal" title="Terminal">
+    <WindowFrame
+      {...props}
+      id="terminal"
+      title="Terminal"
+      active={active}
+      onFocus={(event) => {
+        onFocus(event);
+        if ((event.target as HTMLElement).closest('.terminal-output')) return;
+        window.requestAnimationFrame(() => inputRef.current?.focus({ preventScroll: true }));
+      }}
+    >
       <div ref={bodyRef} className="window-body terminal-body" onClick={() => inputRef.current?.focus()}>
         <div className="terminal-line"><span className="terminal-prompt">john@portfolio:~$</span><span className="terminal-command">whoami</span></div>
         <div className="terminal-output">john doe / design systems designer{'\n'}building thoughtful interfaces and resilient systems.</div>
@@ -3818,6 +3838,7 @@ function Home() {
   const [storageHelpOpen, setStorageHelpOpen] = useState(false);
   const [windows, setWindows] = useState<WindowState>(initialWindows);
   const [activeWindow, setActiveWindow] = useState<WindowId>('about');
+  const [terminalFocusRequest, setTerminalFocusRequest] = useState(0);
   const [windowStack, setWindowStack] = useState<WindowId[]>(savedDesktopState.windowStack ?? defaultDesktopState.windowStack ?? []);
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -4533,6 +4554,7 @@ function Home() {
 
   const openWindow = (id: WindowId) => {
     if ((id === 'terminal' || id === 'guide') && workspaceMode !== 'desktop') return;
+    if (id === 'terminal') setTerminalFocusRequest((current) => current + 1);
     setWindows((current) => ({ ...current, [id]: true }));
     setActiveWindow(id);
     setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
@@ -5617,7 +5639,7 @@ function Home() {
         {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}
         {windows.contact && (!managedLayout || (!stickyOnTop && activeWindow === 'contact')) && <ContactWindow {...windowProps('contact')} />}
-        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} onSetContrastTheme={setContrastTheme} onSetAccessibility={(patch) => setAccessibility((current) => ({ ...current, ...patch }))} openWindows={windows} currentTheme={theme} accessibility={accessibility} />}
+        {workspaceMode === 'desktop' && windows.terminal && (!managedLayout || (!stickyOnTop && activeWindow === 'terminal')) && <TerminalWindow {...windowProps('terminal')} onOpenWindow={openWindow} onCloseWindow={closeWindow} onSetTheme={setRegularTheme} onSetContrastTheme={setContrastTheme} onSetAccessibility={(patch) => setAccessibility((current) => ({ ...current, ...patch }))} openWindows={windows} currentTheme={theme} accessibility={accessibility} focusRequest={terminalFocusRequest} />}
         {workspaceMode === 'desktop' && windows.settings && (
           <SettingsWindow
             {...windowProps('settings')}
@@ -5991,7 +6013,7 @@ function Home() {
         )}
         {workspaceMode === 'desktop' && (
           <>
-            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} focused={windows.terminal && !stickyOnTop && activeWindow === 'terminal'} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><TerminalCursorFill size={20} data-testid="icon-dock-terminal-cursor-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
+            <DockItem className="dock-item dock-app-terminal" active={windows.terminal} focused={windows.terminal && !stickyOnTop && activeWindow === 'terminal'} onClick={() => openWindow('terminal')} aria-label="Open terminal" data-testid="button-dock-terminal"><TerminalCursorFill size={20} data-testid="icon-dock-terminal-cursor-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-stickies" active={stickyVisible} focused={stickyVisible && stickyOnTop} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
             <DockItem ref={shortcutDockItemRef} className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" aria-expanded={mobileOpen} aria-controls="shortcut-drawer" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><KeyboardFill size={19} data-testid="icon-dock-shortcuts-keyboard-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-settings" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><BsGearWideConnected size={20} data-testid="icon-dock-settings-gear-wide-connected-fill" /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>

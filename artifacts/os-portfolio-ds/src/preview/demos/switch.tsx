@@ -11,7 +11,7 @@ export function SwitchDemo() {
 
   return (
     <div className="space-y-8">
-      <div className="max-w-sm rounded-xl border bg-card p-6">
+      <div className="max-w-sm space-y-6 rounded-xl border bg-card p-6">
         <Stack label={`Notifications · ${notifications ? 'Checked' : 'Unchecked'}`}>
           <div className="flex items-center justify-between gap-6">
             <Label htmlFor="switch-notifications">Notifications</Label>

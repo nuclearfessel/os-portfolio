@@ -18,7 +18,7 @@ export function ButtonDemo() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-6 rounded-xl border bg-card p-6 text-card-foreground">
+      <div className="grid grid-cols-1 gap-6 rounded-xl border bg-card p-6 text-card-foreground sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <Row label="Default · Idle">
           <Button>Default</Button>
         </Row>

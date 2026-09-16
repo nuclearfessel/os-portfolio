@@ -62,9 +62,9 @@ All wrapper and primitive components merge `className`; forwarded refs are suppo
 
 ## Variants and states
 
-- The content is `w-full` with `max-w-lg`, centered with a `bg-background` surface, border, shadow, and responsive rounded corners.
+- The content is `w-full` with `max-w-lg`, centered by a full-viewport grid with a `bg-background` surface, border, shadow, and responsive rounded corners.
 - Header text is centered on small screens and left-aligned at `sm`; footer actions stack on small screens and become a right-aligned row at `sm`.
-- Opening and closing animate with fade, zoom, and a subtle slide. The overlay fades in and out.
+- Opening and closing use a fade without moving or scaling the alert surface. The overlay fades in and out.
 - `AlertDialogAction` uses the default Button appearance; supply a `className` or button-compatible classes when a destructive treatment is needed.
 - `AlertDialogCancel` uses the outline appearance and is intended to remain visually secondary.
 
@@ -122,3 +122,4 @@ import { Button } from '@workspace/os-portfolio-ds/components/ui/button';
 | Use for irreversible or high-impact actions where an explicit choice is required. | Do not use for routine forms, informational content, or low-risk confirmations; use `Dialog`. |
 | Make the consequence clear in the description and label the action with a specific verb. | Do not rely on backdrop click or an icon-only close affordance. |
 | Keep Cancel available and visually secondary. | Do not make the confirmation label ambiguous (for example, avoid “OK” for deletion). |
+| Center the surface with a full-viewport layout container, consistent with the site. | Do not position or animate the surface with X/Y transforms; transforms can conflict with the site’s window and motion behavior. |

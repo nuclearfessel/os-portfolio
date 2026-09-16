@@ -8,7 +8,7 @@ const specMd = extractSection(mdDataDisplayFamily, 'Badge');
 export function BadgeDemo() {
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Row label="Variants">
           <Badge>Default</Badge>
           <Badge variant="secondary">Secondary</Badge>

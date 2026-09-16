@@ -27,7 +27,7 @@ export function DropdownMenuDemo() {
 
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">Open menu</Button>

@@ -6,7 +6,7 @@ import { mdInput } from '../docs-map';
 export function InputDemo() {
   return (
     <div className="space-y-8">
-      <div className="max-w-md space-y-6 rounded-xl border bg-card p-6">
+      <div className="max-w-sm space-y-6 rounded-xl border bg-card p-6">
         <Stack label="Text · Idle">
           <Input placeholder="Name" />
         </Stack>

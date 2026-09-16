@@ -10,7 +10,7 @@ const specMd = extractSection(mdFeedbackFamily, 'Sonner');
 export function SonnerDemo() {
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Row label="Notifications">
           <Button onClick={() => toast.success('Project published')}>Success</Button>
           <Button

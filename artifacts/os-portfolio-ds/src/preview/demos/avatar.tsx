@@ -8,7 +8,7 @@ const specMd = extractSection(mdDataDisplayFamily, 'Avatar');
 export function AvatarDemo() {
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Row label="Sizes and fallback">
           <Avatar className="h-8 w-8">
             <AvatarFallback>AL</AvatarFallback>

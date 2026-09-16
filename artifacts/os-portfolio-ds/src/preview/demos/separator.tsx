@@ -6,7 +6,7 @@ import { Stack } from '../parts';
 export function SeparatorDemo() {
   return (
     <div className="space-y-8">
-      <div className="max-w-md rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Stack label="Horizontal · Static">
         <div>
           <p className="font-medium">Design system</p>

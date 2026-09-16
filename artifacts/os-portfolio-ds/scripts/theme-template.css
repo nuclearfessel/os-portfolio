@@ -452,12 +452,6 @@ __DS_COMPONENT_DARK_CSS__
   pointer-events: none;
 }
 
-.portfolio-settings-slider-control:focus-within {
-  border-radius: 4px;
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 3px;
-}
-
 /* --------------------------------------------------------------------------
    3. TRANSLUCENT SURFACE UTILITY CLASS  .portfolio-surface-translucent
    Apply this class to any window, dock, or menu surface that should carry

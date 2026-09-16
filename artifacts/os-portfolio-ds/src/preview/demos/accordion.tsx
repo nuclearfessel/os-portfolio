@@ -12,7 +12,7 @@ const specMd = extractSection(mdDataDisplayFamily, 'Accordion');
 export function AccordionDemo() {
   return (
     <div className="space-y-8">
-      <div className="max-w-lg rounded-xl border bg-card px-6">
+      <div className="max-w-sm rounded-xl border bg-card px-6">
         <Accordion type="single" collapsible defaultValue="item-1">
           <AccordionItem value="item-1">
             <AccordionTrigger>Is it accessible?</AccordionTrigger>

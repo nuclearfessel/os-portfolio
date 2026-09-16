@@ -9,7 +9,7 @@ const specMd = extractSection(mdDataDisplayFamily, 'Kbd');
 export function KbdDemo() {
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Row label="Keyboard shortcuts">
           <Kbd>Esc</Kbd>
           <KbdGroup>

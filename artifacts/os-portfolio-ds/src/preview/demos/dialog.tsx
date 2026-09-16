@@ -19,7 +19,7 @@ export function DialogDemo() {
 
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Stack label={`Default trigger · ${open ? 'Open' : 'Closed'}`}>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

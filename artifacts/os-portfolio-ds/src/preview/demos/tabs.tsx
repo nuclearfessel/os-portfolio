@@ -14,7 +14,7 @@ export function TabsDemo() {
 
   return (
     <div className="space-y-8">
-      <div className="max-w-lg rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Stack label={`Underline tabs · ${tab === 'overview' ? 'Overview selected' : 'Activity selected'}`}>
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>

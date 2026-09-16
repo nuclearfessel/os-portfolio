@@ -15,9 +15,9 @@ export function TooltipDemo() {
     <div className="space-y-8">
       <div className="rounded-xl border bg-card p-6">
         <TooltipProvider delayDuration={200}>
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {['Folder', 'Window control', 'Dock item'].map((label) => (
-              <Stack key={label} label={`Outline icon · Hover or focus · ${label}`}>
+              <Stack key={label} label={`Hover or focus · ${label}`}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="icon" aria-label={label}>

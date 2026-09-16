@@ -7,7 +7,7 @@ import { mdToggle } from '../docs-map';
 export function ToggleDemo() {
   return (
     <div className="space-y-8">
-      <div className="space-y-6 rounded-xl border bg-card p-6">
+      <div className="max-w-sm space-y-6 rounded-xl border bg-card p-6">
         <Row label="Variants">
           <Toggle aria-label="Toggle bold" defaultPressed>
             <Bold />

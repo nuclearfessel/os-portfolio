@@ -20,7 +20,7 @@ export function AlertDialogDemo() {
 
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Stack label={`Destructive trigger · ${open ? 'Open' : 'Closed'}`}>
           <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>

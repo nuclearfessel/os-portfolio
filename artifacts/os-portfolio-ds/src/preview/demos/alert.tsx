@@ -13,7 +13,7 @@ const specMd = extractSection(mdFeedbackFamily, 'Alert');
 export function AlertDemo() {
   return (
     <div className="space-y-8">
-      <div className="max-w-xl rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Stack label="Variants">
           <Alert>
             <CheckCircle2 />

@@ -12,7 +12,7 @@ import { mdButtonGroup } from '../docs-map';
 export function ButtonGroupDemo() {
   return (
     <div className="space-y-8">
-      <div className="space-y-6 rounded-xl border bg-card p-6">
+      <div className="max-w-sm space-y-6 rounded-xl border bg-card p-6">
         <Row label="Grouped actions">
           <ButtonGroup>
             <Button variant="outline" size="icon" aria-label="Bold">

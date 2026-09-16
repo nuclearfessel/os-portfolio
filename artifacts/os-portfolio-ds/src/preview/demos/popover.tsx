@@ -14,7 +14,7 @@ const specMd = extractSection(mdOverlaysFamily, 'Popover');
 export function PopoverDemo() {
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border bg-card p-6">
+      <div className="max-w-sm rounded-xl border bg-card p-6">
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline">Set dimensions</Button>

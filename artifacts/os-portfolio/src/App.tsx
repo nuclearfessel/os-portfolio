@@ -58,7 +58,8 @@ type IconSize = 'large' | 'small';
 type Theme = 'dark' | 'light';
 type DesktopLauncherId = Exclude<WindowId, 'settings' | 'guide'> | 'stickies-app';
 type FolderPositions = Partial<Record<DesktopLauncherId, { left: number; top: number }>>;
-type StickyItemId = 'sticky' | `sticky-${number}`;
+type SystemStickyId = 'sticky' | 'sticky-system-parity' | 'sticky-system-scale';
+type StickyItemId = SystemStickyId | `sticky-${number}`;
 type DesktopLauncherDragId = `desktop-${DesktopLauncherId}`;
 type DesktopItemId = WindowId | StickyItemId | DesktopLauncherDragId;
 const isWindowId = (id: DesktopItemId): id is WindowId => ['about', 'work', 'contact', 'terminal', 'settings', 'guide'].includes(id);
@@ -274,6 +275,28 @@ const defaultSecondSticky: StickyData = {
   createdAt: 'saved',
 };
 
+const defaultParitySticky: StickyData = {
+  id: 'sticky-system-parity',
+  color: 'teal',
+  text: 'Parity is a production practice.',
+  rotation: 4,
+  author: 'john',
+  createdAt: '10:16',
+};
+
+const defaultScaleSticky: StickyData = {
+  id: 'sticky-system-scale',
+  color: 'orange',
+  text: 'Good systems make the next decision easier—and help teams keep making it at scale.',
+  rotation: -4,
+  author: 'john',
+  createdAt: '10:24',
+};
+
+const systemStickies = [defaultSticky, defaultParitySticky, defaultScaleSticky];
+const systemStickyIds = new Set<SystemStickyId>(systemStickies.map((sticky) => sticky.id as SystemStickyId));
+const isSystemStickyId = (id: StickyItemId): id is SystemStickyId => systemStickyIds.has(id as SystemStickyId);
+
 const formatStickyTime = () => new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date());
 const createUserSticky = (id: StickyItemId, color: StickyColorId = defaultSticky.color, rotation = defaultSticky.rotation): StickyData => ({
   id,
@@ -341,7 +364,7 @@ const defaultDesktopState: SavedDesktopState = {
   snapToGrid: false,
   theme: 'light',
   showDesktopIcons: true,
-  stickies: [defaultSticky, defaultSecondSticky],
+  stickies: [defaultSticky, defaultSecondSticky, defaultParitySticky, defaultScaleSticky],
   dockPosition: 'bottom',
   systemBarPosition: 'top',
   windowStack: ['work', 'about', 'contact', 'terminal', 'settings', 'guide'],
@@ -487,15 +510,17 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
         if (!sticky) return [];
         const savedColor = (sticky as unknown as { color: string }).color;
         const migratedColor = savedColor === 'coral' ? 'red' : savedColor;
-        return (sticky.id === 'sticky' || /^sticky-\d+$/.test(sticky.id))
+        return (systemStickyIds.has(sticky.id as SystemStickyId) || /^sticky-\d+$/.test(sticky.id))
           && stickyPalette.some((color) => color.id === migratedColor)
           && typeof sticky.text === 'string'
             ? [{
               ...sticky,
               color: migratedColor as StickyColorId,
               rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
-              author: sticky.author === 'user' ? 'user' as const : sticky.id === 'sticky' ? 'john' as const : 'user' as const,
-              createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt ? sticky.createdAt : sticky.id === 'sticky' ? '09:42' : 'saved',
+              author: isSystemStickyId(sticky.id) ? 'john' as const : 'user' as const,
+              createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt
+                ? sticky.createdAt
+                : systemStickies.find((item) => item.id === sticky.id)?.createdAt ?? 'saved',
             }]
             : [];
       })
@@ -505,6 +530,10 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
           ? migratedLegacyStickyColor as StickyColorId
           : defaultSticky.color,
       }];
+    const hydratedStickies = [
+      ...stickies,
+      ...systemStickies.filter((systemSticky) => !stickies.some((sticky) => sticky.id === systemSticky.id)),
+    ];
     const allWindowIds: WindowId[] = ['about', 'work', 'contact', 'terminal', 'settings', 'guide'];
     const savedWindowStack = Array.isArray(parsed.windowStack)
       ? parsed.windowStack.filter((id, index, ids): id is WindowId => (
@@ -535,10 +564,10 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
     );
     const activeStickyId = (
       typeof parsed.activeStickyId === 'string'
-      && stickies.some((sticky) => sticky.id === parsed.activeStickyId)
+      && hydratedStickies.some((sticky) => sticky.id === parsed.activeStickyId)
     )
       ? parsed.activeStickyId as StickyItemId
-      : stickies[0]?.id ?? 'sticky';
+      : hydratedStickies[0]?.id ?? 'sticky';
 
     const normalizedState: SavedDesktopState = {
       folderPositions,
@@ -548,7 +577,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       snapToGrid: typeof parsed.snapToGrid === 'boolean' ? parsed.snapToGrid : defaultDesktopState.snapToGrid,
       theme: parsed.theme === 'light' || parsed.theme === 'dark' ? parsed.theme : defaultDesktopState.theme,
       showDesktopIcons: typeof parsed.showDesktopIcons === 'boolean' ? parsed.showDesktopIcons : defaultDesktopState.showDesktopIcons,
-      stickies: Array.isArray(parsed.stickies) ? stickies : defaultDesktopState.stickies,
+      stickies: Array.isArray(parsed.stickies) ? hydratedStickies : defaultDesktopState.stickies,
       dockPosition: ['bottom', 'top', 'left', 'right'].includes(parsed.dockPosition as string) ? (parsed.dockPosition as DockPosition) : defaultDesktopState.dockPosition,
       systemBarPosition: ['bottom', 'top', 'left', 'right'].includes(parsed.systemBarPosition as string) ? (parsed.systemBarPosition as DockPosition) : defaultDesktopState.systemBarPosition,
       windowStack,
@@ -4846,7 +4875,11 @@ function Home() {
   };
   const addSticky = (sourceId: StickyItemId) => {
     const source = stickies.find((sticky) => sticky.id === sourceId) ?? stickies[0] ?? defaultSticky;
-    const numericIds = stickies.map((sticky) => sticky.id === 'sticky' ? 0 : Number(sticky.id.slice(7))).filter(Number.isFinite);
+    const numericIds = stickies.flatMap((sticky) => {
+      if (sticky.id === 'sticky') return [0];
+      const match = /^sticky-(\d+)$/.exec(sticky.id);
+      return match ? [Number(match[1])] : [];
+    });
     const id = `sticky-${Math.max(0, ...numericIds) + 1}` as StickyItemId;
     const area = desktopAreaRef.current;
     const sourcePosition = workspaceMode === 'desktop'
@@ -4865,7 +4898,7 @@ function Home() {
       dragPositions: { ...desktopGeometryRef.current.dragPositions, [id]: { left, top } },
       itemSizes: { ...desktopGeometryRef.current.itemSizes, [id]: { width, height } },
     };
-    setStickies((current) => [...current, createUserSticky(id, source.color, rotations[(numericIds.length - 1) % rotations.length])]);
+    setStickies((current) => [...current, createUserSticky(id, source.color, rotations[Math.max(0, numericIds.length - 1) % rotations.length])]);
     setDragPositions((current) => ({ ...current, [id]: { left, top } }));
     setItemSizes((current) => ({ ...current, [id]: { width, height } }));
     setActiveStickyId(id);
@@ -4876,7 +4909,7 @@ function Home() {
     });
   };
   const deleteSticky = (id: StickyItemId) => {
-    if (id === 'sticky') return;
+    if (isSystemStickyId(id)) return;
     const remaining = stickies.filter((sticky) => sticky.id !== id);
     setStickies(remaining);
     setActiveStickyId((activeId) => activeId === id ? (remaining[0]?.id ?? 'sticky') : activeId);
@@ -5372,7 +5405,7 @@ function Home() {
               >
                 <Plus size={16} strokeWidth={2} aria-hidden="true" />
               </button>
-              {sticky.id !== 'sticky' && (
+              {!isSystemStickyId(sticky.id) && (
                 <button
                   type="button"
                   className="sticky-delete-button"
@@ -5404,7 +5437,7 @@ function Home() {
                 <button type="button" onClick={() => selectAdjacentSticky(1)} disabled={stickies.length < 2} aria-label="Next sticky"><ChevronRight size={14} /></button>
                 <button type="button" onClick={() => cycleStickyColor(sticky.id)}>Color</button>
                 <button type="button" onClick={() => addSticky(sticky.id)}><Plus size={14} /> Add</button>
-                {sticky.id !== 'sticky' && (
+                {!isSystemStickyId(sticky.id) && (
                   <button type="button" className="managed-sticky-delete" onClick={() => deleteSticky(sticky.id)}><X size={14} /> Delete</button>
                 )}
               </div>
@@ -5642,7 +5675,7 @@ function Home() {
           >
             <span>Reset rotation</span>
           </button>
-          {stickyMenu.id !== 'sticky' && (
+          {!isSystemStickyId(stickyMenu.id) && (
             <>
               <div className="context-menu-separator" />
               <button

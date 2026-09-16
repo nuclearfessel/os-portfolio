@@ -2612,18 +2612,39 @@ test('all ten sticky colors have distinct Low and High Contrast variants', async
 });
 
 test('deletes only user-created stickies after confirmation and clears their saved layout', async ({ page }) => {
-  const originalSticky = page.getByTestId('sticky-sticky');
-  await expect(originalSticky.getByRole('button', { name: /Delete/ })).toHaveCount(0);
-  await openStickyMenu(page);
-  await expect(page.getByTestId('button-delete-sticky')).toHaveCount(0);
-  await page.keyboard.press('Escape');
+  const systemStickies = [
+    {
+      id: 'sticky',
+      text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
+      color: 'purple',
+    },
+    {
+      id: 'sticky-system-parity',
+      text: 'Parity is a production practice.',
+      color: 'teal',
+    },
+    {
+      id: 'sticky-system-scale',
+      text: 'Good systems make the next decision easier—and help teams keep making it at scale.',
+      color: 'orange',
+    },
+  ];
+  for (const systemSticky of systemStickies) {
+    const sticky = page.getByTestId(`sticky-${systemSticky.id}`);
+    await expect(sticky).toHaveAttribute('data-sticky-color', systemSticky.color);
+    await expect(sticky.getByRole('textbox')).toHaveValue(systemSticky.text);
+    await expect(sticky.getByRole('button', { name: /Delete/ })).toHaveCount(0);
+    await sticky.dispatchEvent('contextmenu');
+    await expect(page.getByTestId('button-delete-sticky')).toHaveCount(0);
+    await page.keyboard.press('Escape');
+  }
 
   const addStickyButton = page.getByTestId('button-add-sticky');
   await addStickyButton.focus();
   await page.keyboard.press('Enter');
 
   const createdSticky = page.getByTestId('sticky-sticky-2');
-  const createdText = createdSticky.getByRole('textbox', { name: 'Sticky note 3 text' });
+  const createdText = createdSticky.getByRole('textbox', { name: 'Sticky note 5 text' });
   const deleteButton = page.getByTestId('button-delete-sticky-2');
   await expect(createdSticky).toBeVisible();
   await createdText.fill('Delete this saved note.');
@@ -2648,7 +2669,7 @@ test('deletes only user-created stickies after confirmation and clears their sav
     size: { width: expect.any(Number), height: expect.any(Number) },
   });
 
-  await deleteButton.click();
+  await deleteButton.dispatchEvent('click');
   const deleteDialog = page.getByRole('alertdialog', { name: 'Delete this sticky?' });
   const cancelDelete = deleteDialog.getByRole('button', { name: 'Cancel' });
   const confirmDelete = page.getByTestId('button-confirm-delete-sticky');
@@ -2687,7 +2708,7 @@ test('deletes only user-created stickies after confirmation and clears their sav
       hasSize: Object.prototype.hasOwnProperty.call(saved.itemSizes ?? {}, 'sticky-2'),
     };
   }, storageKey)).toEqual({
-    stickyIds: ['sticky', 'sticky-1'],
+    stickyIds: ['sticky', 'sticky-1', 'sticky-system-parity', 'sticky-system-scale'],
     hasPosition: false,
     hasSize: false,
   });
@@ -2696,25 +2717,48 @@ test('deletes only user-created stickies after confirmation and clears their sav
   await expect(page.getByTestId('sticky-sticky-2')).toHaveCount(0);
   await expect(page.getByTestId('sticky-sticky')).toBeVisible();
   const savedAfterReload = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
-  expect(savedAfterReload.stickies.map((item: { id: string }) => item.id)).toEqual(['sticky', 'sticky-1']);
+  expect(savedAfterReload.stickies.map((item: { id: string }) => item.id)).toEqual([
+    'sticky',
+    'sticky-1',
+    'sticky-system-parity',
+    'sticky-system-scale',
+  ]);
   expect(savedAfterReload.itemPositions).not.toHaveProperty('sticky-2');
   expect(savedAfterReload.itemSizes).not.toHaveProperty('sticky-2');
 });
 
-test('focusing a desktop window preserves the sticky stacking order', async ({ page }) => {
+test('multiple stickies keep one active note above the rest and all notes below windows', async ({ page }) => {
   await page.getByTestId('button-add-sticky').click();
 
-  const systemSticky = page.getByTestId('sticky-sticky');
-  const activeUserSticky = page.getByTestId('sticky-sticky-2');
-  const readZIndex = (locator: typeof systemSticky) =>
+  const stickyIds = [
+    'sticky',
+    'sticky-system-parity',
+    'sticky-system-scale',
+    'sticky-1',
+    'sticky-2',
+  ];
+  const readZIndex = (locator: ReturnType<typeof page.getByTestId>) =>
     locator.evaluate((element) => Number(getComputedStyle(element).zIndex));
 
-  await expect(activeUserSticky).toBeVisible();
-  expect(await readZIndex(activeUserSticky)).toBeGreaterThan(await readZIndex(systemSticky));
+  for (const activeId of stickyIds) {
+    await page.getByTestId(`sticky-${activeId}`).getByRole('textbox').dispatchEvent('pointerdown');
+    await expect.poll(async () => Promise.all(stickyIds.map(async (id) => ({
+      id,
+      zIndex: await readZIndex(page.getByTestId(`sticky-${id}`)),
+    })))).toEqual(stickyIds.map((id) => ({
+      id,
+      zIndex: id === activeId ? 5 : 4,
+    })));
+  }
 
   await page.getByTestId('window-work').click({ position: { x: 40, y: 40 } });
 
-  expect(await readZIndex(activeUserSticky)).toBeGreaterThan(await readZIndex(systemSticky));
+  const stickyZIndexes = await Promise.all(stickyIds.map((id) => readZIndex(page.getByTestId(`sticky-${id}`))));
+  const visibleWindowZIndexes = await page.locator('.window:visible').evaluateAll((windows) =>
+    windows.map((window) => Number(getComputedStyle(window).zIndex)),
+  );
+  expect(Math.max(...stickyZIndexes)).toBeLessThan(Math.min(...visibleWindowZIndexes));
+  expect(stickyZIndexes.filter((zIndex) => zIndex === 5)).toHaveLength(1);
 });
 
 test('keeps stickies hidden on mobile and tablet workspaces', async ({ page }) => {
@@ -2910,7 +2954,11 @@ test('saves the current desktop state as the default only after confirmation', a
       },
       activeWindow: 'work',
        windowStack: ['about', 'settings', 'guide', 'contact', 'terminal', 'work'],
-      stickies: [{ id: 'sticky' }],
+      stickies: [
+        { id: 'sticky' },
+        { id: 'sticky-system-parity' },
+        { id: 'sticky-system-scale' },
+      ],
     });
 
   await page.getByTestId('button-close-contact').click();
@@ -2919,7 +2967,7 @@ test('saves the current desktop state as the default only after confirmation', a
   await page.getByTestId('button-add-sticky').dispatchEvent('click');
   await page.getByTestId('button-delete-sticky-2').dispatchEvent('click');
   await page.getByTestId('button-confirm-delete-sticky').click();
-  await expect(page.locator('[data-testid^="sticky-"]')).toHaveCount(2);
+  await expect(page.locator('[data-testid^="sticky-"]')).toHaveCount(4);
 
   await openDesktopMenu(page);
   await page.getByRole('menuitem', { name: 'Reset desktop…' }).click();
@@ -2929,8 +2977,10 @@ test('saves the current desktop state as the default only after confirmation', a
   await expect(page.getByTestId('window-work')).toBeVisible();
   await expect(page.getByTestId('window-contact')).toBeVisible();
   await expect(page.getByTestId('window-terminal')).toBeVisible();
-  await expect(page.locator('[data-testid^="sticky-"]')).toHaveCount(1);
+  await expect(page.locator('[data-testid^="sticky-"]')).toHaveCount(3);
   await expect(page.getByTestId('sticky-sticky')).toBeVisible();
+  await expect(page.getByTestId('sticky-sticky-system-parity')).toBeVisible();
+  await expect(page.getByTestId('sticky-sticky-system-scale')).toBeVisible();
   await expect(page.getByTestId('window-work')).toHaveClass(/is-active/);
   const finalStack = await page.locator('[data-testid^="window-"]').evaluateAll((windows) => Object.fromEntries(
     windows.map((window) => [window.getAttribute('data-testid'), Number(window.getAttribute('style')?.match(/z-index:\s*(\d+)/)?.[1] ?? 0)]),

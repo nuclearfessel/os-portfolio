@@ -47,6 +47,10 @@ Sticky notes are free-floating text/media surfaces on the desktop canvas. They e
 | Delete confirmation | Product (use `AlertDialog` for confirmation) |
 | Z-order | Product state |
 
+System-owned notes may be movable, rotatable, recolorable, and editable while
+remaining non-deletable. Use dedicated system IDs rather than numeric user-note
+IDs so protected defaults never collide with notes created by site users.
+
 ### Desktop stacking contract
 
 Keep every visible sticky in a bounded layer above wallpaper, solid fills,
@@ -102,8 +106,9 @@ colors into the generic contrast surface.
 ## Accessibility checklist
 
 - [ ] Sticky note container has `role="article"` or equivalent if it's a distinct content unit.
-- [ ] Delete button has `aria-label="Delete note"`.
-- [ ] Deletion is confirmed via `AlertDialog` before data is removed.
+- [ ] User-created notes have a delete button with `aria-label="Delete note"`.
+- [ ] System-owned notes expose no delete action.
+- [ ] User-note deletion is confirmed via `AlertDialog` before data is removed.
 - [ ] Keyboard alternative exists for moving notes (drag-only is not sufficient).
 - [ ] Sticky content remains above all desktop content and below every open window.
 

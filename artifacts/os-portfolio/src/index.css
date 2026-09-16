@@ -1092,6 +1092,11 @@ button { cursor: pointer; }
 
 .guide-topic .guide-card-index {
   color: var(--guide-accent);
+  min-width: 0;
+  align-self: start;
+  padding-top: 4px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .guide-topic h3,
@@ -1113,6 +1118,13 @@ button { cursor: pointer; }
   color: #8d92ae;
   font-size: 12px;
   line-height: 1.7;
+}
+
+.guide-topic > div,
+.guide-detail > div,
+.guide-step > div,
+.guide-card > div {
+  min-width: 0;
 }
 
 .theme-light .guide-topic p,

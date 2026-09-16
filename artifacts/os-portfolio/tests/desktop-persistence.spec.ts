@@ -1171,7 +1171,9 @@ test('Guide Sticky anatomy uses clear add and trash controls with an adjacent ma
   await expect(actions.locator('.gvc-sticky-btn svg')).toHaveCount(2);
   await expect(actions.locator('.gvc-sticky-actions-marker')).toHaveText('B');
 
-  const geometry = await actions.evaluate((element) => {
+  const geometry = await diagram.evaluate((root) => {
+    const body = root.querySelector<HTMLElement>('.gvc-sticky-body')!.getBoundingClientRect();
+    const element = root.querySelector<HTMLElement>('.gvc-sticky-actions')!;
     const marker = element.querySelector<HTMLElement>('.gvc-sticky-actions-marker')!.getBoundingClientRect();
     const controls = [...element.querySelectorAll<HTMLElement>('.gvc-sticky-btn')].map((control) => control.getBoundingClientRect());
     const controlLeft = Math.min(...controls.map((control) => control.left));
@@ -1182,10 +1184,13 @@ test('Guide Sticky anatomy uses clear add and trash controls with an adjacent ma
       controlsCenter: (controlLeft + controlRight) / 2,
       markerBottom: marker.bottom,
       controlTop,
+      bodyWidth: body.width,
+      bodyHeight: body.height,
     };
   });
   expect(Math.abs(geometry.markerCenter - geometry.controlsCenter)).toBeLessThanOrEqual(2);
   expect(geometry.markerBottom).toBeLessThanOrEqual(geometry.controlTop);
+  expect(Math.abs(geometry.bodyWidth - geometry.bodyHeight)).toBeLessThanOrEqual(0.5);
 });
 
 test('Sticky illustration fills keep their round markers visible in both themes', async ({ page }) => {

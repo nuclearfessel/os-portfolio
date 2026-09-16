@@ -4740,7 +4740,7 @@ button { cursor: pointer; }
   gap: 14px;
 }
 
-@container settings-window (min-width: 681px) {
+@container settings-window (min-width: 957px) {
   .settings-transparency-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

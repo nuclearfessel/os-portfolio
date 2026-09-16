@@ -2161,14 +2161,18 @@ test('keeps the desktop shortcuts drawer vertically compact', async ({ page }) =
   const geometry = await drawer.evaluate((element) => {
     const button = element.querySelector<HTMLElement>('.quick-button')!;
     const grid = element.querySelector<HTMLElement>('.shortcut-menu-grid')!;
+    const kicker = element.querySelector<HTMLElement>('.section-kicker')!;
+    const description = element.querySelector<HTMLElement>('.shortcut-menu-description')!;
     return {
       drawerHeight: element.getBoundingClientRect().height,
       buttonHeight: button.getBoundingClientRect().height,
       gridGap: Number.parseFloat(getComputedStyle(grid).rowGap),
+      kickerDescriptionGap: description.getBoundingClientRect().top - kicker.getBoundingClientRect().bottom,
     };
   });
   expect(geometry.buttonHeight).toBeCloseTo(20, 0);
   expect(geometry.gridGap).toBeCloseTo(0.5, 1);
+  expect(geometry.kickerDescriptionGap).toBeCloseTo(16, 0);
   expect(geometry.drawerHeight).toBeLessThan(335);
 });
 

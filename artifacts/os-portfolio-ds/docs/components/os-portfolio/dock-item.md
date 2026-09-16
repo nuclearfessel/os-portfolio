@@ -106,9 +106,9 @@ The Shortcuts item opens a non-modal drawer that:
 
 - closes with `Escape`, an outside pointer press, or its trigger;
 - stays open when interacting inside it;
-- matches the 218px desktop context-menu width;
+- uses a compact 202px width;
 - uses compact vertical spacing for its shortcut rows;
-- keeps the beak tip, rather than the panel edge, 16px from the Shortcuts Dock
+- keeps the beak tip, rather than the panel edge, 4px from the Shortcuts Dock
   item on the item’s inward-facing side;
 - follows the Dock to any desktop edge and uses a directional beak aimed at the
   center of the Shortcuts item, including when viewport clamping shifts the drawer;

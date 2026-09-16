@@ -4227,7 +4227,7 @@ button { cursor: pointer; }
 .mobile-shortcut-menu.shortcut-menu-system-bar-right { inset: 16px 64px auto 16px; }
 .desktop-shortcut-drawer {
   inset: auto;
-  width: 218px;
+  width: 202px;
   max-height: calc(100dvh - 32px);
   padding: 10px;
   box-sizing: border-box;
@@ -4237,8 +4237,8 @@ button { cursor: pointer; }
 .desktop-shortcut-drawer.is-positioned { visibility: visible; }
 .shortcut-menu-description { margin: 9px 0 14px; font-size: 12px; }
 .shortcut-menu-grid { display: grid; gap: 8px; }
-.desktop-shortcut-drawer .shortcut-menu-description { margin: 5px 0 7px; line-height: 1.3; }
-.desktop-shortcut-drawer .shortcut-menu-grid { gap: 3px; }
+.desktop-shortcut-drawer .shortcut-menu-description { margin: 2.5px 0 3.5px; line-height: 1.3; }
+.desktop-shortcut-drawer .shortcut-menu-grid { gap: 1.5px; }
 .desktop-shortcut-drawer .quick-button { min-height: 30px; padding: 5px 10px; }
 .desktop-shortcut-drawer::before,
 .desktop-shortcut-drawer::after {

@@ -2115,10 +2115,22 @@ test('anchors the shortcuts drawer and beak to its Dock item on every desktop ed
 
     const drawer = page.getByTestId('menu-mobile');
     await expect(drawer).toHaveAttribute('data-shortcut-placement', position);
+    await expect.poll(async () => {
+      const [currentDrawerBox, currentTriggerBox] = await Promise.all([drawer.boundingBox(), trigger.boundingBox()]);
+      if (!currentDrawerBox || !currentTriggerBox) return Number.NaN;
+      return position === 'bottom'
+        ? currentTriggerBox.y - (currentDrawerBox.y + currentDrawerBox.height)
+        : position === 'top'
+          ? currentDrawerBox.y - (currentTriggerBox.y + currentTriggerBox.height)
+          : position === 'left'
+            ? currentDrawerBox.x - (currentTriggerBox.x + currentTriggerBox.width)
+            : currentTriggerBox.x - (currentDrawerBox.x + currentDrawerBox.width);
+    }, { message: `${position} Dock panel gap` }).toBeCloseTo(20, 0);
+
     const [drawerBox, triggerBox] = await Promise.all([drawer.boundingBox(), trigger.boundingBox()]);
     expect(drawerBox).not.toBeNull();
     expect(triggerBox).not.toBeNull();
-    expect(drawerBox!.width).toBeCloseTo(218, 0);
+    expect(drawerBox!.width).toBeCloseTo(202, 0);
 
     const panelGap = position === 'bottom'
       ? triggerBox!.y - (drawerBox!.y + drawerBox!.height)
@@ -2127,8 +2139,8 @@ test('anchors the shortcuts drawer and beak to its Dock item on every desktop ed
         : position === 'left'
           ? drawerBox!.x - (triggerBox!.x + triggerBox!.width)
           : triggerBox!.x - (drawerBox!.x + drawerBox!.width);
-    expect(panelGap, `${position} Dock panel gap`).toBeCloseTo(32, 0);
-    expect(panelGap - 16, 'beak tip should remain 16px from the Shortcut Dock item').toBeCloseTo(16, 0);
+    expect(panelGap).toBeCloseTo(20, 0);
+    expect(panelGap - 16, 'beak tip should remain 4px from the Shortcut Dock item').toBeCloseTo(4, 0);
 
     const beakOffset = await drawer.evaluate((element) => (
       Number.parseFloat(getComputedStyle(element).getPropertyValue('--shortcut-beak-offset'))
@@ -2156,8 +2168,8 @@ test('keeps the desktop shortcuts drawer vertically compact', async ({ page }) =
     };
   });
   expect(geometry.buttonHeight).toBeCloseTo(30, 0);
-  expect(geometry.gridGap).toBeCloseTo(3, 0);
-  expect(geometry.drawerHeight).toBeLessThan(350);
+  expect(geometry.gridGap).toBeCloseTo(1.5, 1);
+  expect(geometry.drawerHeight).toBeLessThan(335);
 });
 
 test('falls back to safe defaults when saved data is corrupted', async ({ page }) => {

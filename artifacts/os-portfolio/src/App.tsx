@@ -4418,7 +4418,7 @@ function Home() {
       const menuRect = menu.getBoundingClientRect();
       const viewportPadding = 16;
       const beakDepth = 16;
-      const beakToTriggerGap = 16;
+      const beakToTriggerGap = 4;
       const triggerGap = beakDepth + beakToTriggerGap;
       const triggerCenterX = triggerRect.left + triggerRect.width / 2;
       const triggerCenterY = triggerRect.top + triggerRect.height / 2;

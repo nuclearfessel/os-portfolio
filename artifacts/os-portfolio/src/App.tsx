@@ -4580,7 +4580,7 @@ function Home() {
     const resize = resizeRef.current;
     if (!resize) return;
     const isSticky = resize.id.startsWith('sticky');
-    const minWidth = isSticky ? MIN_STICKY_SIZE.width : 320;
+    const minWidth = isSticky ? MIN_STICKY_SIZE.width : resize.id === 'guide' ? 340 : 320;
     const minHeight = isSticky ? MIN_STICKY_SIZE.height : 240;
     const deltaX = event.clientX - resize.startX;
     const deltaY = event.clientY - resize.startY;

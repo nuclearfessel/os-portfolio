@@ -1747,7 +1747,7 @@ test('guide system bar keeps one fixed width across the navigation collapse', as
   const guideWindow = page.getByTestId('window-guide');
   await page.getByTestId('guide-nav-systembar').click();
 
-  for (const width of [800, 563, 562, 400]) {
+  for (const width of [800, 563, 562, 400, 340]) {
     await guideWindow.evaluate((element, nextWidth) => {
       element.style.width = `${nextWidth}px`;
     }, width);
@@ -1769,7 +1769,7 @@ test('guide system bar keeps one fixed width across the navigation collapse', as
       };
     });
 
-    expect(layout.systemBarWidth).toBeCloseTo(280, 0);
+    expect(layout.systemBarWidth).toBeCloseTo(286, 0);
     expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth);
     expect(layout.childrenFit).toBe(true);
     expect(layout.columns).toBe(width >= 563 ? 2 : 1);

@@ -947,7 +947,8 @@ button { cursor: pointer; }
 .window.guide {
   top: 8%;
   left: 18%;
-  width: 340px !important;
+  width: min(820px, calc(100vw - 64px));
+  min-width: 340px;
   height: min(620px, calc(100dvh - 132px));
   overflow: hidden;
   container-type: inline-size;
@@ -2130,7 +2131,7 @@ button { cursor: pointer; }
   justify-content: space-between;
   flex-wrap: nowrap;
   gap: 3px;
-  width: 280px;
+  width: 286px;
   max-width: 100%;
   height: 32px;
   min-width: 0;
@@ -2140,7 +2141,7 @@ button { cursor: pointer; }
   border-radius: 5px;
   background: var(--gv-surface-base);
   border: 1px solid var(--gv-primary-ring);
-  font: 7px var(--app-font-mono);
+  font: 8px var(--app-font-mono);
   color: var(--gv-fg-muted);
   white-space: nowrap;
 }
@@ -2152,7 +2153,7 @@ button { cursor: pointer; }
   flex: 0 0 auto;
   flex-wrap: nowrap;
   min-width: 0;
-  gap: 1px;
+  gap: 2px;
   white-space: nowrap;
 }
 
@@ -2180,7 +2181,7 @@ button { cursor: pointer; }
 
 .gvc-sysbar-statustext {
   color: var(--gv-fg-muted);
-  font: 7px var(--app-font-mono);
+  font: 8px var(--app-font-mono);
   text-transform: uppercase;
   letter-spacing: .06em;
 }
@@ -2197,7 +2198,13 @@ button { cursor: pointer; }
 
 .gvc-sysbar-clock {
   color: var(--gv-fg-muted);
-  font: 7px var(--app-font-mono);
+  font: 8px var(--app-font-mono);
+}
+
+@container settings-window (max-width: 560px) {
+  .guide-visual-sysbar-demo > .gvc-annotated-crop {
+    padding-inline: 3px;
+  }
 }
 
 /* ---- System bar side-rail (vertical) illustration ---- */

@@ -5422,6 +5422,18 @@ button { cursor: pointer; }
   transition-duration: 0.08s !important;
 }
 
+/* The terminal caret is functional feedback, not decorative UI motion. */
+[data-no-animations] .terminal-live-cursor,
+[data-fast-ui] .terminal-live-cursor {
+  animation: cursor-blink 1s step-end infinite !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-live-cursor {
+    animation: cursor-blink 1s step-end infinite !important;
+  }
+}
+
 /* =========================================================
    Contrast Themes
    ========================================================= */

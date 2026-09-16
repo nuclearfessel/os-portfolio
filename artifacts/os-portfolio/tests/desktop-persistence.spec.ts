@@ -709,6 +709,26 @@ test('Terminal uses the same blinking block cursor shown in the User Guide', asy
   expect(cursorStyle).toEqual({ width: 7, height: 13, animationName: 'cursor-blink' });
   await expect(input).toHaveCSS('caret-color', 'rgba(0, 0, 0, 0)');
 
+  await page.evaluate(() => {
+    document.documentElement.setAttribute('data-no-animations', '');
+    document.documentElement.setAttribute('data-fast-ui', '');
+  });
+  const reducedEffectsAnimation = await cursor.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      animationName: style.animationName,
+      iterationCount: style.animationIterationCount,
+    };
+  });
+  expect(reducedEffectsAnimation).toEqual({
+    animationName: 'cursor-blink',
+    iterationCount: 'infinite',
+  });
+  const initialAnimationTime = await cursor.evaluate((element) => Number(element.getAnimations()[0]?.currentTime ?? 0));
+  await page.waitForTimeout(120);
+  const advancedAnimationTime = await cursor.evaluate((element) => Number(element.getAnimations()[0]?.currentTime ?? 0));
+  expect(advancedAnimationTime).toBeGreaterThan(initialAnimationTime);
+
   await input.fill('help');
   const typedCursorLeft = await cursor.evaluate((element) => element.getBoundingClientRect().left);
   expect(typedCursorLeft).toBeGreaterThan(initialCursorLeft);

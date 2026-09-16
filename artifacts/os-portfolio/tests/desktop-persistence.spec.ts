@@ -1506,6 +1506,8 @@ test('Customize, Tech notes, and Shortcuts pages each contain a visual illustrat
   await expect(kbdVisual).toContainText('Esc');
   await expect(kbdVisual).toContainText('Close the front window');
   await expect(kbdVisual).toContainText('Close all windows');
+  const modifierKeys = kbdVisual.locator('.gvc-kbd-chord-keys .gvc-kbd-key');
+  await expect(modifierKeys.first()).toHaveCSS('border-bottom-width', '1px');
 });
 
 test('guide visuals do not overflow at narrow Guide window width', async ({ page }) => {

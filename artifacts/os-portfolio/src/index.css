@@ -3429,6 +3429,10 @@ button { cursor: pointer; }
   font-size: 10px;
 }
 
+.gvc-kbd-chord-keys .gvc-kbd-key {
+  border-bottom-width: 1px;
+}
+
 .gvc-kbd-key-label {
   font: 8px var(--app-font-mono);
   color: var(--gv-fg-muted);

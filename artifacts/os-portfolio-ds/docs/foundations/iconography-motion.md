@@ -78,9 +78,19 @@ The package does not apply its own `@media (prefers-reduced-motion)` rules beyon
 
 See → [Accessibility](./accessibility.md), [Accessibility preference panel](../patterns/accessibility-panel.md)
 
+### Motion do / don't
+
+| Do | Don't |
+|---|---|
+| Use component motion contracts for duration and easing | Reference primitive durations or easing curves directly from component styles |
+| Keep feedback fast, spatial, and interruptible | Delay interaction while an entry animation completes |
+| Animate `transform` and `opacity` when possible | Animate layout properties such as width, height, padding, or position |
+| Keep drag and resize geometry directly coupled to the pointer | Apply easing while the pointer controls geometry |
+| Honor reduced-motion settings while preserving functional feedback | Remove the Terminal caret or other motion that communicates essential state |
+
 ---
 
-## Do / Don't
+## Iconography do / don't
 
 | ✅ Do | ❌ Don't |
 |---|---|

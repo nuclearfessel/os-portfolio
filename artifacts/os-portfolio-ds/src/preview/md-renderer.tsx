@@ -90,8 +90,17 @@ function tokenise(md: string): Block[] {
     if (/^[-*+]\s/.test(line.trim())) {
       const items: string[] = [];
       while (i < lines.length && /^[-*+]\s/.test(lines[i].trim())) {
-        items.push(lines[i].trim().replace(/^[-*+]\s+/, ''));
+        const itemLines = [lines[i].trim().replace(/^[-*+]\s+/, '')];
         i++;
+        while (
+          i < lines.length &&
+          lines[i].trim().length > 0 &&
+          !/^([-*+]\s|\d+\.\s|#{1,4}\s|>|```|\|)/.test(lines[i].trim())
+        ) {
+          itemLines.push(lines[i].trim());
+          i++;
+        }
+        items.push(itemLines.join(' '));
       }
       blocks.push({ kind: 'bullet-list', items });
       continue;
@@ -101,8 +110,17 @@ function tokenise(md: string): Block[] {
     if (/^\d+\.\s/.test(line.trim())) {
       const items: string[] = [];
       while (i < lines.length && /^\d+\.\s/.test(lines[i].trim())) {
-        items.push(lines[i].trim().replace(/^\d+\.\s+/, ''));
+        const itemLines = [lines[i].trim().replace(/^\d+\.\s+/, '')];
         i++;
+        while (
+          i < lines.length &&
+          lines[i].trim().length > 0 &&
+          !/^([-*+]\s|\d+\.\s|#{1,4}\s|>|```|\|)/.test(lines[i].trim())
+        ) {
+          itemLines.push(lines[i].trim());
+          i++;
+        }
+        items.push(itemLines.join(' '));
       }
       blocks.push({ kind: 'ordered-list', items });
       continue;
@@ -123,7 +141,11 @@ function tokenise(md: string): Block[] {
     if (line.trim().length > 0) {
       const paragraphLines: string[] = [line.trim()];
       i++;
-      while (i < lines.length && lines[i].trim().length > 0 && !/^[#|>\-*+\d`]/.test(lines[i].trim())) {
+      while (
+        i < lines.length &&
+        lines[i].trim().length > 0 &&
+        !/^(#{1,4}\s|[-*+]\s|\d+\.\s|>|```|\|)/.test(lines[i].trim())
+      ) {
         paragraphLines.push(lines[i].trim());
         i++;
       }
@@ -211,7 +233,7 @@ function renderBlock(block: Block, i: number): ReactNode {
 
     case 'paragraph':
       return (
-        <p key={i} className="text-sm leading-6 text-foreground/80">
+        <p key={i} className="w-full max-w-none text-sm leading-6 text-foreground/80">
           {renderInline(block.text)}
         </p>
       );
@@ -221,11 +243,11 @@ function renderBlock(block: Block, i: number): ReactNode {
 
     case 'bullet-list':
       return (
-        <ul key={i} className="space-y-1.5">
+        <ul key={i} className="w-full max-w-none space-y-1.5">
           {block.items.map((item, j) => (
             <li key={j} className="flex gap-2 text-sm text-foreground/80">
               <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-              <span className="leading-6">{renderInline(item)}</span>
+              <span className="min-w-0 flex-1 leading-6">{renderInline(item)}</span>
             </li>
           ))}
         </ul>
@@ -233,11 +255,11 @@ function renderBlock(block: Block, i: number): ReactNode {
 
     case 'ordered-list':
       return (
-        <ol key={i} className="space-y-1.5">
+        <ol key={i} className="w-full max-w-none space-y-1.5">
           {block.items.map((item, j) => (
             <li key={j} className="flex gap-2 text-sm text-foreground/80">
               <span className="mt-0.5 shrink-0 font-mono text-xs text-primary">{j + 1}.</span>
-              <span className="leading-6">{renderInline(item)}</span>
+              <span className="min-w-0 flex-1 leading-6">{renderInline(item)}</span>
             </li>
           ))}
         </ol>
@@ -281,7 +303,7 @@ function renderBlock(block: Block, i: number): ReactNode {
 
     case 'blockquote':
       return (
-        <blockquote key={i} className="border-l-2 border-primary/40 pl-4">
+        <blockquote key={i} className="w-full max-w-none border-l-2 border-primary/40 pl-4">
           {block.lines.map((l, j) => (
             <p key={j} className="text-sm italic text-muted-foreground leading-6">
               {renderInline(l)}
@@ -311,7 +333,7 @@ export function MarkdownDoc({
   const source = markdown ?? md ?? '';
   const blocks = tokenise(source);
   return (
-    <div className="space-y-4">
+    <div className="w-full max-w-none space-y-4">
       {blocks.map((block, i) => renderBlock(block, i))}
     </div>
   );

@@ -120,6 +120,28 @@ purpose names such as `padding`, `paddingInline`, `paddingBlock`, `gap`, and
 
 ---
 
+## Spacing do / don't
+
+| Do | Don't |
+|---|---|
+| Use component spacing contracts inside reusable components | Reference primitive spacing tokens directly from components |
+| Choose semantic spacing by purpose, such as `iconGap` or `surfacePadding` | Choose a value only because its number looks close |
+| Keep page composition and responsive geometry local to the layout | Promote viewport offsets, calculated widths, or drag positions into spacing tokens |
+| Use one spacing contract consistently across every state of a component | Change padding or gaps on hover, focus, or selected states |
+
+---
+
+## Radius do / don't
+
+| Do | Don't |
+|---|---|
+| Use component radius contracts for controls, surfaces, overlays, and desktop primitives | Reference primitive radius values directly from component styles |
+| Use `control`, `surface`, `elevated`, and `pill` roles according to shape purpose | Pick a radius based only on visual similarity |
+| Keep a component's corner treatment stable across interaction states | Increase or decrease radius on hover, focus, or active states |
+| Use `hairline` only for intentionally near-square details such as the Terminal caret | Use a small non-zero radius where a square corner is required |
+
+---
+
 ## Usage guidance
 
 Prefer the semantic or component contract that describes the purpose of a

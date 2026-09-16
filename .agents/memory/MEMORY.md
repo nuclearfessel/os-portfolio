@@ -23,3 +23,4 @@
 - [Design-token namespace](design-token-namespace.md) — OS Portfolio token names and generated custom properties use the `osp` namespace.
 - [Window overlap shadow artifacts](window-overlap-shadow-artifacts.md) — keep idle shadows, but suppress the moving window’s external blur during drag or resize.
 - [Guide documentation spacing](guide-documentation-spacing.md) — keep guide content editorial and spacious; avoid compact dashboard grids for explanatory material.
+- [Apache error document assets](apache-error-document-assets.md) — custom error pages must not depend on relative assets because the browser retains the failed request URL.

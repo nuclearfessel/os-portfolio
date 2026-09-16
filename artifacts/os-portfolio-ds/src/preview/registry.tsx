@@ -639,7 +639,7 @@ export const NAV_GROUPS: NavGroup[] = [
       },
       {
         id: 'motion-tokens',
-        name: 'Motion tokens',
+        name: 'Motion',
         description: 'Component-level durations and easing contracts used by the design system and OS Portfolio.',
         Page: MotionTokensPage,
       },

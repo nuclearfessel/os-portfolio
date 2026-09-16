@@ -31,7 +31,17 @@ function sourceAlias(value: string) {
   return value.replace(/^\{/, 'osp.').replace(/\}$/, '');
 }
 
-function ValuePreview({ family, property, value }: { family: Family; property: string; value: string }) {
+function ValuePreview({
+  family,
+  property,
+  value,
+  easing,
+}: {
+  family: Family;
+  property: string;
+  value: string;
+  easing?: string;
+}) {
   if (family === 'spacing') {
     const width = Math.min(Math.max(Number.parseFloat(value), 2), 96);
     return <div className="h-3 rounded-full bg-primary" style={{ width }} />;
@@ -43,8 +53,10 @@ function ValuePreview({ family, property, value }: { family: Family; property: s
     return (
       <div className="relative h-5 w-24 overflow-hidden rounded-full bg-muted">
         <div
-          className="absolute top-1 size-3 rounded-full bg-primary motion-safe:animate-[token-motion_var(--token-duration)_ease-in-out_infinite_alternate]"
-          style={{ '--token-duration': value } as React.CSSProperties}
+          className="absolute top-1 size-3 rounded-full bg-primary"
+          style={{
+            animation: `osp-token-motion-preview ${value} ${easing ?? 'ease'} infinite alternate`,
+          }}
         />
       </div>
     );
@@ -68,6 +80,9 @@ function ComponentTokenFamily({ family, title, description }: { family: Family; 
             <div className="mt-4 divide-y divide-border/60">
               {Object.entries(properties).filter(([key]) => !key.startsWith('$')).map(([property, leaf]) => {
                 const resolved = RESOLVED[family][component]?.[property] ?? leaf.$value;
+                const resolvedEasing = family === 'motion'
+                  ? RESOLVED.motion[component]?.easing
+                  : undefined;
                 return (
                   <div key={property} className="grid gap-3 py-3 sm:grid-cols-[1fr_auto] sm:items-center">
                     <div className="min-w-0">
@@ -78,7 +93,12 @@ function ComponentTokenFamily({ family, title, description }: { family: Family; 
                         {sourceAlias(leaf.$value)} → {resolved}
                       </p>
                     </div>
-                    <ValuePreview family={family} property={property} value={resolved} />
+                    <ValuePreview
+                      family={family}
+                      property={property}
+                      value={resolved}
+                      easing={resolvedEasing}
+                    />
                   </div>
                 );
               })}
@@ -109,10 +129,18 @@ export function SpacingRadiusTokensPage() {
 
 export function MotionTokensPage() {
   return (
-    <ComponentTokenFamily
-      family="motion"
-      title="Motion contracts"
-      description="Durations and easing curves for feedback, entry, overlays, launchers, settings controls, and the functional Terminal caret."
-    />
+    <>
+      <style>{`
+        @keyframes osp-token-motion-preview {
+          from { transform: translateX(0); }
+          to { transform: translateX(76px); }
+        }
+      `}</style>
+      <ComponentTokenFamily
+        family="motion"
+        title="Motion contracts"
+        description="Durations and easing curves for feedback, entry, overlays, launchers, settings controls, and the functional Terminal caret."
+      />
+    </>
   );
 }

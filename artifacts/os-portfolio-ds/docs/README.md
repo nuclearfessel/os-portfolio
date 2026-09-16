@@ -23,7 +23,7 @@ Welcome to the documentation root for `@workspace/os-portfolio-ds`. Every spec, 
 | [Color](./foundations/color.md) | `color-roles` |
 | [Typography](./foundations/typography.md) | `type-scale` |
 | [Spacing & Radius](./foundations/spacing-radius.md) | `spacing-radius` |
-| Motion tokens | `motion-tokens` |
+| Motion | `motion-tokens` |
 | [Iconography & Motion](./foundations/iconography-motion.md) | `os-portfolio-guidelines` |
 | [Accessibility](./foundations/accessibility.md) | `accessibility` |
 

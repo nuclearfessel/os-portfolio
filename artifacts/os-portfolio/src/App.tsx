@@ -263,7 +263,7 @@ const defaultSticky: StickyData = {
   text: "The best interfaces don\u2019t ask for attention. They earn trust, one tiny response at a time.",
   rotation: -9,
   author: 'john',
-  createdAt: '09:42',
+  createdAt: '9:42 AM',
 };
 
 const defaultSecondSticky: StickyData = {
@@ -281,7 +281,7 @@ const defaultParitySticky: StickyData = {
   text: 'Parity is a production practice.',
   rotation: 4,
   author: 'john',
-  createdAt: '10:16',
+  createdAt: '10:16 AM',
 };
 
 const defaultScaleSticky: StickyData = {
@@ -290,12 +290,19 @@ const defaultScaleSticky: StickyData = {
   text: 'Good systems make the next decision easier—and help teams keep making it at scale.',
   rotation: -4,
   author: 'john',
-  createdAt: '10:24',
+  createdAt: '10:24 AM',
 };
 
 const systemStickies = [defaultSticky, defaultParitySticky, defaultScaleSticky];
 const systemStickyIds = new Set<SystemStickyId>(systemStickies.map((sticky) => sticky.id as SystemStickyId));
 const isSystemStickyId = (id: StickyItemId): id is SystemStickyId => systemStickyIds.has(id as SystemStickyId);
+const normalizeSystemStickyTime = (value: string) => {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value);
+  if (!match) return value;
+  const hour = Number(match[1]);
+  if (hour > 23) return value;
+  return `${hour % 12 || 12}:${match[2]} ${hour < 12 ? 'AM' : 'PM'}`;
+};
 
 const formatStickyTime = () => new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date());
 const createUserSticky = (id: StickyItemId, color: StickyColorId = defaultSticky.color, rotation = defaultSticky.rotation): StickyData => ({
@@ -519,7 +526,9 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
               rotation: Number.isFinite(sticky.rotation) ? sticky.rotation : 3,
               author: isSystemStickyId(sticky.id) ? 'john' as const : 'user' as const,
               createdAt: typeof sticky.createdAt === 'string' && sticky.createdAt
-                ? sticky.createdAt
+                ? isSystemStickyId(sticky.id)
+                  ? normalizeSystemStickyTime(sticky.createdAt)
+                  : sticky.createdAt
                 : systemStickies.find((item) => item.id === sticky.id)?.createdAt ?? 'saved',
             }]
             : [];

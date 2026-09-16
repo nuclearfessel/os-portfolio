@@ -2617,22 +2617,26 @@ test('deletes only user-created stickies after confirmation and clears their sav
       id: 'sticky',
       text: 'The best interfaces don’t ask for attention. They earn trust, one tiny response at a time.',
       color: 'purple',
+      time: '9:42 AM',
     },
     {
       id: 'sticky-system-parity',
       text: 'Parity is a production practice.',
       color: 'teal',
+      time: '10:16 AM',
     },
     {
       id: 'sticky-system-scale',
       text: 'Good systems make the next decision easier—and help teams keep making it at scale.',
       color: 'orange',
+      time: '10:24 AM',
     },
   ];
   for (const systemSticky of systemStickies) {
     const sticky = page.getByTestId(`sticky-${systemSticky.id}`);
     await expect(sticky).toHaveAttribute('data-sticky-color', systemSticky.color);
     await expect(sticky.getByRole('textbox')).toHaveValue(systemSticky.text);
+    await expect(sticky.locator('.note-signoff')).toContainText(systemSticky.time);
     await expect(sticky.getByRole('button', { name: /Delete/ })).toHaveCount(0);
     await sticky.dispatchEvent('contextmenu');
     await expect(page.getByTestId('button-delete-sticky')).toHaveCount(0);
@@ -2919,7 +2923,7 @@ test('Reset desktop restores every default after confirmation', async ({ page })
       text: "The best interfaces don\u2019t ask for attention. They earn trust, one tiny response at a time.",
       rotation: -9,
       author: 'john',
-      createdAt: '09:42',
+      createdAt: '9:42 AM',
     }, {
       id: 'sticky-1',
       color: 'lemon',
@@ -2927,6 +2931,20 @@ test('Reset desktop restores every default after confirmation', async ({ page })
       rotation: 7,
       author: 'user',
       createdAt: 'saved',
+    }, {
+      id: 'sticky-system-parity',
+      color: 'teal',
+      text: 'Parity is a production practice.',
+      rotation: 4,
+      author: 'john',
+      createdAt: '10:16 AM',
+    }, {
+      id: 'sticky-system-scale',
+      color: 'orange',
+      text: 'Good systems make the next decision easier—and help teams keep making it at scale.',
+      rotation: -4,
+      author: 'john',
+      createdAt: '10:24 AM',
     }],
     dockPosition: 'bottom',
     wallpaperLight: { mode: 'picture', color: '#e8f0ec' },

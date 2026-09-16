@@ -2253,7 +2253,7 @@ button { cursor: pointer; }
   min-height: 76px;
   padding: 18px 10px 10px;
   border-radius: 5px;
-  background: #ffd84d;   /* --sticky-bg default, representational */
+  background: #624393;
   box-shadow: 0 4px 10px rgba(0,0,0,.2);
   transform: rotate(-3deg);
 }
@@ -2270,12 +2270,20 @@ button { cursor: pointer; }
 .gvc-overview-sticky-line {
   height: 4px;
   border-radius: 2px;
-  background: rgba(100,73,0,.38);
+  background: rgba(255,255,255,.38);
 }
 
 .gvc-overview-sticky-line-short {
   width: 70%;
   margin-top: 7px;
+}
+
+.theme-light .gvc-overview-sticky {
+  background: #d9caef;
+}
+
+.theme-light .gvc-overview-sticky-line {
+  background: rgba(23,56,71,.38);
 }
 
 .gvc-overview-icon {

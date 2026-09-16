@@ -1118,6 +1118,44 @@ test('Guide diagram markers use regular font weight', async ({ page }) => {
   }
 });
 
+test('Overview Sticky fill keeps its round marker visible in both themes', async ({ page }) => {
+  for (const theme of ['light', 'dark']) {
+    await page.evaluate((nextTheme) => {
+      const key = 'os-portfolio.desktop.v4';
+      const current = JSON.parse(localStorage.getItem(key) ?? '{}');
+      localStorage.setItem(key, JSON.stringify({ ...current, theme: nextTheme }));
+    }, theme);
+    await page.reload();
+    await page.keyboard.press('8');
+    const sticky = page.getByTestId('window-guide').locator('.gvc-overview-sticky');
+    await expect(sticky).toBeVisible();
+
+    const contrast = await sticky.evaluate((element) => {
+      const parse = (value: string) => {
+        const channels = value.match(/\d+(?:\.\d+)?/g)!.slice(0, 3).map(Number);
+        return channels.map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045
+            ? normalized / 12.92
+            : ((normalized + 0.055) / 1.055) ** 2.4;
+        });
+      };
+      const luminance = (value: string) => {
+        const [red, green, blue] = parse(value);
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      };
+      const stickyLuminance = luminance(getComputedStyle(element).backgroundColor);
+      const markerLuminance = luminance(
+        getComputedStyle(element.querySelector<HTMLElement>('.gvc-dot-badge')!).backgroundColor,
+      );
+      return (Math.max(stickyLuminance, markerLuminance) + 0.05)
+        / (Math.min(stickyLuminance, markerLuminance) + 0.05);
+    });
+
+    expect(contrast, `${theme} Overview Sticky marker contrast`).toBeGreaterThanOrEqual(3);
+  }
+});
+
 test('all Guide page content meets WCAG AA contrast in light and dark themes', async ({ page }) => {
   const sections = [
     'overview',

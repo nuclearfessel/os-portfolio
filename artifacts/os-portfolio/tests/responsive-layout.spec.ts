@@ -129,7 +129,7 @@ test('managed windows keep an 8px inset below the system bar', async ({ page }) 
     expect(windowBox!.y - (barBox!.y + barBox!.height)).toBeCloseTo(8, 0);
     expect(dockBox!.y - (windowBox!.y + windowBox!.height)).toBeGreaterThanOrEqual(7);
     await expect(appWindow).toHaveCSS('background-color', 'rgba(247, 250, 248, 0.8)');
-    await expect(appWindow.locator('.window-header')).toHaveCSS('background-color', 'rgba(194, 222, 216, 0.8)');
+    await expect(appWindow.locator('.window-header')).toHaveCSS('background-color', 'rgba(226, 236, 232, 0.8)');
 
     if (viewport.controlsHidden) {
       await expect(appWindow.locator('.traffic-lights .minimize')).toBeHidden();

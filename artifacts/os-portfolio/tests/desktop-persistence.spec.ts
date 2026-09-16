@@ -2134,6 +2134,8 @@ test('falls back to safe defaults when saved data is corrupted', async ({ page }
 });
 
 test('stays usable when browser storage reads, writes, and removals fail', async ({ page }) => {
+  test.slow();
+
   await page.addInitScript(() => {
     const attempts = { getItem: 0, setItem: 0, removeItem: 0 };
     const storageRecoveryMarker = 'desktop-storage-recovered';

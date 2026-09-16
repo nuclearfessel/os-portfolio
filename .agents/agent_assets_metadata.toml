@@ -14,3 +14,17 @@ mtime_ms = 1789354409731
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d159fe7f-a716-4487-8eae-fc1245a06d3f/c69dcb85-84c5-4470-9202-adcbfb12ed19/a4a945af-682a-4271-9c5a-e5ac194615de"
 storage_version_token = "1789354443298322"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "Ek7JBPWKvbuVLq8gioYmr"
+uri = "file://screenshots/guide-320-systembar.png"
+type = "image"
+title = "Guide at 320px"
+description = "Running OS Portfolio preview with the Guide set to exactly 320px wide and the System Bar page open."
+logical_id = "d4388fe8-d19d-4d8c-b665-f2b0e343c5f5"
+content_hash = "sha256:4976bef92a9f22b2f26ef03c3908c66c97629c47e57cbac97c934cd99e4a39a8"
+size = 628018
+mtime_ms = 1789530632269
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d159fe7f-a716-4487-8eae-fc1245a06d3f/d4388fe8-d19d-4d8c-b665-f2b0e343c5f5/2ba76896-1db9-4ae4-a8e8-421610647a89"
+storage_version_token = "1789530637646754"
+content_type = "image/png"

@@ -107,7 +107,11 @@ The Shortcuts item opens a non-modal drawer that:
 - closes with `Escape`, an outside pointer press, or its trigger;
 - stays open when interacting inside it;
 - uses a compact 202px width;
-- uses compact vertical spacing for its shortcut rows;
+- centers its kicker, description, and shortcut labels;
+- keeps 8px between kicker and description;
+- separates description from actions with the context-menu separator color and
+  8px of space above and below;
+- uses 20px shortcut rows with 0.5px gaps;
 - keeps the beak tip, rather than the panel edge, 4px from the Shortcuts Dock
   item on the item’s inward-facing side;
 - follows the Dock to any desktop edge and uses a directional beak aimed at the
@@ -115,6 +119,11 @@ The Shortcuts item opens a non-modal drawer that:
 - lists all seven Dock assignments.
 
 Number shortcuts must not run while focus is inside a color-value input.
+
+Windowed Dock items use one consistent activation model: clicking an item opens
+its window when closed and focuses/brings it forward when open. Clicking the
+currently focused item must not minimize or close the window. Text-entry apps
+such as Terminal may also return focus to their primary input on activation.
 
 ---
 
@@ -174,6 +183,7 @@ pointer.
 | Give every open app a full-tile border/ring and only the focused app an edge pill | Add a separate bottom tab to an open but unfocused app |
 | Preserve branded tile and glyph colors and use a flat outline on hover/focus | Move, brighten, emboss, or recolor branded tiles on hover |
 | Apply hover feedback only to inactive items | Layer hover styling on top of the active treatment |
+| Use Dock clicks to open or focus windowed apps | Make one app minimize when its active Dock item is clicked |
 | Use one shared 1px border color for every inactive item | Give each inactive branded tile a different border color |
 | Change utility foreground and background as a tested pair | Change only the foreground and assume contrast remains sufficient |
 | Show `1–7` in desktop Dock labels and the Shortcuts drawer | Show shortcut numbers in mobile or tablet inline labels |

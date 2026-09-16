@@ -6,6 +6,7 @@ import {
 } from 'react';
 import { tooltipSurfaceClassName } from './tooltip';
 import './os-portfolio-action-button.css';
+import './os-portfolio-terminal-cursor.css';
 
 function classes(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(' ');
@@ -194,4 +195,14 @@ export function StickyNoteSurface({ className, ...props }: HTMLAttributes<HTMLDi
 
 export function ContextMenuSurface({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={classes('rounded-md border border-border bg-popover text-popover-foreground shadow-xl', className)} {...props} />;
+}
+
+export function TerminalCursor({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={classes('osp-terminal-cursor', className)}
+      {...props}
+      aria-hidden="true"
+    />
+  );
 }

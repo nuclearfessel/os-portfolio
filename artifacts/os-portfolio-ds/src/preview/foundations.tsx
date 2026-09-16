@@ -173,7 +173,7 @@ function Swatch({
 
 // Portfolio-scoped public counts
 // Components: 10 Desktop primitives + 8 Settings primitives + 14 generic + 2 family overviews = 34
-// The os-portfolio-primitives directory is the single sidebar entry for all 18 primitives.
+// The os-portfolio-primitives directory is the single sidebar entry for all 19 primitives.
 const PUBLIC_COUNTS = {
   foundations: 6,
   components: 34,

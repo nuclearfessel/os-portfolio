@@ -49,6 +49,7 @@ Source: `src/components/ui/os-portfolio.tsx` · Preview: `os-portfolio-pilot`
 | DesktopLauncher | [→](./components/os-portfolio/desktop-launcher.md) |
 | StickyNoteSurface | [→](./components/os-portfolio/sticky-note-surface.md) |
 | ContextMenuSurface | [→](./components/os-portfolio/context-menu-surface.md) |
+| TerminalCursor | [→](./components/os-portfolio/terminal-cursor.md) |
 
 ### Settings primitives
 

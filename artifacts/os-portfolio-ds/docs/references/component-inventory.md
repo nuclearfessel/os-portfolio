@@ -3,7 +3,7 @@
 **Canonical index.** Every shipped component/export and every reusable pattern maps to a spec document and a living preview ID.
 
 Source authority: `package.json` exports + `src/components/ui/` files + `src/preview/registry.tsx`
-Last updated: post workspace layout and launcher-cleanup update.
+Last updated: post Terminal cursor, Dock activation, and Shortcuts drawer update.
 
 ---
 
@@ -25,6 +25,7 @@ Preview ID: `os-portfolio-pilot`
 | DesktopLauncher | `DesktopLauncher` | [desktop-launcher.md](../components/os-portfolio/desktop-launcher.md) | `os-portfolio-pilot` |
 | StickyNoteSurface | `StickyNoteSurface` | [sticky-note-surface.md](../components/os-portfolio/sticky-note-surface.md) | `os-portfolio-pilot` |
 | ContextMenuSurface | `ContextMenuSurface` | [context-menu-surface.md](../components/os-portfolio/context-menu-surface.md) | `os-portfolio-pilot` |
+| TerminalCursor | `TerminalCursor` | [terminal-cursor.md](../components/os-portfolio/terminal-cursor.md) | `os-portfolio-pilot` |
 
 ---
 

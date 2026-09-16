@@ -9,6 +9,7 @@ import {
   StatusIndicator,
   StickyNoteSurface,
   Surface,
+  TerminalCursor,
   WindowSurface,
 } from '../../components/ui/os-portfolio';
 import { CanonicalSpec } from '../md-renderer';
@@ -23,6 +24,7 @@ import {
   mdOsPortfolioDesktopLauncher,
   mdOsPortfolioStickyNote,
   mdOsPortfolioContextMenuSurface,
+  mdOsPortfolioTerminalCursor,
 } from '../docs-map';
 
 // Combine all OS Portfolio primitive docs into one readable spec
@@ -37,6 +39,7 @@ const combinedMd = [
   mdOsPortfolioDesktopLauncher,
   mdOsPortfolioStickyNote,
   mdOsPortfolioContextMenuSurface,
+  mdOsPortfolioTerminalCursor,
 ].join('\n\n---\n\n');
 
 export function OsPortfolioDemo() {
@@ -61,6 +64,19 @@ export function OsPortfolioDemo() {
           <StatusIndicator tone="idle" label="away" />
           <StatusIndicator tone="danger" label="offline" />
         </div>
+      </Surface>
+
+      <Surface className="space-y-4 p-5">
+        <SectionLabel>terminal / active command line</SectionLabel>
+        <div className="flex items-center gap-2 rounded-md border border-border bg-[#111326] px-4 py-3 font-mono text-xs text-[#f3f0e3]">
+          <span className="text-[#e4ff5b]">john@portfolio:~$</span>
+          <span>help</span>
+          <TerminalCursor />
+        </div>
+        <p className="text-sm text-muted-foreground">
+          The product positions this block from the native input selection and
+          automatically focuses the input whenever the Terminal becomes active.
+        </p>
       </Surface>
 
       <Surface className="space-y-4 p-5">

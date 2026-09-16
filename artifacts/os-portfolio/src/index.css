@@ -4371,8 +4371,10 @@ button { cursor: pointer; }
 .theme-light .terminal-examples { color: #50656c; }
 .theme-light .terminal-examples button { color: #24354a; background: #e2ece8; border-color: #b7c9c3; }
 .theme-light .terminal-examples button:hover, .theme-light .terminal-examples button:focus-visible { color: #fff; background: #0b665d; border-color: #0b665d; }
-.theme-light .terminal-live-cursor { background: #cb664f; }
-.terminal-live-cursor { left: min(var(--terminal-cursor-left), calc(100% - 7px)); }
+.terminal-live-cursor.osp-terminal-cursor {
+  left: min(var(--terminal-cursor-left), calc(100% - 7px));
+  background: var(--osp-terminal-cursor-color);
+}
 .theme-light .dock { background: rgba(232,241,237,.84); border-color: rgba(26,83,91,.2); box-shadow: 0 12px 38px rgba(48,68,71,.2); }
 .theme-light .dock-item { color: #506572; background: rgba(248,251,249,.75); border-color: rgba(26,83,91,.16); }
 .theme-light .dock-item.dock-app-about { color: #fff9fc; background: linear-gradient(145deg, #d95791, #a23f6a 72%); border-color: #873253; }

@@ -50,6 +50,7 @@ export { default as mdOsPortfolioDockItem } from '../../docs/components/os-portf
 export { default as mdOsPortfolioDesktopLauncher } from '../../docs/components/os-portfolio/desktop-launcher.md?raw';
 export { default as mdOsPortfolioStickyNote } from '../../docs/components/os-portfolio/sticky-note-surface.md?raw';
 export { default as mdOsPortfolioContextMenuSurface } from '../../docs/components/os-portfolio/context-menu-surface.md?raw';
+export { default as mdOsPortfolioTerminalCursor } from '../../docs/components/os-portfolio/terminal-cursor.md?raw';
 
 // ── Settings primitives (individual files) ────────────────────────────────────
 export { default as mdSettingsFamily } from '../../docs/components/settings/settings-family.md?raw';

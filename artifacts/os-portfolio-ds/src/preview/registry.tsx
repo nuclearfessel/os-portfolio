@@ -221,6 +221,9 @@ const OsPortfolioStickyNoteDemo = lazyPage(() =>
 const OsPortfolioContextMenuSurfaceDemo = lazyPage(() =>
   import('./demos/os-portfolio-context-menu-surface').then(({ OsPortfolioContextMenuSurfaceDemo }) => OsPortfolioContextMenuSurfaceDemo),
 );
+const OsPortfolioTerminalCursorDemo = lazyPage(() =>
+  import('./demos/os-portfolio-terminal-cursor').then(({ OsPortfolioTerminalCursorDemo }) => OsPortfolioTerminalCursorDemo),
+);
 
 // ── OS Portfolio primitives directory ────────────────────────────────────────────
 const OsPortfolioPrimitivesPage = lazyPage(() =>
@@ -305,7 +308,7 @@ const PatternAnnotatedInterfaceTeaching = lazyPage(() =>
 //     input, menubar, radio-group, separator, slider, switch, tabs, toast, tooltip
 //   Public OS Portfolio primitives (individual): action-button, section-label,
 //     status-indicator, surface, project-card, window-surface, dock-item,
-//     desktop-launcher, sticky-note-surface, context-menu-surface
+//     desktop-launcher, sticky-note-surface, context-menu-surface, terminal-cursor
 //   Public OS Portfolio family overview: os-portfolio-pilot
 //   Public Settings primitives (individual): settings-nav, settings-toggle-row,
 //     settings-slider-group, settings-segmented-choice, settings-contrast-card,
@@ -336,6 +339,7 @@ export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
   'desktop-launcher': false,
   'sticky-note-surface': false,
   'context-menu-surface': false,
+  'terminal-cursor': false,
   // ── Settings individual primitives — same treatment as above ─────────────────
   'settings-nav': false,
   'settings-toggle-row': false,
@@ -543,6 +547,12 @@ export const NAV_GROUPS: NavGroup[] = [
         name: 'ContextMenuSurface',
         description: 'Surface shell for custom-positioned desktop context menus — popover background, border, and shadow.',
         Page: OsPortfolioContextMenuSurfaceDemo,
+      },
+      {
+        id: 'terminal-cursor',
+        name: 'TerminalCursor',
+        description: 'Functional block caret for native Terminal inputs, with tokenized theme colors and persistent typing feedback.',
+        Page: OsPortfolioTerminalCursorDemo,
       },
       // ── Settings primitive detail pages — hidden from sidebar; deep-linkable ─
       {
@@ -1003,7 +1013,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'os-portfolio-primitives',
         name: 'OS Portfolio primitives',
-        description: 'Directory of all 18 OS Portfolio design primitives — desktop surfaces, actions, dock, launchers, and settings controls. Grouped into Desktop primitives (10) and Settings primitives (8). Each links to its dedicated spec page.',
+        description: 'Directory of all 19 OS Portfolio design primitives — desktop surfaces, actions, dock, launchers, Terminal feedback, and settings controls. Grouped into Desktop primitives (11) and Settings primitives (8). Each links to its dedicated spec page.',
         Page: OsPortfolioPrimitivesPage,
       },
       {
@@ -1166,6 +1176,7 @@ export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
   'desktop-launcher': 'interactive+canonical',
   'sticky-note-surface': 'interactive+canonical',
   'context-menu-surface': 'interactive+canonical',
+  'terminal-cursor': 'interactive+canonical',
   'gvc-illustration': 'interactive+canonical',
   // ── Settings individual primitives ───────────────────────────────────────────
   'settings-nav': 'interactive+canonical',
@@ -1303,12 +1314,12 @@ if (import.meta.env.DEV) {
     );
   }
 
-  // Assert: all 18 OS Portfolio + Settings detail IDs are registered in ALL_ENTRIES
+  // Assert: all 19 OS Portfolio + Settings detail IDs are registered in ALL_ENTRIES
   // and documented, so the os-portfolio-primitives directory can deep-link to them.
   const EXPECTED_OS_PORTFOLIO_DETAIL_IDS = [
     'action-button', 'section-label', 'status-indicator', 'surface',
     'project-card', 'window-surface', 'dock-item', 'desktop-launcher',
-    'sticky-note-surface', 'context-menu-surface',
+    'sticky-note-surface', 'context-menu-surface', 'terminal-cursor',
     'settings-nav', 'settings-toggle-row', 'settings-slider-group',
     'settings-segmented-choice', 'settings-contrast-card',
     'settings-color-preset', 'settings-divider', 'settings-section-header',
@@ -1321,7 +1332,7 @@ if (import.meta.env.DEV) {
       missingDetailIds.map((id) => `  • ${id}`).join('\n') +
       '\n  These must remain in NAV_GROUPS to be deep-linkable.',
     );
-  } else if (EXPECTED_OS_PORTFOLIO_DETAIL_IDS.length !== 18) {
-    console.error('[design-system] Expected 18 OS Portfolio detail IDs, assertion list is wrong.');
+  } else if (EXPECTED_OS_PORTFOLIO_DETAIL_IDS.length !== 19) {
+    console.error('[design-system] Expected 19 OS Portfolio detail IDs, assertion list is wrong.');
   }
 }

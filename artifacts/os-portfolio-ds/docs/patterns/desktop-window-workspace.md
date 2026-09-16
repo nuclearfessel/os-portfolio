@@ -52,6 +52,7 @@ The OS Portfolio desktop presents multiple floating windows simultaneously — e
 | Window controls (close, minimize, maximize) | Product |
 | Maximized drag-to-restore | Product title-bar pointer handling |
 | Keyboard close commands | Product global keyboard handling |
+| Primary input focus | Product; text-entry windows focus their input when opened, restored, or activated |
 
 `WindowSurface` has no internal state — it is purely visual.
 
@@ -140,6 +141,8 @@ When `data-transparency-enabled` + `--accessibility-transparency` are set by the
 - [ ] Every open window remains above every sticky note, including the active sticky.
 - [ ] Maximized title-bar drag restores and continues under the same pointer.
 - [ ] Product close shortcuts preserve geometry and follow current z-order.
+- [ ] Text-entry windows place focus at their primary caret when opened,
+      restored, or brought forward, without blocking intentional output selection.
 
 ---
 

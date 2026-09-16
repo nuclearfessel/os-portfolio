@@ -40,6 +40,7 @@ import {
   StatusIndicator,
   StickyNoteSurface,
   Surface,
+  TerminalCursor,
   WindowSurface,
 } from '@workspace/os-portfolio-ds/components/ui/os-portfolio';
 import {
@@ -3745,7 +3746,7 @@ function TerminalWindow({
                 autoComplete="off"
                 spellCheck={false}
               />
-              <span className="terminal-live-cursor" data-testid="terminal-live-cursor" aria-hidden="true" />
+              <TerminalCursor className="terminal-live-cursor" data-testid="terminal-live-cursor" />
             </div>
             <span id="terminal-prediction" className="terminal-prediction" aria-live="polite" data-testid="terminal-prediction">
               {predictedCommand && predictedCommand !== command ? <><kbd>Tab</kbd><span aria-hidden="true"> → </span>{predictedCommand}</> : null}

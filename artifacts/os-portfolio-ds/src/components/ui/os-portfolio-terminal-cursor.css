@@ -1,0 +1,44 @@
+:root,
+.theme-dark,
+.dark {
+  --osp-terminal-cursor-color: #e4ff5b;
+}
+
+.theme-light,
+.light {
+  --osp-terminal-cursor-color: #c54f48;
+}
+
+@keyframes cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.osp-terminal-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  flex: 0 0 7px;
+  border-radius: 1px;
+  background: var(--osp-terminal-cursor-color);
+  animation: cursor-blink 1s step-end infinite;
+  pointer-events: none;
+}
+
+/* A text caret is functional typing feedback, not decorative interface motion. */
+[data-no-animations] .osp-terminal-cursor,
+[data-fast-ui] .osp-terminal-cursor {
+  animation: cursor-blink 1s step-end infinite !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .osp-terminal-cursor {
+    animation: cursor-blink 1s step-end infinite !important;
+  }
+}

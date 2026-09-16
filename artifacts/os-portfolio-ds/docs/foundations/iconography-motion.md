@@ -38,6 +38,7 @@ Default: `1.7–1.8`. Use `strokeWidth={1.8}` on Lucide icons where the default 
 | Hover & focus feedback | 100ms | `ease` | Color, border, small positional shifts |
 | Theme icon morphs | 240–340ms | Crossfade + rotate/scale | Sun↔Moon icon within a fixed footprint |
 | Window / layer entry | ~160ms | `ease-out` | Should not delay interaction |
+| Terminal block caret | 1s | `step-end` | Functional typing feedback; continues under reduced-effects modes |
 | Drag & resize | Direct | None | Pointer controls geometry — no easing |
 
 ### CSS utilities used
@@ -57,6 +58,10 @@ The consuming app can adjust motion globally by setting data attributes on the s
 | (no attribute) | Default timing |
 | `data-no-animations` | Collapses all durations to `0.001ms` |
 | `data-fast-ui` | `animation: none`, `transition: none` — maximum reduction |
+
+`TerminalCursor` is the exception to these global animation suppressions. Its
+blink communicates the active typing position and therefore remains active in
+reduced-effects modes.
 
 ### Reduced motion
 The package does not apply its own `@media (prefers-reduced-motion)` rules beyond what Tailwind ships. The consuming app should:

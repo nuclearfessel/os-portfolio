@@ -75,6 +75,7 @@ The inline label sits as a child in the `DockItem`'s flex column:
 | Icon and label content | Product |
 | Dock position (left/bottom/floating) | Product layout |
 | Breakpoint detection | Product (`useMediaQuery` or CSS container queries) |
+| Open/focus behavior | Product; clicking a windowed app opens it or brings it forward |
 
 ---
 
@@ -114,6 +115,8 @@ increase the gaps between items.
 - [ ] The active pill remains visible beneath mobile and tablet inline labels.
 - [ ] Hover styling applies only to inactive items; active items remain unchanged under the pointer.
 - [ ] All inactive items use the same 1px border color within a theme.
+- [ ] Clicking any windowed app follows the same open-or-focus model; an active
+      Dock item never doubles as a minimize or close control.
 
 ---
 
@@ -135,6 +138,7 @@ increase the gaps between items.
 | Keep the active ring and edge pill visible in every theme and breakpoint | Hide the active indicator on mobile or rely on color alone |
 | Keep active items visually stable on hover | Add a second hover treatment on top of active styling |
 | Standardize inactive items on one 1px border color | Use unrelated border colors for each inactive app tile |
+| Keep windowed-app clicks consistent: open or focus | Make selected apps minimize or close from the Dock |
 
 ---
 

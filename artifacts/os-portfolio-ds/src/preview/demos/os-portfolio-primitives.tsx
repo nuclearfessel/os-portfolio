@@ -1,7 +1,7 @@
 /**
  * OS Portfolio Primitives — unified directory page.
  *
- * Organises all 18 OS Portfolio + Settings primitives into a compact, scannable
+ * Organises all 19 OS Portfolio + Settings primitives into a compact, scannable
  * directory. Each primitive shows its component name, concise purpose, and a
  * link button to its dedicated spec/demo page. No inline demos are shown here;
  * individual detail pages remain deep-linkable at their existing hashes.
@@ -24,7 +24,7 @@ type PrimitiveEntry = {
   purpose: string;
 };
 
-// ── Desktop primitives (10) ───────────────────────────────────────────────────
+// ── Desktop primitives (11) ───────────────────────────────────────────────────
 
 const DESKTOP_PRIMITIVES: PrimitiveEntry[] = [
   {
@@ -77,6 +77,11 @@ const DESKTOP_PRIMITIVES: PrimitiveEntry[] = [
     name: 'ContextMenuSurface',
     purpose: 'Surface shell for custom-positioned desktop context menus — popover background, border, and shadow.',
   },
+  {
+    id: 'terminal-cursor',
+    name: 'TerminalCursor',
+    purpose: 'Functional 7×13px block caret for Terminal inputs, with tokenized theme colors and reduced-effects support.',
+  },
 ];
 
 // ── Settings primitives (8) ───────────────────────────────────────────────────
@@ -124,7 +129,7 @@ const SETTINGS_PRIMITIVES: PrimitiveEntry[] = [
   },
 ];
 
-// ── Assertion: all 18 detail IDs are accounted for ───────────────────────────
+// ── Assertion: all 19 detail IDs are accounted for ───────────────────────────
 
 export const OS_PORTFOLIO_PRIMITIVE_IDS = [
   ...DESKTOP_PRIMITIVES.map((p) => p.id),
@@ -132,26 +137,26 @@ export const OS_PORTFOLIO_PRIMITIVE_IDS = [
 ] as const;
 
 if (import.meta.env.DEV) {
-  const expected18 = [
+  const expected19 = [
     'action-button', 'section-label', 'status-indicator', 'surface',
     'project-card', 'window-surface', 'dock-item', 'desktop-launcher',
-    'sticky-note-surface', 'context-menu-surface',
+    'sticky-note-surface', 'context-menu-surface', 'terminal-cursor',
     'settings-nav', 'settings-toggle-row', 'settings-slider-group',
     'settings-segmented-choice', 'settings-contrast-card',
     'settings-color-preset', 'settings-divider', 'settings-section-header',
   ] as const;
 
   const ids = new Set(OS_PORTFOLIO_PRIMITIVE_IDS as readonly string[]);
-  const missing = expected18.filter((id) => !ids.has(id));
+  const missing = expected19.filter((id) => !ids.has(id));
   if (missing.length > 0) {
     console.error(
       `[os-portfolio-primitives] Directory is missing ${missing.length} primitive(s):\n` +
       missing.map((id) => `  • ${id}`).join('\n'),
     );
   }
-  if (OS_PORTFOLIO_PRIMITIVE_IDS.length !== 18) {
+  if (OS_PORTFOLIO_PRIMITIVE_IDS.length !== 19) {
     console.error(
-      `[os-portfolio-primitives] Expected 18 primitives, found ${OS_PORTFOLIO_PRIMITIVE_IDS.length}.`,
+      `[os-portfolio-primitives] Expected 19 primitives, found ${OS_PORTFOLIO_PRIMITIVE_IDS.length}.`,
     );
   }
 }
@@ -246,7 +251,7 @@ export function OsPortfolioPrimitivesPage() {
       <section className="rounded-xl border bg-card p-5 text-card-foreground">
         <SectionLabel>components / john os</SectionLabel>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          18 primitives in two families. Desktop primitives shape the portfolio
+          19 primitives in two families. Desktop primitives shape the portfolio
           canvas — windows, dock, launchers, surfaces, and actions. Settings
           primitives power the preference window — navigation, toggles, sliders,
           segmented choices, contrast cards, and color presets.

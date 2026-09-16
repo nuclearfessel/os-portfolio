@@ -2163,16 +2163,29 @@ test('keeps the desktop shortcuts drawer vertically compact', async ({ page }) =
     const grid = element.querySelector<HTMLElement>('.shortcut-menu-grid')!;
     const kicker = element.querySelector<HTMLElement>('.section-kicker')!;
     const description = element.querySelector<HTMLElement>('.shortcut-menu-description')!;
+    const separator = element.querySelector<HTMLElement>('.shortcut-menu-separator')!;
+    const firstButton = element.querySelector<HTMLElement>('.quick-button')!;
+    const drawerBox = element.getBoundingClientRect();
     return {
-      drawerHeight: element.getBoundingClientRect().height,
+      drawerHeight: drawerBox.height,
       buttonHeight: button.getBoundingClientRect().height,
       gridGap: Number.parseFloat(getComputedStyle(grid).rowGap),
       kickerDescriptionGap: description.getBoundingClientRect().top - kicker.getBoundingClientRect().bottom,
+      descriptionSeparatorGap: separator.getBoundingClientRect().top - description.getBoundingClientRect().bottom,
+      separatorButtonGap: firstButton.getBoundingClientRect().top - separator.getBoundingClientRect().bottom,
+      separatorHeight: separator.getBoundingClientRect().height,
+      separatorBackground: getComputedStyle(separator).backgroundColor,
+      outerEdgeKickerGap: kicker.getBoundingClientRect().top - drawerBox.top,
     };
   });
   expect(geometry.buttonHeight).toBeCloseTo(20, 0);
   expect(geometry.gridGap).toBeCloseTo(0.5, 1);
   expect(geometry.kickerDescriptionGap).toBeCloseTo(8, 0);
+  expect(geometry.descriptionSeparatorGap).toBeCloseTo(8, 0);
+  expect(geometry.separatorButtonGap).toBeCloseTo(8, 0);
+  expect(geometry.separatorHeight).toBeCloseTo(1, 0);
+  expect(geometry.separatorBackground).not.toBe('rgba(0, 0, 0, 0)');
+  expect(geometry.outerEdgeKickerGap).toBeCloseTo(11, 0);
   expect(geometry.drawerHeight).toBeLessThan(335);
 });
 

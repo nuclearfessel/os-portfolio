@@ -5988,6 +5988,7 @@ function Home() {
         >
           <div className="section-kicker">keyboard map</div>
           <p className="shortcut-menu-description">{workspaceMode === 'desktop' ? 'Use 1–8 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
+          <Separator className="shortcut-menu-separator" decorative />
           <div className="shortcut-menu-grid">
             <button className="quick-button" onClick={() => openWindow('about')} data-testid="button-menu-about"><span className="shortcut-number">1</span>about</button>
             <button className="quick-button" onClick={() => openWindow('work')} data-testid="button-menu-work"><span className="shortcut-number">2</span>work</button>

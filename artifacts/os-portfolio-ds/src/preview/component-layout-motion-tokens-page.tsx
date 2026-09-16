@@ -59,11 +59,11 @@ function ValuePreview({
   if (property.toLowerCase().includes('duration')) {
     if (component === 'terminalCursor') {
       return (
-        <div className="flex h-7 w-24 items-center rounded-md bg-[#111326] px-3">
+        <div className="relative h-2 w-24 overflow-hidden rounded-full bg-muted">
           <div
-            className="h-[13px] w-[7px] rounded-[1px] bg-[#e4ff5b]"
+            className="absolute left-0 top-0 size-2 rounded-full bg-primary"
             style={{
-              animation: `osp-token-caret-preview ${value} ${easing ?? 'step-end'} infinite`,
+              animation: `osp-token-step-preview ${value} ${easing ?? 'step-end'} infinite`,
             }}
           />
         </div>
@@ -156,9 +156,9 @@ export function MotionTokensPage() {
           from { transform: translateX(0); }
           to { transform: translateX(76px); }
         }
-        @keyframes osp-token-caret-preview {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
+        @keyframes osp-token-step-preview {
+          0%, 49.999% { transform: translateX(0); }
+          50%, 100% { transform: translateX(88px); }
         }
       `}</style>
       <CanonicalSpec

@@ -1595,7 +1595,7 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   expect(guideColors.activeBackground).toBe(settingsColors.activeBackground);
   expect(guideColors.hoverColor).toBe(settingsColors.hoverColor);
   expect(guideColors.hoverBackground).toBe(settingsColors.hoverBackground);
-  expect(guideColors.activeColor).toBe('rgb(11, 102, 93)');
+  expect(guideColors.activeColor).toBe('rgb(6, 79, 71)');
   expect(guideColors.activeBackground).toBe('rgba(0, 0, 0, 0)');
   expect(guideColors.hoverBackground).toBe('rgb(208, 230, 225)');
   expect(guideColors.activeShadow).toBe('none');

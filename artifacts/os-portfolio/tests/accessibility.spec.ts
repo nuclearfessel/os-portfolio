@@ -712,12 +712,12 @@ test.describe('Contrast themes disable wallpaper controls', () => {
     await runCommand('set low contrast on', 'Low Contrast turned on.');
     await expect(root).toHaveAttribute('data-contrast', 'low');
     await runCommand('theme light', 'Light and dark themes are disabled while a contrast theme is active.');
-    await runCommand('set low contrast off', 'Standard theme restored.');
+    await runCommand('set low contrast off', 'Low Contrast turned off. Standard theme restored.');
     await expect(root).not.toHaveAttribute('data-contrast');
     await expect(shell).toHaveClass(/theme-dark/);
 
     await runCommand('set high contrast on', 'High Contrast turned on.');
-    await runCommand('set high contrast off', 'Standard theme restored.');
+    await runCommand('set high contrast off', 'High Contrast turned off. Standard theme restored.');
     await expect(root).not.toHaveAttribute('data-contrast');
     await expect(shell).toHaveClass(/theme-dark/);
   });

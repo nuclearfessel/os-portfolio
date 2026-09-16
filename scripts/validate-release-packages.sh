@@ -68,7 +68,6 @@ grep -Fxq 'index.html' "$site_manifest"
 grep -Fxq 'os-portfolio-ds/index.html' "$site_manifest"
 grep -Fxq 'public/index.html' "$claude_manifest"
 grep -Fxq 'public/os-portfolio-ds/index.html' "$claude_manifest"
-
 {
   sha256sum "$site_zip" | awk -v name="$(basename "$site_zip")" '{ print $1 "  " name }'
   sha256sum "$claude_zip" | awk -v name="$(basename "$claude_zip")" '{ print $1 "  " name }'

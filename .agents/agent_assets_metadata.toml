@@ -42,7 +42,6 @@ mtime_ms = 1789532709084
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d159fe7f-a716-4487-8eae-fc1245a06d3f/b21dd5f7-4018-4094-9987-8e5eef5e2cd6/959fba97-8491-42fe-aa8f-69952293891d"
 storage_version_token = "1789532770514763"
 content_type = "image/jpeg"
-
 [[outputs]]
 id = "KkZIlQgQeYKMn7dAaqMfi"
 uri = "file://artifacts/os-portfolio/test-results/settings-navigation-360.png"

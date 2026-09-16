@@ -2794,6 +2794,22 @@ test('multiple stickies keep one active note above the rest and all notes below 
   expect(stickyZIndexes.filter((zIndex) => zIndex === stickyIds.length)).toHaveLength(1);
 });
 
+test('focusing a desktop window preserves the sticky stacking order', async ({ page }) => {
+  await page.getByTestId('button-add-sticky').click();
+
+  const systemSticky = page.getByTestId('sticky-sticky');
+  const activeUserSticky = page.getByTestId('sticky-sticky-2');
+  const readZIndex = (locator: typeof systemSticky) =>
+    locator.evaluate((element) => Number(getComputedStyle(element).zIndex));
+
+  await expect(activeUserSticky).toBeVisible();
+  expect(await readZIndex(activeUserSticky)).toBeGreaterThan(await readZIndex(systemSticky));
+
+  await page.getByTestId('window-work').click({ position: { x: 40, y: 40 } });
+
+  expect(await readZIndex(activeUserSticky)).toBeGreaterThan(await readZIndex(systemSticky));
+});
+
 test('keeps stickies hidden on mobile and tablet workspaces', async ({ page }) => {
   for (const viewport of [
     { width: 320, height: 640, workspaceClass: /workspace-managed/ },

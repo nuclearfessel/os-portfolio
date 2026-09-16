@@ -1023,6 +1023,28 @@ test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', a
   await expect(guideWindow).toContainText('On Windows or Linux, use');
 });
 
+test('Guide Overview documents the complete desktop context menu', async ({ page }) => {
+  await page.getByTestId('button-dock-guide').click();
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  const menu = guideWindow.locator('.gvc-menu-desktop');
+  await expect(menu).toBeVisible();
+  for (const item of [
+    'View',
+    'Cleanup icons',
+    'Snap to grid',
+    'Auto arrange icons',
+    'Show desktop icons',
+    'Save state as default',
+    'Reset desktop…',
+  ]) {
+    await expect(menu).toContainText(item);
+  }
+  await expect(guideWindow).toContainText('Enter or Space to choose an item');
+  await expect(guideWindow).toContainText('Escape to close it');
+});
+
 test('keeps Settings and the User Guide light navigation states consistent', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   const settingsActive = page.getByTestId('settings-nav-personalization');
@@ -1318,6 +1340,86 @@ test('guide diagrams resolve shared DS colors and stay flat in both themes', asy
     expect(diagramState!.lineBackground).not.toBe('rgba(0, 0, 0, 0)');
     expect(diagramState!.controlBackground).not.toBe('rgba(0, 0, 0, 0)');
     expect(diagramState!.windowShadow).toBe('none');
+  }
+});
+
+test('guide diagram labels use normal weight and the system bar stays on one line', async ({ page }) => {
+  await page.getByTestId('button-dock-guide').click();
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  const resizeHandle = guideWindow.locator('.window-resize-e');
+  const handleBox = await resizeHandle.boundingBox();
+  const guideBox = await guideWindow.boundingBox();
+  expect(handleBox).not.toBeNull();
+  expect(guideBox).not.toBeNull();
+  await page.mouse.move(handleBox!.x + handleBox!.width / 2, handleBox!.y + handleBox!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(guideBox!.x + 456, handleBox!.y + handleBox!.height / 2, { steps: 8 });
+  await page.mouse.up();
+
+  await page.getByTestId('guide-nav-systembar').click();
+  const systemBar = guideWindow.locator('.gvc-sysbar');
+  await expect(systemBar).toBeVisible();
+  const systemBarLayout = await systemBar.evaluate((element) => {
+    const children = [...element.children] as HTMLElement[];
+    const top = children[0]?.getBoundingClientRect().top;
+    return {
+      whiteSpace: getComputedStyle(element).whiteSpace,
+      childTops: children.map((child) => child.getBoundingClientRect().top),
+      top,
+    };
+  });
+  expect(systemBarLayout.whiteSpace).toBe('nowrap');
+  expect(systemBarLayout.childTops.every((top) => Math.abs(top - systemBarLayout.top) < 1)).toBe(true);
+
+  const positionLabels = guideWindow.locator('.gvc-pos-label');
+  await expect(positionLabels).toHaveCount(4);
+  for (let index = 0; index < await positionLabels.count(); index++) {
+    await expect(positionLabels.nth(index)).toHaveCSS('font-weight', '400');
+  }
+
+  await page.getByTestId('guide-nav-shortcuts').click();
+  const keyboardLabels = guideWindow.locator('.gvc-kbd-section-label');
+  await expect(keyboardLabels).toHaveCount(2);
+  for (let index = 0; index < await keyboardLabels.count(); index++) {
+    await expect(keyboardLabels.nth(index)).toHaveCSS('font-weight', '400');
+  }
+
+  const numberKeys = guideWindow.locator('.gvc-kbd-key-num');
+  await expect(numberKeys).toHaveCount(8);
+  for (let index = 0; index < await numberKeys.count(); index++) {
+    await expect(numberKeys.nth(index)).toHaveCSS('border-bottom-width', '1px');
+  }
+});
+
+test('guide Dock diagram keeps state markers clear of app tiles', async ({ page }) => {
+  await page.getByTestId('button-dock-guide').click();
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+  await page.getByTestId('guide-nav-dock').click();
+
+  const dockVisual = guideWindow.locator('.guide-visual-dock-demo');
+  await expect(dockVisual.locator('.gvc-dock-item')).toHaveCount(7);
+  await expect(dockVisual.locator('.gvc-dock-active')).toHaveCount(1);
+  await expect(dockVisual.locator('.gvc-dock-pill')).toHaveCount(1);
+  await expect(dockVisual.locator('.gvc-dock-open-mark')).toHaveCount(1);
+  await expect(dockVisual.locator('.gvc-dock-marker-active')).toHaveText('A');
+  await expect(dockVisual.locator('.gvc-dock-marker-open')).toHaveText('B');
+
+  for (const markerClass of ['.gvc-dock-marker-active', '.gvc-dock-marker-open']) {
+    const marker = dockVisual.locator(markerClass);
+    const item = marker.locator('..');
+    const markerBox = await marker.boundingBox();
+    const itemBox = await item.boundingBox();
+    expect(markerBox).not.toBeNull();
+    expect(itemBox).not.toBeNull();
+    const fullyInsideTile =
+      markerBox!.x >= itemBox!.x &&
+      markerBox!.y >= itemBox!.y &&
+      markerBox!.x + markerBox!.width <= itemBox!.x + itemBox!.width &&
+      markerBox!.y + markerBox!.height <= itemBox!.y + itemBox!.height;
+    expect(fullyInsideTile).toBe(false);
   }
 });
 

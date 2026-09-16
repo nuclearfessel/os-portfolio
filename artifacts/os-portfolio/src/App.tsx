@@ -1957,6 +1957,47 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <div><h3>Your changes stay in this browser</h3><p>Window positions, Stickies, and Settings are saved automatically. Use Save state as default when you want a setup you can return to later.</p></div>
                   </Surface>
                 </div>
+                <div className="guide-section-label">Desktop context menu</div>
+                <div className="guide-visual-row guide-visual-desktop-menu-row">
+                  <div className="guide-visual-crop guide-visual-desktop-menu" aria-hidden="true">
+                    <div className="gvc-menu gvc-menu-desktop">
+                      <div className="gvc-menu-title">Desktop options</div>
+                      <div className="gvc-menu-sep" />
+                      <div className="gvc-menu-item gvc-menu-item-submenu">View <span aria-hidden="true">›</span></div>
+                      <div className="gvc-menu-item">Cleanup icons</div>
+                      <div className="gvc-menu-item gvc-menu-item-checked"><span className="gvc-menu-check">&#10003;</span>Snap to grid</div>
+                      <div className="gvc-menu-item">Auto arrange icons</div>
+                      <div className="gvc-menu-sep" />
+                      <div className="gvc-menu-item gvc-menu-item-checked"><span className="gvc-menu-check">&#10003;</span>Show desktop icons</div>
+                      <div className="gvc-menu-item">Save state as default</div>
+                      <div className="gvc-menu-sep" />
+                      <div className="gvc-menu-item gvc-menu-item-danger">Reset desktop…</div>
+                    </div>
+                  </div>
+                  <div className="guide-visual-caption">
+                    <span className="guide-card-index">right-click</span>
+                    <h3>The Desktop context menu</h3>
+                    <p>Right-click an open area of the desktop to manage icons or the whole workspace. Checkmarks show options that stay on until you change them.</p>
+                  </div>
+                </div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Change how icons appear</h3><p>Open View to choose large or small icons. Show desktop icons hides or restores every desktop shortcut without removing the apps from the Dock.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>Organize desktop icons</h3><p>Cleanup icons straightens the current arrangement once. Snap to grid keeps future moves aligned. Auto arrange icons places them in order for you.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>Save or reset the workspace</h3><p>Save state as default records the current workspace as the setup used by Reset desktop. Reset desktop asks for confirmation before restoring that saved baseline.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div><h3>Use the menu from the keyboard</h3><p>After the menu opens, use the arrow keys to move, Enter or Space to choose an item, and Escape to close it.</p></div>
+                  </div>
+                </div>
                 <div className="guide-callout">
                   <span className="guide-callout-label">quick start</span>
                   <p>Press <kbd>8</kbd> on a desktop keyboard to bring this guide forward. Open <strong>Windows</strong> next to learn each window control.</p>
@@ -2223,18 +2264,19 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 >
                     <div className="gvc-dock-bar">
                       {[
-                        { cls: 'gvc-dock-about',    active: false },
-                        { cls: 'gvc-dock-work',     active: true },
-                        { cls: 'gvc-dock-contact',  active: false },
-                        { cls: 'gvc-dock-terminal', active: false },
-                        { cls: 'gvc-dock-stickies', active: false },
-                        { cls: 'gvc-dock-settings', active: false },
-                        { cls: 'gvc-dock-guide',    active: false },
+                        { cls: 'gvc-dock-about',    active: false, open: false },
+                        { cls: 'gvc-dock-work',     active: true,  open: false },
+                        { cls: 'gvc-dock-contact',  active: false, open: false },
+                        { cls: 'gvc-dock-terminal', active: false, open: true },
+                        { cls: 'gvc-dock-stickies', active: false, open: false },
+                        { cls: 'gvc-dock-settings', active: false, open: false },
+                        { cls: 'gvc-dock-guide',    active: false, open: false },
                       ].map((item, i) => (
                         <div key={i} className={`gvc-dock-item ${item.cls}${item.active ? ' gvc-dock-active' : ''}`}>
                           {item.active && <div className="gvc-dock-pill" />}
-                          {item.active && <span className="gvc-dot-badge gvc-dot-inline">A</span>}
-                          {i === 3 && !item.active && <span className="gvc-dot-badge gvc-dot-inline">B</span>}
+                          {item.open && <div className="gvc-dock-open-mark" />}
+                          {item.active && <span className="gvc-dot-badge gvc-dock-marker gvc-dock-marker-active">A</span>}
+                          {item.open && <span className="gvc-dot-badge gvc-dock-marker gvc-dock-marker-open">B</span>}
                         </div>
                       ))}
                     </div>

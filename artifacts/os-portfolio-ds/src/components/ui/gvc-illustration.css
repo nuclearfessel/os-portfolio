@@ -246,7 +246,7 @@
 }
 
 .gvc-pos-label {
-  font: 700 9px var(--app-font-mono, monospace);
+  font: 400 9px var(--app-font-mono, monospace);
   text-transform: uppercase;
   letter-spacing: .07em;
   color: var(--gv-fg-muted);
@@ -268,7 +268,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 700 7px var(--app-font-mono, monospace);
+  font: 400 7px var(--app-font-mono, monospace);
   text-transform: uppercase;
   letter-spacing: .06em;
   color: var(--gv-fg-dim);

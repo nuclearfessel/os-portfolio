@@ -38,11 +38,13 @@ function sourceAlias(value: string) {
 
 function ValuePreview({
   family,
+  component,
   property,
   value,
   easing,
 }: {
   family: Family;
+  component: string;
   property: string;
   value: string;
   easing?: string;
@@ -55,6 +57,18 @@ function ValuePreview({
     return <div className="size-12 border border-primary bg-primary/10" style={{ borderRadius: value }} />;
   }
   if (property.toLowerCase().includes('duration')) {
+    if (component === 'terminalCursor') {
+      return (
+        <div className="flex h-7 w-24 items-center rounded-md bg-[#111326] px-3">
+          <div
+            className="h-[13px] w-[7px] rounded-[1px] bg-[#e4ff5b]"
+            style={{
+              animation: `osp-token-caret-preview ${value} ${easing ?? 'step-end'} infinite`,
+            }}
+          />
+        </div>
+      );
+    }
     return (
       <div className="relative h-5 w-24 overflow-hidden rounded-full bg-muted">
         <div
@@ -100,6 +114,7 @@ function ComponentTokenFamily({ family, title, description }: { family: Family; 
                     </div>
                     <ValuePreview
                       family={family}
+                      component={component}
                       property={property}
                       value={resolved}
                       easing={resolvedEasing}
@@ -140,6 +155,10 @@ export function MotionTokensPage() {
         @keyframes osp-token-motion-preview {
           from { transform: translateX(0); }
           to { transform: translateX(76px); }
+        }
+        @keyframes osp-token-caret-preview {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
         }
       `}</style>
       <CanonicalSpec

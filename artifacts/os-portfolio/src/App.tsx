@@ -76,6 +76,11 @@ type IntroCustomization = {
 type Position = { left: number; top: number };
 type Size = { width: number; height: number };
 type WorkspaceBounds = { left: number; top: number; right: number; bottom: number };
+type ShortcutMenuPosition = {
+  left: number;
+  top: number;
+  beakOffset: number;
+};
 
 // Wallpaper types
 type WallpaperMode = 'picture' | 'color';
@@ -3787,7 +3792,9 @@ function Home() {
   const [windowStack, setWindowStack] = useState<WindowId[]>(savedDesktopState.windowStack ?? defaultDesktopState.windowStack ?? []);
   const [clock, setClock] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [shortcutMenuPosition, setShortcutMenuPosition] = useState<ShortcutMenuPosition | null>(null);
   const shortcutMenuRef = useRef<HTMLDivElement | null>(null);
+  const shortcutDockItemRef = useRef<HTMLButtonElement | null>(null);
   const [stickyVisible, setStickyVisible] = useState(true);
   const [stickyOnTop, setStickyOnTop] = useState(false);
   const [maximizedWindows, setMaximizedWindows] = useState<Partial<Record<WindowId, boolean>>>({});
@@ -4395,6 +4402,61 @@ function Home() {
     window.addEventListener('pointerdown', closeOnOutsidePointer, true);
     return () => window.removeEventListener('pointerdown', closeOnOutsidePointer, true);
   }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!mobileOpen || workspaceMode !== 'desktop') {
+      setShortcutMenuPosition(null);
+      return;
+    }
+
+    const updatePosition = () => {
+      const trigger = shortcutDockItemRef.current;
+      const menu = shortcutMenuRef.current;
+      if (!trigger || !menu) return;
+
+      const triggerRect = trigger.getBoundingClientRect();
+      const menuRect = menu.getBoundingClientRect();
+      const viewportPadding = 16;
+      const triggerGap = 16;
+      const triggerCenterX = triggerRect.left + triggerRect.width / 2;
+      const triggerCenterY = triggerRect.top + triggerRect.height / 2;
+      let left = triggerCenterX - menuRect.width / 2;
+      let top = triggerCenterY - menuRect.height / 2;
+
+      if (effectiveDockPosition === 'bottom') top = triggerRect.top - triggerGap - menuRect.height;
+      if (effectiveDockPosition === 'top') top = triggerRect.bottom + triggerGap;
+      if (effectiveDockPosition === 'left') left = triggerRect.right + triggerGap;
+      if (effectiveDockPosition === 'right') left = triggerRect.left - triggerGap - menuRect.width;
+
+      left = Math.max(viewportPadding, Math.min(window.innerWidth - menuRect.width - viewportPadding, left));
+      top = Math.max(viewportPadding, Math.min(window.innerHeight - menuRect.height - viewportPadding, top));
+
+      const beakOffset = effectiveDockPosition === 'top' || effectiveDockPosition === 'bottom'
+        ? Math.max(16, Math.min(menuRect.width - 16, triggerCenterX - left))
+        : Math.max(16, Math.min(menuRect.height - 16, triggerCenterY - top));
+
+      setShortcutMenuPosition((current) => (
+        current
+        && Math.abs(current.left - left) < 0.5
+        && Math.abs(current.top - top) < 0.5
+        && Math.abs(current.beakOffset - beakOffset) < 0.5
+          ? current
+          : { left, top, beakOffset }
+      ));
+    };
+
+    const frame = window.requestAnimationFrame(updatePosition);
+    window.addEventListener('resize', updatePosition);
+    const observer = new ResizeObserver(updatePosition);
+    if (shortcutDockItemRef.current) observer.observe(shortcutDockItemRef.current);
+    if (shortcutMenuRef.current) observer.observe(shortcutMenuRef.current);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', updatePosition);
+      observer.disconnect();
+    };
+  }, [effectiveDockPosition, mobileOpen, workspaceMode]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -5900,7 +5962,7 @@ function Home() {
           <>
             <DockItem className="dock-item dock-app-terminal" active={windows.terminal} focused={windows.terminal && !stickyOnTop && activeWindow === 'terminal'} onClick={() => { if (activeWindow === 'terminal' && windows.terminal) minimizeWindow('terminal'); else openWindow('terminal'); }} aria-label="Open terminal" data-testid="button-dock-terminal"><TerminalCursorFill size={20} data-testid="icon-dock-terminal-cursor-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Terminal · 4</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-stickies" active={stickyVisible} focused={stickyVisible && stickyOnTop} onClick={handleStickyDock} aria-label={stickyVisible && stickyOnTop ? 'Minimize Stickies' : 'Open or focus Stickies'} data-testid="button-dock-stickies"><BsStickyFill size={20} data-testid="icon-dock-stickies-bootstrap-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Stickies · 5</DockItemLabel></DockItem>
-            <DockItem className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><KeyboardFill size={19} data-testid="icon-dock-shortcuts-keyboard-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
+            <DockItem ref={shortcutDockItemRef} className="dock-item" onClick={() => setMobileOpen((value) => !value)} aria-label="Show keyboard shortcuts" aria-expanded={mobileOpen} aria-controls="shortcut-drawer" data-shortcut-menu-toggle data-testid="button-dock-shortcuts"><KeyboardFill size={19} data-testid="icon-dock-shortcuts-keyboard-fill" /><DockItemLabel presentation={workspaceMode === 'desktop' ? 'tooltip' : 'inline'}>Shortcuts · 6</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-settings" active={windows.settings} focused={windows.settings && !stickyOnTop && activeWindow === 'settings'} onClick={() => openWindow('settings')} aria-label="Open settings" data-testid="button-dock-settings"><BsGearWideConnected size={20} data-testid="icon-dock-settings-gear-wide-connected-fill" /><DockItemLabel presentation="tooltip">Settings · 7</DockItemLabel></DockItem>
             <DockItem className="dock-item dock-app-guide" active={windows.guide} focused={windows.guide && !stickyOnTop && activeWindow === 'guide'} onClick={() => openWindow('guide')} aria-label="Open user guide" data-testid="button-dock-guide"><BookFill size={20} data-testid="icon-dock-guide-book-fill" /><DockItemLabel presentation="tooltip">User guide · 8</DockItemLabel></DockItem>
           </>
@@ -5908,7 +5970,20 @@ function Home() {
       </nav>
 
       {mobileOpen && (
-        <div ref={shortcutMenuRef} className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}`} data-testid="menu-mobile">
+        <div
+          id="shortcut-drawer"
+          ref={shortcutMenuRef}
+          className={`mobile-shortcut-menu shortcut-menu-system-bar-${effectiveSystemBarPosition}${workspaceMode === 'desktop' ? ` desktop-shortcut-drawer shortcut-drawer-from-${effectiveDockPosition}${shortcutMenuPosition ? ' is-positioned' : ''}` : ''}`}
+          data-shortcut-placement={workspaceMode === 'desktop' ? effectiveDockPosition : undefined}
+          data-testid="menu-mobile"
+          style={workspaceMode === 'desktop' && shortcutMenuPosition
+            ? {
+                left: shortcutMenuPosition.left,
+                top: shortcutMenuPosition.top,
+                '--shortcut-beak-offset': `${shortcutMenuPosition.beakOffset}px`,
+              } as React.CSSProperties
+            : undefined}
+        >
           <div className="section-kicker">keyboard map</div>
           <p style={{ margin: '9px 0 14px', fontSize: 12 }}>{workspaceMode === 'desktop' ? 'Use 1–8 for Dock shortcuts.' : 'Choose an app to open or bring it to the front.'} Escape closes this menu.</p>
           <div style={{ display: 'grid', gap: 8 }}>

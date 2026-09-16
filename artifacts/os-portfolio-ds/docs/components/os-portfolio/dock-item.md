@@ -106,8 +106,10 @@ The Shortcuts item opens a non-modal drawer that:
 
 - closes with `Escape`, an outside pointer press, or its trigger;
 - stays open when interacting inside it;
-- clears a top system bar by 16px and otherwise stays 16px from the viewport;
-- clears a left or right system rail by 16px;
+- matches the 218px desktop context-menu width;
+- sits 16px from the Shortcuts Dock item on the item’s inward-facing side;
+- follows the Dock to any desktop edge and uses a directional beak aimed at the
+  center of the Shortcuts item, including when viewport clamping shifts the drawer;
 - lists all seven Dock assignments.
 
 Number shortcuts must not run while focus is inside a color-value input.

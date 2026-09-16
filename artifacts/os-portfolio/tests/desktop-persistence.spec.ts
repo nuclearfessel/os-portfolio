@@ -2103,20 +2103,35 @@ test('closes the topmost or all desktop windows with modifier shortcuts', async 
   await expect(page.getByTestId('window-about')).toHaveCount(0);
 });
 
-test('keeps the shortcuts drawer clear of every system bar position', async ({ page }) => {
+test('anchors the shortcuts drawer and beak to its Dock item on every desktop edge', async ({ page }) => {
   for (const position of ['top', 'bottom', 'left', 'right'] as const) {
-    await page.evaluate(([key, systemBarPosition]) => {
+    await page.evaluate(([key, dockPosition]) => {
       const saved = JSON.parse(localStorage.getItem(key) ?? '{}');
-      localStorage.setItem(key, JSON.stringify({ ...saved, systemBarPosition }));
+      localStorage.setItem(key, JSON.stringify({ ...saved, dockPosition }));
     }, [storageKey, position]);
     await page.reload();
-    await page.getByTestId('button-dock-shortcuts').click();
+    const trigger = page.getByTestId('button-dock-shortcuts');
+    await trigger.click();
 
-    const drawerBox = await page.getByTestId('menu-mobile').boundingBox();
+    const drawer = page.getByTestId('menu-mobile');
+    await expect(drawer).toHaveAttribute('data-shortcut-placement', position);
+    const [drawerBox, triggerBox] = await Promise.all([drawer.boundingBox(), trigger.boundingBox()]);
     expect(drawerBox).not.toBeNull();
-    expect(drawerBox!.y).toBeCloseTo(position === 'top' ? 58 : 16, 0);
-    if (position === 'left') expect(drawerBox!.x).toBeGreaterThanOrEqual(64);
-    if (position === 'right') expect(drawerBox!.x + drawerBox!.width).toBeLessThanOrEqual(1280 - 64);
+    expect(triggerBox).not.toBeNull();
+    expect(drawerBox!.width).toBeCloseTo(218, 0);
+
+    if (position === 'bottom') expect(triggerBox!.y - (drawerBox!.y + drawerBox!.height)).toBeCloseTo(16, 0);
+    if (position === 'top') expect(drawerBox!.y - (triggerBox!.y + triggerBox!.height)).toBeCloseTo(16, 0);
+    if (position === 'left') expect(drawerBox!.x - (triggerBox!.x + triggerBox!.width)).toBeCloseTo(16, 0);
+    if (position === 'right') expect(triggerBox!.x - (drawerBox!.x + drawerBox!.width)).toBeCloseTo(16, 0);
+
+    const beakOffset = await drawer.evaluate((element) => (
+      Number.parseFloat(getComputedStyle(element).getPropertyValue('--shortcut-beak-offset'))
+    ));
+    const expectedBeakOffset = position === 'top' || position === 'bottom'
+      ? triggerBox!.x + triggerBox!.width / 2 - drawerBox!.x
+      : triggerBox!.y + triggerBox!.height / 2 - drawerBox!.y;
+    expect(beakOffset).toBeCloseTo(expectedBeakOffset, 0);
   }
 });
 

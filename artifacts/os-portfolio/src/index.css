@@ -5565,6 +5565,7 @@ button { cursor: pointer; }
 
 @container settings-window (min-width: 957px) {
   .settings-intro-editor { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .settings-intro-input-row textarea { height: 37px; min-height: 37px; resize: vertical; }
   .settings-intro-color-button { width: 100%; }
 }
 

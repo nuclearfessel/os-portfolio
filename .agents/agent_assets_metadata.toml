@@ -28,3 +28,17 @@ mtime_ms = 1789530632269
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d159fe7f-a716-4487-8eae-fc1245a06d3f/d4388fe8-d19d-4d8c-b665-f2b0e343c5f5/2ba76896-1db9-4ae4-a8e8-421610647a89"
 storage_version_token = "1789530637646754"
 content_type = "image/png"
+
+[[outputs]]
+id = "myUsnE8D0PmEETPs2fNHg"
+uri = "file://artifacts/os-portfolio/public/og-image.jpg"
+type = "image"
+title = "OS Portfolio social preview"
+description = "1200 × 630 Open Graph and social sharing image for the OS Portfolio site."
+logical_id = "b21dd5f7-4018-4094-9987-8e5eef5e2cd6"
+content_hash = "sha256:b3b2d3e062e3bad116795d4daef312c36034eca58d81a655011a815371f2fbcf"
+size = 92456
+mtime_ms = 1789532709084
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d159fe7f-a716-4487-8eae-fc1245a06d3f/b21dd5f7-4018-4094-9987-8e5eef5e2cd6/959fba97-8491-42fe-aa8f-69952293891d"
+storage_version_token = "1789532770514763"
+content_type = "image/jpeg"

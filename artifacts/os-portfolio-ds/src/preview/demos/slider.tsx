@@ -1,20 +1,43 @@
+import { useState } from 'react';
 import { Slider } from '../../components/ui/slider';
 import { Stack } from '../parts';
 import { CanonicalSpec } from '../md-renderer';
 import { mdSlider } from '../docs-map';
 
 export function SliderDemo() {
+  const [value, setValue] = useState([40]);
+  const [range, setRange] = useState([25, 75]);
+  const [stepped, setStepped] = useState([60]);
+
   return (
     <div className="space-y-8">
       <div className="max-w-md space-y-6 rounded-xl border bg-card p-6">
-        <Stack label="Value">
-          <Slider defaultValue={[40]} max={100} step={1} />
+        <Stack label={`Value · ${value[0]}`}>
+          <Slider
+            value={value}
+            onValueChange={setValue}
+            max={100}
+            step={1}
+            aria-label="Value"
+          />
         </Stack>
-        <Stack label="Range">
-          <Slider defaultValue={[25, 75]} max={100} step={5} />
+        <Stack label={`Range · ${range[0]}–${range[1]}`}>
+          <Slider
+            value={range}
+            onValueChange={setRange}
+            max={100}
+            step={5}
+            aria-label="Range"
+          />
         </Stack>
-        <Stack label="Disabled">
-          <Slider defaultValue={[60]} disabled />
+        <Stack label={`Stepped · ${stepped[0]}`}>
+          <Slider
+            value={stepped}
+            onValueChange={setStepped}
+            max={100}
+            step={10}
+            aria-label="Stepped value"
+          />
         </Stack>
       </div>
       <CanonicalSpec md={mdSlider} />

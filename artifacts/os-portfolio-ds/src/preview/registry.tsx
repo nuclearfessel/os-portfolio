@@ -737,7 +737,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'slider',
         name: 'Slider',
-        description: 'Single values, ranges, and disabled states.',
+        description: 'Single values, ranges, and stepped values.',
         Page: SliderDemo,
       },
       {

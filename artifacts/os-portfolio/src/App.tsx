@@ -3433,11 +3433,12 @@ function TerminalWindow({
       const target = rawArgs[0]?.toLowerCase();
       const validWindows: WindowId[] = ['about', 'work', 'contact', 'terminal'];
       if (verb === 'close' && target === 'all') {
-        const openPortfolioWindows = (['about', 'work', 'contact'] as WindowId[]).filter((id) => openWindows[id]);
-        if (!openPortfolioWindows.length) appendEntry(raw, 'All portfolio windows are already closed.');
+        const openWindowIds = (['about', 'work', 'contact', 'settings', 'guide'] as WindowId[])
+          .filter((id) => openWindows[id]);
+        if (!openWindowIds.length) appendEntry(raw, 'All windows are already closed');
         else {
-          openPortfolioWindows.forEach(onCloseWindow);
-          appendEntry(raw, 'Closed all portfolio windows.');
+          openWindowIds.forEach(onCloseWindow);
+          appendEntry(raw, 'Closed all windows');
         }
       } else if (!validWindows.includes(target as WindowId)) {
         appendEntry(raw, `${verb}: expected about, work, contact, terminal${verb === 'close' ? ', or all' : ''}`, true);

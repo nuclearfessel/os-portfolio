@@ -5,6 +5,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 site_zip="${1:-site-package-validation.zip}"
 claude_zip="${2:-claude-src-pack.zip}"
+checksum_manifest="${3:-SHA256SUMS.txt}"
 
 absolute_output() {
   local output="$1"
@@ -18,6 +19,7 @@ absolute_output() {
 
 site_zip="$(absolute_output "$site_zip")"
 claude_zip="$(absolute_output "$claude_zip")"
+checksum_manifest="$(absolute_output "$checksum_manifest")"
 
 cd "$repo_root"
 
@@ -50,6 +52,7 @@ mkdir -p "$stage/os-portfolio-ds"
 cp -R artifacts/os-portfolio-ds/dist/. "$stage/os-portfolio-ds/"
 
 rm -f "$site_zip"
+rm -f "$checksum_manifest"
 (cd "$stage" && zip -qr "$site_zip" .)
 bash scripts/package-claude-source.sh "$claude_zip"
 
@@ -65,3 +68,11 @@ grep -Fxq 'index.html' "$site_manifest"
 grep -Fxq 'os-portfolio-ds/index.html' "$site_manifest"
 grep -Fxq 'public/index.html' "$claude_manifest"
 grep -Fxq 'public/os-portfolio-ds/index.html' "$claude_manifest"
+
+{
+  sha256sum "$site_zip" | awk -v name="$(basename "$site_zip")" '{ print $1 "  " name }'
+  sha256sum "$claude_zip" | awk -v name="$(basename "$claude_zip")" '{ print $1 "  " name }'
+} > "$checksum_manifest"
+
+grep -Eq "^[[:xdigit:]]{64}  $(basename "$site_zip")$" "$checksum_manifest"
+grep -Eq "^[[:xdigit:]]{64}  $(basename "$claude_zip")$" "$checksum_manifest"

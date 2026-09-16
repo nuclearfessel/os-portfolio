@@ -116,6 +116,7 @@ jobs:
             echo "tag=site-package-${version}"
             echo "site_zip=site-package-${version}.zip"
             echo "claude_zip=claude-src-pack.zip"
+            echo "checksum_manifest=SHA256SUMS.txt"
             echo "release_date=$(date -u +%Y-%m-%d)"
           } >> "$GITHUB_OUTPUT"
 
@@ -128,7 +129,8 @@ jobs:
         run: |
           bash scripts/validate-release-packages.sh \
             "${{ steps.release.outputs.site_zip }}" \
-            "${{ steps.release.outputs.claude_zip }}"
+            "${{ steps.release.outputs.claude_zip }}" \
+            "${{ steps.release.outputs.checksum_manifest }}"
 
       - name: Publish GitHub Release
         shell: bash
@@ -138,6 +140,7 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SITE_ZIP: ${{ steps.release.outputs.site_zip }}
           CLAUDE_ZIP: ${{ steps.release.outputs.claude_zip }}
+          CHECKSUM_MANIFEST: ${{ steps.release.outputs.checksum_manifest }}
         run: |
           release_notes="Automated combined OS Portfolio site and Claude source packages for \`main\` at commit \`${GITHUB_SHA::7}\`. The site package includes OS Portfolio DS at \`/os-portfolio-ds/\`."
 
@@ -145,11 +148,12 @@ jobs:
             while IFS= read -r legacy_asset; do
               [[ -n "$legacy_asset" ]] && gh release delete-asset "$RELEASE_TAG" "$legacy_asset" --yes
             done < <(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name | select(startswith("design-system-package-"))')
-            gh release upload "$RELEASE_TAG" "$SITE_ZIP" "$CLAUDE_ZIP" --clobber
+            gh release upload "$RELEASE_TAG" "$SITE_ZIP" "$CLAUDE_ZIP" "$CHECKSUM_MANIFEST" --clobber
           else
             gh release create "$RELEASE_TAG" \
               "$SITE_ZIP" \
               "$CLAUDE_ZIP" \
+              "$CHECKSUM_MANIFEST" \
               --target "$GITHUB_SHA" \
               --title "OS Portfolio packages ${RELEASE_VERSION}" \
               --notes "$release_notes"

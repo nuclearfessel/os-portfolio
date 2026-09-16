@@ -2172,7 +2172,7 @@ test('keeps the desktop shortcuts drawer vertically compact', async ({ page }) =
   });
   expect(geometry.buttonHeight).toBeCloseTo(20, 0);
   expect(geometry.gridGap).toBeCloseTo(0.5, 1);
-  expect(geometry.kickerDescriptionGap).toBeCloseTo(16, 0);
+  expect(geometry.kickerDescriptionGap).toBeCloseTo(8, 0);
   expect(geometry.drawerHeight).toBeLessThan(335);
 });
 

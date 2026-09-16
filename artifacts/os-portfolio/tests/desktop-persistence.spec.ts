@@ -823,6 +823,33 @@ test('Terminal controls all performance effects together and validates their sta
   await expect(page.getByTestId('window-guide')).toContainText('turn all effects on|off');
 });
 
+test('Terminal close all closes every other window and validates when they are already closed', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('button-dock-contact').click();
+  await page.getByTestId('button-dock-settings').click();
+  await page.getByTestId('button-dock-guide').click();
+  await page.getByTestId('button-dock-terminal').click();
+
+  for (const id of ['about', 'work', 'contact', 'settings', 'guide', 'terminal']) {
+    await expect(page.getByTestId(`window-${id}`)).toBeVisible();
+  }
+
+  const input = page.getByTestId('input-terminal-command');
+  await input.fill('close all');
+  await input.press('Enter');
+
+  for (const id of ['about', 'work', 'contact', 'settings', 'guide']) {
+    await expect(page.getByTestId(`window-${id}`)).toHaveCount(0);
+  }
+  await expect(page.getByTestId('window-terminal')).toBeVisible();
+  await expect(page.locator('.terminal-entry').last()).toContainText('Closed all windows');
+
+  await input.fill('close all');
+  await input.press('Enter');
+  await expect(page.locator('.terminal-entry').last()).toContainText('All windows are already closed');
+  await expect(page.getByTestId('sticky-sticky')).toBeVisible();
+});
+
 test('Terminal validates contrast commands against the current state', async ({ page }) => {
   await page.goto('/');
   await page.getByTestId('button-dock-terminal').click();

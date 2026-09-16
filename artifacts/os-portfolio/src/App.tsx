@@ -1706,7 +1706,7 @@ function SettingsWindow({
                       </button>
                       <a
                         className="settings-about-link"
-                        href="/os-portfolio-ds/"
+                        href={`/os-portfolio-ds/?theme=${theme}`}
                         target="_blank"
                         rel="noreferrer"
                         data-testid="settings-about-open-design-system"
@@ -4366,7 +4366,6 @@ function Home() {
     setWindows((current) => ({ ...current, [id]: true }));
     setActiveWindow(id);
     setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
-    setStickyOnTop(false);
     setMobileOpen(false);
   };
   const rememberWindowGeometry = (id: WindowId) => {
@@ -5068,27 +5067,23 @@ function Home() {
     onFocus: () => {
       setActiveWindow(id);
       setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
-      setStickyOnTop(false);
     },
     onClose: () => closeWindow(id),
     onMinimize: () => minimizeWindow(id),
     onMaximize: () => {
       setActiveWindow(id);
       setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
-      setStickyOnTop(false);
       setMaximizedWindows((current) => ({ ...current, [id]: !current[id] }));
     },
     onHeaderDoubleClick: (event: ReactMouseEvent<HTMLElement>) => {
       if (deviceMode !== 'desktop' || (event.target as HTMLElement).closest('.traffic-lights')) return;
       setActiveWindow(id);
       setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
-      setStickyOnTop(false);
       setMaximizedWindows((current) => ({ ...current, [id]: !current[id] }));
     },
     onPointerDown: (event: ReactPointerEvent<HTMLElement>) => {
       setActiveWindow(id);
       setWindowStack((current) => [...current.filter((windowId) => windowId !== id), id]);
-      setStickyOnTop(false);
       if (maximizedWindows[id]) startMaximizedDrag(id, event);
       else startDrag(id, event);
     },

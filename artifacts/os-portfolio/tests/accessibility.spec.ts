@@ -598,18 +598,19 @@ test.describe('UI animations toggle', () => {
   });
 });
 
-test.describe('Animation speed chips', () => {
-  test('Default speed is selected by default', async ({ page }) => {
+test.describe('Animation speed slider', () => {
+  test('Default speed is centered by default', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
-    const defaultChip = page.getByTestId('settings-a11y-speed-default');
-    await expect(defaultChip).toHaveAttribute('aria-checked', 'true');
+    const slider = page.getByTestId('settings-a11y-speed-slider');
+    await expect(slider).toHaveValue('1');
+    await expect(slider).toHaveAttribute('aria-valuetext', 'Default');
   });
 
   test('selecting Less sets data-anim-speed="less" on <html>', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
-    await page.getByTestId('settings-a11y-speed-less').click();
+    await page.getByTestId('settings-a11y-speed-slider').fill('0');
     const value = await page.evaluate(() =>
       document.documentElement.getAttribute('data-anim-speed'),
     );
@@ -619,7 +620,7 @@ test.describe('Animation speed chips', () => {
   test('selecting More sets data-anim-speed="more" on <html>', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
-    await page.getByTestId('settings-a11y-speed-more').click();
+    await page.getByTestId('settings-a11y-speed-slider').fill('2');
     const value = await page.evaluate(() =>
       document.documentElement.getAttribute('data-anim-speed'),
     );
@@ -629,32 +630,22 @@ test.describe('Animation speed chips', () => {
   test('selecting Default removes data-anim-speed from <html>', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
-    await page.getByTestId('settings-a11y-speed-less').click();
-    await page.getByTestId('settings-a11y-speed-default').click();
+    const slider = page.getByTestId('settings-a11y-speed-slider');
+    await slider.fill('0');
+    await slider.fill('1');
     const value = await page.evaluate(() =>
       document.documentElement.getAttribute('data-anim-speed'),
     );
     expect(value).toBeNull();
   });
 
-  test('only one speed chip is selected at a time', async ({ page }) => {
+  test('slider exposes Less, Default, and More as its three values', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
-    await page.getByTestId('settings-a11y-speed-less').click();
-    const lessChip = page.getByTestId('settings-a11y-speed-less');
-    const defaultChip = page.getByTestId('settings-a11y-speed-default');
-    const moreChip = page.getByTestId('settings-a11y-speed-more');
-    await expect(lessChip).toHaveAttribute('aria-checked', 'true');
-    await expect(defaultChip).toHaveAttribute('aria-checked', 'false');
-    await expect(moreChip).toHaveAttribute('aria-checked', 'false');
-  });
-
-  test('speed chips have role="radio"', async ({ page }) => {
-    await openSettings(page);
-    await goToAccessibility(page);
-    await expect(page.getByTestId('settings-a11y-speed-less')).toHaveAttribute('role', 'radio');
-    await expect(page.getByTestId('settings-a11y-speed-default')).toHaveAttribute('role', 'radio');
-    await expect(page.getByTestId('settings-a11y-speed-more')).toHaveAttribute('role', 'radio');
+    const slider = page.getByTestId('settings-a11y-speed-slider');
+    await expect(slider).toHaveAttribute('min', '0');
+    await expect(slider).toHaveAttribute('max', '2');
+    await expect(slider).toHaveAttribute('step', '1');
   });
 });
 
@@ -1011,7 +1002,7 @@ test.describe('Accessibility prefs persist across reload', () => {
   test('animation speed "Less" pref survives reload', async ({ page }) => {
     await openSettings(page);
     await goToAccessibility(page);
-    await page.getByTestId('settings-a11y-speed-less').click();
+    await page.getByTestId('settings-a11y-speed-slider').fill('0');
     await closeSettings(page);
     await page.reload();
     await page.waitForLoadState('networkidle');
@@ -1039,7 +1030,7 @@ test.describe('Accessibility prefs persist across reload', () => {
     await goToAccessibility(page);
     await page.getByTestId('settings-a11y-scrollbars-switch').click();
     await page.getByTestId('settings-a11y-blur-switch').click();
-    await page.getByTestId('settings-a11y-speed-more').click();
+    await page.getByTestId('settings-a11y-speed-slider').fill('2');
     await page.getByTestId('settings-a11y-animations-switch').click();
 
     await closeSettings(page);

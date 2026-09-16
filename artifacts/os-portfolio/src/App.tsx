@@ -1518,32 +1518,41 @@ function SettingsWindow({
 
                   {accessibility.contrastTheme === 'none' && accessibility.uiAnimations && (
                     <div className="settings-speed-group" data-testid="settings-a11y-speed-group">
-                      <span className="settings-label">Animation speed</span>
+                      <span className="settings-label" id="a11y-animation-speed-label">Animation speed</span>
                       <span className="settings-description">
                         <strong>Less</strong> — slower, reduced intensity (easier on motion sensitivity).{' '}
                         <strong>Default</strong> — standard timing.{' '}
                         <strong>More</strong> — faster, snappier motion.
                       </span>
-                      <div className="settings-speed-chips" role="radiogroup" aria-label="Animation speed">
-                        {([
-                          { value: 'less' as AnimationSpeed, label: 'Less', description: 'Slower, reduced intensity' },
-                          { value: 'default' as AnimationSpeed, label: 'Default', description: 'Standard timing' },
-                          { value: 'more' as AnimationSpeed, label: 'More', description: 'Faster, snappier motion' },
-                        ]).map(({ value, label, description }) => (
-                          <button
-                            key={value}
-                            type="button"
-                            role="radio"
-                            aria-checked={accessibility.animationSpeed === value}
-                            className={`settings-speed-chip${accessibility.animationSpeed === value ? ' is-selected' : ''}`}
-                            onClick={() => updateAccessibility({ animationSpeed: value })}
-                            data-testid={`settings-a11y-speed-${value}`}
-                            title={description}
-                          >
-                            {accessibility.animationSpeed === value && <Check size={10} strokeWidth={2.5} aria-hidden="true" />}
-                            {label}
-                          </button>
-                        ))}
+                      <div
+                        className="settings-transparency-control settings-speed-control"
+                        style={{
+                          '--slider-progress': `${(['less', 'default', 'more'] as AnimationSpeed[]).indexOf(accessibility.animationSpeed) * 50}%`,
+                          '--slider-thumb-left': `calc(${(['less', 'default', 'more'] as AnimationSpeed[]).indexOf(accessibility.animationSpeed) * 50}% - ${(['less', 'default', 'more'] as AnimationSpeed[]).indexOf(accessibility.animationSpeed) * 7}px)`,
+                        } as React.CSSProperties}
+                      >
+                        <input
+                          id="a11y-animation-speed"
+                          className="settings-transparency-slider"
+                          type="range"
+                          min="0"
+                          max="2"
+                          step="1"
+                          value={(['less', 'default', 'more'] as AnimationSpeed[]).indexOf(accessibility.animationSpeed)}
+                          onChange={(event) => updateAccessibility({
+                            animationSpeed: (['less', 'default', 'more'] as AnimationSpeed[])[Number(event.currentTarget.value)],
+                          })}
+                          aria-labelledby="a11y-animation-speed-label"
+                          aria-valuetext={accessibility.animationSpeed === 'default'
+                            ? 'Default'
+                            : accessibility.animationSpeed === 'less' ? 'Less' : 'More'}
+                          data-testid="settings-a11y-speed-slider"
+                        />
+                      </div>
+                      <div className="settings-speed-scale" aria-hidden="true">
+                        <span>Less</span>
+                        <span>Default</span>
+                        <span>More</span>
                       </div>
                     </div>
                   )}

@@ -17,7 +17,7 @@ A dedicated settings pane where users control visual accessibility preferences �
 | `SettingsSectionHeader` | `settings.tsx` | Group heading + description |
 | `SettingsDivider` | `settings.tsx` | Section separator |
 | `SettingsToggleRow` | `settings.tsx` | Boolean preference (on/off) |
-| `SettingsSegmentedChoice` | `settings.tsx` | Exclusive speed selection |
+| Native three-step range | Product | Less / Default / More speed selection |
 | `SettingsContrastCard` | `settings.tsx` | Contrast theme selector |
 
 ---
@@ -42,7 +42,7 @@ Motion
   ┌─────────────────────────────────────────┐
   │ UI animations                   [●────] │  ← SettingsToggleRow
   └─────────────────────────────────────────┘
-  [Less] [Default] [More]                     ← SettingsSegmentedChoice (when animations on)
+  Less ──────────●────────── More              ← three-step range, Default centered
 
 Contrast
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -61,7 +61,7 @@ All preference values are owned by the consuming product. The panel only reflect
 | Transparency effects on | `SettingsToggleRow` | Set/remove `data-transparency-enabled` on `:root`; applies to all translucent system surfaces |
 | Blur effects on | `SettingsToggleRow` | Set/remove `data-no-blur` and set `--surface-blur` on `:root`; available only while transparency is on |
 | UI animations on | `SettingsToggleRow` | Set/remove `data-no-animations` on shell |
-| Animation speed | `SettingsSegmentedChoice` | Set/remove `data-anim-speed` on shell |
+| Animation speed | Three-step range | Set/remove `data-anim-speed` on shell |
 | Contrast theme | `SettingsContrastCard` | Set/remove `data-contrast` on `:root`; uses an independent presentation baseline and disables regular theme, wallpaper, motion, transparency, and blur controls |
 
 See → [State contracts](../references/components/settings.md#state-contracts)
@@ -74,7 +74,7 @@ See → [State contracts](../references/components/settings.md#state-contracts)
 2. **Blur depends on transparency in Standard mode.** When Transparency effects is off, show Blur effects off and disabled and apply `data-no-blur`. Preserve the saved Blur preference and restore it when Transparency is turned back on.
 3. **Regular themes are disabled when any contrast theme is active.** Keep Light and Dark visible but disabled, preserve the saved regular theme, and restore it when Standard is selected.
 4. **Wallpaper controls are disabled when any contrast theme is active.** Preserve the saved wallpaper preference for restoration in Standard.
-5. **Animation speed is hidden/disabled when animations are off or contrast is active.** Only show `SettingsSegmentedChoice` when `uiAnimations === true && contrastTheme === 'none'`.
+5. **Animation speed is hidden/disabled when animations are off or contrast is active.** Only show the three-step range when `uiAnimations === true && contrastTheme === 'none'`.
 6. **Effect levels belong in Personalization.** Show window and sticky transparency controls when Transparency effects is on, and show the blur control only when both Transparency effects and Blur effects are on.
 7. **Three controls share one wide row.** At the product's large Settings-window breakpoint, window transparency, sticky transparency, and blur use three equal columns. At narrower widths, each uses its own row.
 8. **Default scrollbars are contextual.** Apply `portfolio-scrollbar-window` to each window so scrollbar thumbs fade in on window hover/focus and fade out when idle. `data-always-scrollbars` keeps those same thumbs visible; tracks stay transparent.
@@ -85,7 +85,7 @@ See → [State contracts](../references/components/settings.md#state-contracts)
 
 - [ ] Each `SettingsToggleRow` has a unique `id` and descriptive `label`.
 - [ ] Disabled toggles have `disabled` prop — visible but inert (not hidden).
-- [ ] `SettingsSegmentedChoice` has `groupLabel` set to "Animation speed".
+- [ ] The range has an accessible "Animation speed" label and announces Less, Default, or More for its current value.
 - [ ] `SettingsContrastCard` parent has `role="radiogroup" aria-label="Contrast theme"`.
 
 ---

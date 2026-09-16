@@ -1648,21 +1648,23 @@ button { cursor: pointer; }
   letter-spacing: .08em;
 }
 
-.gvc-sticky-actions { display: flex; gap: 3px; }
+.gvc-sticky-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
 .gvc-sticky-btn {
+  display: grid;
+  place-items: center;
   width: 18px; height: 18px;
   border-radius: 4px;
+  color: rgba(255, 255, 255, .82);
   background: rgba(255, 255, 255, .16);
 }
 
-.gvc-sticky-btn-add::before {
-  content: '+';
-  display: block;
-  text-align: center;
-  line-height: 18px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, .82);
+.gvc-sticky-actions-marker {
+  margin-right: 2px;
 }
 
 .gvc-sticky-text-lines { display: grid; gap: 6px; align-content: start; }
@@ -1703,11 +1705,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-visual-sticky-demo .gvc-sticky-btn {
-  background: rgba(23,56,71,.14);
-}
-
-.theme-light .guide-visual-sticky-demo .gvc-sticky-btn-add::before {
   color: rgba(23,56,71,.82);
+  background: rgba(23,56,71,.14);
 }
 
 .theme-light .guide-visual-sticky-demo .gvc-text-line {
@@ -1888,6 +1887,162 @@ button { cursor: pointer; }
 
 .gvc-menu-desktop {
   width: min(210px, 100%);
+}
+
+.guide-visual-sticky-menu {
+  display: flex;
+  justify-content: center;
+  padding: 20px 18px 24px;
+}
+
+.guide-visual-launcher-states {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto minmax(220px, 1.25fr);
+  align-items: center;
+  gap: 22px;
+  padding: 24px;
+}
+
+.gvc-launcher-state-group {
+  display: grid;
+  gap: 15px;
+  min-width: 0;
+}
+
+.gvc-launcher-group-title {
+  color: var(--gv-fg);
+  font: 9px var(--app-font-mono);
+  letter-spacing: .1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.gvc-launcher-state-row {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  gap: 18px;
+}
+
+.gvc-launcher-state {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 54px;
+}
+
+.gvc-launcher-state-name {
+  color: var(--gv-fg);
+  font: 9px var(--app-font-mono);
+}
+
+.gvc-launcher-desktop-icon,
+.gvc-launcher-dock-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  color: #fff7fb;
+  background: linear-gradient(145deg, #d64f8c, #9e3d67 72%);
+  border: 1px solid #dc94b4;
+}
+
+.gvc-launcher-desktop-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
+  box-shadow: 0 7px 14px rgba(0,0,0,.24);
+}
+
+.gvc-launcher-desktop-icon.is-open {
+  filter: brightness(1.12);
+  border-color: var(--gv-primary);
+}
+
+.gvc-launcher-desktop-label {
+  padding: 2px 5px;
+  color: var(--gv-fg);
+  border-radius: 4px;
+  font: 10px var(--app-font-sans);
+}
+
+.gvc-launcher-desktop-label.is-open {
+  color: var(--gv-marker-fg);
+  background: var(--gv-primary);
+}
+
+.gvc-launcher-link {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  color: var(--gv-fg);
+  font: 8px var(--app-font-mono);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.gvc-launcher-link [aria-hidden="true"] {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.gvc-launcher-dock-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+.gvc-launcher-dock-icon.is-open {
+  outline: 2px solid var(--gv-primary);
+  outline-offset: 1px;
+}
+
+.gvc-launcher-dock-icon.is-focused::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  width: 18px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--gv-primary);
+  transform: translateX(-50%);
+}
+
+.gvc-menu-sticky {
+  width: min(220px, 100%);
+}
+
+.gvc-menu-sticky-colors {
+  display: grid;
+  grid-template-columns: repeat(5, 26px);
+  gap: 6px;
+  padding: 6px 8px 4px;
+}
+
+.gvc-menu-sticky-color {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--gv-border);
+  border-radius: 6px;
+  color: #fff;
+}
+
+.gvc-menu-sticky-color.is-selected {
+  outline: 2px solid var(--gv-primary);
+  outline-offset: 1px;
+}
+
+.gvc-menu-sticky-name {
+  padding: 4px 8px 5px;
+  color: var(--gv-fg-muted);
+  font: 10px var(--app-font-mono);
+}
+
+.gvc-menu-item-plain {
+  padding-left: 8px;
 }
 
 .gvc-menu-title {
@@ -3292,6 +3447,17 @@ button { cursor: pointer; }
 
   .guide-terminal-command-row {
     grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .guide-visual-launcher-states {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .gvc-launcher-link {
+    grid-template-columns: auto auto auto;
+    justify-content: center;
+    gap: 6px;
   }
 }
 

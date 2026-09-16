@@ -13,7 +13,7 @@ import {
   TerminalCursor as TerminalCursorFill,
 } from '@keyline-icons/react/fill';
 import { RiMailSendFill } from 'react-icons/ri';
-import { BsGearWideConnected, BsStickyFill } from 'react-icons/bs';
+import { BsGearWideConnected, BsStickyFill, BsTrash3Fill } from 'react-icons/bs';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { RELEASE_CHANNEL, RELEASE_COMMIT, RELEASE_DATE, RELEASE_VERSION } from '@/release';
 import { tokens } from '@workspace/os-portfolio-ds/tokens';
@@ -1966,6 +1966,68 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <div><h3>Your changes stay in this browser</h3><p>Window positions, Stickies, and Settings are saved automatically. Use Save state as default when you want a setup you can return to later.</p></div>
                   </Surface>
                 </div>
+                <div className="guide-section-label">Desktop icons and the Dock</div>
+                <div className="guide-visual-full guide-visual-launcher-states" aria-hidden="true">
+                  <div className="gvc-launcher-state-group">
+                    <span className="gvc-launcher-group-title">Desktop icon</span>
+                    <div className="gvc-launcher-state-row">
+                      <div className="gvc-launcher-state">
+                        <span className="gvc-launcher-desktop-icon"><CircleUserFill size={25} /></span>
+                        <span className="gvc-launcher-desktop-label">about</span>
+                        <span className="gvc-launcher-state-name">Closed</span>
+                      </div>
+                      <div className="gvc-launcher-state">
+                        <span className="gvc-launcher-desktop-icon is-open"><CircleUserFill size={25} /></span>
+                        <span className="gvc-launcher-desktop-label is-open">about</span>
+                        <span className="gvc-launcher-state-name">Open</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="gvc-launcher-link">
+                    <span>same app</span>
+                    <span aria-hidden="true">↔</span>
+                    <span>shared state</span>
+                  </div>
+                  <div className="gvc-launcher-state-group">
+                    <span className="gvc-launcher-group-title">Dock item</span>
+                    <div className="gvc-launcher-state-row">
+                      <div className="gvc-launcher-state">
+                        <span className="gvc-launcher-dock-icon"><CircleUserFill size={20} /></span>
+                        <span className="gvc-launcher-state-name">Closed</span>
+                      </div>
+                      <div className="gvc-launcher-state">
+                        <span className="gvc-launcher-dock-icon is-open"><CircleUserFill size={20} /></span>
+                        <span className="gvc-launcher-state-name">Open</span>
+                      </div>
+                      <div className="gvc-launcher-state">
+                        <span className="gvc-launcher-dock-icon is-open is-focused"><CircleUserFill size={20} /></span>
+                        <span className="gvc-launcher-state-name">Focused</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Recognize closed, open, and focused apps</h3><p>A desktop icon has closed and open states; an open icon uses a brighter tile and highlighted label. In the Dock, a full-tile ring means the app is open. The directional edge pill identifies the one open app currently focused in front.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>Use either launcher for the same app</h3><p>About, Work, Contact, Terminal, and Stickies appear both on the desktop and in the Dock. Opening an app from either place updates both controls because they share the same app state. A desktop icon always opens or focuses its app; it does not hide an open app.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>Find Dock-only controls</h3><p>Shortcuts, Settings, and Guide appear only in the Dock. The Dock also has app-specific controls: selecting the focused Terminal minimizes it, while selecting focused Stickies hides the notes. Other app items open or bring their window forward.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div><h3>Open and arrange desktop icons</h3><p>Double-click a desktop icon with a mouse or trackpad; tap once on a touch device. Hover or keyboard focus shows whether the action will open or focus the app. Drag icons to arrange them. Their positions are saved separately from the Dock, so moving an icon never moves or reorders its Dock item.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">05</span>
+                    <div><h3>Change icon display without changing the Dock</h3><p>Use the Desktop context menu to choose large or small icons, clean up positions, snap moves to the grid, auto arrange, or hide every desktop icon. The matching Dock items remain available and keep their open and focused states.</p></div>
+                  </div>
+                </div>
                 <div className="guide-section-label">Desktop context menu</div>
                 <div className="guide-visual-row guide-visual-desktop-menu-row">
                   <div className="guide-visual-crop guide-visual-desktop-menu" aria-hidden="true">
@@ -2113,12 +2175,11 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                       </div>
                       <div className="gvc-sticky-body">
                         <div className="gvc-sticky-header">
-                          <span className="gvc-sticky-label">note / lemon</span>
+                          <span className="gvc-sticky-label">title</span>
                           <div className="gvc-sticky-actions">
-                            <div className="gvc-sticky-btn" />
-                            <div className="gvc-sticky-btn gvc-sticky-btn-add">
-                              <span className="gvc-dot-badge gvc-dot-inline">B</span>
-                            </div>
+                            <span className="gvc-dot-badge gvc-sticky-actions-marker">B</span>
+                            <div className="gvc-sticky-btn"><Plus size={12} strokeWidth={2.2} /></div>
+                            <div className="gvc-sticky-btn"><BsTrash3Fill size={10} /></div>
                           </div>
                         </div>
                         <div className="gvc-sticky-text-lines">
@@ -2220,6 +2281,54 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   </Surface>
                 </div>
 
+                <div className="guide-section-label">Sticky context menu</div>
+                <div className="guide-visual-row guide-visual-sticky-menu-row">
+                  <div className="guide-visual-crop guide-visual-sticky-menu" aria-hidden="true">
+                    <div className="gvc-menu gvc-menu-sticky">
+                      <div className="gvc-menu-title">Sticky color</div>
+                      <div className="gvc-menu-sticky-colors">
+                        {['#ffd84d', '#ffb84d', '#c9363e', '#fff0d2', '#006456', '#0d56b3', '#6648b8', '#a93570', '#1e603d', '#343b4f'].map((color, index) => (
+                          <span
+                            key={color}
+                            className={`gvc-menu-sticky-color${index === 6 ? ' is-selected' : ''}`}
+                            style={{ background: color }}
+                          >
+                            {index === 6 && <Check size={10} strokeWidth={2.4} />}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="gvc-menu-sticky-name">Violet</div>
+                      <div className="gvc-menu-sep" />
+                      <div className="gvc-menu-item gvc-menu-item-plain">Reset rotation</div>
+                      <div className="gvc-menu-sep" />
+                      <div className="gvc-menu-item gvc-menu-item-plain gvc-menu-item-danger">Delete this sticky…</div>
+                    </div>
+                  </div>
+                  <div className="guide-visual-caption">
+                    <span className="guide-card-index">right-click / long-press</span>
+                    <h3>The Sticky context menu</h3>
+                    <p>Open a note’s menu to change its color, reset its rotation, or delete an additional note. The original default note keeps the first two actions but does not show Delete this sticky….</p>
+                  </div>
+                </div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div><h3>Choose one of ten colors</h3><p>Select a swatch from the color grid. A checkmark and color name show the current choice, and the note updates immediately.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div><h3>Return the note upright</h3><p>Choose Reset rotation to set the note back to zero degrees without changing its text, color, size, or position.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div><h3>Delete an additional note</h3><p>Choose Delete this sticky… to open a confirmation dialog. This action appears only for notes you added; the original default note cannot be deleted from this menu.</p></div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div><h3>Use the menu from the keyboard</h3><p>Use the Up and Down arrows to move through choices, Home or End to jump to the first or last item, Enter or Space to choose, and Escape to close the menu.</p></div>
+                  </div>
+                </div>
+
                 <div className="guide-section-label">Add and remove notes</div>
                 <div className="guide-topic-list" role="list">
                   <Surface elevation="flat" className="guide-topic" role="listitem">
@@ -2233,7 +2342,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <span className="guide-card-index">delete</span>
                     <div>
                       <h3>Remove a note</h3>
-                      <p>Select the trash icon that appears next to the plus, or right-click and choose Delete note. A confirmation appears before the note is removed.</p>
+                        <p>Select the trash icon that appears next to the plus, or right-click and choose Delete this sticky…. A confirmation appears before the note is removed.</p>
                     </div>
                   </Surface>
                   <Surface elevation="flat" className="guide-topic" role="listitem">

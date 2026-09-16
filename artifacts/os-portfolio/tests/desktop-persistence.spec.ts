@@ -1045,6 +1045,46 @@ test('Guide Overview documents the complete desktop context menu', async ({ page
   await expect(guideWindow).toContainText('Escape to close it');
 });
 
+test('Guide Overview documents desktop icon states and their Dock relationship', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  await expect(guideWindow).toContainText('Desktop icons and the Dock');
+  const stateDiagram = guideWindow.locator('.guide-visual-launcher-states');
+  for (const label of ['Desktop icon', 'Dock item', 'Closed', 'Open', 'Focused', 'same app', 'shared state']) {
+    await expect(stateDiagram).toContainText(label);
+  }
+  for (const label of ['About', 'Work', 'Contact', 'Terminal', 'Stickies', 'Shortcuts', 'Settings', 'Guide']) {
+    await expect(guideWindow).toContainText(label);
+  }
+  await expect(guideWindow).toContainText('full-tile ring means the app is open');
+  await expect(guideWindow).toContainText('directional edge pill');
+  await expect(guideWindow).toContainText('Double-click a desktop icon');
+  await expect(guideWindow).toContainText('tap once on a touch device');
+  await expect(guideWindow).toContainText('moving an icon never moves or reorders its Dock item');
+  await expect(guideWindow).toContainText('matching Dock items remain available');
+});
+
+test('Guide Stickies documents the complete Sticky context menu', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+  await page.getByTestId('guide-nav-stickies').click();
+
+  await expect(guideWindow).toContainText('Sticky context menu');
+  const menuIllustration = guideWindow.locator('.gvc-menu-sticky');
+  for (const label of ['Sticky color', 'Violet', 'Reset rotation', 'Delete this sticky…']) {
+    await expect(menuIllustration).toContainText(label);
+  }
+  await expect(guideWindow).toContainText('right-click / long-press');
+  await expect(guideWindow).toContainText('The original default note');
+  await expect(guideWindow).toContainText('Use the Up and Down arrows');
+  await expect(guideWindow).toContainText('Home or End');
+  await expect(guideWindow).toContainText('Enter or Space');
+  await expect(guideWindow).toContainText('Escape to close the menu');
+});
+
 test('Guide Overview diagram keeps a stable structure at normal and narrow widths', async ({ page }) => {
   await page.keyboard.press('8');
   const guideWindow = page.getByTestId('window-guide');
@@ -1116,6 +1156,28 @@ test('Guide diagram markers use regular font weight', async ({ page }) => {
       markerWeights.map(() => '400'),
     );
   }
+});
+
+test('Guide Sticky anatomy uses clear add and trash controls with an adjacent marker', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+  await page.getByTestId('guide-nav-stickies').click();
+
+  const diagram = guideWindow.locator('.guide-visual-sticky-demo');
+  await expect(diagram.locator('.gvc-sticky-label')).toHaveText('title');
+  const actions = diagram.locator('.gvc-sticky-actions');
+  await expect(actions.locator('.gvc-sticky-btn')).toHaveCount(2);
+  await expect(actions.locator('.gvc-sticky-btn svg')).toHaveCount(2);
+  await expect(actions.locator('.gvc-sticky-actions-marker')).toHaveText('B');
+
+  const geometry = await actions.evaluate((element) => {
+    const marker = element.querySelector<HTMLElement>('.gvc-sticky-actions-marker')!.getBoundingClientRect();
+    const firstControl = element.querySelector<HTMLElement>('.gvc-sticky-btn')!.getBoundingClientRect();
+    return { markerRight: marker.right, controlLeft: firstControl.left, verticalGap: Math.abs(marker.top - firstControl.top) };
+  });
+  expect(geometry.controlLeft - geometry.markerRight).toBeLessThanOrEqual(8);
+  expect(geometry.verticalGap).toBeLessThanOrEqual(2);
 });
 
 test('Sticky illustration fills keep their round markers visible in both themes', async ({ page }) => {

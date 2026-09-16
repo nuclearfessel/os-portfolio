@@ -21,6 +21,12 @@ const tokensPath = join(root, "tokens.json");
 const templatePath = join(here, "theme-template.css");
 const cssOut = join(root, "src", "index.css");
 const tsOutDir = join(root, "src", "generated");
+const guideIllustrationCssOut = join(
+  root,
+  "src",
+  "generated",
+  "gvc-illustration-tokens.css",
+);
 const indexHtmlPath = join(root, "index.html");
 const faviconOut = join(root, "public", "favicon.svg");
 
@@ -224,7 +230,7 @@ function structuredDimensionEntries(dimension, tokens) {
   };
 }
 
-function componentCssEntries(scope, tokens) {
+function componentCssEntries(scope, tokens, family) {
   const lines = [];
   const walk = (node, path) => {
     for (const [name, child] of Object.entries(node ?? {})) {
@@ -250,8 +256,30 @@ function componentCssEntries(scope, tokens) {
       }
     }
   };
-  walk(tokens.color.component[scope], []);
+  const source = family
+    ? tokens.color.component[scope]?.[family]
+    : tokens.color.component[scope];
+  if (!source) {
+    throw new Error(`Missing component color family ${scope}.${family}`);
+  }
+  walk(source, family ? [family] : []);
   return lines.join("\n");
+}
+
+function buildGuideIllustrationCss(tokens) {
+  return `/* GENERATED FROM tokens.json -- DO NOT EDIT. Run scripts/build-tokens.mjs. */
+/* Isolated semantic mappings required by gvc-illustration.css. */
+:root,
+.theme-light,
+.light {
+${componentCssEntries("light", tokens, "guideIllustration")}
+}
+
+.theme-dark,
+.dark {
+${componentCssEntries("dark", tokens, "guideIllustration")}
+}
+`;
 }
 
 function buildCss(tokens) {
@@ -385,6 +413,7 @@ export function buildTokens() {
   const tokens = JSON.parse(readFileSync(tokensPath, "utf8"));
   writeFileSync(cssOut, buildCss(tokens));
   mkdirSync(tsOutDir, { recursive: true });
+  writeFileSync(guideIllustrationCssOut, buildGuideIllustrationCss(tokens));
   writeFileSync(join(tsOutDir, "tokens.tsx"), buildTs(tokens));
   mkdirSync(dirname(faviconOut), { recursive: true });
   writeFileSync(faviconOut, buildFavicon(tokens));
@@ -393,6 +422,6 @@ export function buildTokens() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   buildTokens();
   process.stdout.write(
-    "Generated src/index.css, src/generated/tokens.tsx, and public/favicon.svg\n",
+    "Generated src/index.css, Guide illustration CSS mappings, src/generated/tokens.tsx, and public/favicon.svg\n",
   );
 }

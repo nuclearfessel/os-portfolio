@@ -1583,7 +1583,7 @@ button { cursor: pointer; }
    gvc-content-line, gvc-resize-handle, gvc-resize-se
    are now provided by DS gvc-illustration.css.
    ========================================================= */
-.guide-visual-window-demo { padding: 28px 16px 32px; }
+.guide-visual-window-demo > .gvc-annotated-crop { padding: 28px 16px 32px; }
 
 /* =========================================================
    Sticky note illustration
@@ -1591,7 +1591,7 @@ button { cursor: pointer; }
    product values used in App.tsx (--sticky-bg default #ffd84d,
    tape matches .desktop-note::before rgba(245,232,193,…))
    ========================================================= */
-.guide-visual-sticky-demo { padding: 36px 20px 28px; }
+.guide-visual-sticky-demo > .gvc-annotated-crop { padding: 36px 20px 28px; }
 
 .gvc-sticky-tape {
   position: absolute;
@@ -1695,7 +1695,7 @@ button { cursor: pointer; }
    Icon gradients are representational — they match the exact
    DockIcon colours in App.tsx.
    ========================================================= */
-.guide-visual-dock-demo { padding: 28px 16px 32px; }
+.guide-visual-dock-demo > .gvc-annotated-crop { padding: 28px 16px 32px; }
 
 .gvc-dock-bar {
   display: flex;
@@ -1706,7 +1706,6 @@ button { cursor: pointer; }
   border: 1px solid var(--gv-border);
   width: fit-content;
   margin: 0 auto;
-  box-shadow: 0 6px 18px var(--gv-shadow-dk);
 }
 
 .gvc-dock-item {
@@ -1799,7 +1798,6 @@ button { cursor: pointer; }
   border-radius: 8px;
   background: var(--gv-surface);
   border: 1px solid var(--gv-border);
-  box-shadow: 0 14px 38px var(--gv-shadow-dk);
   font: 12px var(--app-font-sans);
   color: var(--gv-fg);
 }
@@ -1839,11 +1837,9 @@ button { cursor: pointer; }
 /* =========================================================
    System bar illustration
    ========================================================= */
-.guide-visual-sysbar-demo {
+.guide-visual-sysbar-demo > .gvc-annotated-crop {
   position: relative;
   padding: 28px 16px 36px;
-  border: 1px solid var(--gv-border);
-  border-radius: 9px;
   background: var(--gv-bg);
 }
 
@@ -1966,11 +1962,9 @@ button { cursor: pointer; }
    The only fixed colours are terminal-syntax tokens (prompt,
    path, output) which match the actual product terminal CSS.
    ========================================================= */
-.guide-visual-terminal-demo {
+.guide-visual-terminal-demo > .gvc-annotated-crop {
   position: relative;
   padding: 28px 16px 36px;
-  border: 1px solid var(--gv-border);
-  border-radius: 9px;
   background: var(--gv-bg);
 }
 
@@ -1980,7 +1974,6 @@ button { cursor: pointer; }
   border: 1px solid var(--gv-border);
   /* Terminal body is always near-black — representational of product terminal */
   background: hsl(var(--background));
-  box-shadow: 0 10px 30px var(--gv-shadow-dk);
   font: 11px var(--app-font-mono);
 }
 
@@ -2069,10 +2062,6 @@ button { cursor: pointer; }
    ========================================================= */
 .guide-visual-desktop-overview {
   position: relative;
-  border: 1px solid var(--gv-border);
-  border-radius: 9px;
-  background: var(--gv-bg);
-  overflow: hidden;
 }
 
 .gvc-desktop-overview {
@@ -2116,7 +2105,6 @@ button { cursor: pointer; }
   border: 1px solid var(--gv-border);
   border-radius: 5px;
   background: var(--gv-surface);
-  box-shadow: 0 6px 16px var(--gv-shadow-dk);
   overflow: hidden;
 }
 
@@ -2161,7 +2149,6 @@ button { cursor: pointer; }
   background: var(--gv-surface-deep);
   border: 1px solid var(--gv-border);
   border-radius: 6px 6px 0 0;
-  box-shadow: 0 -3px 10px var(--gv-shadow-dk);
 }
 
 .gvc-overview-dock-item {
@@ -2259,7 +2246,6 @@ button { cursor: pointer; }
   border: 1px solid var(--gv-border);
   border-radius: 9px;
   background: var(--gv-surface);
-  box-shadow: 0 10px 28px var(--gv-shadow-dk);
   overflow: hidden;
   font: 11px var(--app-font-sans);
 }
@@ -2337,7 +2323,6 @@ button { cursor: pointer; }
   border-radius: 50%;
   background: var(--gv-primary);
   border: 1px solid var(--gv-surface);
-  box-shadow: 0 1px 3px var(--gv-shadow-dk);
 }
 
 /* Toggle */
@@ -2363,7 +2348,6 @@ button { cursor: pointer; }
   height: 10px;
   border-radius: 50%;
   background: var(--gv-surface);
-  box-shadow: 0 1px 2px var(--gv-shadow-dk);
   transition: left .15s;
 }
 
@@ -2515,7 +2499,6 @@ button { cursor: pointer; }
   border: 1px solid var(--gv-border);
   border-radius: 9px;
   background: var(--gv-surface);
-  box-shadow: 0 10px 28px var(--gv-shadow-dk);
   overflow: hidden;
   font: 11px var(--app-font-sans);
 }
@@ -2677,7 +2660,6 @@ button { cursor: pointer; }
   border-radius: 50%;
   background: var(--gv-primary);
   border: 1px solid var(--gv-surface);
-  box-shadow: 0 1px 3px var(--gv-shadow-dk);
 }
 
 .gvc-settings-toggle {
@@ -2704,7 +2686,6 @@ button { cursor: pointer; }
   width: 10px; height: 10px;
   border-radius: 50%;
   background: var(--gv-surface);
-  box-shadow: 0 1px 2px var(--gv-shadow-dk);
 }
 
 .gvc-settings-toggle-on .gvc-settings-toggle-knob {
@@ -2781,7 +2762,6 @@ button { cursor: pointer; }
   border-radius: 7px;
   overflow: hidden;
   background: var(--gv-surface);
-  box-shadow: 0 4px 12px var(--gv-shadow-dk);
 }
 
 .gvc-arch-browser-bar {
@@ -2975,7 +2955,6 @@ button { cursor: pointer; }
   background: var(--gv-surface);
   border: 1px solid var(--gv-border);
   border-bottom-width: 3px;
-  box-shadow: 0 2px 4px var(--gv-shadow-dk);
   font: 600 11px var(--app-font-mono);
   color: var(--gv-fg);
   white-space: nowrap;

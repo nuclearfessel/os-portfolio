@@ -170,7 +170,6 @@
   --component-guide-illustration-icon-background: var(--border);
   --component-guide-illustration-accent-color: var(--accent);
   --component-guide-illustration-marker-foreground: var(--primary-foreground);
-  --component-guide-illustration-shadow-base: var(--foreground);
   --component-action-button-primary-background: var(--primary);
   --component-action-button-primary-foreground: var(--primary-foreground);
   --component-action-button-primary-border: var(--primary);
@@ -502,7 +501,6 @@
   --component-guide-illustration-icon-background: var(--border);
   --component-guide-illustration-accent-color: var(--accent);
   --component-guide-illustration-marker-foreground: var(--primary-foreground);
-  --component-guide-illustration-shadow-base: var(--foreground);
   --component-action-button-primary-background: var(--primary);
   --component-action-button-primary-foreground: var(--primary-foreground);
   --component-action-button-primary-border: var(--primary);

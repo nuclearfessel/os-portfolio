@@ -1280,6 +1280,47 @@ test('guide window controls show min/max/close at top right', async ({ page }) =
   await expect(winDemo.locator('.gvc-traffic-lights')).toHaveCount(0);
 });
 
+test('guide diagrams resolve shared DS colors and stay flat in both themes', async ({ page }) => {
+  for (const theme of ['Light', 'Dark'] as const) {
+    await openSettingsAndSetTheme(page, theme);
+    await page.getByTestId('button-dock-guide').click();
+    const guideWindow = page.getByTestId('window-guide');
+    await expect(guideWindow).toBeVisible();
+    await page.getByTestId('guide-nav-windows').click();
+
+    const visual = guideWindow.locator('.guide-visual-window-demo');
+    const diagramState = await visual.evaluate((element) => {
+      const frameStyle = getComputedStyle(element);
+      const crop = element.querySelector<HTMLElement>('.gvc-annotated-crop');
+      const window = element.querySelector<HTMLElement>('.gvc-window');
+      const line = element.querySelector<HTMLElement>('.gvc-content-line');
+      const control = element.querySelector<HTMLElement>('.gvc-win-btn');
+      if (!crop || !window || !line || !control) return null;
+
+      return {
+        surfaceToken: frameStyle.getPropertyValue('--component-guide-illustration-surface').trim(),
+        lineToken: frameStyle.getPropertyValue('--component-guide-illustration-content-line').trim(),
+        outerPaddingTop: frameStyle.paddingTop,
+        cropPaddingTop: getComputedStyle(crop).paddingTop,
+        windowBackground: getComputedStyle(window).backgroundColor,
+        windowShadow: getComputedStyle(window).boxShadow,
+        lineBackground: getComputedStyle(line).backgroundColor,
+        controlBackground: getComputedStyle(control).backgroundColor,
+      };
+    });
+
+    expect(diagramState).not.toBeNull();
+    expect(diagramState!.surfaceToken).not.toBe('');
+    expect(diagramState!.lineToken).not.toBe('');
+    expect(diagramState!.outerPaddingTop).toBe('0px');
+    expect(diagramState!.cropPaddingTop).not.toBe('0px');
+    expect(diagramState!.windowBackground).not.toBe('rgba(0, 0, 0, 0)');
+    expect(diagramState!.lineBackground).not.toBe('rgba(0, 0, 0, 0)');
+    expect(diagramState!.controlBackground).not.toBe('rgba(0, 0, 0, 0)');
+    expect(diagramState!.windowShadow).toBe('none');
+  }
+});
+
 test('guide stickies section has annotated anatomy visual with rotation info', async ({ page }) => {
   await page.keyboard.press('8');
   const guideWindow = page.getByTestId('window-guide');

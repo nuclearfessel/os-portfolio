@@ -1,10 +1,13 @@
+@import "../../generated/gvc-illustration-tokens.css";
+
 /* ==========================================================
    GVC Illustration Layer — DS Component Stylesheet
    Guide-visual-component (gvc) annotation, abstract window chrome,
    and position-grid CSS.
 
-   ALL colours derive from generated --component-guide-illustration-*
-   CSS custom properties (aliases of semantic tokens). No raw hex,
+   ALL colours derive from the imported generated
+   --component-guide-illustration-* CSS custom properties (aliases of
+   semantic tokens). No raw hex,
    no raw rgba(), no white fallbacks. The only representational fixed
    colours are:
      • Sticky yellow  #ffd84d (product sticky default, not used here)
@@ -36,9 +39,6 @@
   --gv-secondary:     hsl(var(--component-guide-illustration-secondary-accent));
   --gv-icon-bg:       hsl(var(--component-guide-illustration-icon-background) / .8);
   --gv-marker-fg:     hsl(var(--component-guide-illustration-marker-foreground));
-  /* Shadow: use shadow-base hue channel with alpha */
-  --gv-shadow-dk:     hsl(var(--component-guide-illustration-shadow-base) / .36);
-  --gv-shadow-lt:     hsl(var(--component-guide-illustration-shadow-base) / .14);
 }
 
 /* Light-theme overrides — same structure, light component vars */
@@ -62,8 +62,6 @@
   --gv-secondary:     hsl(var(--component-guide-illustration-secondary-accent));
   --gv-icon-bg:       hsl(var(--component-guide-illustration-primary-ring) / .36);
   --gv-marker-fg:     hsl(var(--component-guide-illustration-marker-foreground));
-  --gv-shadow-dk:     hsl(var(--component-guide-illustration-shadow-base) / .1);
-  --gv-shadow-lt:     hsl(var(--component-guide-illustration-shadow-base) / .06);
 }
 
 /* ==========================================================
@@ -188,7 +186,6 @@
   border: 1px solid var(--gv-border);
   border-radius: 9px;
   background: var(--gv-surface);
-  box-shadow: 0 12px 36px var(--gv-shadow-dk);
   overflow: hidden;
 }
 

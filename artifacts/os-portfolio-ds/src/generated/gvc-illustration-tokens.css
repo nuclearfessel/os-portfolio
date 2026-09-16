@@ -1,0 +1,48 @@
+/* GENERATED FROM tokens.json -- DO NOT EDIT. Run scripts/build-tokens.mjs. */
+/* Isolated semantic mappings required by gvc-illustration.css. */
+:root,
+.theme-light,
+.light {
+  --component-guide-illustration-canvas: var(--muted);
+  --component-guide-illustration-border: var(--border);
+  --component-guide-illustration-surface: var(--card);
+  --component-guide-illustration-surface-mid: var(--popover);
+  --component-guide-illustration-surface-elevated: var(--secondary);
+  --component-guide-illustration-surface-deep: var(--sidebar);
+  --component-guide-illustration-surface-base: var(--background);
+  --component-guide-illustration-content-line: var(--border);
+  --component-guide-illustration-separator: var(--border);
+  --component-guide-illustration-foreground: var(--foreground);
+  --component-guide-illustration-foreground-muted: var(--muted-foreground);
+  --component-guide-illustration-foreground-dim: var(--muted-foreground);
+  --component-guide-illustration-primary: var(--primary);
+  --component-guide-illustration-primary-tint: var(--action-surface);
+  --component-guide-illustration-primary-ring: var(--ring);
+  --component-guide-illustration-secondary-accent: var(--chart-3);
+  --component-guide-illustration-icon-background: var(--border);
+  --component-guide-illustration-accent-color: var(--accent);
+  --component-guide-illustration-marker-foreground: var(--primary-foreground);
+}
+
+.theme-dark,
+.dark {
+  --component-guide-illustration-canvas: var(--muted);
+  --component-guide-illustration-border: var(--border);
+  --component-guide-illustration-surface: var(--card);
+  --component-guide-illustration-surface-mid: var(--popover);
+  --component-guide-illustration-surface-elevated: var(--secondary);
+  --component-guide-illustration-surface-deep: var(--sidebar);
+  --component-guide-illustration-surface-base: var(--background);
+  --component-guide-illustration-content-line: var(--border);
+  --component-guide-illustration-separator: var(--border);
+  --component-guide-illustration-foreground: var(--foreground);
+  --component-guide-illustration-foreground-muted: var(--muted-foreground);
+  --component-guide-illustration-foreground-dim: var(--muted-foreground);
+  --component-guide-illustration-primary: var(--primary);
+  --component-guide-illustration-primary-tint: var(--action-surface);
+  --component-guide-illustration-primary-ring: var(--ring);
+  --component-guide-illustration-secondary-accent: var(--chart-3);
+  --component-guide-illustration-icon-background: var(--border);
+  --component-guide-illustration-accent-color: var(--accent);
+  --component-guide-illustration-marker-foreground: var(--primary-foreground);
+}

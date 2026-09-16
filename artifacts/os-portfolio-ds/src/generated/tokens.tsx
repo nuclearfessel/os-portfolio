@@ -186,8 +186,7 @@ export const tokens = {
           "secondaryAccent": "#287f8f",
           "iconBackground": "#a9c5bd",
           "accentColor": "#c54f48",
-          "markerForeground": "#f7fbf9",
-          "shadowBase": "#17233a"
+          "markerForeground": "#f7fbf9"
         },
         "actionButtonPrimary": {
           "background": "#0b665d",
@@ -378,8 +377,7 @@ export const tokens = {
           "secondaryAccent": "#86d9ee",
           "iconBackground": "#444967",
           "accentColor": "#ff8d79",
-          "markerForeground": "#111326",
-          "shadowBase": "#e8eaf4"
+          "markerForeground": "#111326"
         },
         "actionButtonPrimary": {
           "background": "#e4ff5b",

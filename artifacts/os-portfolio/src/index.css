@@ -610,7 +610,7 @@ button { cursor: pointer; }
   overflow-y: auto;
 }
 
-@container settings-window (max-width: 620px) {
+@container settings-window (max-width: 560px) {
   .settings-layout {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
@@ -920,7 +920,7 @@ button { cursor: pointer; }
   outline: none;
 }
 
-@container settings-window (max-width: 560px) {
+@container settings-window (max-width: 620px) {
   .settings-about-hero {
     grid-template-columns: auto minmax(0, 1fr);
   }
@@ -3445,7 +3445,7 @@ button { cursor: pointer; }
 /* =========================================================
    Responsive: collapse visual rows on narrow guide window
    ========================================================= */
-@container settings-window (max-width: 560px) {
+@container settings-window (max-width: 620px) {
   .guide-visual-row,
   .guide-visual-row-reverse {
     grid-template-columns: minmax(0, 1fr);

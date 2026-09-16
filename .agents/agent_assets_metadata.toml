@@ -42,3 +42,17 @@ mtime_ms = 1789532709084
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d159fe7f-a716-4487-8eae-fc1245a06d3f/b21dd5f7-4018-4094-9987-8e5eef5e2cd6/959fba97-8491-42fe-aa8f-69952293891d"
 storage_version_token = "1789532770514763"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "KkZIlQgQeYKMn7dAaqMfi"
+uri = "file://artifacts/os-portfolio/test-results/settings-navigation-360.png"
+type = "image"
+title = "Settings navigation at 360px"
+description = "Personalization and Accessibility share the first row; About is one-column wide and centered on the second row."
+logical_id = "23208ff7-44c4-499f-b02b-4eee0cff6a66"
+content_hash = "sha256:c3139061624a8e52411bf798c387e9e5cbdff9e9973139e49cb893b639a9e131"
+size = 77212
+mtime_ms = 1789541066911
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d159fe7f-a716-4487-8eae-fc1245a06d3f/23208ff7-44c4-499f-b02b-4eee0cff6a66/22fdf24c-2d22-46cd-90a1-db4e842ed1cd"
+storage_version_token = "1789541091523642"
+content_type = "image/png"

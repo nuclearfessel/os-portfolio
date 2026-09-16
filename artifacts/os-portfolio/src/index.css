@@ -561,7 +561,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav {
-  background: rgba(194,222,216,.76);
+  background: #e2ece8;
   border-right-color: rgba(26,83,91,.2);
 }
 
@@ -594,13 +594,16 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav-item-active {
-  color: #f7fbf8 !important;
-  background: #2c8f81 !important;
+  color: #17233a !important;
+  background: transparent !important;
   font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .theme-light .settings-nav-item-active .settings-nav-icon {
-  color: #f7fbf8;
+  color: #17233a;
 }
 
 /* Settings content area */
@@ -619,8 +622,9 @@ button { cursor: pointer; }
   .settings-nav {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    padding: 8px 10px;
+    column-gap: 6px;
+    row-gap: 1px;
+    padding: 3px 10px;
     overflow: hidden;
     border-right: 0;
     border-bottom: 1px solid rgba(214,221,255,.1);
@@ -635,12 +639,25 @@ button { cursor: pointer; }
   .settings-nav-item {
     min-width: 0;
     justify-content: center;
+    padding-block: 3px;
     padding-inline: 8px;
     text-align: center;
   }
 
   .settings-content {
     padding: 18px;
+  }
+}
+
+@container settings-window (max-width: 400px) {
+  .settings-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-nav-item:last-child {
+    grid-column: 1 / -1;
+    width: calc((100% - 6px) / 2);
+    justify-self: center;
   }
 }
 
@@ -4595,8 +4612,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav .settings-nav-item-active {
-  color: #f7fbf8 !important;
-  background: #2c8f81 !important;
+  color: #17233a !important;
+  background: transparent !important;
 }
 
 .theme-light .settings-nav .settings-nav-item:hover:not(.settings-nav-item-active) {
@@ -5253,7 +5270,7 @@ button { cursor: pointer; }
 }
 
 [data-no-transparency] .theme-light .settings-nav {
-  background: rgba(218, 232, 228, 1) !important;
+  background: rgba(226, 236, 232, 1) !important;
 }
 
 [data-no-transparency] .theme-light .desktop-context-menu,
@@ -5296,7 +5313,7 @@ button { cursor: pointer; }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .window-header,
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .settings-nav {
-  background: rgb(194 222 216 / calc(100% - var(--accessibility-transparency))) !important;
+  background: rgb(226 236 232 / calc(100% - var(--accessibility-transparency))) !important;
 }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .desktop-context-menu,

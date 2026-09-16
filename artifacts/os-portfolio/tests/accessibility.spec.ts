@@ -173,6 +173,40 @@ test.describe('Settings sidebar navigation', () => {
 
     await expect(nav).toHaveCSS('animation-name', 'settings-subnav-in');
   });
+
+  test('Settings navigation uses two columns with About centered at the 360px minimum width', async ({ page }) => {
+    await openSettings(page);
+    const settingsWindow = page.getByTestId('window-settings');
+    const nav = settingsWindow.locator('.settings-nav');
+    const personalization = page.getByTestId('settings-nav-personalization');
+    const accessibility = page.getByTestId('settings-nav-accessibility');
+    const about = page.getByTestId('settings-nav-about');
+
+    await settingsWindow.evaluate((element) => {
+      element.style.width = '360px';
+    });
+
+    await expect.poll(async () => {
+      const [navBox, personalizationBox, accessibilityBox, aboutBox] = await Promise.all([
+        nav.boundingBox(),
+        personalization.boundingBox(),
+        accessibility.boundingBox(),
+        about.boundingBox(),
+      ]);
+      if (!navBox || !personalizationBox || !accessibilityBox || !aboutBox) return null;
+      return {
+        firstRowAligned: Math.abs(personalizationBox.y - accessibilityBox.y) < 2,
+        aboutOnSecondRow: aboutBox.y >= personalizationBox.y + personalizationBox.height + 1,
+        aboutCentered: Math.abs((aboutBox.x + aboutBox.width / 2) - (navBox.x + navBox.width / 2)) < 2,
+        aboutMatchesColumnWidth: Math.abs(aboutBox.width - personalizationBox.width) < 2,
+      };
+    }).toEqual({
+      firstRowAligned: true,
+      aboutOnSecondRow: true,
+      aboutCentered: true,
+      aboutMatchesColumnWidth: true,
+    });
+  });
 });
 
 // ═════════════════════════════════════════════════════════════════════════════

@@ -1173,6 +1173,7 @@ test('Guide Sticky anatomy uses clear add and trash controls with an adjacent ma
 
   const geometry = await diagram.evaluate((root) => {
     const body = root.querySelector<HTMLElement>('.gvc-sticky-body')!.getBoundingClientRect();
+    const tape = root.querySelector<HTMLElement>('.gvc-sticky-tape')!.getBoundingClientRect();
     const element = root.querySelector<HTMLElement>('.gvc-sticky-actions')!;
     const marker = element.querySelector<HTMLElement>('.gvc-sticky-actions-marker')!.getBoundingClientRect();
     const controls = [...element.querySelectorAll<HTMLElement>('.gvc-sticky-btn')].map((control) => control.getBoundingClientRect());
@@ -1182,15 +1183,18 @@ test('Guide Sticky anatomy uses clear add and trash controls with an adjacent ma
     return {
       markerCenter: (marker.left + marker.right) / 2,
       controlsCenter: (controlLeft + controlRight) / 2,
-      markerBottom: marker.bottom,
-      controlTop,
+      markerVerticalCenter: (marker.top + marker.bottom) / 2,
+      controlsVerticalCenter: (controlTop + Math.max(...controls.map((control) => control.bottom))) / 2,
       bodyWidth: body.width,
       bodyHeight: body.height,
+      tapeOverlap: tape.bottom - body.top,
     };
   });
   expect(Math.abs(geometry.markerCenter - geometry.controlsCenter)).toBeLessThanOrEqual(2);
-  expect(geometry.markerBottom).toBeLessThanOrEqual(geometry.controlTop);
+  expect(Math.abs(geometry.markerVerticalCenter - geometry.controlsVerticalCenter)).toBeLessThanOrEqual(4);
   expect(Math.abs(geometry.bodyWidth - geometry.bodyHeight)).toBeLessThanOrEqual(0.5);
+  expect(geometry.tapeOverlap).toBeGreaterThanOrEqual(7);
+  expect(geometry.tapeOverlap).toBeLessThanOrEqual(11);
 });
 
 test('Sticky illustration fills keep their round markers visible in both themes', async ({ page }) => {

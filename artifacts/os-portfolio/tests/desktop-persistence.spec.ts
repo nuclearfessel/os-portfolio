@@ -1559,13 +1559,18 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   const settingsHover = page.getByTestId('settings-nav-accessibility');
   await expect(settingsActive).toBeVisible();
   await settingsHover.hover();
+  await expect(settingsHover).toHaveCSS('background-color', 'rgb(208, 230, 225)');
   const settingsColors = await page.evaluate(() => {
+    const nav = document.querySelector('[aria-label="Settings sections"]');
     const active = document.querySelector('[data-testid="settings-nav-personalization"]');
     const hover = document.querySelector('[data-testid="settings-nav-accessibility"]');
     return {
+      navBackground: nav ? getComputedStyle(nav).backgroundColor : '',
       activeColor: active ? getComputedStyle(active).color : '',
       activeBackground: active ? getComputedStyle(active).backgroundColor : '',
       activeShadow: active ? getComputedStyle(active).boxShadow : '',
+      activeTextDecorationLine: active ? getComputedStyle(active).textDecorationLine : '',
+      activeTextDecorationThickness: active ? getComputedStyle(active).textDecorationThickness : '',
       hoverColor: hover ? getComputedStyle(hover).color : '',
       hoverBackground: hover ? getComputedStyle(hover).backgroundColor : '',
     };
@@ -1577,23 +1582,36 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   const guideHover = page.getByTestId('guide-nav-windows');
   await expect(guideActive).toBeVisible();
   await guideHover.hover();
+  await expect(guideHover).toHaveCSS('background-color', 'rgb(208, 230, 225)');
   const guideColors = await page.evaluate(() => {
+    const nav = document.querySelector('[aria-label="User guide sections"]');
     const active = document.querySelector('[data-testid="guide-nav-overview"]');
     const hover = document.querySelector('[data-testid="guide-nav-windows"]');
     return {
+      navBackground: nav ? getComputedStyle(nav).backgroundColor : '',
       activeColor: active ? getComputedStyle(active).color : '',
       activeBackground: active ? getComputedStyle(active).backgroundColor : '',
       activeShadow: active ? getComputedStyle(active).boxShadow : '',
+      activeTextDecorationLine: active ? getComputedStyle(active).textDecorationLine : '',
+      activeTextDecorationThickness: active ? getComputedStyle(active).textDecorationThickness : '',
       hoverColor: hover ? getComputedStyle(hover).color : '',
       hoverBackground: hover ? getComputedStyle(hover).backgroundColor : '',
     };
   });
 
+  expect(guideColors.navBackground).toBe(settingsColors.navBackground);
   expect(guideColors.activeColor).toBe(settingsColors.activeColor);
   expect(guideColors.activeBackground).toBe(settingsColors.activeBackground);
+  expect(guideColors.activeTextDecorationLine).toBe(settingsColors.activeTextDecorationLine);
+  expect(guideColors.activeTextDecorationThickness).toBe(settingsColors.activeTextDecorationThickness);
   expect(guideColors.hoverColor).toBe(settingsColors.hoverColor);
   expect(guideColors.hoverBackground).toBe(settingsColors.hoverBackground);
-  expect(guideColors.activeBackground).toBe('rgb(44, 143, 129)');
+  expect(guideColors.activeColor).toBe('rgb(23, 35, 58)');
+  expect(guideColors.navBackground).toBe('rgba(226, 236, 232, 0.8)');
+  expect(guideColors.activeBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(guideColors.activeTextDecorationLine).toBe('underline');
+  expect(guideColors.activeTextDecorationThickness).toBe('2px');
+  expect(guideColors.hoverBackground).toBe('rgb(208, 230, 225)');
   expect(guideColors.activeShadow).toBe('none');
 });
 

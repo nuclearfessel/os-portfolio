@@ -2165,7 +2165,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   markers={[
                     { label: 'A', description: 'Tape strip — drag to move the note' },
                     { label: 'B', description: 'Plus / trash icons — add or delete a note' },
-                    { label: 'C', description: 'Rotation handles - drag handles at the corners to rotate the note (desktop only)' },
+                    { label: 'C', description: 'Rotation handles — drag handles at the corners to rotate the note (desktop only)' },
                     { label: 'D', description: 'Resize corner — drag to change the note size' },
                   ]}
                 >

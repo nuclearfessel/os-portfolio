@@ -1166,6 +1166,7 @@ test('Guide Sticky anatomy uses clear add and trash controls with an adjacent ma
 
   const diagram = guideWindow.locator('.guide-visual-sticky-demo');
   await expect(diagram.locator('.gvc-sticky-label')).toHaveText('title');
+  await expect(diagram).toContainText('Rotation handles — drag handles at the corners to rotate the note (desktop only)');
   const actions = diagram.locator('.gvc-sticky-actions');
   await expect(actions.locator('.gvc-sticky-btn')).toHaveCount(2);
   await expect(actions.locator('.gvc-sticky-btn svg')).toHaveCount(2);
@@ -1202,13 +1203,17 @@ test('Guide Sticky anatomy uses clear add and trash controls with an adjacent ma
   const rotationHandleStyles = await diagram.locator('.gvc-rot-handle').evaluateAll((handles) =>
     handles.map((handle) => {
       const styles = getComputedStyle(handle);
-      return { border: styles.border, background: styles.backgroundColor };
+      return {
+        borderStyle: styles.borderStyle,
+        borderWidth: styles.borderWidth,
+        background: styles.backgroundColor,
+      };
     }),
   );
   expect(rotationHandleStyles).toEqual([
-    { border: '0px none rgb(0, 0, 0)', background: 'rgba(0, 0, 0, 0)' },
-    { border: '0px none rgb(0, 0, 0)', background: 'rgba(0, 0, 0, 0)' },
-    { border: '0px none rgb(0, 0, 0)', background: 'rgba(0, 0, 0, 0)' },
+    { borderStyle: 'none', borderWidth: '0px', background: 'rgba(0, 0, 0, 0)' },
+    { borderStyle: 'none', borderWidth: '0px', background: 'rgba(0, 0, 0, 0)' },
+    { borderStyle: 'none', borderWidth: '0px', background: 'rgba(0, 0, 0, 0)' },
   ]);
 });
 

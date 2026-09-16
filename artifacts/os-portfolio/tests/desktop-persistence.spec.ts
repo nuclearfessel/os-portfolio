@@ -2728,7 +2728,9 @@ test('deletes only user-created stickies after confirmation and clears their sav
 });
 
 test('multiple stickies keep one active note above the rest and all notes below windows', async ({ page }) => {
-  await page.getByTestId('button-add-sticky').click();
+  await page.getByTestId('button-close-about').click();
+  await page.getByTestId('button-close-work').click();
+  await page.getByTestId('button-add-sticky-system-parity').click();
 
   const stickyIds = [
     'sticky',
@@ -2740,25 +2742,66 @@ test('multiple stickies keep one active note above the rest and all notes below 
   const readZIndex = (locator: ReturnType<typeof page.getByTestId>) =>
     locator.evaluate((element) => Number(getComputedStyle(element).zIndex));
 
+  const tealSystemSticky = page.getByTestId('sticky-sticky-system-parity');
+  const tealUserSticky = page.getByTestId('sticky-sticky-2');
+  await expect(tealSystemSticky).toHaveAttribute('data-sticky-color', 'teal');
+  await expect(tealUserSticky).toHaveAttribute('data-sticky-color', 'teal');
+
   for (const activeId of stickyIds) {
     await page.getByTestId(`sticky-${activeId}`).getByRole('textbox').dispatchEvent('pointerdown');
     await expect.poll(async () => Promise.all(stickyIds.map(async (id) => ({
       id,
       zIndex: await readZIndex(page.getByTestId(`sticky-${id}`)),
-    })))).toEqual(stickyIds.map((id) => ({
+    })))).toMatchObject(stickyIds.map((id) => ({
       id,
-      zIndex: id === activeId ? 5 : 4,
+      zIndex: id === activeId ? stickyIds.length + 1 : expect.any(Number),
     })));
+    const stack = await Promise.all(stickyIds.map(async (id) => ({
+      id,
+      zIndex: await readZIndex(page.getByTestId(`sticky-${id}`)),
+    })));
+    const inactiveRanks = stack.filter(({ id }) => id !== activeId).map(({ zIndex }) => zIndex);
+    expect(inactiveRanks.every((zIndex) => zIndex < stickyIds.length + 1)).toBe(true);
+    expect(new Set(inactiveRanks).size).toBe(inactiveRanks.length);
   }
 
-  await page.getByTestId('window-work').click({ position: { x: 40, y: 40 } });
+  await tealSystemSticky.evaluate((element) => {
+    element.style.left = '120px';
+    element.style.top = '100px';
+  });
+  await tealUserSticky.evaluate((element) => {
+    element.style.left = '420px';
+    element.style.top = '100px';
+  });
+
+  await tealSystemSticky.getByRole('textbox').click();
+  await expect.poll(async () => ({
+    selected: await readZIndex(tealSystemSticky),
+    sameColorPeer: await readZIndex(tealUserSticky),
+  })).toMatchObject({ selected: stickyIds.length + 1, sameColorPeer: expect.any(Number) });
+  const afterSystemSelection = {
+    selected: await readZIndex(tealSystemSticky),
+    sameColorPeer: await readZIndex(tealUserSticky),
+  };
+  expect(afterSystemSelection.sameColorPeer).toBeLessThan(stickyIds.length + 1);
+
+  await tealUserSticky.getByRole('textbox').click();
+  await expect.poll(async () => ({
+    selected: await readZIndex(tealUserSticky),
+    sameColorPeer: await readZIndex(tealSystemSticky),
+  })).toEqual({
+    selected: stickyIds.length + 1,
+    sameColorPeer: 3,
+  });
+
+  await page.getByTestId('button-dock-work').click();
 
   const stickyZIndexes = await Promise.all(stickyIds.map((id) => readZIndex(page.getByTestId(`sticky-${id}`))));
   const visibleWindowZIndexes = await page.locator('.window:visible').evaluateAll((windows) =>
     windows.map((window) => Number(getComputedStyle(window).zIndex)),
   );
   expect(Math.max(...stickyZIndexes)).toBeLessThan(Math.min(...visibleWindowZIndexes));
-  expect(stickyZIndexes.filter((zIndex) => zIndex === 5)).toHaveLength(1);
+  expect(stickyZIndexes.filter((zIndex) => zIndex === stickyIds.length + 1)).toHaveLength(1);
 });
 
 test('keeps stickies hidden on mobile and tablet workspaces', async ({ page }) => {

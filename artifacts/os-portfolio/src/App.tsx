@@ -4855,12 +4855,13 @@ function Home() {
     const position = dragPositions[`desktop-${id}`] ?? folderPositions[id];
     return position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined;
   };
-  const stickyStyle = (sticky: StickyData) => {
+  const stickyStyle = (sticky: StickyData, index: number) => {
     const selectedColor = stickyPalette.find((color) => color.id === sticky.color) ?? stickyPalette[0];
     const usesLightText = selectedColor.foreground === 'light';
+    const individualStackRank = index + 1;
     return {
       ...(managedLayout ? {} : itemStyle(sticky.id)),
-      zIndex: stickyOnTop && activeStickyId === sticky.id ? 5 : 4,
+      zIndex: stickyOnTop && activeStickyId === sticky.id ? stickies.length + 1 : individualStackRank,
       '--sticky-bg': selectedColor.background,
       '--sticky-text': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-muted': usesLightText ? '#edf1f5' : '#37414d',
@@ -5364,14 +5365,16 @@ function Home() {
           </div>
         )}
 
-        {workspaceMode === 'desktop' && stickyVisible && (!managedLayout || stickyOnTop) && stickies.filter((sticky) => !managedLayout || sticky.id === activeStickyId).map((sticky, index) => (
-          <aside
+        {workspaceMode === 'desktop' && stickyVisible && (!managedLayout || stickyOnTop) && (
+          <div className="sticky-notes-layer">
+            {stickies.filter((sticky) => !managedLayout || sticky.id === activeStickyId).map((sticky, index) => (
+              <aside
             key={sticky.id}
             className="desktop-note"
             data-draggable-item
             data-sticky-color={sticky.color}
             data-testid={`sticky-${sticky.id}`}
-            style={stickyStyle(sticky)}
+            style={stickyStyle(sticky, index)}
             onPointerDown={(event) => { setActiveStickyId(sticky.id); setStickyOnTop(true); startDrag(sticky.id, event); }}
             onPointerMove={moveDrag}
             onPointerUp={endDrag}
@@ -5468,8 +5471,10 @@ function Home() {
               aria-label={`Resize sticky note ${index + 1}`}
               tabIndex={0}
             />
-          </aside>
-        ))}
+              </aside>
+            ))}
+          </div>
+        )}
 
         {windows.work && (!managedLayout || (!stickyOnTop && activeWindow === 'work')) && <WorkWindow {...windowProps('work')} />}
         {windows.about && (!managedLayout || (!stickyOnTop && activeWindow === 'about')) && <AboutWindow {...windowProps('about')} />}

@@ -58,6 +58,10 @@ desktop intro text, images, and launchers, but below every open window. The
 active sticky may rise above other stickies only within that bounded layer; it
 must never overtake a window.
 
+Assign each sticky an independent integer rank inside that layer. Selecting a
+note raises only that note to the layer's highest rank; color must never
+participate in stacking identity or rank.
+
 Managed tablet and mobile layouts may replace overlapping layers with
 single-surface navigation. Preserve that navigation model rather than applying
 desktop z-index behavior at narrow breakpoints.

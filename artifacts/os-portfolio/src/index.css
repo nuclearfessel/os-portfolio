@@ -4232,6 +4232,7 @@ button { cursor: pointer; }
   padding: 10px;
   box-sizing: border-box;
   overflow: visible;
+  text-align: center;
   visibility: hidden;
 }
 .desktop-shortcut-drawer.is-positioned { visibility: visible; }
@@ -4244,7 +4245,7 @@ button { cursor: pointer; }
   background: rgba(214,221,255,.14);
 }
 .desktop-shortcut-drawer .shortcut-menu-grid { gap: .5px; }
-.desktop-shortcut-drawer .quick-button { height: 20px; min-height: 20px; padding: 0 10px; box-sizing: border-box; line-height: 18px; }
+.desktop-shortcut-drawer .quick-button { height: 20px; min-height: 20px; justify-content: center; padding: 0 10px; box-sizing: border-box; line-height: 18px; text-align: center; }
 .desktop-shortcut-drawer::before,
 .desktop-shortcut-drawer::after {
   content: '';

@@ -2176,6 +2176,10 @@ test('keeps the desktop shortcuts drawer vertically compact', async ({ page }) =
       separatorHeight: separator.getBoundingClientRect().height,
       separatorBackground: getComputedStyle(separator).backgroundColor,
       outerEdgeKickerGap: kicker.getBoundingClientRect().top - drawerBox.top,
+      kickerTextAlign: getComputedStyle(kicker).textAlign,
+      descriptionTextAlign: getComputedStyle(description).textAlign,
+      buttonJustifyContent: getComputedStyle(firstButton).justifyContent,
+      buttonTextAlign: getComputedStyle(firstButton).textAlign,
     };
   });
   expect(geometry.buttonHeight).toBeCloseTo(20, 0);
@@ -2186,6 +2190,10 @@ test('keeps the desktop shortcuts drawer vertically compact', async ({ page }) =
   expect(geometry.separatorHeight).toBeCloseTo(1, 0);
   expect(geometry.separatorBackground).not.toBe('rgba(0, 0, 0, 0)');
   expect(geometry.outerEdgeKickerGap).toBeCloseTo(11, 0);
+  expect(geometry.kickerTextAlign).toBe('center');
+  expect(geometry.descriptionTextAlign).toBe('center');
+  expect(geometry.buttonJustifyContent).toBe('center');
+  expect(geometry.buttonTextAlign).toBe('center');
   expect(geometry.drawerHeight).toBeLessThan(335);
 });
 

@@ -329,7 +329,7 @@ export function DesignSystemBrowser() {
 
         {/* ── Main content ─────────────────────────────────────────────── */}
         <main className="min-w-0 px-6 py-10 sm:px-10 lg:px-14">
-          <div className="mx-auto max-w-5xl">
+          <div className="w-full max-w-none">
             {isPrimitiveDetailPage && (
               <Button
                 variant="outline"

@@ -9,6 +9,12 @@ The User Guide should use generous outer gutters, a readable single-column flow,
 
 **How to apply:** Prefer the site's editorial Work/About patterns and design-system flat surfaces. Keep explanatory content stacked with breathing room; reserve color for section markers, indexed edges, and occasional callouts.
 
+Single-column documentation in the design-system site must use the full available main-content width. Only explicit multi-column grids and bounded component specimens should constrain their contents.
+
+**Why:** A global page-width cap made sections such as Exclusions wrap as though they occupied one half of a two-column layout.
+
+**How to apply:** Keep the design-system page shell and shared Markdown blocks uncapped. Apply width limits locally only when a demo, form, dialog, readable intro measure, or deliberate grid requires one.
+
 Guide instructions should use plain language and break each topic into short, specific actions. Explain necessary technical terms where they appear instead of assuming the reader already knows them.
 
 **Why:** The user wants the Guide to offer more detail without becoming jargon-heavy or difficult to scan.

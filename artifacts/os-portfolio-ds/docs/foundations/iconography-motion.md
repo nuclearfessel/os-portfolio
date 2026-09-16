@@ -41,10 +41,18 @@ Default: `1.7–1.8`. Use `strokeWidth={1.8}` on Lucide icons where the default 
 | Terminal block caret | 1s | `step-end` | Functional typing feedback; continues under reduced-effects modes |
 | Drag & resize | Direct | None | Pointer controls geometry — no easing |
 
+### Component token architecture
+
+Motion uses primitive, semantic, and component layers in `tokens.json`.
+Components consume `--osp-motion-component-*` contracts for durations and
+easing rather than referencing primitive timings directly. The design-system
+site presents only the component layer.
+
 ### CSS utilities used
-- `transition-colors duration-100` — hover color feedback on buttons, nav items
+- `--osp-motion-component-action-button-*` — button feedback
+- `--osp-motion-component-dialog-*` and `sheet-*` — overlay entry and exit
+- `--osp-motion-component-dock-*` and `desktop-launcher-*` — desktop navigation feedback
 - `transition-transform` — knob slide in `SettingsToggleRow`
-- `transition-all duration-100` — swatch and card border transitions
 - `animate-pulse` — Skeleton loading state
 - `animate-spin` — Spinner
 

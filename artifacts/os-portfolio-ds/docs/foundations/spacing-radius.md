@@ -58,19 +58,20 @@ contract. It is not part of the staged primitive count.
 
 ## Radius inventory
 
-There are **6 primitive radius tokens**:
+There are **7 primitive radius tokens**:
 
 | Token | Value |
 |---|---:|
 | `radius.primitive.none` | 0px |
+| `radius.primitive.hairline` | 1px |
 | `radius.primitive.sm` | 8px |
 | `radius.primitive.md` | 10px |
 | `radius.primitive.lg` | 12px |
 | `radius.primitive.xl` | 16px |
 | `radius.primitive.full` | 9999px |
 
-There are **11 semantic radius aliases**: the six size names `none`, `sm`,
-`md`, `lg`, `xl`, `full`, plus the stable purposes `compact`, `control`,
+There are **12 semantic radius aliases**: the seven size names `none`,
+`hairline`, `sm`, `md`, `lg`, `xl`, `full`, plus the stable purposes `compact`, `control`,
 `surface`, `elevated`, and `pill`.
 
 `radius.base` remains `0.75rem` (12px), and the legacy theme aliases
@@ -81,18 +82,18 @@ existing compatibility formulas.
 
 ## Component coverage
 
-The component layer covers the existing **21 component groups**:
-`actionButton`, `accordion`, `dialog`, `separator`, `toast`, `tooltip`,
+The component layer covers the existing **23 component groups**:
+`actionButton`, `accordion`, `dialog`, `sheet`, `separator`, `toast`, `tooltip`,
 `contextMenu`, `desktopLauncher`, `dock`, `dockLabel`, `projectCard`,
 `sectionLabel`, `statusIndicator`, `stickyNoteSurface`, `genericSurface`,
 `windowSurface`, `systemBar`, `settingsControls`, `colorPicker`, `terminal`,
-and `contactCta`.
+`terminalCursor`, and `contactCta`.
 
-The radius layer has stable contracts for all 21 groups (23 component radius
+The radius layer has stable contracts for all 23 groups (25 component radius
 aliases total). `settingsControls` intentionally has separate `surface`,
 `control`, and `segmented` leaves because its window surface, form controls,
 and segmented pills do not share one radius. The spacing layer has stable
-contracts for 20 groups (44 component spacing aliases total); `separator` has
+contracts for 21 groups (47 component spacing aliases total); `separator` has
 no spacing contract and is intentionally omitted. Component properties use
 purpose names such as `padding`, `paddingInline`, `paddingBlock`, `gap`, and
 `radius`, not one-off geometry values.

@@ -1,6 +1,11 @@
 import tokensJson from '../../tokens.json';
 import { motionTokens, radiusTokens, spacingTokens } from '../generated/tokens';
 import { SectionLabel } from '../components/ui/os-portfolio';
+import { CanonicalSpec, extractSection } from './md-renderer';
+import {
+  mdFoundationIconographyMotion,
+  mdFoundationSpacingRadius,
+} from './docs-map';
 
 type Leaf = { $value: string; $description?: string };
 type ComponentSource = Record<string, Record<string, Leaf>>;
@@ -113,6 +118,7 @@ function ComponentTokenFamily({ family, title, description }: { family: Family; 
 export function SpacingRadiusTokensPage() {
   return (
     <div className="space-y-12">
+      <CanonicalSpec md={mdFoundationSpacingRadius} title="Spacing & radius guidance" />
       <ComponentTokenFamily
         family="spacing"
         title="Spacing contracts"
@@ -129,18 +135,22 @@ export function SpacingRadiusTokensPage() {
 
 export function MotionTokensPage() {
   return (
-    <>
+    <div className="space-y-12">
       <style>{`
         @keyframes osp-token-motion-preview {
           from { transform: translateX(0); }
           to { transform: translateX(76px); }
         }
       `}</style>
+      <CanonicalSpec
+        md={extractSection(mdFoundationIconographyMotion, 'Motion')}
+        title="Motion guidance"
+      />
       <ComponentTokenFamily
         family="motion"
         title="Motion contracts"
         description="Durations and easing curves for feedback, entry, overlays, launchers, settings controls, and the functional Terminal caret."
       />
-    </>
+    </div>
   );
 }

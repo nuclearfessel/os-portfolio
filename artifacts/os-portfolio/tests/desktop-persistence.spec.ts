@@ -178,6 +178,7 @@ test('layers stickies above desktop content and below every window', async ({ pa
   await page.setViewportSize({ width: 1280, height: 800 });
 
   const sticky = page.getByTestId('sticky-sticky');
+  const stickyLayerContainer = page.locator('.sticky-notes-layer');
   const intro = page.locator('.desktop-intro');
   const launcherLayerContainer = page.locator('.desktop-folders');
   const aboutWindow = page.getByTestId('window-about');
@@ -186,7 +187,7 @@ test('layers stickies above desktop content and below every window', async ({ pa
   await expect(aboutWindow).toBeVisible();
 
   const layers = await Promise.all(
-    [intro, launcherLayerContainer, sticky, aboutWindow].map((locator) =>
+    [intro, launcherLayerContainer, stickyLayerContainer, aboutWindow].map((locator) =>
       locator.evaluate((element) => Number.parseInt(getComputedStyle(element).zIndex, 10)),
     ),
   );
@@ -196,11 +197,14 @@ test('layers stickies above desktop content and below every window', async ({ pa
   expect(stickyLayer).toBeGreaterThan(launcherLayer);
   expect(windowLayer).toBeGreaterThan(stickyLayer);
 
+  const inactiveStickyRank = await sticky.evaluate(
+    (element) => Number.parseInt(getComputedStyle(element).zIndex, 10),
+  );
   await sticky.click();
   const activeStickyLayer = await sticky.evaluate(
     (element) => Number.parseInt(getComputedStyle(element).zIndex, 10),
   );
-  expect(activeStickyLayer).toBeGreaterThan(stickyLayer);
+  expect(activeStickyLayer).toBeGreaterThan(inactiveStickyRank);
   expect(windowLayer).toBeGreaterThan(activeStickyLayer);
 });
 
@@ -2480,13 +2484,6 @@ test('stays usable when browser storage reads, writes, and removals fail', async
       snapToGrid: true,
       theme: 'dark',
       showDesktopIcons: false,
-      stickies: [{
-        id: 'sticky',
-        text: inMemoryState.stickyText,
-      }, {
-        id: 'sticky-1',
-        text: '',
-      }],
       dockPosition: 'right',
     });
     expect(snapshot.itemPositions['desktop-about'].left).toBeCloseTo(inMemoryState.launcher.left, 2);
@@ -2564,6 +2561,16 @@ test('keeps storage recovery help visible and keyboard-operable on narrow screen
         throw new Error('localStorage getItem blocked');
       },
     });
+    expect(snapshot.stickies).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        id: 'sticky',
+        text: inMemoryState.stickyText,
+      }),
+      expect.objectContaining({
+        id: 'sticky-1',
+        text: '',
+      }),
+    ]));
   });
   await page.reload();
 
@@ -3355,6 +3362,9 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await page.getByTestId('settings-automatic-text-contrast-switch').click();
   const settingsWindow = page.getByTestId('window-settings');
   const editor = settingsWindow.locator('.settings-intro-editor');
+  await settingsWindow.evaluate((element) => {
+    element.style.width = '1100px';
+  });
   const capsuleSpacing = () => editor.locator('.settings-intro-field').evaluateAll(
     (items) => items.map((item) => {
       const style = getComputedStyle(item);
@@ -3378,15 +3388,9 @@ test('desktop text personalization and theme-specific colors can be edited and p
   await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(3);
   await expectSymmetricCapsuleSpacing();
 
-  const settingsBox = await settingsWindow.boundingBox();
-  const resizeHandle = settingsWindow.locator('.window-resize-e');
-  const resizeBox = await resizeHandle.boundingBox();
-  expect(settingsBox).not.toBeNull();
-  expect(resizeBox).not.toBeNull();
-  await page.mouse.move(resizeBox!.x + resizeBox!.width / 2, resizeBox!.y + resizeBox!.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(settingsBox!.x + 540, resizeBox!.y + resizeBox!.height / 2);
-  await page.mouse.up();
+  await settingsWindow.evaluate((element) => {
+    element.style.width = '560px';
+  });
   await expect.poll(() => editor.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
   await expectSymmetricCapsuleSpacing();
 

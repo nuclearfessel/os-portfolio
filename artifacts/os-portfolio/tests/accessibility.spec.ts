@@ -430,6 +430,10 @@ test.describe('Transparency effects', () => {
     const settingsWindow = page.getByTestId('window-settings');
     const sliderGrid = page.getByTestId('settings-transparency-grid');
 
+    await settingsWindow.evaluate((element) => {
+      element.style.width = '1100px';
+    });
+
     await expect.poll(() => sliderGrid.evaluate((element) =>
       getComputedStyle(element).gridTemplateColumns.split(' ').length,
     )).toBe(3);

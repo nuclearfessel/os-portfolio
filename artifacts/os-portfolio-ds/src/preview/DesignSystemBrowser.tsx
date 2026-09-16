@@ -26,6 +26,10 @@ const THEME_STORAGE_KEY = 'portfolio-os-ds.theme';
 const LEGACY_THEME_STORAGE_KEY = 'portfolio-os-design-system.theme';
 
 function readStoredTheme(): 'light' | 'dark' {
+  const requestedTheme = new URLSearchParams(window.location.search).get('theme');
+  if (requestedTheme === 'light' || requestedTheme === 'dark') {
+    return requestedTheme;
+  }
   const storedTheme =
     localStorage.getItem(THEME_STORAGE_KEY) ??
     localStorage.getItem(LEGACY_THEME_STORAGE_KEY);

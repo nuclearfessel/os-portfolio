@@ -135,8 +135,9 @@ rather than inheriting a different border from every branded tile. Keep that
 border stable through hover and focus; use the flat outline for interaction
 feedback.
 
-The active state must remain distinguishable without hover. Use a full-tile ring
-for every open app. Add the directional edge pill only to the focused/topmost
+The active state must remain distinguishable without hover. Use a full-tile
+border/ring for every open app; an open but unfocused app has no edge tab. Add
+the directional edge pill only to the focused/topmost
 item so users can distinguish open apps from the current app. On mobile and
 tablet, keep that pill visible beneath the inline label. Do not apply hover
 styling to active items; their selected treatment remains unchanged under the
@@ -166,7 +167,7 @@ pointer.
 | Supply `aria-label` on every `DockItem` | Rely on `DockItemLabel` text as the only accessible name |
 | Use `presentation="tooltip"` only on desktop | Show tooltip labels on mobile (they overlap other content) |
 | Keep Dock icons in a fixed footprint across states | Resize the icon on hover/active |
-| Give every open app a full-tile ring and only the focused app an edge pill | Put the focused edge pill on every open app |
+| Give every open app a full-tile border/ring and only the focused app an edge pill | Add a separate bottom tab to an open but unfocused app |
 | Preserve branded tile and glyph colors and use a flat outline on hover/focus | Move, brighten, emboss, or recolor branded tiles on hover |
 | Apply hover feedback only to inactive items | Layer hover styling on top of the active treatment |
 | Use one shared 1px border color for every inactive item | Give each inactive branded tile a different border color |

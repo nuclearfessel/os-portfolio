@@ -107,6 +107,10 @@ purpose names such as `padding`, `paddingInline`, `paddingBlock`, `gap`, and
 - Arbitrary and dynamic geometry is not tokenized, including percentages,
   calculated dimensions, responsive widths, transforms, slider positions, and
   content-dependent sizes.
+- Teaching-diagram widths, host-window minimums, navigation relocation
+  breakpoints, marker edge offsets, and cursor alignment are composition
+  geometry. Keep values such as a Guide minimum width or fixed system-bar strip
+  width local to the pattern that proves they fit; do not promote them to tokens.
 - No new separator spacing contract is invented because the audited separator
   component has no stable spacing purpose.
 - Existing scalar APIs are not replaced by structured objects. Use

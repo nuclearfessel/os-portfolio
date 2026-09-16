@@ -50,6 +50,9 @@ When `data-contrast="high"` is active, all semantic tokens re-map to the fixed h
 - Modal dialogs restore focus to the trigger element on close.
 - Desktop numeric shortcuts are suspended while a color-value field has focus so
   number entry cannot launch or focus Dock applications.
+- Dock state and keyboard focus remain separate: every open app retains its
+  full-tile border/ring, only the focused topmost app receives the directional
+  edge tab, and `:focus-visible` remains available for keyboard focus.
 
 ### Focus ring token
 `ring` maps to `primary` in both themes. In high-contrast mode it maps to `--hc-focus` (#ffff00) globally via `*:focus-visible`.
@@ -107,6 +110,12 @@ When `data-contrast="high"` is active, all semantic tokens re-map to the fixed h
 - Body copy stays at 13px or larger.
 - Major controls have practical touch targets (min 36px height via `min-h-9` on ActionButton and Button).
 - Content reflows without horizontal page scrolling.
+- Teaching diagrams retain complete labels and controls at supported minimum
+  window widths. Prefer a fixed non-shrinking diagram with a documented host
+  minimum over progressively compressed text.
+- Modifier-chord key diagrams use a flat uniform border; do not add a bottom tab
+  or raised-key indicator that could be mistaken for state.
+- Text cursors in terminal diagrams are vertically centered on their prompt line.
 
 ---
 

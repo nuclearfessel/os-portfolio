@@ -1909,7 +1909,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                           <div className="gvc-content-line" style={{ width: '82%' }} />
                           <div className="gvc-content-line" style={{ width: '62%' }} />
                         </div>
-                        <span className="gvc-dot-badge gvc-overview-window-marker">B</span>
+                        <span className="gvc-dot-badge gvc-dot-edge-left gvc-overview-window-marker">B</span>
                       </div>
                       <div className="gvc-overview-side">
                         <div className="gvc-overview-icon">
@@ -2097,7 +2097,12 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     { label: 'C', description: 'Corner handle — drag to resize' },
                   ]}
                 >
-                    <AbstractWindow title="~/about" showResizeHandle style={{ minWidth: 240, width: '70%', maxWidth: 360 }}>
+                    <AbstractWindow
+                      title="~/about"
+                      showResizeHandle
+                      className="gvc-window-overflow-visible"
+                      style={{ minWidth: 240, width: '70%', maxWidth: 360 }}
+                    >
                       <span className="gvc-dot-badge" style={{ position: 'absolute', left: '46%', top: 8, transform: 'translateX(-50%)' }}>A</span>
                       <span className="gvc-dot-badge" style={{ position: 'absolute', right: 2, top: 8 }}>B</span>
                       <div className="gvc-content-line" style={{ width: '55%', height: 3, marginBottom: 6 }} />
@@ -2105,7 +2110,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                       <div className="gvc-content-line" style={{ width: '70%' }} />
                       <div className="gvc-content-line" style={{ width: '80%' }} />
                       <div className="gvc-content-line" style={{ width: '40%' }} />
-                      <span className="gvc-dot-badge gvc-window-resize-marker">C</span>
+                      <span className="gvc-dot-badge gvc-dot-edge-se gvc-window-resize-marker">C</span>
                     </AbstractWindow>
                 </AnnotatedFrame>
 
@@ -2514,7 +2519,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     { label: 'B', description: 'Right side — online status, quick icons, and clock' },
                   ]}
                 >
-                    <div className="gvc-sysbar">
+                    <div className="gvc-sysbar gvc-fixed-strip">
                       <div className="gvc-sysbar-left">
                         <span className="gvc-sysbar-logo" />
                         <span className="gvc-sysbar-sep">|</span>
@@ -2800,7 +2805,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                           <div className="gvc-settings-nav-item gvc-settings-nav-active">Personalization</div>
                           <div className="gvc-settings-nav-item">Accessibility</div>
                           <div className="gvc-settings-nav-item gvc-settings-nav-dim">About</div>
-                          <span className="gvc-dot-badge gvc-settings-nav-marker">A</span>
+                          <span className="gvc-dot-badge gvc-dot-group-center gvc-settings-nav-marker">A</span>
                         </div>
                         {/* Content */}
                         <div className="gvc-settings-content">

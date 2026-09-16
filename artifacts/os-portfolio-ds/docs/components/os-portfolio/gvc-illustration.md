@@ -130,6 +130,17 @@ These components are structural wrappers. Product-specific diagram interiors
 | `label` | `string` | — | Displayed character |
 | `inline` | `boolean` | `false` | Apply `.gvc-dot-inline` margin/align |
 | `className` | `string` | — | Additional className |
+| `style` | `CSSProperties` | — | Local composition geometry, such as an edge marker's along-edge offset |
+
+Shared placement modifiers:
+
+| Class | Purpose |
+|---|---|
+| `.gvc-dot-edge-left` | Center a marker directly across a positioned element's left edge |
+| `.gvc-dot-edge-se` | Center a marker directly across a positioned element's southeast corner |
+| `.gvc-dot-group-center` | Center a marker beneath a grid or navigation group |
+| `.gvc-window-overflow-visible` | Allow edge markers to extend beyond an `AbstractWindow` |
+| `.gvc-fixed-strip` | Keep a teaching strip at `--gvc-fixed-strip-width` and prevent direct children from shrinking |
 
 ---
 
@@ -158,7 +169,12 @@ dark themes flow through automatically.
 
 ## Responsive Containment
 
-- Crops use `overflow: hidden` — content never bleeds outside the frame.
+- Crops use `overflow: hidden` so the complete illustration remains inside the frame.
+- A marker may cross an illustrated element's edge inside the crop. Apply
+  `.gvc-window-overflow-visible` to that element and an edge modifier to the
+  marker; never disable containment on the outer `.gvc-annotated` frame.
+- Fixed teaching strips use one deliberate width and non-shrinking children.
+  The consuming window must reserve enough space for that width at its minimum.
 - At `container-width ≤ 499px`, `.gvc-legend` stacks items single-column
   and `.gvc-positions-grid` collapses to 2 columns via `@container`.
 - The consuming element must set `container-type: inline-size` for
@@ -193,6 +209,12 @@ lines) in the portfolio — they are not part of the reusable DS layer.
 
 ✅ **Do** import `gvc-illustration.css` alongside the component imports.
 
+✅ **Do** center a group-level marker beneath the entire group rather than under
+the first item.
+
+✅ **Do** use `.gvc-fixed-strip` for system-bar-style diagrams that must retain
+all labels and controls at every supported window width.
+
 ❌ **Don't** use `.gvc-traffic-lights` with `gvc-traffic-close/min/max` for new
 diagrams — use `AbstractWindow`'s monochrome buttons instead.
 
@@ -222,9 +244,14 @@ function WindowGuide() {
         { label: 'B', description: 'Min / Max / Close — top right' },
       ]}
     >
-      <AbstractWindow title="~/about" style={{ width: '100%', maxWidth: 360 }}>
+      <AbstractWindow
+        title="~/about"
+        className="gvc-window-overflow-visible"
+        style={{ width: '100%', maxWidth: 360 }}
+      >
         <DotBadge label="A" style={{ position: 'absolute', left: '46%', top: 8 }} />
         <DotBadge label="B" style={{ position: 'absolute', right: 2, top: 8 }} />
+        <DotBadge label="C" className="gvc-dot-edge-se" />
         <div className="gvc-content-line" style={{ width: '70%' }} />
         <div className="gvc-content-line" style={{ width: '90%' }} />
       </AbstractWindow>

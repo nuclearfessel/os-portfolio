@@ -105,6 +105,21 @@ All annotation labels must live in the **legend**, never directly inside the cro
 
 Dot badges (`.gvc-dot-badge`) inside the crop never carry text labels — only the legend entries do.
 
+Markers that identify an edge or corner should be centered across that exact
+boundary. Use `.gvc-dot-edge-left` or `.gvc-dot-edge-se`; if the illustrated
+element normally clips its children, opt that element into
+`.gvc-window-overflow-visible`. The outer annotated frame remains contained.
+A marker describing a navigation group uses `.gvc-dot-group-center` so it sits
+beneath the group rather than appearing attached to the first item.
+
+### Fixed teaching strips
+
+System-bar-style diagrams should render one compact, legible composition instead
+of progressively shrinking their text and gaps. Use `.gvc-fixed-strip`, set
+`--gvc-fixed-strip-width` in the consuming composition, and keep every direct
+child non-shrinking. The host window minimum and crop padding must guarantee the
+strip fits; do not hide lower-priority labels to make the diagram pass.
+
 ---
 
 ## Decorative vs. accessible rules
@@ -184,6 +199,9 @@ Shadows use `hsl(var(--component-guide-illustration-shadow-base) / α)` — no `
 | ✅ Do | ❌ Don't |
 |---|---|
 | Keep all annotation text in the legend | Put text labels directly inside the crop |
+| Center edge markers across the edge they identify | Place edge markers fully inside the illustrated element |
+| Keep fixed teaching strips legible and non-shrinking | Compress labels and controls independently at multiple breakpoints |
+| Center group markers beneath the complete group | Align a group marker to the first navigation item |
 | Use `AbstractWindow` for any window chrome | Hand-roll `.gvc-win-titlebar` with traffic-light colours |
 | Use `ariaHidden` when prose covers the same information | Leave decorative diagrams accessible to screen readers (noisy) |
 | Keep legend items under 60 characters | Write multi-sentence legend labels |

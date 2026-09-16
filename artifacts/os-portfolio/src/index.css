@@ -1625,16 +1625,6 @@ button { cursor: pointer; }
    ========================================================= */
 .guide-visual-window-demo > .gvc-annotated-crop { padding: 28px 16px 32px; }
 
-.guide-visual-window-demo .gvc-window {
-  overflow: visible;
-}
-
-.gvc-window-resize-marker {
-  position: absolute;
-  right: -8px;
-  bottom: -8px;
-}
-
 /* =========================================================
    Sticky note illustration
    Sticky colours are representational — they match the exact
@@ -2126,13 +2116,12 @@ button { cursor: pointer; }
 }
 
 .gvc-sysbar {
+  --gvc-fixed-strip-width: 286px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: nowrap;
   gap: 3px;
-  width: 286px;
-  max-width: 100%;
   height: 32px;
   min-width: 0;
   margin-inline: auto;
@@ -2438,8 +2427,6 @@ button { cursor: pointer; }
 }
 
 .gvc-overview-window-marker {
-  position: absolute;
-  left: -8px;
   bottom: 14px;
 }
 
@@ -2986,7 +2973,6 @@ button { cursor: pointer; }
 }
 
 .gvc-settings-nav-marker {
-  justify-self: center;
   margin-top: 4px;
 }
 

@@ -75,6 +75,13 @@ This is the reference implementation of the universal OS Portfolio side-navigati
 | Tablet | Modal `Sheet` or `Dialog`; sidebar collapses to top tabs or Select |
 | Mobile | Full-screen; sidebar becomes a `Select` or inline tabs |
 
+For documentation windows with denser navigation, set a product-validated
+minimum before applying this transformation. OS Portfolio's Guide uses a 340px
+minimum and moves its navigation above the content at a 560px container width
+(approximately 562px including the window borders). This breakpoint is local
+composition geometry, not a design token. Fixed-width teaching diagrams inside
+the content pane must fit at the 340px minimum without shrinking their labels.
+
 ---
 
 ## Accessibility checklist

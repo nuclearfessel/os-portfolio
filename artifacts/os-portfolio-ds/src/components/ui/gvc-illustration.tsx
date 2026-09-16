@@ -104,13 +104,15 @@ export type DotBadgeProps = {
   /** When true, renders with .gvc-dot-inline (margin-left + align-self: center) */
   inline?: boolean;
   className?: string;
+  /** Optional composition geometry such as an edge marker's along-edge offset */
+  style?: CSSProperties;
 };
 
 /**
  * Circular numbered/lettered badge used both inside crops and in legend items.
  * Uses the primary token for its background colour (theme-safe).
  */
-export function DotBadge({ label, inline, className }: DotBadgeProps) {
+export function DotBadge({ label, inline, className, style }: DotBadgeProps) {
   const cls = [
     'gvc-dot-badge',
     inline ? 'gvc-dot-inline' : '',
@@ -118,7 +120,7 @@ export function DotBadge({ label, inline, className }: DotBadgeProps) {
   ]
     .filter(Boolean)
     .join(' ');
-  return <span className={cls}>{label}</span>;
+  return <span className={cls} style={style}>{label}</span>;
 }
 
 // ---------------------------------------------------------------------------

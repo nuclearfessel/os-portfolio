@@ -134,6 +134,35 @@
   align-self: center;
 }
 
+/* Marker-placement modifiers for reusable teaching-diagram geometry. */
+.gvc-dot-edge-left {
+  position: absolute;
+  left: 0;
+  transform: translateX(-50%);
+}
+
+.gvc-dot-edge-se {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transform: translate(50%, 50%);
+}
+
+.gvc-dot-group-center {
+  justify-self: center;
+}
+
+/* Fixed teaching strips keep one legible composition instead of flex-shrinking. */
+.gvc-fixed-strip {
+  width: var(--gvc-fixed-strip-width);
+  max-width: 100%;
+  flex-wrap: nowrap;
+}
+
+.gvc-fixed-strip > * {
+  flex-shrink: 0;
+}
+
 /* ==========================================================
    PRODUCT-CORRECT ABSTRACT WINDOW CHROME
    Title left — Minimize / Maximize / Close at top-right (in that order).
@@ -187,6 +216,10 @@
   border-radius: 9px;
   background: var(--gv-surface);
   overflow: hidden;
+}
+
+.gvc-window-overflow-visible {
+  overflow: visible;
 }
 
 /* Window body */

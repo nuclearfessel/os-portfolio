@@ -28,7 +28,12 @@ function WindowAnatomyDemo() {
         { label: 'C', description: 'Corner handle — drag to resize' },
       ]}
     >
-      <AbstractWindow title="~/about" showResizeHandle style={{ width: '100%', maxWidth: 360 }}>
+      <AbstractWindow
+        title="~/about"
+        showResizeHandle
+        className="gvc-window-overflow-visible"
+        style={{ width: '100%', maxWidth: 360 }}
+      >
         {/* Marker A on titlebar */}
         <span
           className="gvc-dot-badge"
@@ -48,12 +53,7 @@ function WindowAnatomyDemo() {
         <div className="gvc-content-line" style={{ width: '70%' }} />
         <div className="gvc-content-line" style={{ width: '80%' }} />
         {/* Marker C on resize handle (rendered by AbstractWindow) */}
-        <span
-          className="gvc-dot-badge"
-          style={{ position: 'absolute', bottom: 2, right: 2 }}
-        >
-          C
-        </span>
+        <DotBadge label="C" className="gvc-dot-edge-se" />
       </AbstractWindow>
     </AnnotatedFrame>
   );
@@ -68,8 +68,9 @@ function DesktopOverviewDemo() {
       markers={[
         { label: 'A', description: 'System bar — time, status, and location' },
         { label: 'B', description: 'Windows — each app opens here' },
-        { label: 'C', description: 'Stickies — quick notes on the desktop' },
-        { label: 'D', description: 'Dock — open and switch apps' },
+        { label: 'C', description: 'Desktop icons — open apps from the workspace' },
+        { label: 'D', description: 'Stickies — quick notes on the desktop' },
+        { label: 'E', description: 'Dock — open and switch apps' },
       ]}
     >
       {/* System bar */}
@@ -95,7 +96,7 @@ function DesktopOverviewDemo() {
           <div className="gvc-content-line" style={{ width: '90%', height: 4 }} />
           <div className="gvc-content-line" style={{ width: '75%', height: 4 }} />
         </AbstractWindow>
-        <span className="gvc-dot-badge" style={{ position: 'absolute', top: 4, right: -6 }}>B</span>
+        <DotBadge label="B" className="gvc-dot-edge-left" style={{ bottom: 12 } as CSSProperties} />
       </div>
 
       {/* Window 2 */}
@@ -109,7 +110,7 @@ function DesktopOverviewDemo() {
       {/* Sticky note */}
       <div style={{ position: 'absolute', left: '6%', top: '72%', display: 'flex', alignItems: 'center', gap: 4 }}>
         <div style={{ width: 48, height: 36, background: '#ffd84d', borderRadius: 4, border: '1px solid rgba(143,105,0,.2)' }} />
-        <DotBadge label="C" />
+        <DotBadge label="D" />
       </div>
 
       {/* Dock */}
@@ -122,7 +123,7 @@ function DesktopOverviewDemo() {
         {['#d64f8c','#7478b8','#e7ded5','#303747','#ebca75','#56cbd3','#c9f27b'].map((bg, i) => (
           <div key={i} style={{ width: 14, height: 14, borderRadius: 4, background: bg, flexShrink: 0 }} />
         ))}
-        <DotBadge label="D" />
+        <DotBadge label="E" />
       </div>
     </AnnotatedFrame>
   );

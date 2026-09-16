@@ -708,10 +708,15 @@ test('Terminal predicts and completes commands, arguments, and paths with Tab', 
   await input.press('Tab');
   await expect(input).toHaveValue('open work');
 
-  await input.fill('set high c');
-  await expect(prediction).toContainText('set high contrast on');
+  await input.fill('turn high c');
+  await expect(prediction).toContainText('turn high contrast mode on');
   await input.press('Tab');
-  await expect(input).toHaveValue('set high contrast on');
+  await expect(input).toHaveValue('turn high contrast mode on');
+
+  await input.fill('turn all e');
+  await expect(prediction).toContainText('turn all effects on');
+  await input.press('Tab');
+  await expect(input).toHaveValue('turn all effects on');
 
   await input.fill('cat ~/work/north');
   await expect(prediction).toContainText('northstar-commerce-system.md');
@@ -729,29 +734,29 @@ test('Terminal controls transparency, blur, and motion effects', async ({ page }
     await input.press('Enter');
   };
 
-  await run('set transparency off');
+  await run('turn transparency effects off');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-transparency'))).toBe(true);
-  await run('set transparency off');
+  await run('turn transparency effects off');
 
-  await run('set transparency on');
+  await run('turn transparency effects on');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-transparency'))).toBe(false);
-  await run('set transparency on');
+  await run('turn transparency effects on');
 
-  await run('set blur off');
+  await run('turn blur effects off');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-blur'))).toBe(true);
-  await run('set blur off');
+  await run('turn blur effects off');
 
-  await run('set blur on');
+  await run('turn blur effects on');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-blur'))).toBe(false);
-  await run('set blur on');
+  await run('turn blur effects on');
 
-  await run('set motion off');
+  await run('turn motion effects off');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-animations'))).toBe(true);
-  await run('set motion off');
+  await run('turn motion effects off');
 
-  await run('set motion on');
+  await run('turn motion effects on');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-animations'))).toBe(false);
-  await run('set motion on');
+  await run('turn motion effects on');
 
   await expect(page.locator('.terminal-entry')).toContainText([
     'Transparency effects turned off.',
@@ -769,6 +774,55 @@ test('Terminal controls transparency, blur, and motion effects', async ({ page }
   ]);
 });
 
+test('Terminal controls all performance effects together and validates their state', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('button-dock-terminal').click();
+
+  const input = page.getByTestId('input-terminal-command');
+  const run = async (command: string) => {
+    await input.fill(command);
+    await input.press('Enter');
+  };
+
+  await run('turn all effects off');
+  await expect.poll(() => page.evaluate(() => ({
+    transparencyDisabled: document.documentElement.hasAttribute('data-no-transparency'),
+    blurDisabled: document.documentElement.hasAttribute('data-no-blur'),
+    animationsDisabled: document.documentElement.hasAttribute('data-no-animations'),
+  }))).toEqual({
+    transparencyDisabled: true,
+    blurDisabled: true,
+    animationsDisabled: true,
+  });
+  await run('turn all effects off');
+
+  await run('turn all effects on');
+  await expect.poll(() => page.evaluate(() => ({
+    transparencyDisabled: document.documentElement.hasAttribute('data-no-transparency'),
+    blurDisabled: document.documentElement.hasAttribute('data-no-blur'),
+    animationsDisabled: document.documentElement.hasAttribute('data-no-animations'),
+  }))).toEqual({
+    transparencyDisabled: false,
+    blurDisabled: false,
+    animationsDisabled: false,
+  });
+  await run('turn all effects on');
+
+  await expect(page.locator('.terminal-entry')).toContainText([
+    'All effects turned off.',
+    'All effects are already off.',
+    'All effects turned on.',
+    'All effects are already on.',
+  ]);
+
+  await run('help');
+  await expect(page.locator('.terminal-entry').last()).toContainText('turn all effects on|off');
+
+  await page.getByTestId('button-dock-guide').click();
+  await page.getByTestId('guide-nav-terminal').click();
+  await expect(page.getByTestId('window-guide')).toContainText('turn all effects on|off');
+});
+
 test('Terminal validates contrast commands against the current state', async ({ page }) => {
   await page.goto('/');
   await page.getByTestId('button-dock-terminal').click();
@@ -779,14 +833,14 @@ test('Terminal validates contrast commands against the current state', async ({ 
     await input.press('Enter');
   };
 
-  await run('set standard on');
-  await run('set high contrast off');
-  await run('set high contrast on');
-  await run('set high contrast on');
-  await run('set high contrast off');
-  await run('set low contrast on');
-  await run('set low contrast on');
-  await run('set low contrast off');
+  await run('turn standard mode on');
+  await run('turn high contrast mode off');
+  await run('turn high contrast mode on');
+  await run('turn high contrast mode on');
+  await run('turn high contrast mode off');
+  await run('turn low contrast mode on');
+  await run('turn low contrast mode on');
+  await run('turn low contrast mode off');
 
   await expect(page.locator('.terminal-entry')).toContainText([
     'Standard theme is already active.',
@@ -2465,12 +2519,12 @@ test('all ten sticky colors have distinct Low and High Contrast variants', async
     return variants;
   };
 
-  await setContrast('set low contrast on');
+  await setContrast('turn low contrast mode on');
   const lowVariants = await collectVariants('low');
   expect(new Set(lowVariants.map(({ background }) => background)).size).toBe(colorNames.length);
   expect(new Set(lowVariants.map(({ border }) => border)).size).toBe(colorNames.length);
 
-  await setContrast('set high contrast on');
+  await setContrast('turn high contrast mode on');
   const highVariants = await collectVariants('high');
   expect(new Set(highVariants.map(({ border }) => border)).size).toBe(colorNames.length);
 

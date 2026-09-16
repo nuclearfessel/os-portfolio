@@ -700,24 +700,24 @@ test.describe('Contrast themes disable wallpaper controls', () => {
       await expect(page.getByTestId('window-terminal').locator('.terminal-output').last()).toHaveText(expectedOutput);
     };
 
-    await runCommand('set high contrast on', 'High Contrast turned on.');
+    await runCommand('turn high contrast mode on', 'High Contrast turned on.');
     await expect(root).toHaveAttribute('data-contrast', 'high');
     await expect(shell).toHaveClass(/theme-dark/);
-    await runCommand('set standard on', 'Standard theme restored.');
+    await runCommand('turn standard mode on', 'Standard theme restored.');
     await expect(root).not.toHaveAttribute('data-contrast');
     await expect(shell).toHaveClass(/theme-light/);
 
     await runCommand('theme dark', 'Theme changed to dark.');
     await expect(shell).toHaveClass(/theme-dark/);
-    await runCommand('set low contrast on', 'Low Contrast turned on.');
+    await runCommand('turn low contrast mode on', 'Low Contrast turned on.');
     await expect(root).toHaveAttribute('data-contrast', 'low');
     await runCommand('theme light', 'Light and dark themes are disabled while a contrast theme is active.');
-    await runCommand('set low contrast off', 'Low Contrast turned off. Standard theme restored.');
+    await runCommand('turn low contrast mode off', 'Low Contrast turned off. Standard theme restored.');
     await expect(root).not.toHaveAttribute('data-contrast');
     await expect(shell).toHaveClass(/theme-dark/);
 
-    await runCommand('set high contrast on', 'High Contrast turned on.');
-    await runCommand('set high contrast off', 'High Contrast turned off. Standard theme restored.');
+    await runCommand('turn high contrast mode on', 'High Contrast turned on.');
+    await runCommand('turn high contrast mode off', 'High Contrast turned off. Standard theme restored.');
     await expect(root).not.toHaveAttribute('data-contrast');
     await expect(shell).toHaveClass(/theme-dark/);
   });

@@ -1561,9 +1561,11 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   await settingsHover.hover();
   await expect(settingsHover).toHaveCSS('background-color', 'rgb(208, 230, 225)');
   const settingsColors = await page.evaluate(() => {
+    const nav = document.querySelector('[aria-label="Settings sections"]');
     const active = document.querySelector('[data-testid="settings-nav-personalization"]');
     const hover = document.querySelector('[data-testid="settings-nav-accessibility"]');
     return {
+      navBackground: nav ? getComputedStyle(nav).backgroundColor : '',
       activeColor: active ? getComputedStyle(active).color : '',
       activeBackground: active ? getComputedStyle(active).backgroundColor : '',
       activeShadow: active ? getComputedStyle(active).boxShadow : '',
@@ -1580,9 +1582,11 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   await guideHover.hover();
   await expect(guideHover).toHaveCSS('background-color', 'rgb(208, 230, 225)');
   const guideColors = await page.evaluate(() => {
+    const nav = document.querySelector('[aria-label="User guide sections"]');
     const active = document.querySelector('[data-testid="guide-nav-overview"]');
     const hover = document.querySelector('[data-testid="guide-nav-windows"]');
     return {
+      navBackground: nav ? getComputedStyle(nav).backgroundColor : '',
       activeColor: active ? getComputedStyle(active).color : '',
       activeBackground: active ? getComputedStyle(active).backgroundColor : '',
       activeShadow: active ? getComputedStyle(active).boxShadow : '',
@@ -1591,11 +1595,13 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
     };
   });
 
+  expect(guideColors.navBackground).toBe(settingsColors.navBackground);
   expect(guideColors.activeColor).toBe(settingsColors.activeColor);
   expect(guideColors.activeBackground).toBe(settingsColors.activeBackground);
   expect(guideColors.hoverColor).toBe(settingsColors.hoverColor);
   expect(guideColors.hoverBackground).toBe(settingsColors.hoverBackground);
-  expect(guideColors.activeColor).toBe('rgb(6, 79, 71)');
+  expect(guideColors.activeColor).toBe('rgb(23, 35, 58)');
+  expect(guideColors.navBackground).toBe('rgba(226, 236, 232, 0.8)');
   expect(guideColors.activeBackground).toBe('rgba(0, 0, 0, 0)');
   expect(guideColors.hoverBackground).toBe('rgb(208, 230, 225)');
   expect(guideColors.activeShadow).toBe('none');

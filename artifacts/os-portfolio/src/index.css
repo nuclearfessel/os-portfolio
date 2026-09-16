@@ -561,7 +561,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav {
-  background: rgba(194,222,216,.76);
+  background: #e2ece8;
   border-right-color: rgba(26,83,91,.2);
 }
 
@@ -594,13 +594,13 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav-item-active {
-  color: #064f47 !important;
+  color: #17233a !important;
   background: transparent !important;
   font-weight: 600;
 }
 
 .theme-light .settings-nav-item-active .settings-nav-icon {
-  color: #064f47;
+  color: #17233a;
 }
 
 /* Settings content area */
@@ -4607,7 +4607,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav .settings-nav-item-active {
-  color: #064f47 !important;
+  color: #17233a !important;
   background: transparent !important;
 }
 
@@ -5265,7 +5265,7 @@ button { cursor: pointer; }
 }
 
 [data-no-transparency] .theme-light .settings-nav {
-  background: rgba(218, 232, 228, 1) !important;
+  background: rgba(226, 236, 232, 1) !important;
 }
 
 [data-no-transparency] .theme-light .desktop-context-menu,
@@ -5308,7 +5308,7 @@ button { cursor: pointer; }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .window-header,
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .settings-nav {
-  background: rgb(194 222 216 / calc(100% - var(--accessibility-transparency))) !important;
+  background: rgb(226 236 232 / calc(100% - var(--accessibility-transparency))) !important;
 }
 
 :root[data-transparency-enabled]:not([data-contrast]) .theme-light .desktop-context-menu,

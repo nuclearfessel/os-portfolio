@@ -3,10 +3,8 @@ import { ToastAction } from '../../components/ui/toast';
 import { Toaster } from '../../components/ui/toaster';
 import { toast } from '../../hooks/use-toast';
 import { Row } from '../parts';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdFeedbackFamily } from '../docs-map';
-
-const specMd = extractSection(mdFeedbackFamily, 'Toast');
+import { CanonicalSpec } from '../md-renderer';
+import { mdToast } from '../docs-map';
 
 export function ToastDemo() {
   return (
@@ -39,7 +37,7 @@ export function ToastDemo() {
         </Row>
         <Toaster />
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdToast} />
     </div>
   );
 }

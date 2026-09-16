@@ -6,10 +6,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../../components/ui/tooltip';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdOverlaysFamily } from '../docs-map';
-
-const specMd = extractSection(mdOverlaysFamily, 'Tooltip');
+import { CanonicalSpec } from '../md-renderer';
+import { mdTooltip } from '../docs-map';
 
 export function TooltipDemo() {
   return (
@@ -30,7 +28,7 @@ export function TooltipDemo() {
           </div>
         </TooltipProvider>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdTooltip} />
     </div>
   );
 }

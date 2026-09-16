@@ -9,10 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../../components/ui/dialog';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdOverlaysFamily } from '../docs-map';
-
-const specMd = extractSection(mdOverlaysFamily, 'Dialog');
+import { CanonicalSpec } from '../md-renderer';
+import { mdDialog } from '../docs-map';
 
 export function DialogDemo() {
   return (
@@ -43,7 +41,7 @@ export function DialogDemo() {
           </DialogContent>
         </Dialog>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdDialog} />
     </div>
   );
 }

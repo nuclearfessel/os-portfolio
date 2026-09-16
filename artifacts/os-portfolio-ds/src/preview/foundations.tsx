@@ -422,7 +422,7 @@ export function ColorsPage() {
           ))}
         </div>
       </section>
-      <CanonicalSpec md={mdFoundationColor} />
+      <CanonicalSpec md={mdFoundationColor} hideTokenSections={false} />
     </div>
   );
 }
@@ -500,7 +500,7 @@ export function FontsPage() {
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Body text never drops below 13px. Do not use tracking below −0.04em, and avoid uppercase for sentences.</p>
         </div>
       </section>
-      <CanonicalSpec md={mdFoundationTypography} />
+      <CanonicalSpec md={mdFoundationTypography} hideTokenSections={false} />
     </div>
   );
 }
@@ -548,7 +548,7 @@ export function LayoutPage() {
           </div>
         </section>
       </div>
-      <CanonicalSpec md={mdFoundationSpacingRadius} />
+      <CanonicalSpec md={mdFoundationSpacingRadius} hideTokenSections={false} />
     </div>
   );
 }

@@ -137,6 +137,7 @@ export function SpacingRadiusTokensPage() {
         md={mdFoundationSpacingRadius}
         title="Spacing & radius guidance"
         separated={false}
+        hideTokenSections={false}
       />
       <ComponentTokenFamily
         family="spacing"
@@ -169,6 +170,7 @@ export function MotionTokensPage() {
         md={extractSection(mdFoundationIconographyMotion, 'Motion')}
         title="Motion guidance"
         separated={false}
+        hideTokenSections={false}
       />
       <ComponentTokenFamily
         family="motion"

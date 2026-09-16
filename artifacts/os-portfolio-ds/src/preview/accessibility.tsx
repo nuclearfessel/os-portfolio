@@ -644,7 +644,7 @@ export function AccessibilityPage() {
         </Surface>
       </section>
 
-      <CanonicalSpec md={mdFoundationAccessibility} />
+      <CanonicalSpec md={mdFoundationAccessibility} hideTokenSections={false} />
     </div>
   );
 }

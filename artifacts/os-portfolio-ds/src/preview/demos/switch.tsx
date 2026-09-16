@@ -1,10 +1,8 @@
 import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
 import { Stack } from '../parts';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdFormsFamily } from '../docs-map';
-
-const specMd = extractSection(mdFormsFamily, 'Switch');
+import { CanonicalSpec } from '../md-renderer';
+import { mdSwitch } from '../docs-map';
 
 export function SwitchDemo() {
   return (
@@ -25,7 +23,7 @@ export function SwitchDemo() {
           </div>
         </Stack>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdSwitch} />
     </div>
   );
 }

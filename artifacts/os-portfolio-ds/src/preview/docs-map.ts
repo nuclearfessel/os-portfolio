@@ -15,22 +15,35 @@ export { default as mdButtonGroup } from '../../docs/components/actions/button-g
 export { default as mdToggle } from '../../docs/components/actions/toggle.md?raw';
 export { default as mdToggleGroup } from '../../docs/components/actions/toggle-group.md?raw';
 
-// ── Forms family (one file, sections per component) ───────────────────────────
+// ── Forms ─────────────────────────────────────────────────────────────────────
+export { default as mdInput } from '../../docs/components/forms/input.md?raw';
+export { default as mdRadioGroup } from '../../docs/components/forms/radio-group.md?raw';
+export { default as mdSlider } from '../../docs/components/forms/slider.md?raw';
+export { default as mdSwitch } from '../../docs/components/forms/switch.md?raw';
 export { default as mdFormsFamily } from '../../docs/components/forms/forms-family.md?raw';
 
-// ── Overlays family ───────────────────────────────────────────────────────────
+// ── Overlays ──────────────────────────────────────────────────────────────────
+export { default as mdAlertDialog } from '../../docs/components/overlays/alert-dialog.md?raw';
+export { default as mdDialog } from '../../docs/components/overlays/dialog.md?raw';
+export { default as mdTooltip } from '../../docs/components/overlays/tooltip.md?raw';
 export { default as mdOverlaysFamily } from '../../docs/components/overlays/overlays-family.md?raw';
 
-// ── Navigation family ─────────────────────────────────────────────────────────
+// ── Navigation ────────────────────────────────────────────────────────────────
+export { default as mdContextMenu } from '../../docs/components/navigation/context-menu.md?raw';
+export { default as mdMenubar } from '../../docs/components/navigation/menubar.md?raw';
+export { default as mdTabs } from '../../docs/components/navigation/tabs.md?raw';
 export { default as mdNavigationFamily } from '../../docs/components/navigation/navigation-family.md?raw';
 
-// ── Data display family ───────────────────────────────────────────────────────
+// ── Data display ──────────────────────────────────────────────────────────────
+export { default as mdCard } from '../../docs/components/data-display/card.md?raw';
 export { default as mdDataDisplayFamily } from '../../docs/components/data-display/data-display-family.md?raw';
 
-// ── Feedback family ───────────────────────────────────────────────────────────
+// ── Feedback ──────────────────────────────────────────────────────────────────
+export { default as mdToast } from '../../docs/components/feedback/toast.md?raw';
 export { default as mdFeedbackFamily } from '../../docs/components/feedback/feedback-family.md?raw';
 
-// ── Structure family ──────────────────────────────────────────────────────────
+// ── Structure ─────────────────────────────────────────────────────────────────
+export { default as mdSeparator } from '../../docs/components/structure/separator.md?raw';
 export { default as mdStructureFamily } from '../../docs/components/structure/structure-family.md?raw';
 
 // ── Charts ─────────────────────────────────────────────────────────────────────

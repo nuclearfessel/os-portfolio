@@ -14,10 +14,8 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from '../../components/ui/menubar';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdNavigationFamily } from '../docs-map';
-
-const specMd = extractSection(mdNavigationFamily, 'Menubar');
+import { CanonicalSpec } from '../md-renderer';
+import { mdMenubar } from '../docs-map';
 
 export function MenubarDemo() {
   const [showToolbar, setShowToolbar] = useState(true);
@@ -61,7 +59,7 @@ export function MenubarDemo() {
           </MenubarMenu>
         </Menubar>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdMenubar} />
     </div>
   );
 }

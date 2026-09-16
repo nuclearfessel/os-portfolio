@@ -14,10 +14,8 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '../../components/ui/context-menu';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdNavigationFamily } from '../docs-map';
-
-const specMd = extractSection(mdNavigationFamily, 'ContextMenu');
+import { CanonicalSpec } from '../md-renderer';
+import { mdContextMenu } from '../docs-map';
 
 export function ContextMenuDemo() {
   const [favorite, setFavorite] = useState(true);
@@ -53,7 +51,7 @@ export function ContextMenuDemo() {
           </ContextMenuSub>
         </ContextMenuContent>
       </ContextMenu>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdContextMenu} />
     </div>
   );
 }

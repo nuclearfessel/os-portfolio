@@ -10,7 +10,6 @@ import {
   DocSection,
   DocSpec,
   DocTable,
-  DocTokens,
 } from '../doc-renderer';
 
 export function ButtonDemo() {
@@ -121,21 +120,6 @@ asChild: renders the consumer's child element via Radix Slot.`}</DocAnatomy>
               'Disabled state: use disabled prop (not aria-disabled) for form buttons.',
               'Icon-only buttons must have aria-label set on the <Button>.',
               'Destructive variant does not suppress confirmation — pair with AlertDialog.',
-            ]}
-          />
-        </DocSection>
-
-        <DocSection title="Tokens">
-          <DocTokens
-            tokens={[
-              'bg-primary',
-              'text-primary-foreground',
-              '--primary-border',
-              'bg-secondary',
-              'bg-destructive',
-              'ring-ring',
-              '--elevate-1',
-              '--elevate-2',
             ]}
           />
         </DocSection>

@@ -24,8 +24,8 @@ import {
 
 function PatternPage({ md }: { md: string }) {
   return (
-    <div className="max-w-3xl">
-      <MarkdownDoc markdown={md} />
+    <div className="w-full max-w-none">
+      <MarkdownDoc markdown={md} hideTokenSections />
     </div>
   );
 }

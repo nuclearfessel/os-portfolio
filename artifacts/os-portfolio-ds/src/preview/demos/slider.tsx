@@ -1,9 +1,7 @@
 import { Slider } from '../../components/ui/slider';
 import { Stack } from '../parts';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdFormsFamily } from '../docs-map';
-
-const specMd = extractSection(mdFormsFamily, 'Slider');
+import { CanonicalSpec } from '../md-renderer';
+import { mdSlider } from '../docs-map';
 
 export function SliderDemo() {
   return (
@@ -19,7 +17,7 @@ export function SliderDemo() {
           <Slider defaultValue={[60]} disabled />
         </Stack>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdSlider} />
     </div>
   );
 }

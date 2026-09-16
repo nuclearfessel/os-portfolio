@@ -160,6 +160,33 @@ function tokenise(md: string): Block[] {
   return blocks;
 }
 
+function omitTokenSections(md: string): string {
+  const lines = md.split('\n');
+  const output: string[] = [];
+  let omittedHeadingLevel: number | null = null;
+
+  for (const line of lines) {
+    const heading = line.match(/^(#{1,4})\s+(.+)$/);
+    if (heading) {
+      const level = heading[1].length;
+      const title = heading[2].trim().toLowerCase();
+
+      if (omittedHeadingLevel !== null && level <= omittedHeadingLevel) {
+        omittedHeadingLevel = null;
+      }
+
+      if (omittedHeadingLevel === null && /^tokens(?:\s*\/\s*contracts)?$/.test(title)) {
+        omittedHeadingLevel = level;
+        continue;
+      }
+    }
+
+    if (omittedHeadingLevel === null) output.push(line);
+  }
+
+  return output.join('\n');
+}
+
 // ─── Inline rendering ─────────────────────────────────────────────────────────
 
 function renderInline(text: string, key?: string): ReactNode {
@@ -326,11 +353,15 @@ function renderBlock(block: Block, i: number): ReactNode {
 export function MarkdownDoc({
   markdown,
   md,
+  hideTokenSections = false,
 }: {
   markdown?: string;
   md?: string;
+  hideTokenSections?: boolean;
 }) {
-  const source = markdown ?? md ?? '';
+  const source = hideTokenSections
+    ? omitTokenSections(markdown ?? md ?? '')
+    : markdown ?? md ?? '';
   const blocks = tokenise(source);
   return (
     <div className="w-full max-w-none space-y-4">
@@ -348,11 +379,13 @@ export function MarkdownDocSpec({
   md,
   title = 'Component reference',
   separated = true,
+  hideTokenSections = true,
 }: {
   markdown?: string;
   md?: string;
   title?: string;
   separated?: boolean;
+  hideTokenSections?: boolean;
 }) {
   const source = markdown ?? md ?? '';
   return (
@@ -363,7 +396,7 @@ export function MarkdownDocSpec({
         </p>
         <h2 className="mt-1.5 text-xl font-semibold tracking-tight">{title}</h2>
       </div>
-      <MarkdownDoc markdown={source} />
+      <MarkdownDoc markdown={source} hideTokenSections={hideTokenSections} />
     </div>
   );
 }
@@ -378,13 +411,22 @@ export function CanonicalSpec({
   markdown,
   title = 'Component reference',
   separated = true,
+  hideTokenSections = true,
 }: {
   md?: string;
   markdown?: string;
   title?: string;
   separated?: boolean;
+  hideTokenSections?: boolean;
 }) {
-  return <MarkdownDocSpec md={md ?? markdown ?? ''} title={title} separated={separated} />;
+  return (
+    <MarkdownDocSpec
+      md={md ?? markdown ?? ''}
+      title={title}
+      separated={separated}
+      hideTokenSections={hideTokenSections}
+    />
+  );
 }
 
 /**

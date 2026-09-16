@@ -1,8 +1,6 @@
 import { Separator } from '../../components/ui/separator';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdStructureFamily } from '../docs-map';
-
-const specMd = extractSection(mdStructureFamily, 'Separator');
+import { CanonicalSpec } from '../md-renderer';
+import { mdSeparator } from '../docs-map';
 
 export function SeparatorDemo() {
   return (
@@ -21,7 +19,7 @@ export function SeparatorDemo() {
           <span>Patterns</span>
         </div>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdSeparator} />
     </div>
   );
 }

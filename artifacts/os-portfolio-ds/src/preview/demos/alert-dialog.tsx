@@ -10,10 +10,8 @@ import {
   AlertDialogTrigger,
 } from '../../components/ui/alert-dialog';
 import { Button } from '../../components/ui/button';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdOverlaysFamily } from '../docs-map';
-
-const specMd = extractSection(mdOverlaysFamily, 'AlertDialog');
+import { CanonicalSpec } from '../md-renderer';
+import { mdAlertDialog } from '../docs-map';
 
 export function AlertDialogDemo() {
   return (
@@ -37,7 +35,7 @@ export function AlertDialogDemo() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdAlertDialog} />
     </div>
   );
 }

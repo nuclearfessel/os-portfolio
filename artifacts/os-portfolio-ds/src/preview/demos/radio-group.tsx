@@ -4,10 +4,8 @@ import {
   RadioGroupItem,
 } from '../../components/ui/radio-group';
 import { Stack } from '../parts';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdFormsFamily } from '../docs-map';
-
-const specMd = extractSection(mdFormsFamily, 'RadioGroup');
+import { CanonicalSpec } from '../md-renderer';
+import { mdRadioGroup } from '../docs-map';
 
 export function RadioGroupDemo() {
   return (
@@ -30,7 +28,7 @@ export function RadioGroupDemo() {
           </RadioGroup>
         </Stack>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdRadioGroup} />
     </div>
   );
 }

@@ -4,10 +4,8 @@ import {
   TabsList,
   TabsTrigger,
 } from '../../components/ui/tabs';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdNavigationFamily } from '../docs-map';
-
-const specMd = extractSection(mdNavigationFamily, 'Tabs');
+import { CanonicalSpec } from '../md-renderer';
+import { mdTabs } from '../docs-map';
 
 export function TabsDemo() {
   return (
@@ -29,7 +27,7 @@ export function TabsDemo() {
           </TabsContent>
         </Tabs>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdTabs} />
     </div>
   );
 }

@@ -1,9 +1,7 @@
 import { Input } from '../../components/ui/input';
 import { Stack } from '../parts';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdFormsFamily } from '../docs-map';
-
-const specMd = extractSection(mdFormsFamily, 'Input');
+import { CanonicalSpec } from '../md-renderer';
+import { mdInput } from '../docs-map';
 
 export function InputDemo() {
   return (
@@ -20,7 +18,7 @@ export function InputDemo() {
           <Input placeholder="Invalid" aria-invalid="true" />
         </Stack>
       </div>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdInput} />
     </div>
   );
 }

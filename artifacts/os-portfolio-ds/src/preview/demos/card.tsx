@@ -7,10 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '../../components/ui/card';
-import { CanonicalSpec, extractSection } from '../md-renderer';
-import { mdDataDisplayFamily } from '../docs-map';
-
-const specMd = extractSection(mdDataDisplayFamily, 'Card');
+import { CanonicalSpec } from '../md-renderer';
+import { mdCard } from '../docs-map';
 
 export function CardDemo() {
   return (
@@ -36,7 +34,7 @@ export function CardDemo() {
           <Button variant="outline">View report</Button>
         </CardFooter>
       </Card>
-      <CanonicalSpec md={specMd} />
+      <CanonicalSpec md={mdCard} />
     </div>
   );
 }

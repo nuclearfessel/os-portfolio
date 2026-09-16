@@ -15,6 +15,12 @@ Single-column documentation in the design-system site must use the full availabl
 
 **How to apply:** Keep the design-system page shell and shared Markdown blocks uncapped. Apply width limits locally only when a demo, form, dialog, readable intro measure, or deliberate grid requires one.
 
+Every surfaced component and pattern page needs a complete reference, but must not surface a token section. Token documentation belongs on the foundation token pages.
+
+**Why:** Family excerpts left many component pages less useful than Buttons, while repeating token inventories across component and pattern pages added unnecessary detail.
+
+**How to apply:** Surface dedicated references covering purpose, anatomy, behavior, states, accessibility, usage, and Do/Don’t. Suppress Tokens and Tokens / contracts sections outside foundations.
+
 Guide instructions should use plain language and break each topic into short, specific actions. Explain necessary technical terms where they appear instead of assuming the reader already knows them.
 
 **Why:** The user wants the Guide to offer more detail without becoming jargon-heavy or difficult to scan.

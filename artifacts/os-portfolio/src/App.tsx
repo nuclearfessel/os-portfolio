@@ -257,6 +257,12 @@ type StickyData = {
   createdAt: string;
 };
 
+const normalizeStickyStack = (stickies: readonly StickyData[], stack: readonly StickyItemId[] = []) => {
+  const stickyIds = stickies.map((sticky) => sticky.id);
+  const validStack = stack.filter((id, index) => stickyIds.includes(id) && stack.indexOf(id) === index);
+  return [...validStack, ...stickyIds.filter((id) => !validStack.includes(id))];
+};
+
 const defaultSticky: StickyData = {
   id: 'sticky',
   color: 'purple',
@@ -332,6 +338,7 @@ type SavedDesktopState = {
   stickyVisible?: boolean;
   stickyOnTop?: boolean;
   activeStickyId?: StickyItemId;
+  stickyStack?: StickyItemId[];
   wallpaperLight?: WallpaperConfig;
   wallpaperDark?: WallpaperConfig;
   accessibility?: AccessibilityPrefs;
@@ -381,6 +388,7 @@ const defaultDesktopState: SavedDesktopState = {
   stickyVisible: true,
   stickyOnTop: false,
   activeStickyId: 'sticky',
+  stickyStack: [defaultSticky.id, defaultSecondSticky.id, defaultParitySticky.id, defaultScaleSticky.id],
   wallpaperLight: DEFAULT_WALLPAPER_LIGHT,
   wallpaperDark: DEFAULT_WALLPAPER_DARK,
   accessibility: DEFAULT_ACCESSIBILITY_PREFS,
@@ -577,6 +585,14 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
     )
       ? parsed.activeStickyId as StickyItemId
       : hydratedStickies[0]?.id ?? 'sticky';
+    const savedStickyStack = Array.isArray(parsed.stickyStack)
+      ? parsed.stickyStack.filter((id, index, ids): id is StickyItemId => (
+        typeof id === 'string'
+        && hydratedStickies.some((sticky) => sticky.id === id)
+        && ids.indexOf(id) === index
+      ))
+      : [];
+    const stickyStack = normalizeStickyStack(hydratedStickies, savedStickyStack);
 
     const normalizedState: SavedDesktopState = {
       folderPositions,
@@ -596,6 +612,7 @@ function loadDesktopState(storageKey = DESKTOP_STORAGE_KEY): SavedDesktopState {
       stickyVisible: typeof parsed.stickyVisible === 'boolean' ? parsed.stickyVisible : defaultDesktopState.stickyVisible,
       stickyOnTop: typeof parsed.stickyOnTop === 'boolean' ? parsed.stickyOnTop : defaultDesktopState.stickyOnTop,
       activeStickyId,
+      stickyStack,
       wallpaperLight: parseWallpaperConfig(parsed.wallpaperLight) ?? DEFAULT_WALLPAPER_LIGHT,
       wallpaperDark: parseWallpaperConfig(parsed.wallpaperDark) ?? DEFAULT_WALLPAPER_DARK,
       accessibility: parseAccessibilityPrefs(parsed.accessibility),
@@ -3776,8 +3793,20 @@ function Home() {
   const [maximizedWindows, setMaximizedWindows] = useState<Partial<Record<WindowId, boolean>>>({});
   const [activeStickyId, setActiveStickyId] = useState<StickyItemId>('sticky');
   const [stickies, setStickies] = useState<StickyData[]>(savedDesktopState.stickies);
+  const [stickyStack, setStickyStack] = useState<StickyItemId[]>(
+    normalizeStickyStack(savedDesktopState.stickies, savedDesktopState.stickyStack),
+  );
   const [dragPositions, setDragPositions] = useState<ItemPositions>(savedDesktopState.itemPositions);
   const [itemSizes, setItemSizes] = useState<ItemSizes>(savedDesktopState.itemSizes);
+  const stickyIdsSignature = stickies.map((sticky) => sticky.id).join('|');
+  useEffect(() => {
+    setStickyStack((current) => {
+      const normalized = normalizeStickyStack(stickies, current);
+      return normalized.length === current.length && normalized.every((id, index) => id === current[index])
+        ? current
+        : normalized;
+    });
+  }, [stickyIdsSignature]);
   const [folderPositions, setFolderPositions] = useState<FolderPositions>(savedDesktopState.folderPositions);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; target: 'desktop' | 'dock' | 'system-bar' } | null>(null);
   const [stickyMenu, setStickyMenu] = useState<{ x: number; y: number; id: StickyItemId } | null>(null);
@@ -4044,6 +4073,7 @@ function Home() {
     theme,
     showDesktopIcons,
     stickies,
+    stickyStack,
     dockPosition,
     systemBarPosition,
     wallpaperLight,
@@ -4340,7 +4370,7 @@ function Home() {
       setStorageUnavailable(true);
       setStorageRestored(false);
     }
-  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, theme, showDesktopIcons, dockPosition, systemBarPosition, workspaceMode, wallpaperLight, wallpaperDark, accessibility, introCustomization]);
+  }, [dragPositions, folderPositions, iconSize, itemSizes, snapToGrid, stickies, stickyStack, theme, showDesktopIcons, dockPosition, systemBarPosition, workspaceMode, wallpaperLight, wallpaperDark, accessibility, introCustomization]);
 
   useEffect(() => {
     if (!storageRestored) return;
@@ -4443,10 +4473,15 @@ function Home() {
     rememberWindowGeometry(id);
     setWindows((current) => ({ ...current, [id]: false }));
   };
+  const activateSticky = (id: StickyItemId) => {
+    setActiveStickyId(id);
+    setStickyStack((current) => [...current.filter((stickyId) => stickyId !== id), id]);
+    setStickyOnTop(true);
+  };
   const handleStickyDock = () => {
     if (!stickies.length) {
       setStickies([createUserSticky('sticky')]);
-      setActiveStickyId('sticky');
+      activateSticky('sticky');
       setStickyVisible(true);
       setStickyOnTop(true);
       setMobileOpen(false);
@@ -4459,13 +4494,14 @@ function Home() {
     }
     setStickyVisible(true);
     setStickyOnTop(true);
-    if (stickies.length > 0) setActiveStickyId(stickies[0].id);
+    const topStickyId = [...stickyStack].reverse().find((id) => stickies.some((sticky) => sticky.id === id));
+    if (topStickyId) setActiveStickyId(topStickyId);
     setMobileOpen(false);
   };
   const openStickies = () => {
     if (!stickies.length) {
       setStickies([createUserSticky('sticky')]);
-      setActiveStickyId('sticky');
+      activateSticky('sticky');
     }
     setStickyVisible(true);
     setStickyOnTop(true);
@@ -4792,8 +4828,7 @@ function Home() {
       pointerAngle: Math.atan2(event.clientY - centerY, event.clientX - centerX) * 180 / Math.PI,
       rotation,
     };
-    setActiveStickyId(id);
-    setStickyOnTop(true);
+    activateSticky(id);
     event.currentTarget.setPointerCapture(event.pointerId);
     event.stopPropagation();
   };
@@ -4818,8 +4853,7 @@ function Home() {
     if (event.key === 'Home' || event.key === '0') {
       event.preventDefault();
       event.stopPropagation();
-      setActiveStickyId(id);
-      setStickyOnTop(true);
+      activateSticky(id);
       setStickyRotation(id, 0);
       return;
     }
@@ -4828,8 +4862,7 @@ function Home() {
     event.stopPropagation();
     const direction = event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 1 : -1;
     const increment = event.shiftKey ? 15 : 1;
-    setActiveStickyId(id);
-    setStickyOnTop(true);
+    activateSticky(id);
     const sticky = stickies.find((item) => item.id === id);
     if (sticky) setStickyRotation(id, Math.round((sticky.rotation + direction * increment) * 10) / 10);
   };
@@ -4864,13 +4897,13 @@ function Home() {
     const position = dragPositions[`desktop-${id}`] ?? folderPositions[id];
     return position ? { left: position.left, top: position.top, right: 'auto', bottom: 'auto' } : undefined;
   };
-  const stickyStyle = (sticky: StickyData, index: number) => {
+  const stickyStyle = (sticky: StickyData) => {
     const selectedColor = stickyPalette.find((color) => color.id === sticky.color) ?? stickyPalette[0];
     const usesLightText = selectedColor.foreground === 'light';
-    const individualStackRank = index + 1;
+    const individualStackRank = Math.max(1, stickyStack.indexOf(sticky.id) + 1);
     return {
       ...(managedLayout ? {} : itemStyle(sticky.id)),
-      zIndex: stickyOnTop && activeStickyId === sticky.id ? stickies.length + 1 : individualStackRank,
+      zIndex: individualStackRank,
       '--sticky-bg': selectedColor.background,
       '--sticky-text': usesLightText ? '#ffffff' : '#1d2430',
       '--sticky-muted': usesLightText ? '#edf1f5' : '#37414d',
@@ -4909,6 +4942,7 @@ function Home() {
       itemSizes: { ...desktopGeometryRef.current.itemSizes, [id]: { width, height } },
     };
     setStickies((current) => [...current, createUserSticky(id, source.color, rotations[Math.max(0, numericIds.length - 1) % rotations.length])]);
+    setStickyStack((current) => [...current.filter((stickyId) => stickyId !== id), id]);
     setDragPositions((current) => ({ ...current, [id]: { left, top } }));
     setItemSizes((current) => ({ ...current, [id]: { width, height } }));
     setActiveStickyId(id);
@@ -4922,7 +4956,10 @@ function Home() {
     if (isSystemStickyId(id)) return;
     const remaining = stickies.filter((sticky) => sticky.id !== id);
     setStickies(remaining);
-    setActiveStickyId((activeId) => activeId === id ? (remaining[0]?.id ?? 'sticky') : activeId);
+    setStickyStack((current) => current.filter((stickyId) => stickyId !== id));
+    setActiveStickyId((activeId) => activeId === id
+      ? [...stickyStack].reverse().find((stickyId) => stickyId !== id) ?? remaining[0]?.id ?? 'sticky'
+      : activeId);
     if (!remaining.length) {
       setStickyVisible(false);
       setStickyOnTop(false);
@@ -4959,12 +4996,11 @@ function Home() {
   const selectAdjacentSticky = (direction: -1 | 1) => {
     const index = Math.max(0, stickies.findIndex((sticky) => sticky.id === activeStickyId));
     const next = stickies[(index + direction + stickies.length) % stickies.length];
-    if (next) setActiveStickyId(next.id);
+    if (next) activateSticky(next.id);
   };
   const resetStickyRotation = (id: StickyItemId) => {
     setStickyRotation(id, 0);
-    setActiveStickyId(id);
-    setStickyOnTop(true);
+    activateSticky(id);
     setStickyMenu(null);
   };
   const openDesktopContextMenu = (event: ReactMouseEvent<HTMLDivElement>) => {
@@ -5081,6 +5117,7 @@ function Home() {
     setMaximizedWindows(resetDesktopState.maximizedWindows ?? {});
     setStickyVisible(resetDesktopState.stickyVisible ?? true);
     setStickyOnTop(resetDesktopState.stickyOnTop ?? false);
+    setStickyStack(normalizeStickyStack(resetDesktopState.stickies, resetDesktopState.stickyStack));
     setMobileOpen(false);
     setActiveStickyId(resetDesktopState.activeStickyId ?? resetDesktopState.stickies[0]?.id ?? 'sticky');
     setContextMenu(null);
@@ -5383,16 +5420,15 @@ function Home() {
             data-draggable-item
             data-sticky-color={sticky.color}
             data-testid={`sticky-${sticky.id}`}
-            style={stickyStyle(sticky, index)}
-            onPointerDown={(event) => { setActiveStickyId(sticky.id); setStickyOnTop(true); startDrag(sticky.id, event); }}
+            style={stickyStyle(sticky)}
+            onPointerDown={(event) => { activateSticky(sticky.id); startDrag(sticky.id, event); }}
             onPointerMove={moveDrag}
             onPointerUp={endDrag}
             onPointerCancel={endDrag}
             onContextMenu={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              setActiveStickyId(sticky.id);
-              setStickyOnTop(true);
+              activateSticky(sticky.id);
               contextMenuOpenerRef.current = document.activeElement instanceof HTMLElement && event.currentTarget.contains(document.activeElement)
                 ? document.activeElement
                 : event.currentTarget.querySelector<HTMLElement>('textarea, button') ?? event.currentTarget;
@@ -5438,7 +5474,7 @@ function Home() {
                 className="sticky-text"
                 value={sticky.text}
                 onChange={(event) => setStickies((current) => current.map((item) => item.id === sticky.id ? { ...item, text: event.target.value } : item))}
-                onPointerDown={(event) => { event.stopPropagation(); setActiveStickyId(sticky.id); setStickyOnTop(true); }}
+                onPointerDown={(event) => { event.stopPropagation(); activateSticky(sticky.id); }}
                 aria-label={`Sticky note ${index + 1} text`}
                 placeholder="Write a note…"
               />

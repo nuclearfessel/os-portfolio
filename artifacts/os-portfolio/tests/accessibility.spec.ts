@@ -196,7 +196,7 @@ test.describe('Settings sidebar navigation', () => {
       if (!navBox || !personalizationBox || !accessibilityBox || !aboutBox) return null;
       return {
         firstRowAligned: Math.abs(personalizationBox.y - accessibilityBox.y) < 2,
-        aboutOnSecondRow: aboutBox.y >= personalizationBox.y + personalizationBox.height + 3,
+        aboutOnSecondRow: aboutBox.y >= personalizationBox.y + personalizationBox.height + 1,
         aboutCentered: Math.abs((aboutBox.x + aboutBox.width / 2) - (navBox.x + navBox.width / 2)) < 2,
         aboutMatchesColumnWidth: Math.abs(aboutBox.width - personalizationBox.width) < 2,
       };

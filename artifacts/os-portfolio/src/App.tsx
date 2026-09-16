@@ -3404,6 +3404,7 @@ function TerminalWindow({
   accessibility: AccessibilityPrefs;
 }) {
   const [command, setCommand] = useState('');
+  const [caretIndex, setCaretIndex] = useState(0);
   const [entries, setEntries] = useState<ShellEntry[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
@@ -3423,6 +3424,7 @@ function TerminalWindow({
 
   const insertCommand = (example: string) => {
     setCommand(example);
+    setCaretIndex(example.length);
     setHistoryIndex(null);
     requestAnimationFrame(() => inputRef.current?.focus());
   };
@@ -3432,6 +3434,7 @@ function TerminalWindow({
   const completeCommand = () => {
     if (predictedCommand && predictedCommand !== command) {
       setCommand(predictedCommand);
+      setCaretIndex(predictedCommand.length);
       setHistoryIndex(null);
     }
   };
@@ -3448,6 +3451,7 @@ function TerminalWindow({
     setCommandHistory(nextHistory);
     setHistoryIndex(null);
     setCommand('');
+    setCaretIndex(0);
 
     if (verb === 'exit') {
       props.onClose();
@@ -3663,15 +3667,18 @@ function TerminalWindow({
       const nextIndex = historyIndex === null ? commandHistory.length - 1 : Math.max(0, historyIndex - 1);
       setHistoryIndex(nextIndex);
       setCommand(commandHistory[nextIndex]);
+      setCaretIndex(commandHistory[nextIndex].length);
     } else {
       if (historyIndex === null) return;
       const nextIndex = historyIndex + 1;
       if (nextIndex >= commandHistory.length) {
         setHistoryIndex(null);
         setCommand('');
+        setCaretIndex(0);
       } else {
         setHistoryIndex(nextIndex);
         setCommand(commandHistory[nextIndex]);
+        setCaretIndex(commandHistory[nextIndex].length);
       }
     }
   };
@@ -3697,7 +3704,29 @@ function TerminalWindow({
         <form className="terminal-form" onSubmit={submitCommand}>
           <span className="terminal-prompt">john@portfolio:{displayShellPath(cwd)}$</span>
           <div className="terminal-input-group">
-            <input ref={inputRef} className="terminal-input" value={command} onChange={(event) => { setCommand(event.target.value); setHistoryIndex(null); }} onKeyDown={handleInputKeyDown} aria-label="Terminal command" aria-describedby="terminal-prediction" placeholder="type a command" data-testid="input-terminal-command" autoComplete="off" spellCheck={false} />
+            <div
+              className="terminal-input-shell"
+              style={{ '--terminal-cursor-left': `${caretIndex}ch` } as React.CSSProperties}
+            >
+              <input
+                ref={inputRef}
+                className="terminal-input"
+                value={command}
+                onChange={(event) => {
+                  setCommand(event.target.value);
+                  setCaretIndex(event.currentTarget.selectionStart ?? event.target.value.length);
+                  setHistoryIndex(null);
+                }}
+                onSelect={(event) => setCaretIndex(event.currentTarget.selectionStart ?? command.length)}
+                onKeyDown={handleInputKeyDown}
+                aria-label="Terminal command"
+                aria-describedby="terminal-prediction"
+                data-testid="input-terminal-command"
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <span className="terminal-live-cursor" data-testid="terminal-live-cursor" aria-hidden="true" />
+            </div>
             <span id="terminal-prediction" className="terminal-prediction" aria-live="polite" data-testid="terminal-prediction">
               {predictedCommand && predictedCommand !== command ? <><kbd>Tab</kbd><span aria-hidden="true"> → </span>{predictedCommand}</> : null}
             </span>

@@ -691,6 +691,29 @@ test('About and Work use distinct saturated application icons instead of folders
   expect(new Set(backgrounds).size).toBe(3);
 });
 
+test('Terminal uses the same blinking block cursor shown in the User Guide', async ({ page }) => {
+  await page.getByTestId('button-dock-terminal').click();
+  const input = page.getByTestId('input-terminal-command');
+  const cursor = page.getByTestId('terminal-live-cursor');
+
+  const initialCursorLeft = await cursor.evaluate((element) => element.getBoundingClientRect().left);
+  const cursorStyle = await cursor.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const box = element.getBoundingClientRect();
+    return {
+      width: box.width,
+      height: box.height,
+      animationName: style.animationName,
+    };
+  });
+  expect(cursorStyle).toEqual({ width: 7, height: 13, animationName: 'cursor-blink' });
+  await expect(input).toHaveCSS('caret-color', 'rgba(0, 0, 0, 0)');
+
+  await input.fill('help');
+  const typedCursorLeft = await cursor.evaluate((element) => element.getBoundingClientRect().left);
+  expect(typedCursorLeft).toBeGreaterThan(initialCursorLeft);
+});
+
 test('Terminal predicts and completes commands, arguments, and paths with Tab', async ({ page }) => {
   await page.goto('/');
   await page.getByTestId('button-dock-terminal').click();

@@ -6,17 +6,25 @@ OS Portfolio (OS.Portfolio) is a desktop-inspired portfolio for **John Doe**, bu
 
 ![OS Portfolio desktop portfolio](docs/images/os-portfolio.jpg)
 
-The portfolio presents John’s work through draggable and resizable application windows, desktop launchers, a responsive Dock, sticky notes, Terminal, Settings, contextual menus, and persistent workspace preferences.
+The portfolio presents John’s work through draggable and resizable application windows, desktop launchers, a responsive Dock, sticky notes, Terminal, Settings, contextual menus, and persistent workspace preferences. Its responsive geometry preserves the user’s desktop arrangement while adapting windows and navigation for smaller screens.
 
 ### Highlights
 
 - Draggable and resizable desktop windows
 - Responsive desktop, tablet, and mobile layouts
 - About, Work, Terminal, Contact, Settings, and sticky-note applications
-- Light and dark themes with independent wallpaper colors
-- Persistent workspace layout and saved defaults
+- Light and dark themes with independent picture and solid-color wallpaper choices
+- Personalized desktop text and theme-specific text colors
+- Persistent workspace layout, complete saved defaults, and reset controls
 - Accessibility controls for contrast, transparency, animation, and scrollbars
-- Keyboard interactions and semantic ARIA states
+- Keyboard interactions, numbered Dock shortcuts, and semantic ARIA states
+- Terminal commands for opening and closing apps, changing themes, and controlling effects
+
+### Protected-directory experience
+
+![OS Portfolio 403 protected-directory page](screenshots/403-toolbarless.jpg)
+
+Apache directory listing is disabled for packaged deployments. Blocked directory requests use a self-contained, dark picture-mode 403 page whose styling and assets remain reliable when Apache preserves the original denied URL.
 
 ## OS Portfolio DS
 
@@ -24,10 +32,10 @@ The portfolio presents John’s work through draggable and resizable application
 
 The living OS Portfolio DS documentation site is built with the same tokens and components used by the portfolio. It includes:
 
-- Five visual and accessibility foundations
+- Six foundations covering color, typography, spacing and radius, iconography and motion, accessibility, and effects
 - Public documentation for components used by the portfolio
 - A consolidated OS Portfolio DS primitives directory
-- Twelve composed interaction patterns
+- Thirteen composed interaction patterns
 - Interactive examples, specifications, usage guidance, and copyable source
 - Registered deep links for internal catalog pages that are not publicly surfaced
 - A sidebar with Foundations and Patterns at the top level and every component family nested under Components
@@ -36,12 +44,13 @@ The living OS Portfolio DS documentation site is built with the same tokens and 
 
 ```text
 artifacts/
-├── os-portfolio/      # Interactive portfolio
-├── os-portfolio-ds/          # Shared components, tokens, and living documentation
-├── api-server/             # Workspace API service
-└── mockup-sandbox/         # Design and component preview workspace
+├── os-portfolio/       # Interactive portfolio
+├── os-portfolio-ds/   # Shared components, tokens, and living documentation
+├── api-server/        # Workspace API service
+└── mockup-sandbox/    # Design and component preview workspace
 docs/
-└── images/                 # Repository screenshots
+└── images/            # Repository screenshots
+screenshots/           # Validation and feature screenshots
 ```
 
 This is a pnpm workspace. Shared visual primitives belong to `@workspace/os-portfolio-ds`; portfolio behavior and persistence remain in `@workspace/os-portfolio`.
@@ -92,10 +101,11 @@ Do not start GitHub completion until the user explicitly says “Approved.” Be
 
 ## Automated website releases
 
-Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio and design system, then publishes two assets in one standard GitHub release:
+Every push to `main` runs the **Release website ZIP** GitHub Actions workflow. The workflow typechecks and builds the portfolio and design system, validates both archives, and publishes three assets in one standard GitHub release:
 
-- A versioned deployable site ZIP, such as `site-package-v01.01.zip`, containing the portfolio at the archive root and the design-system site in `os-portfolio-ds/`.
+- A versioned deployable site ZIP, such as `site-package-0.30.0.zip`, containing the portfolio at the archive root and the design-system site in `os-portfolio-ds/`.
 - An unversioned Claude source package named exactly `claude-src-pack.zip`, containing project source, documentation, Claude skills, and the same combined deployment in its top-level `public/` directory.
+- `SHA256SUMS.txt`, containing checksums for both ZIP archives.
 
 Feature and maintenance branch pushes never create release packages or prereleases. Only `main` publishes standard releases.
 

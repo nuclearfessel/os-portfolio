@@ -10,8 +10,8 @@
     "test:e2e": "PLAYWRIGHT_PORT=4173 PLAYWRIGHT_OUTPUT_DIR=test-results/all PLAYWRIGHT_REPORT_DIR=playwright-report/all playwright test",
     "test:e2e:persistence": "PLAYWRIGHT_PORT=4174 PLAYWRIGHT_OUTPUT_DIR=test-results/persistence PLAYWRIGHT_REPORT_DIR=playwright-report/persistence playwright test tests/desktop-persistence.spec.ts --project=chromium",
     "test:playwright-config": "node --test scripts/playwright-config.test.mjs",
-    "test:e2e:firefox-recovery": "pnpm run test:playwright-config && PLAYWRIGHT_PORT=4175 PLAYWRIGHT_OUTPUT_DIR=test-results/firefox-recovery PLAYWRIGHT_REPORT_DIR=playwright-report/firefox-recovery playwright test --project=firefox-storage-recovery",
-    "test:e2e:webkit-recovery": "pnpm run test:playwright-config && PLAYWRIGHT_PORT=4176 PLAYWRIGHT_OUTPUT_DIR=test-results/webkit-recovery PLAYWRIGHT_REPORT_DIR=playwright-report/webkit-recovery playwright test --project=webkit-storage-recovery",
+    "test:e2e:firefox-recovery": "bash scripts/run-recovery-checks.sh firefox",
+    "test:e2e:webkit-recovery": "bash scripts/run-recovery-checks.sh webkit",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {

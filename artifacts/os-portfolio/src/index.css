@@ -2985,6 +2985,11 @@ button { cursor: pointer; }
   margin: 0 4px;
 }
 
+.gvc-settings-nav-marker {
+  justify-self: center;
+  margin-top: 4px;
+}
+
 .gvc-settings-nav-active {
   background: var(--gv-primary-tint);
   color: var(--gv-primary);

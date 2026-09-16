@@ -2800,7 +2800,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                           <div className="gvc-settings-nav-item gvc-settings-nav-active">Personalization</div>
                           <div className="gvc-settings-nav-item">Accessibility</div>
                           <div className="gvc-settings-nav-item gvc-settings-nav-dim">About</div>
-                          <span className="gvc-dot-badge" style={{ marginTop: 4 }}>A</span>
+                          <span className="gvc-dot-badge gvc-settings-nav-marker">A</span>
                         </div>
                         {/* Content */}
                         <div className="gvc-settings-content">

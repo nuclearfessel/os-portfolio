@@ -1478,8 +1478,14 @@ test('Customize, Tech notes, and Shortcuts pages each contain a visual illustrat
   await page.getByTestId('guide-nav-customize').click();
   await expect(guideWindow.getByRole('heading', { name: 'Make the desktop yours' })).toBeVisible();
   await expect(guideWindow.getByTestId('guide-visual-customize')).toBeVisible();
-  // Confirm key control labels are rendered inside the visual
   const customizeVisual = guideWindow.getByTestId('guide-visual-customize');
+  const customizeMarkerAlignment = await customizeVisual.evaluate((root) => {
+    const navigation = root.querySelector<HTMLElement>('.gvc-settings-nav')!.getBoundingClientRect();
+    const marker = root.querySelector<HTMLElement>('.gvc-settings-nav-marker')!.getBoundingClientRect();
+    return Math.abs((navigation.left + navigation.right) / 2 - (marker.left + marker.right) / 2);
+  });
+  expect(customizeMarkerAlignment).toBeLessThanOrEqual(1);
+  // Confirm key control labels are rendered inside the visual
   await expect(customizeVisual).toContainText('Personalization');
   await expect(customizeVisual).toContainText('Save state');
   await expect(customizeVisual).toContainText('Surface effects');

@@ -55,7 +55,7 @@
   --gv-sep:           hsl(var(--component-guide-illustration-primary-ring) / .48);
   --gv-fg:            hsl(var(--component-guide-illustration-foreground));
   --gv-fg-muted:      hsl(var(--component-guide-illustration-foreground-muted));
-  --gv-fg-dim:        hsl(var(--component-guide-illustration-foreground-dim) / .7);
+  --gv-fg-dim:        hsl(var(--component-guide-illustration-foreground-dim));
   --gv-primary:       hsl(var(--component-guide-illustration-primary));
   --gv-primary-tint:  hsl(var(--component-guide-illustration-primary) / .1);
   --gv-primary-ring:  hsl(var(--component-guide-illustration-primary-ring) / .3);

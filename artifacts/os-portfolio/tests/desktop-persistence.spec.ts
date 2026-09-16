@@ -1045,6 +1045,109 @@ test('Guide Overview documents the complete desktop context menu', async ({ page
   await expect(guideWindow).toContainText('Escape to close it');
 });
 
+test('all Guide page content meets WCAG AA contrast in light and dark themes', async ({ page }) => {
+  const sections = [
+    'overview',
+    'windows',
+    'stickies',
+    'dock',
+    'systembar',
+    'terminal',
+    'customize',
+    'technical',
+    'shortcuts',
+  ];
+
+  for (const theme of ['light', 'dark']) {
+    await page.evaluate((nextTheme) => {
+      const key = 'os-portfolio.desktop.v4';
+      const current = JSON.parse(localStorage.getItem(key) ?? '{}');
+      localStorage.setItem(key, JSON.stringify({ ...current, theme: nextTheme }));
+    }, theme);
+    await page.reload();
+    await expect(page.locator('.osp-shell')).toHaveClass(new RegExp(`theme-${theme}`));
+    await page.getByTestId('button-dock-guide').click();
+    const guideWindow = page.getByTestId('window-guide');
+    await expect(guideWindow).toBeVisible();
+
+    for (const section of sections) {
+      await page.getByTestId(section === 'terminal' ? 'guide-nav-terminal' : `guide-nav-${section}`).click();
+      const failures = await guideWindow.evaluate((root) => {
+        const parseColor = (value: string): [number, number, number, number] => {
+          const match = value.match(/rgba?\(([^)]+)\)/);
+          if (!match) return [0, 0, 0, 0];
+          const parts = match[1].split(/[ ,/]+/).map(Number);
+          return [parts[0], parts[1], parts[2], parts.length > 3 ? parts[3] : 1];
+        };
+        const composite = (
+          foreground: [number, number, number, number],
+          background: [number, number, number, number],
+        ): [number, number, number, number] => {
+          const alpha = foreground[3] + background[3] * (1 - foreground[3]);
+          return [
+            (foreground[0] * foreground[3] + background[0] * background[3] * (1 - foreground[3])) / alpha,
+            (foreground[1] * foreground[3] + background[1] * background[3] * (1 - foreground[3])) / alpha,
+            (foreground[2] * foreground[3] + background[2] * background[3] * (1 - foreground[3])) / alpha,
+            alpha,
+          ];
+        };
+        const luminance = (color: [number, number, number, number]) => {
+          const [red, green, blue] = color.slice(0, 3).map((channel) => {
+            const normalized = channel / 255;
+            return normalized <= 0.04045
+              ? normalized / 12.92
+              : ((normalized + 0.055) / 1.055) ** 2.4;
+          });
+          return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+        };
+        const contrast = (
+          foreground: [number, number, number, number],
+          background: [number, number, number, number],
+        ) => {
+          const foregroundLuminance = luminance(foreground);
+          const backgroundLuminance = luminance(background);
+          return (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
+            / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05);
+        };
+
+        return [...root.querySelectorAll<HTMLElement>('*')].flatMap((element) => {
+          if (element.closest('.settings-nav')) return [];
+          const style = getComputedStyle(element);
+          const bounds = element.getBoundingClientRect();
+          if (style.display === 'none' || style.visibility === 'hidden' || bounds.width < 1 || bounds.height < 1) {
+            return [];
+          }
+          const text = [...element.childNodes]
+            .filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim())
+            .map((node) => node.textContent!.trim())
+            .join(' ');
+          if (!text) return [];
+
+          const layers: [number, number, number, number][] = [];
+          let ancestor: HTMLElement | null = element;
+          while (ancestor) {
+            const background = parseColor(getComputedStyle(ancestor).backgroundColor);
+            if (background[3] > 0) layers.push(background);
+            ancestor = ancestor.parentElement;
+          }
+          let background: [number, number, number, number] = [255, 255, 255, 1];
+          for (const layer of layers.reverse()) background = composite(layer, background);
+          const foreground = composite(parseColor(style.color), background);
+          const ratio = contrast(foreground, background);
+          const fontSize = Number.parseFloat(style.fontSize);
+          const fontWeight = Number.parseInt(style.fontWeight, 10) || 400;
+          const isLarge = fontSize >= 24 || (fontSize >= 18.66 && fontWeight >= 700);
+          const requiredRatio = isLarge ? 3 : 4.5;
+          return ratio + 0.01 < requiredRatio
+            ? [`${text.slice(0, 60)} (${ratio.toFixed(2)}:1, ${style.color})`]
+            : [];
+        });
+      });
+      expect(failures, `${theme} theme / ${section} Guide content`).toEqual([]);
+    }
+  }
+});
+
 test('keeps Settings and the User Guide light navigation states consistent', async ({ page }) => {
   await page.getByTestId('button-dock-settings').click();
   const settingsActive = page.getByTestId('settings-nav-personalization');

@@ -979,7 +979,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-intro {
-  color: #586878;
+  color: #334452;
 }
 
 .guide-page-header {
@@ -1025,7 +1025,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-section-label {
-  color: #0b665d;
+  color: #173847;
 }
 
 .guide-topic-list {
@@ -1284,7 +1284,7 @@ button { cursor: pointer; }
 
 .theme-light .guide-card-index,
 .theme-light .guide-callout-label {
-  color: #0b665d;
+  color: #173847;
 }
 
 .guide-card h3,
@@ -1313,7 +1313,7 @@ button { cursor: pointer; }
 .theme-light .guide-card p,
 .theme-light .guide-step p,
 .theme-light .guide-callout p {
-  color: #586878;
+  color: #334452;
 }
 
 .guide-callout {
@@ -1346,7 +1346,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-callout p {
-  color: #586878;
+  color: #334452;
 }
 
 .guide-callout kbd,
@@ -1401,7 +1401,7 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-step-number {
-  color: #0b665d;
+  color: #173847;
 }
 
 .guide-shortcut-list {
@@ -1443,7 +1443,29 @@ button { cursor: pointer; }
 }
 
 .theme-light .guide-shortcut span {
-  color: #586878;
+  color: #334452;
+}
+
+.theme-light .window.guide .guide-content,
+.theme-light .window.guide .guide-content p,
+.theme-light .window.guide .guide-content dd,
+.theme-light .window.guide .guide-intro,
+.theme-light .window.guide .guide-callout p,
+.theme-light .window.guide .guide-shortcut span {
+  color: #334452;
+}
+
+.theme-light .window.guide .section-kicker,
+.theme-light .window.guide .guide-section-label,
+.theme-light .window.guide .guide-step-number,
+.theme-light .window.guide .guide-card-index,
+.theme-light .window.guide .guide-callout-label,
+.theme-light .window.guide .guide-definition-list dt {
+  color: #173847;
+}
+
+.theme-light .window.guide .guide-content kbd {
+  color: #17213b;
 }
 
 @container settings-window (max-width: 620px) {
@@ -1620,7 +1642,7 @@ button { cursor: pointer; }
 .gvc-sticky-header { display: flex; align-items: center; justify-content: space-between; }
 
 .gvc-sticky-label {
-  color: #8f6900;   /* sticky ink — matches product .gvc-sysbar-label */
+  color: #644900;
   font: 8px var(--app-font-mono);
   text-transform: uppercase;
   letter-spacing: .08em;
@@ -1654,7 +1676,7 @@ button { cursor: pointer; }
 .gvc-sticky-footer { align-self: end; }
 
 .gvc-sticky-footertext {
-  color: rgba(143, 105, 0, .56);
+  color: #644900;
   font: 8px var(--app-font-mono);
 }
 
@@ -1868,7 +1890,7 @@ button { cursor: pointer; }
 }
 
 .gvc-menu-item-danger {
-  color: hsl(var(--destructive));
+  color: var(--gv-fg);
 }
 
 .gvc-menu-check {
@@ -2112,6 +2134,11 @@ button { cursor: pointer; }
   font: 10px var(--app-font-mono);
   border: 1px solid var(--gv-primary-ring);
   white-space: nowrap;
+}
+
+.theme-light .guide-terminal-cmd-badge,
+.theme-light .guide-topic code {
+  color: #173847;
 }
 
 /* =========================================================
@@ -2807,7 +2834,7 @@ button { cursor: pointer; }
 }
 
 .gvc-arch-panel-label {
-  font: 700 9px var(--app-font-mono);
+  font: 400 9px var(--app-font-mono);
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--gv-fg-dim);

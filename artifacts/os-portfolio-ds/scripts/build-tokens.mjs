@@ -266,18 +266,47 @@ function componentCssEntries(scope, tokens, family) {
   return lines.join("\n");
 }
 
+function resolvedComponentColorCssEntries(scope, tokens, family) {
+  const lines = [];
+  const walk = (node, path) => {
+    for (const [name, child] of Object.entries(node ?? {})) {
+      if (name.startsWith("$")) continue;
+      const nextPath = [...path, name];
+      if (child && typeof child === "object" && "$value" in child) {
+        const value = resolveValue(child, tokens);
+        if (typeof value !== "string" || !value.startsWith("#")) {
+          throw new Error(
+            `Resolved component color ${scope}.${nextPath.join(".")} must be a hex color`,
+          );
+        }
+        lines.push(
+          `  --component-${nextPath.map(kebabCase).join("-")}: ${hexToHslChannels(value)};`,
+        );
+      } else {
+        walk(child, nextPath);
+      }
+    }
+  };
+  const source = tokens.color.component[scope]?.[family];
+  if (!source) {
+    throw new Error(`Missing component color family ${scope}.${family}`);
+  }
+  walk(source, [family]);
+  return lines.join("\n");
+}
+
 function buildGuideIllustrationCss(tokens) {
   return `/* GENERATED FROM tokens.json -- DO NOT EDIT. Run scripts/build-tokens.mjs. */
 /* Isolated semantic mappings required by gvc-illustration.css. */
 :root,
-.theme-light,
-.light {
-${componentCssEntries("light", tokens, "guideIllustration")}
-}
-
 .theme-dark,
 .dark {
-${componentCssEntries("dark", tokens, "guideIllustration")}
+${resolvedComponentColorCssEntries("dark", tokens, "guideIllustration")}
+}
+
+.theme-light,
+.light {
+${resolvedComponentColorCssEntries("light", tokens, "guideIllustration")}
 }
 `;
 }

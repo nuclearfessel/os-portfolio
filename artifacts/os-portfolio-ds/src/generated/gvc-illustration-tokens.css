@@ -1,48 +1,48 @@
 /* GENERATED FROM tokens.json -- DO NOT EDIT. Run scripts/build-tokens.mjs. */
 /* Isolated semantic mappings required by gvc-illustration.css. */
 :root,
-.theme-light,
-.light {
-  --component-guide-illustration-canvas: var(--muted);
-  --component-guide-illustration-border: var(--border);
-  --component-guide-illustration-surface: var(--card);
-  --component-guide-illustration-surface-mid: var(--popover);
-  --component-guide-illustration-surface-elevated: var(--secondary);
-  --component-guide-illustration-surface-deep: var(--sidebar);
-  --component-guide-illustration-surface-base: var(--background);
-  --component-guide-illustration-content-line: var(--border);
-  --component-guide-illustration-separator: var(--border);
-  --component-guide-illustration-foreground: var(--foreground);
-  --component-guide-illustration-foreground-muted: var(--muted-foreground);
-  --component-guide-illustration-foreground-dim: var(--muted-foreground);
-  --component-guide-illustration-primary: var(--primary);
-  --component-guide-illustration-primary-tint: var(--action-surface);
-  --component-guide-illustration-primary-ring: var(--ring);
-  --component-guide-illustration-secondary-accent: var(--chart-3);
-  --component-guide-illustration-icon-background: var(--border);
-  --component-guide-illustration-accent-color: var(--accent);
-  --component-guide-illustration-marker-foreground: var(--primary-foreground);
-}
-
 .theme-dark,
 .dark {
-  --component-guide-illustration-canvas: var(--muted);
-  --component-guide-illustration-border: var(--border);
-  --component-guide-illustration-surface: var(--card);
-  --component-guide-illustration-surface-mid: var(--popover);
-  --component-guide-illustration-surface-elevated: var(--secondary);
-  --component-guide-illustration-surface-deep: var(--sidebar);
-  --component-guide-illustration-surface-base: var(--background);
-  --component-guide-illustration-content-line: var(--border);
-  --component-guide-illustration-separator: var(--border);
-  --component-guide-illustration-foreground: var(--foreground);
-  --component-guide-illustration-foreground-muted: var(--muted-foreground);
-  --component-guide-illustration-foreground-dim: var(--muted-foreground);
-  --component-guide-illustration-primary: var(--primary);
-  --component-guide-illustration-primary-tint: var(--action-surface);
-  --component-guide-illustration-primary-ring: var(--ring);
-  --component-guide-illustration-secondary-accent: var(--chart-3);
-  --component-guide-illustration-icon-background: var(--border);
-  --component-guide-illustration-accent-color: var(--accent);
-  --component-guide-illustration-marker-foreground: var(--primary-foreground);
+  --component-guide-illustration-canvas: 232 26.5% 22.9%;
+  --component-guide-illustration-border: 231 20.5% 33.5%;
+  --component-guide-illustration-surface: 234 31.2% 18.2%;
+  --component-guide-illustration-surface-mid: 233 30.1% 16.3%;
+  --component-guide-illustration-surface-elevated: 232 26.5% 22.9%;
+  --component-guide-illustration-surface-deep: 233 33.3% 14.1%;
+  --component-guide-illustration-surface-base: 234 38.2% 10.8%;
+  --component-guide-illustration-content-line: 231 20.5% 33.5%;
+  --component-guide-illustration-separator: 231 20.5% 33.5%;
+  --component-guide-illustration-foreground: 230 35.3% 93.3%;
+  --component-guide-illustration-foreground-muted: 232 21.8% 73.9%;
+  --component-guide-illustration-foreground-dim: 232 21.8% 73.9%;
+  --component-guide-illustration-primary: 70 100% 67.8%;
+  --component-guide-illustration-primary-tint: 232 26.5% 22.9%;
+  --component-guide-illustration-primary-ring: 70 100% 67.8%;
+  --component-guide-illustration-secondary-accent: 192 75.4% 72.9%;
+  --component-guide-illustration-icon-background: 231 20.5% 33.5%;
+  --component-guide-illustration-accent-color: 9 100% 73.7%;
+  --component-guide-illustration-marker-foreground: 234 38.2% 10.8%;
+}
+
+.theme-light,
+.light {
+  --component-guide-illustration-canvas: 156 20.8% 90.6%;
+  --component-guide-illustration-border: 163 19.4% 71.8%;
+  --component-guide-illustration-surface: 150 33.3% 97.6%;
+  --component-guide-illustration-surface-mid: 150 30% 96.1%;
+  --component-guide-illustration-surface-elevated: 159 25% 89%;
+  --component-guide-illustration-surface-deep: 156 20.8% 90.6%;
+  --component-guide-illustration-surface-base: 153 27.3% 93.5%;
+  --component-guide-illustration-content-line: 163 19.4% 71.8%;
+  --component-guide-illustration-separator: 163 19.4% 71.8%;
+  --component-guide-illustration-foreground: 219 43.2% 15.9%;
+  --component-guide-illustration-foreground-muted: 195 15.7% 38.6%;
+  --component-guide-illustration-foreground-dim: 195 15.7% 38.6%;
+  --component-guide-illustration-primary: 174 80.5% 22.2%;
+  --component-guide-illustration-primary-tint: 154 24.1% 94.3%;
+  --component-guide-illustration-primary-ring: 174 80.5% 22.2%;
+  --component-guide-illustration-secondary-accent: 189 56.3% 35.9%;
+  --component-guide-illustration-icon-background: 163 19.4% 71.8%;
+  --component-guide-illustration-accent-color: 3 51.9% 52.7%;
+  --component-guide-illustration-marker-foreground: 150 33.3% 97.6%;
 }

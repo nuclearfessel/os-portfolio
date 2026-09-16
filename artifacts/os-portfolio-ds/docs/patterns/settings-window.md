@@ -97,7 +97,7 @@ the content pane must fit at the 340px minimum without shrinking their labels.
 - [ ] `SettingsColorPreset` uses `aria-pressed`.
 - [ ] Full color pickers open in a named modal dialog and restore focus to their trigger on close.
 - [ ] Surface Effects uses one full-width row per effect at `956px` and narrower, then three equal columns above that container width.
-- [ ] Other three-item Personalization groups use their product-validated container breakpoint.
+- [ ] Desktop Text Personalization uses one full-width row per field at `956px` and narrower, then three equal columns above that container width.
 - [ ] Items in the same three-item Personalization group remain equal height in both wide and stacked layouts, including when one item contains a multiline field.
 
 ---

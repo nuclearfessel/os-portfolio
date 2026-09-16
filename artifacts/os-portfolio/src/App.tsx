@@ -2738,6 +2738,10 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     ))}
                   </div>
                 </Surface>
+                <div className="guide-callout">
+                  <span className="guide-callout-label">state validation</span>
+                  <p>State-changing commands check the current desktop state before making a change. If a window, theme, contrast mode, or visual effect is already in the requested state, the Terminal tells you instead of applying the same setting again.</p>
+                </div>
 
                 <div className="guide-section-label">What the Terminal can and cannot do</div>
                 <div className="guide-topic-list" role="list">
@@ -3458,21 +3462,51 @@ function TerminalWindow({
     if (verb === 'set') {
       const setting = rawArgs.join(' ').toLowerCase();
       if (setting === 'high contrast on') {
-        onSetContrastTheme('high');
-        appendEntry(raw, 'High Contrast turned on.');
+        if (accessibility.contrastTheme === 'high') {
+          appendEntry(raw, 'High Contrast is already on.');
+        } else {
+          onSetContrastTheme('high');
+          appendEntry(raw, 'High Contrast turned on.');
+        }
       } else if (setting === 'low contrast on') {
-        onSetContrastTheme('low');
-        appendEntry(raw, 'Low Contrast turned on.');
-      } else if (setting === 'standard on' || setting === 'high contrast off' || setting === 'low contrast off') {
-        onSetContrastTheme('none');
-        appendEntry(raw, 'Standard theme restored.');
+        if (accessibility.contrastTheme === 'low') {
+          appendEntry(raw, 'Low Contrast is already on.');
+        } else {
+          onSetContrastTheme('low');
+          appendEntry(raw, 'Low Contrast turned on.');
+        }
+      } else if (setting === 'standard on') {
+        if (accessibility.contrastTheme === 'none') {
+          appendEntry(raw, 'Standard theme is already active.');
+        } else {
+          onSetContrastTheme('none');
+          appendEntry(raw, 'Standard theme restored.');
+        }
+      } else if (setting === 'high contrast off') {
+        if (accessibility.contrastTheme !== 'high') {
+          appendEntry(raw, 'High Contrast is already off.');
+        } else {
+          onSetContrastTheme('none');
+          appendEntry(raw, 'High Contrast turned off. Standard theme restored.');
+        }
+      } else if (setting === 'low contrast off') {
+        if (accessibility.contrastTheme !== 'low') {
+          appendEntry(raw, 'Low Contrast is already off.');
+        } else {
+          onSetContrastTheme('none');
+          appendEntry(raw, 'Low Contrast turned off. Standard theme restored.');
+        }
       } else if (setting === 'transparency on' || setting === 'transparency off') {
         if (accessibility.contrastTheme !== 'none') {
           appendEntry(raw, 'Transparency is disabled while a contrast theme is active. Run set standard on first.', true);
         } else {
           const enabled = setting.endsWith(' on');
-          onSetAccessibility({ windowTransparency: enabled });
-          appendEntry(raw, `Transparency effects turned ${enabled ? 'on' : 'off'}.`);
+          if (accessibility.windowTransparency === enabled) {
+            appendEntry(raw, `Transparency effects are already ${enabled ? 'on' : 'off'}.`);
+          } else {
+            onSetAccessibility({ windowTransparency: enabled });
+            appendEntry(raw, `Transparency effects turned ${enabled ? 'on' : 'off'}.`);
+          }
         }
       } else if (setting === 'blur on' || setting === 'blur off') {
         if (accessibility.contrastTheme !== 'none') {
@@ -3481,16 +3515,24 @@ function TerminalWindow({
           appendEntry(raw, 'Blur requires transparency. Run set transparency on first.', true);
         } else {
           const enabled = setting.endsWith(' on');
-          onSetAccessibility({ blurEffects: enabled });
-          appendEntry(raw, `Blur effects turned ${enabled ? 'on' : 'off'}.`);
+          if (accessibility.blurEffects === enabled) {
+            appendEntry(raw, `Blur effects are already ${enabled ? 'on' : 'off'}.`);
+          } else {
+            onSetAccessibility({ blurEffects: enabled });
+            appendEntry(raw, `Blur effects turned ${enabled ? 'on' : 'off'}.`);
+          }
         }
       } else if (setting === 'motion on' || setting === 'motion off') {
         if (accessibility.contrastTheme !== 'none') {
           appendEntry(raw, 'Motion is disabled while a contrast theme is active. Run set standard on first.', true);
         } else {
           const enabled = setting.endsWith(' on');
-          onSetAccessibility({ uiAnimations: enabled });
-          appendEntry(raw, `Motion effects turned ${enabled ? 'on' : 'off'}.`);
+          if (accessibility.uiAnimations === enabled) {
+            appendEntry(raw, `Motion effects are already ${enabled ? 'on' : 'off'}.`);
+          } else {
+            onSetAccessibility({ uiAnimations: enabled });
+            appendEntry(raw, `Motion effects turned ${enabled ? 'on' : 'off'}.`);
+          }
         }
       } else {
         appendEntry(raw, 'set: expected high contrast on|off, low contrast on|off, standard on, transparency on|off, blur on|off, or motion on|off', true);

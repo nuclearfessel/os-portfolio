@@ -731,29 +731,72 @@ test('Terminal controls transparency, blur, and motion effects', async ({ page }
 
   await run('set transparency off');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-transparency'))).toBe(true);
+  await run('set transparency off');
 
   await run('set transparency on');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-transparency'))).toBe(false);
+  await run('set transparency on');
 
   await run('set blur off');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-blur'))).toBe(true);
+  await run('set blur off');
 
   await run('set blur on');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-blur'))).toBe(false);
+  await run('set blur on');
 
   await run('set motion off');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-animations'))).toBe(true);
+  await run('set motion off');
 
   await run('set motion on');
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('data-no-animations'))).toBe(false);
+  await run('set motion on');
 
   await expect(page.locator('.terminal-entry')).toContainText([
     'Transparency effects turned off.',
+    'Transparency effects are already off.',
     'Transparency effects turned on.',
+    'Transparency effects are already on.',
     'Blur effects turned off.',
+    'Blur effects are already off.',
     'Blur effects turned on.',
+    'Blur effects are already on.',
     'Motion effects turned off.',
+    'Motion effects are already off.',
     'Motion effects turned on.',
+    'Motion effects are already on.',
+  ]);
+});
+
+test('Terminal validates contrast commands against the current state', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('button-dock-terminal').click();
+
+  const input = page.getByTestId('input-terminal-command');
+  const run = async (command: string) => {
+    await input.fill(command);
+    await input.press('Enter');
+  };
+
+  await run('set standard on');
+  await run('set high contrast off');
+  await run('set high contrast on');
+  await run('set high contrast on');
+  await run('set high contrast off');
+  await run('set low contrast on');
+  await run('set low contrast on');
+  await run('set low contrast off');
+
+  await expect(page.locator('.terminal-entry')).toContainText([
+    'Standard theme is already active.',
+    'High Contrast is already off.',
+    'High Contrast turned on.',
+    'High Contrast is already on.',
+    'High Contrast turned off. Standard theme restored.',
+    'Low Contrast turned on.',
+    'Low Contrast is already on.',
+    'Low Contrast turned off. Standard theme restored.',
   ]);
 });
 

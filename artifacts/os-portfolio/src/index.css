@@ -597,6 +597,9 @@ button { cursor: pointer; }
   color: #17233a !important;
   background: transparent !important;
   font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .theme-light .settings-nav-item-active .settings-nav-icon {

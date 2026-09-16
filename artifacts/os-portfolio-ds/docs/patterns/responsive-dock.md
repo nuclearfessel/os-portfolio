@@ -106,18 +106,18 @@ increase the gaps between items.
 
 ## Accessibility checklist
 
-- [ ] Every `DockItem` has `aria-label` set to the section name.
-- [ ] Active item has `aria-current="true"` or `aria-pressed="true"`.
-- [ ] `DockItemLabel presentation="tooltip"` is `pointer-events-none` and excluded from tab order.
-- [ ] Mobile labels are always visible — not tooltip-only.
-- [ ] Dock container has `role="navigation"` and `aria-label="Main navigation"` or equivalent.
-- [ ] Branded app hover/focus states preserve each app's tile and glyph colors.
-- [ ] Neutral utility hover/focus foreground and background pairs meet WCAG AA in both themes.
-- [ ] Active items use a full-tile ring and a substantial edge pill, not a small dot alone.
-- [ ] The active pill remains visible beneath mobile and tablet inline labels.
-- [ ] Hover styling applies only to inactive items; active items remain unchanged under the pointer.
-- [ ] All inactive items use the same 1px border color within a theme.
-- [ ] Clicking any windowed app follows the same open-or-focus model; an active
+- ✓ Every `DockItem` has `aria-label` set to the section name.
+- ✓ Active item has `aria-current="true"` or `aria-pressed="true"`.
+- ✓ `DockItemLabel presentation="tooltip"` is `pointer-events-none` and excluded from tab order.
+- ✓ Mobile labels are always visible — not tooltip-only.
+- ✓ Dock container has `role="navigation"` and `aria-label="Main navigation"` or equivalent.
+- ✓ Branded app hover/focus states preserve each app's tile and glyph colors.
+- ✓ Neutral utility hover/focus foreground and background pairs meet WCAG AA in both themes.
+- ✓ Active items use a full-tile ring and a substantial edge pill, not a small dot alone.
+- ✓ The active pill remains visible beneath mobile and tablet inline labels.
+- ✓ Hover styling applies only to inactive items; active items remain unchanged under the pointer.
+- ✓ All inactive items use the same 1px border color within a theme.
+- ✓ Clicking any windowed app follows the same open-or-focus model; an active
       Dock item never doubles as a minimize or close control.
 
 ---

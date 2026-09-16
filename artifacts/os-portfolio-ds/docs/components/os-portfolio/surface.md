@@ -10,6 +10,8 @@
 
 A semantic surface container — the visual base for cards, info panels, and grouped content areas within the portfolio. Three elevation levels express depth. Not to be confused with `WindowSurface` (which adds `shadow-xl` and `section` semantics for draggable app windows).
 
+See → [Effects foundation](../../foundations/effects.md)
+
 ---
 
 ## Anatomy

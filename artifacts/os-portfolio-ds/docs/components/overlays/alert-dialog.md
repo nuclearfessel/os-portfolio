@@ -115,14 +115,10 @@ import { Button } from '@workspace/os-portfolio-ds/components/ui/button';
 </AlertDialog>
 ```
 
-### Do
+### Do / Don't
 
-- Use for irreversible or high-impact actions where an explicit choice is required.
-- Make the consequence clear in the description and label the action with a specific verb.
-- Keep Cancel available and visually secondary.
-
-### Don't
-
-- Do not use for routine forms, informational content, or low-risk confirmations; use `Dialog`.
-- Do not rely on backdrop click or an icon-only close affordance.
-- Do not make the confirmation label ambiguous (for example, avoid “OK” for deletion).
+| ✅ Do | ❌ Don't |
+|---|---|
+| Use for irreversible or high-impact actions where an explicit choice is required. | Do not use for routine forms, informational content, or low-risk confirmations; use `Dialog`. |
+| Make the consequence clear in the description and label the action with a specific verb. | Do not rely on backdrop click or an icon-only close affordance. |
+| Keep Cancel available and visually secondary. | Do not make the confirmation label ambiguous (for example, avoid “OK” for deletion). |

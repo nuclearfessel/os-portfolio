@@ -135,15 +135,15 @@ When `data-transparency-enabled` + `--accessibility-transparency` are set by the
 
 ## Accessibility checklist
 
-- [ ] `WindowSurface` has `aria-label` or `aria-labelledby` pointing to the window title.
-- [ ] Window close button has `aria-label="Close [window name]"`.
-- [ ] Keyboard focus is trapped inside the active window when it is modal.
-- [ ] Focus returns to the launcher button when a window closes.
-- [ ] Resize handles have accessible names and keyboard support.
-- [ ] Every open window remains above every sticky note, including the active sticky.
-- [ ] Maximized title-bar drag restores and continues under the same pointer.
-- [ ] Product close shortcuts preserve geometry and follow current z-order.
-- [ ] Text-entry windows place focus at their primary caret when opened,
+- ✓ `WindowSurface` has `aria-label` or `aria-labelledby` pointing to the window title.
+- ✓ Window close button has `aria-label="Close [window name]"`.
+- ✓ Keyboard focus is trapped inside the active window when it is modal.
+- ✓ Focus returns to the launcher button when a window closes.
+- ✓ Resize handles have accessible names and keyboard support.
+- ✓ Every open window remains above every sticky note, including the active sticky.
+- ✓ Maximized title-bar drag restores and continues under the same pointer.
+- ✓ Product close shortcuts preserve geometry and follow current z-order.
+- ✓ Text-entry windows place focus at their primary caret when opened,
       restored, or brought forward, without blocking intentional output selection.
 
 ---

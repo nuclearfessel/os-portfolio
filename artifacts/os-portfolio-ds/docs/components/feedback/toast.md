@@ -140,14 +140,10 @@ toast({
 });
 ```
 
-## Do
+## Do / Don't
 
-- Mount `Toaster` once at the app root before calling `toast()`.
-- Keep messages short, specific, and useful; include a recovery action for recoverable errors.
-- Use a persistent inline message as well when the status is essential or requires extended attention.
-
-## Don't
-
-- Don’t use a toast for critical information that must remain available.
-- Don’t omit `altText` from `ToastAction`.
-- Don’t mount both the Radix toast system and Sonner toaster for the same app surface.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Mount `Toaster` once at the app root before calling `toast()`. | Don’t use a toast for critical information that must remain available. |
+| Keep messages short, specific, and useful; include a recovery action for recoverable errors. | Don’t omit `altText` from `ToastAction`. |
+| Use a persistent inline message as well when the status is essential or requires extended attention. | Don’t mount both the Radix toast system and Sonner toaster for the same app surface. |

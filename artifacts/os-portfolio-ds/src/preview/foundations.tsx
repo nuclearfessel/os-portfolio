@@ -17,6 +17,7 @@ import { tokens } from '../generated/tokens';
 import { CanonicalSpec } from './md-renderer';
 import {
   mdFoundationColor,
+  mdFoundationEffects,
   mdFoundationTypography,
   mdFoundationSpacingRadius,
 } from './docs-map';
@@ -549,6 +550,29 @@ export function LayoutPage() {
         </section>
       </div>
       <CanonicalSpec md={mdFoundationSpacingRadius} hideTokenSections={false} />
+    </div>
+  );
+}
+
+export function EffectsPage() {
+  return (
+    <div className="space-y-8">
+      <section className="grid gap-4 lg:grid-cols-3">
+        {[
+          { label: 'Low', utility: 'shadow-sm', className: 'shadow-sm' },
+          { label: 'Medium', utility: 'shadow-md', className: 'shadow-md' },
+          { label: 'Floating', utility: 'shadow-xl', className: 'shadow-xl' },
+        ].map((effect) => (
+          <div
+            key={effect.utility}
+            className={`rounded-xl border bg-card p-6 text-card-foreground ${effect.className}`}
+          >
+            <SectionLabel>{effect.label} elevation</SectionLabel>
+            <p className="mt-4 font-mono text-sm">{effect.utility}</p>
+          </div>
+        ))}
+      </section>
+      <CanonicalSpec md={mdFoundationEffects} hideTokenSections={false} />
     </div>
   );
 }

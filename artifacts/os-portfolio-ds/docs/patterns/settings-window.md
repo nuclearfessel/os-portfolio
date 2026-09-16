@@ -88,19 +88,19 @@ the content pane must fit at the 340px minimum without shrinking their labels.
 
 ## Accessibility checklist
 
-- [ ] `WindowSurface` has `aria-label="Settings"` or `aria-labelledby`.
-- [ ] `SettingsNavSection` has descriptive `label` prop.
-- [ ] Active nav item has `aria-current="page"`.
-- [ ] Narrow-window sub-navigation remains the same named `<nav>` landmark and does not overlap the title bar or content.
-- [ ] All preference controls have `id` + linked `label`.
-- [ ] `SettingsToggleRow` uses `role="switch"` and `aria-checked`.
-- [ ] `SettingsSegmentedChoice` uses `role="radiogroup"` and `role="radio"`.
-- [ ] `SettingsContrastCard` parent has `role="radiogroup"`.
-- [ ] `SettingsColorPreset` uses `aria-pressed`.
-- [ ] Full color pickers open in a named modal dialog and restore focus to their trigger on close.
-- [ ] Surface Effects uses one full-width row per effect at `956px` and narrower, then three equal columns above that container width.
-- [ ] Desktop Text Personalization uses one full-width row per field at `956px` and narrower, then three equal columns above that container width.
-- [ ] Items in the same three-item Personalization group remain equal height in both wide and stacked layouts, including when one item contains a multiline field.
+- ✓ `WindowSurface` has `aria-label="Settings"` or `aria-labelledby`.
+- ✓ `SettingsNavSection` has descriptive `label` prop.
+- ✓ Active nav item has `aria-current="page"`.
+- ✓ Narrow-window sub-navigation remains the same named `<nav>` landmark and does not overlap the title bar or content.
+- ✓ All preference controls have `id` + linked `label`.
+- ✓ `SettingsToggleRow` uses `role="switch"` and `aria-checked`.
+- ✓ `SettingsSegmentedChoice` uses `role="radiogroup"` and `role="radio"`.
+- ✓ `SettingsContrastCard` parent has `role="radiogroup"`.
+- ✓ `SettingsColorPreset` uses `aria-pressed`.
+- ✓ Full color pickers open in a named modal dialog and restore focus to their trigger on close.
+- ✓ Surface Effects uses one full-width row per effect at `956px` and narrower, then three equal columns above that container width.
+- ✓ Desktop Text Personalization uses one full-width row per field at `956px` and narrower, then three equal columns above that container width.
+- ✓ Items in the same three-item Personalization group remain equal height in both wide and stacked layouts, including when one item contains a multiline field.
 
 ---
 

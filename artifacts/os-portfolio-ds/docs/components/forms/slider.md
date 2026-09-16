@@ -106,7 +106,7 @@ import { Slider } from '@workspace/os-portfolio-ds/components/ui/slider';
 
 ## Do / Don't
 
-- **Do** provide an accessible name and define a meaningful `min`, `max`, and `step`.
-- **Do** use `onValueCommit` when expensive work should happen only after interaction ends.
-- **Don't** use a slider for a small set of named choices; use radios or a select.
-- **Don't** expose an unlabeled slider or assume users can infer its value from the fill alone.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Provide an accessible name and define a meaningful `min`, `max`, and `step`. | Use a slider for a small set of named choices; use radios or a select. |
+| Use `onValueCommit` when expensive work should happen only after interaction ends. | Expose an unlabeled slider or assume users can infer its value from the fill alone. |

@@ -204,22 +204,12 @@ No macOS traffic-light colours are applied; buttons use `--gv-line`.
 
 ## Do / Don't
 
-✅ **Do** keep product-specific diagram interiors (dock icons, sticky body, terminal
-lines) in the portfolio — they are not part of the reusable DS layer.
-
-✅ **Do** import `gvc-illustration.css` alongside the component imports.
-
-✅ **Do** center a group-level marker beneath the entire group rather than under
-the first item.
-
-✅ **Do** use `.gvc-fixed-strip` for system-bar-style diagrams that must retain
-all labels and controls at every supported window width.
-
-❌ **Don't** use `.gvc-traffic-lights` with `gvc-traffic-close/min/max` for new
-diagrams — use `AbstractWindow`'s monochrome buttons instead.
-
-❌ **Don't** hardcode colour hex values for illustration backgrounds or borders —
-always reference `--gv-*` custom properties that alias DS tokens.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Keep product-specific diagram interiors (dock icons, sticky body, terminal lines) in the portfolio — they are not part of the reusable DS layer. | Use `.gvc-traffic-lights` with `gvc-traffic-close/min/max` for new diagrams — use `AbstractWindow`'s monochrome buttons instead. |
+| Import `gvc-illustration.css` alongside the component imports. | Hardcode colour hex values for illustration backgrounds or borders — always reference `--gv-*` custom properties that alias DS tokens. |
+| Center a group-level marker beneath the entire group rather than under the first item. | |
+| Use `.gvc-fixed-strip` for system-bar-style diagrams that must retain all labels and controls at every supported window width. | |
 
 ---
 

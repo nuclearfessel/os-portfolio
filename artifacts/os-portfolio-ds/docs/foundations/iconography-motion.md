@@ -78,9 +78,9 @@ The package does not apply its own `@media (prefers-reduced-motion)` rules beyon
 
 See → [Accessibility](./accessibility.md), [Accessibility preference panel](../patterns/accessibility-panel.md)
 
-### Motion do / don't
+### Do / Don't
 
-| Do | Don't |
+| ✅ Do | ❌ Don't |
 |---|---|
 | Use component motion contracts for duration and easing | Reference primitive durations or easing curves directly from component styles |
 | Keep feedback fast, spatial, and interruptible | Delay interaction while an entry animation completes |
@@ -90,7 +90,9 @@ See → [Accessibility](./accessibility.md), [Accessibility preference panel](..
 
 ---
 
-## Iconography do / don't
+## Iconography
+
+### Do / Don't
 
 | ✅ Do | ❌ Don't |
 |---|---|

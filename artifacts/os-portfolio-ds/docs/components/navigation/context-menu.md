@@ -120,7 +120,7 @@ import {
 
 ## Do / Don't
 
-- **Do** offer the same essential actions elsewhere for touch and keyboard users.
-- **Do** use labels and item text that describe the target and action.
-- **Don't** hide the only path to a critical action in a context menu.
-- **Don't** nest deeply or put long forms inside a transient menu; use a dialog for complex workflows.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Offer the same essential actions elsewhere for touch and keyboard users. | Hide the only path to a critical action in a context menu. |
+| Use labels and item text that describe the target and action. | Nest deeply or put long forms inside a transient menu; use a dialog for complex workflows. |

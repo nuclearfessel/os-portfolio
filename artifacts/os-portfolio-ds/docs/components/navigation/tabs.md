@@ -90,7 +90,7 @@ import {
 
 ## Do / Don't
 
-- **Do** keep tab labels short, parallel, and mutually exclusive.
-- **Do** preserve unsaved input when switching tabs, or warn before discarding it.
-- **Don't** use tabs for a linear process; use a stepper or separate pages.
-- **Don't** overload a tablist with many labels; use a different navigation pattern when scanning becomes difficult.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Keep tab labels short, parallel, and mutually exclusive. | Use tabs for a linear process; use a stepper or separate pages. |
+| Preserve unsaved input when switching tabs, or warn before discarding it. | Overload a tablist with many labels; use a different navigation pattern when scanning becomes difficult. |

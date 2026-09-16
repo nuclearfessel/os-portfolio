@@ -67,10 +67,10 @@ The "Work" window presents a vertical list of portfolio projects. Each entry has
 
 ## Accessibility checklist
 
-- [ ] List wrapper has `role="list"` (or use `<ul>`).
-- [ ] Each `ProjectCard` renders as `<article>` — self-contained content unit.
-- [ ] "View case study" button has descriptive text (avoid generic "View" without context).
-- [ ] Accent color is not the sole differentiator between projects — index numbers carry identity.
+- ✓ List wrapper has `role="list"` (or use `<ul>`).
+- ✓ Each `ProjectCard` renders as `<article>` — self-contained content unit.
+- ✓ "View case study" button has descriptive text (avoid generic "View" without context).
+- ✓ Accent color is not the sole differentiator between projects — index numbers carry identity.
 
 ---
 

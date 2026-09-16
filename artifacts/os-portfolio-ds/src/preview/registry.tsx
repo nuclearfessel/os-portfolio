@@ -1,6 +1,7 @@
 import { lazy, type ComponentType } from 'react';
 import {
   ColorsPage,
+  EffectsPage,
   FontsPage,
   LayoutPage,
   OverviewPage,
@@ -318,7 +319,7 @@ const PatternAnnotatedInterfaceTeaching = lazyPage(() =>
 //     settings-slider-group, settings-segmented-choice, settings-contrast-card,
 //     settings-color-preset, settings-divider, settings-section-header
 //   Public Settings family overview: os-portfolio-settings
-//   Public foundations: all 5 foundation pages
+//   Public foundations: all foundation pages
 //   Public patterns:    all 13 pattern pages
 //   Everything else:    hidden (false)
 export type PublicVisibility = boolean;
@@ -358,6 +359,7 @@ export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
   'color-tokens': true,
   'type-scale': true,
   'spacing-radius': true,
+  'effects': true,
   'motion-tokens': true,
   'os-portfolio-guidelines': true,
   'accessibility': true,
@@ -639,6 +641,12 @@ export const NAV_GROUPS: NavGroup[] = [
         name: 'Spacing & radius',
         description: 'Component-level spacing and radius contracts with resolved values and alias sources.',
         Page: SpacingRadiusTokensPage,
+      },
+      {
+        id: 'effects',
+        name: 'Effects',
+        description: 'Drop shadows, transparency, and backdrop blur behavior.',
+        Page: EffectsPage,
       },
       {
         id: 'motion-tokens',
@@ -1206,6 +1214,7 @@ export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
   'color-tokens': 'canonical-only',
   'type-scale': 'interactive+canonical',
   'spacing-radius': 'interactive+canonical',
+  'effects': 'interactive+canonical',
   'motion-tokens': 'interactive+inline',
   'os-portfolio-guidelines': 'interactive+canonical',
   'accessibility': 'interactive+canonical',

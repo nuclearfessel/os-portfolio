@@ -120,9 +120,11 @@ purpose names such as `padding`, `paddingInline`, `paddingBlock`, `gap`, and
 
 ---
 
-## Spacing do / don't
+## Spacing
 
-| Do | Don't |
+### Do / Don't
+
+| ✅ Do | ❌ Don't |
 |---|---|
 | Use component spacing contracts inside reusable components | Reference primitive spacing tokens directly from components |
 | Choose semantic spacing by purpose, such as `iconGap` or `surfacePadding` | Choose a value only because its number looks close |
@@ -131,9 +133,11 @@ purpose names such as `padding`, `paddingInline`, `paddingBlock`, `gap`, and
 
 ---
 
-## Radius do / don't
+## Radius
 
-| Do | Don't |
+### Do / Don't
+
+| ✅ Do | ❌ Don't |
 |---|---|
 | Use component radius contracts for controls, surfaces, overlays, and desktop primitives | Reference primitive radius values directly from component styles |
 | Use `control`, `surface`, `elevated`, and `pill` roles according to shape purpose | Pick a radius based only on visual similarity |

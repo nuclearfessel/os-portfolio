@@ -101,14 +101,10 @@ import { Button } from '@workspace/os-portfolio-ds/components/ui/button';
 </Card>
 ```
 
-## Do
+## Do / Don't
 
-- Use a card to keep related content and its actions together.
-- Use the provided regions for consistent spacing, then customize with `className` for the composition.
-- Use real headings and native interactive controls inside the card.
-
-## Don't
-
-- Don’t use a card as a substitute for a dialog, alert, or disclosure component.
-- Don’t make the entire presentational `<div>` clickable without implementing keyboard access and an accessible name.
-- Don’t nest unrelated controls or multiple unrelated tasks in one card.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Use a card to keep related content and its actions together. | Don’t use a card as a substitute for a dialog, alert, or disclosure component. |
+| Use the provided regions for consistent spacing, then customize with `className` for the composition. | Don’t make the entire presentational `<div>` clickable without implementing keyboard access and an accessible name. |
+| Use real headings and native interactive controls inside the card. | Don’t nest unrelated controls or multiple unrelated tasks in one card. |

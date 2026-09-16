@@ -271,12 +271,23 @@ function renderBlock(block: Block, i: number): ReactNode {
     case 'bullet-list':
       return (
         <ul key={i} className="w-full max-w-none space-y-1.5">
-          {block.items.map((item, j) => (
-            <li key={j} className="flex gap-2 text-sm text-foreground/80">
-              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-              <span className="min-w-0 flex-1 leading-6">{renderInline(item)}</span>
-            </li>
-          ))}
+          {block.items.map((item, j) => {
+            const isCheckedItem = item.startsWith('✓ ');
+            const itemText = isCheckedItem ? item.slice(2) : item;
+
+            return (
+              <li key={j} className="flex gap-2 text-sm text-foreground/80">
+                {isCheckedItem ? (
+                  <span className="shrink-0 font-semibold leading-6 text-primary" aria-hidden="true">
+                    ✓
+                  </span>
+                ) : (
+                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                )}
+                <span className="min-w-0 flex-1 leading-6">{renderInline(itemText)}</span>
+              </li>
+            );
+          })}
         </ul>
       );
 

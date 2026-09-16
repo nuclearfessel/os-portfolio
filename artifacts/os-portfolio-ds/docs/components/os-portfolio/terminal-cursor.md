@@ -59,9 +59,9 @@ the native input remains the semantic control.
 
 ---
 
-## Do / Don’t
+## Do / Don't
 
-| Do | Don’t |
+| ✅ Do | ❌ Don't |
 |---|---|
 | Keep the native input as the interactive control | Replace the input with a contenteditable imitation |
 | Track the actual selection position | Pin the cursor to the end of the command |

@@ -106,7 +106,7 @@ import { Label } from '@workspace/os-portfolio-ds/components/ui/label';
 
 ## Do / Don't
 
-- **Do** provide a label and expose validation with `aria-invalid` and descriptive text.
-- **Do** use the native `type`, `autocomplete`, `name`, and constraint attributes.
-- **Don't** use placeholder text as a substitute for a label.
-- **Don't** recreate this control with a generic `div` or suppress native validation and keyboard behavior without a specific reason.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Provide a label and expose validation with `aria-invalid` and descriptive text. | Use placeholder text as a substitute for a label. |
+| Use the native `type`, `autocomplete`, `name`, and constraint attributes. | Recreate this control with a generic `div` or suppress native validation and keyboard behavior without a specific reason. |

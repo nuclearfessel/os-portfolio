@@ -80,6 +80,7 @@ export { default as mdSettingsSectionHeader } from '../../docs/components/settin
 export { default as mdFoundationColor } from '../../docs/foundations/color.md?raw';
 export { default as mdFoundationTypography } from '../../docs/foundations/typography.md?raw';
 export { default as mdFoundationSpacingRadius } from '../../docs/foundations/spacing-radius.md?raw';
+export { default as mdFoundationEffects } from '../../docs/foundations/effects.md?raw';
 export { default as mdFoundationIconographyMotion } from '../../docs/foundations/iconography-motion.md?raw';
 export { default as mdFoundationAccessibility } from '../../docs/foundations/accessibility.md?raw';
 

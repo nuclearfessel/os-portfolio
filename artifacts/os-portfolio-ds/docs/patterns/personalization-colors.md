@@ -78,10 +78,10 @@ The consuming app writes the chosen color to the desktop background (CSS variabl
 
 ## Accessibility checklist
 
-- [ ] Each `SettingsColorPreset` has `aria-pressed` and a descriptive `aria-label` including the hex value.
-- [ ] Selected preset shows a contrasting check mark (handled automatically by `isLightColor()` in the component).
-- [ ] Custom `<input type="color">` has an associated `<label>`.
-- [ ] Focus rings are visible on all swatches (2px outline on `rounded-md`).
+- ✓ Each `SettingsColorPreset` has `aria-pressed` and a descriptive `aria-label` including the hex value.
+- ✓ Selected preset shows a contrasting check mark (handled automatically by `isLightColor()` in the component).
+- ✓ Custom `<input type="color">` has an associated `<label>`.
+- ✓ Focus rings are visible on all swatches (2px outline on `rounded-md`).
 
 ---
 

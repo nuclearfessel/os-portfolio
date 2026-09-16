@@ -136,7 +136,7 @@ export function AccessibilityPage() {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <Surface elevation="floating" className="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+      <Surface elevation="flat" className="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-end">
         <div className="max-w-3xl">
           <SectionLabel>foundation / accessibility</SectionLabel>
           <h2 className="mt-3 text-3xl font-medium tracking-[-0.025em]">Accessible by structure, not decoration.</h2>

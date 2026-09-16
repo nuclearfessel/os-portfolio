@@ -85,10 +85,10 @@ See → [State contracts](../references/components/settings.md#state-contracts)
 
 ## Accessibility checklist
 
-- [ ] Each `SettingsToggleRow` has a unique `id` and descriptive `label`.
-- [ ] Disabled toggles have `disabled` prop — visible but inert (not hidden).
-- [ ] The range has an accessible "Animation speed" label and announces Less, Default, or More for its current value.
-- [ ] `SettingsContrastCard` parent has `role="radiogroup" aria-label="Contrast theme"`.
+- ✓ Each `SettingsToggleRow` has a unique `id` and descriptive `label`.
+- ✓ Disabled toggles have `disabled` prop — visible but inert (not hidden).
+- ✓ The range has an accessible "Animation speed" label and announces Less, Default, or More for its current value.
+- ✓ `SettingsContrastCard` parent has `role="radiogroup" aria-label="Contrast theme"`.
 
 ---
 

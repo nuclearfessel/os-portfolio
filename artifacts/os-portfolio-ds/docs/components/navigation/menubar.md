@@ -127,7 +127,7 @@ import {
 
 ## Do / Don't
 
-- **Do** order menus consistently and keep top-level labels recognizable.
-- **Do** provide visible shortcut hints only when the command is actually available.
-- **Don't** use a menubar as a mobile navigation pattern; provide a responsive alternative.
-- **Don't** put navigation links and unrelated transient actions into one ambiguous menu.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Order menus consistently and keep top-level labels recognizable. | Use a menubar as a mobile navigation pattern; provide a responsive alternative. |
+| Provide visible shortcut hints only when the command is actually available. | Put navigation links and unrelated transient actions into one ambiguous menu. |

@@ -114,14 +114,10 @@ import {
 </Dialog>
 ```
 
-### Do
+### Do / Don't
 
-- Use for reversible tasks, forms, and detail views that need focused attention.
-- Keep the title concise and put the primary action last in the footer.
-- Use controlled `open` state when the parent must react to dismissal or submission.
-
-### Don't
-
-- Do not omit `DialogTitle` or replace the built-in close control without an accessible name.
-- Do not use a Dialog for brief, non-blocking feedback; use a toast or inline message instead.
-- Do not put an irreversible action here without clear consequence copy; use `AlertDialog` for that case.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Use for reversible tasks, forms, and detail views that need focused attention. | Do not omit `DialogTitle` or replace the built-in close control without an accessible name. |
+| Keep the title concise and put the primary action last in the footer. | Do not use a Dialog for brief, non-blocking feedback; use a toast or inline message instead. |
+| Use controlled `open` state when the parent must react to dismissal or submission. | Do not put an irreversible action here without clear consequence copy; use `AlertDialog` for that case. |

@@ -97,6 +97,8 @@ When `data-contrast="high"` is active, all semantic tokens re-map to the fixed h
 ## Motion & manipulation
 
 - Nonessential transitions are removed when `data-no-animations` is set on the shell.
+- Transparency and blur follow the shared [Effects foundation](effects.md);
+  contrast themes automatically make participating surfaces opaque and blur-free.
 - Pointer-controlled dragging, resizing, and rotation are direct and interruptible (no easing while pointer is active).
 - Drag-only desktop interactions provide button, keyboard, or managed-layout alternatives.
 - Responsive reflow does not destroy saved desktop arrangement (see → [Saved-state ownership](../patterns/saved-state-ownership.md)).

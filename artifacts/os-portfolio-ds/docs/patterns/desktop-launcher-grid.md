@@ -103,11 +103,11 @@ placement rules.
 
 ## Accessibility checklist
 
-- [ ] Every `DesktopLauncher` has `aria-label` set to the section/app name.
-- [ ] `aria-expanded={open}` reflects whether the associated window is open.
-- [ ] `aria-controls` points to the window element's `id` if in the same DOM.
-- [ ] Keyboard users can Tab to each launcher and activate with Enter/Space.
-- [ ] A keyboard alternative exists for rearranging launchers (drag-only is not sufficient).
+- ✓ Every `DesktopLauncher` has `aria-label` set to the section/app name.
+- ✓ `aria-expanded={open}` reflects whether the associated window is open.
+- ✓ `aria-controls` points to the window element's `id` if in the same DOM.
+- ✓ Keyboard users can Tab to each launcher and activate with Enter/Space.
+- ✓ A keyboard alternative exists for rearranging launchers (drag-only is not sufficient).
 
 ---
 

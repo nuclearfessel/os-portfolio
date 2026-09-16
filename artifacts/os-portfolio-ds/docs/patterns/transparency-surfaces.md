@@ -10,6 +10,8 @@
 
 Windows, the Dock, menus, and stickies can carry translucency and backdrop blur. Accessibility owns system-wide Transparency effects and Blur effects switches; Blur is available only while Transparency is on. Personalization owns separate window and sticky transparency levels plus one shared blur level. When window and Dock transparency is set to None, the Blur level remains visible but disabled until that transparency rises above None; its saved value is preserved. The design system provides the primitives that respond to these preferences, while the consuming product applies them to relevant surfaces.
 
+For the consolidated depth, transparency, and blur rules, see → [Effects foundation](../foundations/effects.md).
+
 ---
 
 ## The utility class
@@ -122,16 +124,16 @@ document.documentElement.style.removeProperty('--surface-blur');
 
 ## Accessibility checklist
 
-- [ ] Translucent surfaces maintain readable text contrast against the backdrop.
-- [ ] Transparency and blur are disabled when any contrast theme is active (automatic via package CSS).
-- [ ] The transparency preference can be toggled and its effect is immediate.
-- [ ] Turning transparency off disables effective blur without discarding the saved Blur preference.
-- [ ] Turning transparency back on restores the saved Blur preference.
-- [ ] Setting window and Dock transparency to None disables the Blur level control without discarding its saved value.
-- [ ] When `data-no-blur` is set, no backdrop blur appears on any `.portfolio-surface-translucent` element.
-- [ ] Desktop, tablet, and mobile Dock surfaces all respond to the window transparency level.
-- [ ] Dock items and desktop launcher icons remain fully opaque at every transparency level.
-- [ ] Turning transparency off makes every participating surface fully opaque.
+- ✓ Translucent surfaces maintain readable text contrast against the backdrop.
+- ✓ Transparency and blur are disabled when any contrast theme is active (automatic via package CSS).
+- ✓ The transparency preference can be toggled and its effect is immediate.
+- ✓ Turning transparency off disables effective blur without discarding the saved Blur preference.
+- ✓ Turning transparency back on restores the saved Blur preference.
+- ✓ Setting window and Dock transparency to None disables the Blur level control without discarding its saved value.
+- ✓ When `data-no-blur` is set, no backdrop blur appears on any `.portfolio-surface-translucent` element.
+- ✓ Desktop, tablet, and mobile Dock surfaces all respond to the window transparency level.
+- ✓ Dock items and desktop launcher icons remain fully opaque at every transparency level.
+- ✓ Turning transparency off makes every participating surface fully opaque.
 
 ---
 

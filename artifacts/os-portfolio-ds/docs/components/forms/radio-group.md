@@ -124,7 +124,7 @@ import {
 
 ## Do / Don't
 
-- **Do** provide one accessible name for the group and a label for every item.
-- **Do** use stable, unique `id` and string `value` attributes.
-- **Don't** use radios when multiple options can be selected; use checkboxes instead.
-- **Don't** omit a selected/default value when the form requires an explicit choice.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Provide one accessible name for the group and a label for every item. | Use radios when multiple options can be selected; use checkboxes instead. |
+| Use stable, unique `id` and string `value` attributes. | Omit a selected/default value when the form requires an explicit choice. |

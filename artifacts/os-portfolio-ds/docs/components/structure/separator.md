@@ -93,14 +93,10 @@ import { Separator } from '@workspace/os-portfolio-ds/components/ui/separator';
 </div>
 ```
 
-## Do
+## Do / Don't
 
-- Use a horizontal separator between stacked content regions.
-- Use a vertical separator only inside a parent with an explicit height.
-- Keep the separator decorative unless it represents a meaningful semantic boundary.
-
-## Don't
-
-- Don’t use a separator as a substitute for spacing or a visible focus indicator.
-- Don’t rely on a color-only divider to convey information that is essential to understanding the page.
-- Don’t use `Separator` for the settings-specific divider when `SettingsDivider` is the intended component.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Use a horizontal separator between stacked content regions. | Don’t use a separator as a substitute for spacing or a visible focus indicator. |
+| Use a vertical separator only inside a parent with an explicit height. | Don’t rely on a color-only divider to convey information that is essential to understanding the page. |
+| Keep the separator decorative unless it represents a meaningful semantic boundary. | Don’t use `Separator` for the settings-specific divider when `SettingsDivider` is the intended component. |

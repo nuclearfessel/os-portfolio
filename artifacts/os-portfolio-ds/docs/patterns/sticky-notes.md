@@ -111,12 +111,12 @@ colors into the generic contrast surface.
 
 ## Accessibility checklist
 
-- [ ] Sticky note container has `role="article"` or equivalent if it's a distinct content unit.
-- [ ] User-created notes have a delete button with `aria-label="Delete note"`.
-- [ ] System-owned notes expose no delete action.
-- [ ] User-note deletion is confirmed via `AlertDialog` before data is removed.
-- [ ] Keyboard alternative exists for moving notes (drag-only is not sufficient).
-- [ ] Sticky content remains above all desktop content and below every open window.
+- ✓ Sticky note container has `role="article"` or equivalent if it's a distinct content unit.
+- ✓ User-created notes have a delete button with `aria-label="Delete note"`.
+- ✓ System-owned notes expose no delete action.
+- ✓ User-note deletion is confirmed via `AlertDialog` before data is removed.
+- ✓ Keyboard alternative exists for moving notes (drag-only is not sufficient).
+- ✓ Sticky content remains above all desktop content and below every open window.
 
 ---
 

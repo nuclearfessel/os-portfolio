@@ -92,14 +92,10 @@ import {
 </TooltipProvider>
 ```
 
-### Do
+### Do / Don't
 
-- Use short, plain-language labels that identify an icon or clarify a control.
-- Keep the trigger usable by keyboard and give icon-only controls their own accessible name.
-- Use `side`, `align`, and `sideOffset` when placement needs to avoid nearby UI.
-
-### Don't
-
-- Do not use a tooltip for essential content, validation errors, or complex explanations.
-- Do not use it as the sole label for an icon-only control.
-- Do not place buttons, links, or form fields inside `TooltipContent`; use a Popover or Dialog instead.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Use short, plain-language labels that identify an icon or clarify a control. | Do not use a tooltip for essential content, validation errors, or complex explanations. |
+| Keep the trigger usable by keyboard and give icon-only controls their own accessible name. | Do not use it as the sole label for an icon-only control. |
+| Use `side`, `align`, and `sideOffset` when placement needs to avoid nearby UI. | Do not place buttons, links, or form fields inside `TooltipContent`; use a Popover or Dialog instead. |

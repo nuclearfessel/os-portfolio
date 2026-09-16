@@ -97,7 +97,7 @@ import { Switch } from '@workspace/os-portfolio-ds/components/ui/switch';
 
 ## Do / Don't
 
-- **Do** label every switch and describe what changes when it is on.
-- **Do** use a controlled switch when its state is stored or synchronized elsewhere.
-- **Don't** use a switch for multiple mutually exclusive options; use a radio group.
-- **Don't** use color alone to communicate on/off state or leave an icon-only switch unnamed.
+| ✅ Do | ❌ Don't |
+|---|---|
+| Label every switch and describe what changes when it is on. | Use a switch for multiple mutually exclusive options; use a radio group. |
+| Use a controlled switch when its state is stored or synchronized elsewhere. | Use color alone to communicate on/off state or leave an icon-only switch unnamed. |

@@ -108,10 +108,10 @@ The `data-contrast` attribute re-maps semantic channel variables — so every pa
 
 ## Accessibility checklist
 
-- [ ] High contrast mode is visually distinct from the standard theme — confirmed manually.
-- [ ] Focus rings are visible in all three modes (3px yellow in high contrast).
-- [ ] Motion, transparency, and blur are disabled when any contrast theme is active.
-- [ ] All text meets WCAG AA contrast ratios in each mode.
+- ✓ High contrast mode is visually distinct from the standard theme — confirmed manually.
+- ✓ Focus rings are visible in all three modes (3px yellow in high contrast).
+- ✓ Motion, transparency, and blur are disabled when any contrast theme is active.
+- ✓ All text meets WCAG AA contrast ratios in each mode.
 
 ---
 

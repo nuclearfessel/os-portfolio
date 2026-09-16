@@ -1021,6 +1021,11 @@ test('uses 5 through 8 for Stickies, Shortcuts, Settings, and the User Guide', a
   await expect(guideWindow.getByRole('heading', { name: 'Keyboard shortcuts' })).toBeVisible();
   await expect(guideWindow).toContainText('Shortcuts pause in text boxes');
   await expect(guideWindow).toContainText('On Windows or Linux, use');
+  const keyboardKeyWeights = await guideWindow.locator('.guide-visual-keyboard .gvc-kbd-key').evaluateAll((keys) =>
+    keys.map((key) => getComputedStyle(key).fontWeight),
+  );
+  expect(keyboardKeyWeights.length).toBeGreaterThan(0);
+  expect(keyboardKeyWeights).toEqual(keyboardKeyWeights.map(() => '400'));
 });
 
 test('Guide Overview documents the complete desktop context menu', async ({ page }) => {
@@ -1709,10 +1714,13 @@ test('guide diagram labels use normal weight and the system bar stays on one lin
       whiteSpace: getComputedStyle(element).whiteSpace,
       childTops: children.map((child) => child.getBoundingClientRect().top),
       top,
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
     };
   });
   expect(systemBarLayout.whiteSpace).toBe('nowrap');
   expect(systemBarLayout.childTops.every((top) => Math.abs(top - systemBarLayout.top) < 1)).toBe(true);
+  expect(systemBarLayout.scrollWidth).toBeLessThanOrEqual(systemBarLayout.clientWidth);
 
   const positionLabels = guideWindow.locator('.gvc-pos-label');
   await expect(positionLabels).toHaveCount(4);
@@ -1744,7 +1752,9 @@ test('guide Dock diagram keeps state markers clear of app tiles', async ({ page 
   await expect(dockVisual.locator('.gvc-dock-item')).toHaveCount(7);
   await expect(dockVisual.locator('.gvc-dock-active')).toHaveCount(1);
   await expect(dockVisual.locator('.gvc-dock-pill')).toHaveCount(1);
-  await expect(dockVisual.locator('.gvc-dock-open-mark')).toHaveCount(1);
+  await expect(dockVisual.locator('.gvc-dock-open')).toHaveCount(1);
+  await expect(dockVisual.locator('.gvc-dock-open-mark')).toHaveCount(0);
+  await expect(dockVisual.locator('.gvc-dock-open')).toHaveCSS('outline-style', 'solid');
   await expect(dockVisual.locator('.gvc-dock-marker-active')).toHaveText('A');
   await expect(dockVisual.locator('.gvc-dock-marker-open')).toHaveText('B');
 
@@ -1762,6 +1772,51 @@ test('guide Dock diagram keeps state markers clear of app tiles', async ({ page 
       markerBox!.y + markerBox!.height <= itemBox!.y + itemBox!.height;
     expect(fullyInsideTile).toBe(false);
   }
+});
+
+test('guide overview and window markers sit on their illustrated edges', async ({ page }) => {
+  await page.getByTestId('button-dock-guide').click();
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  const overview = guideWindow.locator('.guide-visual-desktop-overview');
+  await expect(overview.locator('.gvc-overview-icon-marker')).toHaveText('C');
+  await expect(overview.locator('.gvc-overview-sticky .gvc-dot-badge')).toHaveText('D');
+  await expect(overview.locator('.gvc-overview-dock > .gvc-dot-badge')).toHaveText('E');
+  const overviewWindowEdgeDelta = await overview.evaluate((root) => {
+    const windowBox = root.querySelector<HTMLElement>('.gvc-overview-window-work')!.getBoundingClientRect();
+    const markerBox = root.querySelector<HTMLElement>('.gvc-overview-window-marker')!.getBoundingClientRect();
+    return Math.abs(markerBox.left + markerBox.width / 2 - windowBox.left);
+  });
+  expect(overviewWindowEdgeDelta).toBeLessThanOrEqual(1);
+
+  await page.getByTestId('guide-nav-windows').click();
+  const windowDiagram = guideWindow.locator('.guide-visual-window-demo');
+  const windowMarkerEdgeDeltas = await windowDiagram.evaluate((root) => {
+    const windowBox = root.querySelector<HTMLElement>('.gvc-window')!.getBoundingClientRect();
+    const markerBox = root.querySelector<HTMLElement>('.gvc-window-resize-marker')!.getBoundingClientRect();
+    return {
+      right: Math.abs(markerBox.left + markerBox.width / 2 - windowBox.right),
+      bottom: Math.abs(markerBox.top + markerBox.height / 2 - windowBox.bottom),
+    };
+  });
+  expect(windowMarkerEdgeDeltas.right).toBeLessThanOrEqual(1);
+  expect(windowMarkerEdgeDeltas.bottom).toBeLessThanOrEqual(1);
+});
+
+test('guide terminal cursor stays centered on its text line', async ({ page }) => {
+  await page.getByTestId('button-dock-guide').click();
+  const guideWindow = page.getByTestId('window-guide');
+  await page.getByTestId('guide-nav-terminal').click();
+
+  const centerDelta = await guideWindow.locator('.gvc-terminal-line-active').evaluate((line) => {
+    const textBox = line.querySelector<HTMLElement>('.gvc-terminal-prompt')!.getBoundingClientRect();
+    const cursorBox = line.querySelector<HTMLElement>('.gvc-terminal-cursor')!.getBoundingClientRect();
+    const textCenter = (textBox.top + textBox.bottom) / 2;
+    const cursorCenter = (cursorBox.top + cursorBox.bottom) / 2;
+    return Math.abs(textCenter - cursorCenter);
+  });
+  expect(centerDelta).toBeLessThanOrEqual(1);
 });
 
 test('guide stickies section has annotated anatomy visual with rotation info', async ({ page }) => {

@@ -1873,8 +1873,9 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   markers={[
                     { label: 'A', description: 'System bar — time, status, and location' },
                     { label: 'B', description: 'Windows — each app opens here' },
-                    { label: 'C', description: 'Stickies — quick notes on the desktop' },
-                    { label: 'D', description: 'Dock — open and switch apps' },
+                    { label: 'C', description: 'Desktop icons — open apps from the workspace' },
+                    { label: 'D', description: 'Stickies — quick notes on the desktop' },
+                    { label: 'E', description: 'Dock — open and switch apps' },
                   ]}
                 >
                     {/* System bar */}
@@ -1908,18 +1909,19 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                           <div className="gvc-content-line" style={{ width: '82%' }} />
                           <div className="gvc-content-line" style={{ width: '62%' }} />
                         </div>
-                        <span className="gvc-dot-badge">B</span>
+                        <span className="gvc-dot-badge gvc-overview-window-marker">B</span>
                       </div>
                       <div className="gvc-overview-side">
                         <div className="gvc-overview-icon">
                           <div className="gvc-overview-icon-tile" />
                           <span>about</span>
+                          <span className="gvc-dot-badge gvc-overview-icon-marker">C</span>
                         </div>
                         <div className="gvc-overview-sticky">
                           <div className="gvc-overview-sticky-tape" />
                           <div className="gvc-overview-sticky-line" />
                           <div className="gvc-overview-sticky-line gvc-overview-sticky-line-short" />
-                          <span className="gvc-dot-badge">C</span>
+                          <span className="gvc-dot-badge">D</span>
                         </div>
                       </div>
                     </div>
@@ -1928,7 +1930,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                       {[0,1,2,3,4,5,6].map(i => (
                         <div key={i} className="gvc-overview-dock-item" style={{ background: ['#d64f8c','#7478b8','#e7ded5','#303747','#ebca75','#56cbd3','#c9f27b'][i] }} />
                       ))}
-                      <span className="gvc-dot-badge">D</span>
+                      <span className="gvc-dot-badge">E</span>
                     </div>
                 </AnnotatedFrame>
 
@@ -2103,7 +2105,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                       <div className="gvc-content-line" style={{ width: '70%' }} />
                       <div className="gvc-content-line" style={{ width: '80%' }} />
                       <div className="gvc-content-line" style={{ width: '40%' }} />
-                      <span className="gvc-dot-badge" style={{ position: 'absolute', bottom: 2, right: 2 }}>C</span>
+                      <span className="gvc-dot-badge gvc-window-resize-marker">C</span>
                     </AbstractWindow>
                 </AnnotatedFrame>
 
@@ -2381,7 +2383,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   cropClassName="gvc-dock-crop"
                   markers={[
                     { label: 'A', description: 'Active app — highlighted with a ring; its window is in front' },
-                    { label: 'B', description: 'Open mark — app is running but not in front' },
+                    { label: 'B', description: 'Open app — the border remains without a focus tab' },
                   ]}
                 >
                     <div className="gvc-dock-bar">
@@ -2394,9 +2396,8 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                         { cls: 'gvc-dock-settings', active: false, open: false },
                         { cls: 'gvc-dock-guide',    active: false, open: false },
                       ].map((item, i) => (
-                        <div key={i} className={`gvc-dock-item ${item.cls}${item.active ? ' gvc-dock-active' : ''}`}>
+                        <div key={i} className={`gvc-dock-item ${item.cls}${item.active ? ' gvc-dock-active' : ''}${item.open ? ' gvc-dock-open' : ''}`}>
                           {item.active && <div className="gvc-dock-pill" />}
-                          {item.open && <div className="gvc-dock-open-mark" />}
                           {item.active && <span className="gvc-dot-badge gvc-dock-marker gvc-dock-marker-active">A</span>}
                           {item.open && <span className="gvc-dot-badge gvc-dock-marker gvc-dock-marker-open">B</span>}
                         </div>

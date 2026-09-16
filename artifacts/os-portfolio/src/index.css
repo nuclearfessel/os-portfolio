@@ -1624,6 +1624,16 @@ button { cursor: pointer; }
    ========================================================= */
 .guide-visual-window-demo > .gvc-annotated-crop { padding: 28px 16px 32px; }
 
+.guide-visual-window-demo .gvc-window {
+  overflow: visible;
+}
+
+.gvc-window-resize-marker {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+}
+
 /* =========================================================
    Sticky note illustration
    Sticky colours are representational — they match the exact
@@ -1797,6 +1807,11 @@ button { cursor: pointer; }
   outline-offset: 1px;
 }
 
+.gvc-dock-open {
+  outline: 2px solid var(--gv-primary);
+  outline-offset: 1px;
+}
+
 .gvc-dock-pill {
   position: absolute;
   bottom: -8px; left: 50%;
@@ -1804,17 +1819,6 @@ button { cursor: pointer; }
   width: 14px; height: 2px;
   border-radius: 999px;
   background: var(--gv-primary);
-}
-
-.gvc-dock-open-mark {
-  position: absolute;
-  bottom: -7px;
-  left: 50%;
-  width: 6px;
-  height: 2px;
-  border-radius: 999px;
-  background: var(--gv-fg-muted);
-  transform: translateX(-50%);
 }
 
 .gvc-dock-marker {
@@ -2192,6 +2196,34 @@ button { cursor: pointer; }
   font: 10px var(--app-font-mono);
 }
 
+@container settings-window (max-width: 640px) {
+  .gvc-sysbar {
+    gap: 4px;
+    padding-inline: 8px;
+    font-size: 9px;
+  }
+
+  .gvc-sysbar-left,
+  .gvc-sysbar-right {
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+
+  .gvc-sysbar-statustext {
+    font-size: 8px;
+  }
+
+  .gvc-sysbar-icon {
+    width: 10px;
+    height: 10px;
+    flex-basis: 10px;
+  }
+
+  .gvc-sysbar-clock {
+    font-size: 9px;
+  }
+}
+
 /* ---- System bar side-rail (vertical) illustration ---- */
 .guide-visual-sysbar-side {
   padding: 20px 40px 24px;
@@ -2312,7 +2344,10 @@ button { cursor: pointer; }
   white-space: pre;
 }
 
-.gvc-terminal-line-active { margin-top: 2px; }
+.gvc-terminal-line-active {
+  align-items: center;
+  margin-top: 2px;
+}
 
 .gvc-terminal-cursor {
   display: inline-block;
@@ -2416,6 +2451,13 @@ button { cursor: pointer; }
 .gvc-overview-window-work {
   align-self: end;
   margin-bottom: 10px;
+  overflow: visible;
+}
+
+.gvc-overview-window-marker {
+  position: absolute;
+  left: -8px;
+  bottom: 14px;
 }
 
 .gvc-overview-window-bar {
@@ -2500,11 +2542,18 @@ button { cursor: pointer; }
 }
 
 .gvc-overview-icon {
+  position: relative;
   display: grid;
   gap: 4px;
   justify-items: center;
   color: var(--gv-fg);
   font: 8px var(--app-font-mono);
+}
+
+.gvc-overview-icon-marker {
+  position: absolute;
+  top: -8px;
+  right: -8px;
 }
 
 .gvc-overview-icon-tile {
@@ -3380,7 +3429,7 @@ button { cursor: pointer; }
   background: var(--gv-surface);
   border: 1px solid var(--gv-border);
   border-bottom-width: 3px;
-  font: 600 11px var(--app-font-mono);
+  font: 400 11px var(--app-font-mono);
   color: var(--gv-fg);
   white-space: nowrap;
 }

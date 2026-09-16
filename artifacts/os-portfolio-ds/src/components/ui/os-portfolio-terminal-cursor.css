@@ -25,20 +25,20 @@
   width: 7px;
   height: 13px;
   flex: 0 0 7px;
-  border-radius: 1px;
+  border-radius: var(--osp-radius-component-terminal-cursor-radius);
   background: var(--osp-terminal-cursor-color);
-  animation: cursor-blink 1s step-end infinite;
+  animation: cursor-blink var(--osp-motion-component-terminal-cursor-duration) var(--osp-motion-component-terminal-cursor-easing) infinite;
   pointer-events: none;
 }
 
 /* A text caret is functional typing feedback, not decorative interface motion. */
 [data-no-animations] .osp-terminal-cursor,
 [data-fast-ui] .osp-terminal-cursor {
-  animation: cursor-blink 1s step-end infinite !important;
+  animation: cursor-blink var(--osp-motion-component-terminal-cursor-duration) var(--osp-motion-component-terminal-cursor-easing) infinite !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .osp-terminal-cursor {
-    animation: cursor-blink 1s step-end infinite !important;
+    animation: cursor-blink var(--osp-motion-component-terminal-cursor-duration) var(--osp-motion-component-terminal-cursor-easing) infinite !important;
   }
 }

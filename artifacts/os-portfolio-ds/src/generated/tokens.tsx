@@ -583,6 +583,7 @@ export const tokens = {
     "base": "0.75rem",
     "primitive": {
       "none": "0px",
+      "hairline": "1px",
       "sm": "8px",
       "md": "10px",
       "lg": "12px",
@@ -591,6 +592,7 @@ export const tokens = {
     },
     "semantic": {
       "none": "0px",
+      "hairline": "1px",
       "sm": "8px",
       "md": "10px",
       "lg": "12px",
@@ -611,6 +613,9 @@ export const tokens = {
       },
       "dialog": {
         "radius": "12px"
+      },
+      "sheet": {
+        "radius": "0px"
       },
       "separator": {
         "radius": "0px"
@@ -664,6 +669,9 @@ export const tokens = {
       },
       "terminal": {
         "radius": "12px"
+      },
+      "terminalCursor": {
+        "radius": "1px"
       },
       "contactCta": {
         "radius": "10px"
@@ -720,6 +728,10 @@ export const tokens = {
         "padding": "24px",
         "gap": "16px"
       },
+      "sheet": {
+        "padding": "24px",
+        "gap": "16px"
+      },
       "toast": {
         "padding": "16px",
         "gap": "6px"
@@ -734,8 +746,9 @@ export const tokens = {
         "gap": "8px"
       },
       "desktopLauncher": {
-        "padding": "12px",
-        "gap": "24px"
+        "paddingInline": "4px",
+        "paddingBlock": "4px",
+        "gap": "8px"
       },
       "dock": {
         "padding": "16px",
@@ -792,11 +805,89 @@ export const tokens = {
         "gap": "6px"
       }
     }
+  },
+  "motionTokens": {
+    "base": "180ms",
+    "primitive": {
+      "none": "0ms",
+      "instant": "100ms",
+      "enter": "160ms",
+      "standard": "180ms",
+      "overlay": "200ms",
+      "slow": "300ms",
+      "deliberate": "500ms",
+      "cursor": "1000ms",
+      "linear": "linear",
+      "step": "step-end",
+      "ease": "ease",
+      "easeIn": "ease-in",
+      "easeOut": "ease-out",
+      "easeInOut": "ease-in-out"
+    },
+    "semantic": {
+      "feedbackDuration": "100ms",
+      "enterDuration": "160ms",
+      "standardDuration": "180ms",
+      "overlayDuration": "200ms",
+      "slowDuration": "300ms",
+      "deliberateDuration": "500ms",
+      "caretDuration": "1000ms",
+      "standardEasing": "ease",
+      "enterEasing": "ease-out",
+      "exitEasing": "ease-in",
+      "emphasizedEasing": "ease-in-out",
+      "caretEasing": "step-end"
+    },
+    "component": {
+      "actionButton": {
+        "duration": "100ms",
+        "easing": "ease"
+      },
+      "accordion": {
+        "duration": "200ms",
+        "easing": "ease-out"
+      },
+      "dialog": {
+        "duration": "200ms",
+        "easing": "ease-out"
+      },
+      "sheet": {
+        "openDuration": "500ms",
+        "closeDuration": "300ms",
+        "easing": "ease-in-out"
+      },
+      "desktopIntro": {
+        "duration": "160ms",
+        "easing": "ease-out"
+      },
+      "desktopLauncher": {
+        "duration": "100ms",
+        "pressDuration": "100ms",
+        "easing": "ease"
+      },
+      "dock": {
+        "duration": "100ms",
+        "easing": "ease"
+      },
+      "settingsControls": {
+        "duration": "100ms",
+        "easing": "ease"
+      },
+      "scrollbar": {
+        "duration": "180ms",
+        "easing": "ease"
+      },
+      "terminalCursor": {
+        "duration": "1000ms",
+        "easing": "step-end"
+      }
+    }
   }
 } as const;
 
 export const radiusTokens = tokens.radiusTokens;
 export const spacingTokens = tokens.spacingTokens;
+export const motionTokens = tokens.motionTokens;
 
 export type Tokens = typeof tokens;
 export default tokens;

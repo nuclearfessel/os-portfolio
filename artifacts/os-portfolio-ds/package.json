@@ -7,6 +7,7 @@
     ".": "./src/generated/tokens.tsx",
     "./tokens": "./src/generated/tokens.tsx",
     "./styles.css": "./src/index.css",
+    "./layout-motion-tokens.css": "./src/generated/layout-motion-tokens.css",
     "./components/*": "./src/components/*.tsx",
     "./components/ui/gvc-illustration.css": "./src/components/ui/gvc-illustration.css",
     "./components/ui/gvc-illustration.tokens.css": "./src/generated/gvc-illustration-tokens.css",

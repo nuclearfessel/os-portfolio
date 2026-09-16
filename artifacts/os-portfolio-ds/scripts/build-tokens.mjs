@@ -370,6 +370,7 @@ function buildCss(tokens) {
   replacements.__DS_DIMENSION_CSS__ = [
     dimensionCssEntries("spacing", tokens),
     dimensionCssEntries("radius", tokens),
+    dimensionCssEntries("motion", tokens),
   ].join("\n");
 
   for (const [token, value] of Object.entries(replacements)) {
@@ -423,6 +424,7 @@ function buildTs(tokens) {
     spacing: resolveValue(tokens.spacing.base, tokens),
     radiusTokens: structuredDimensionEntries("radius", tokens),
     spacingTokens: structuredDimensionEntries("spacing", tokens),
+    motionTokens: structuredDimensionEntries("motion", tokens),
   };
   return `/* GENERATED FROM tokens.json -- DO NOT EDIT. Run scripts/build-tokens.mjs. */
 // Portable design tokens (colors as hex). Web consumes the theme via
@@ -432,6 +434,7 @@ export const tokens = ${JSON.stringify(portable, null, 2)} as const;
 
 export const radiusTokens = tokens.radiusTokens;
 export const spacingTokens = tokens.spacingTokens;
+export const motionTokens = tokens.motionTokens;
 
 export type Tokens = typeof tokens;
 export default tokens;
@@ -444,6 +447,14 @@ export function buildTokens() {
   mkdirSync(tsOutDir, { recursive: true });
   writeFileSync(guideIllustrationCssOut, buildGuideIllustrationCss(tokens));
   writeFileSync(join(tsOutDir, "tokens.tsx"), buildTs(tokens));
+  writeFileSync(
+    join(tsOutDir, "layout-motion-tokens.css"),
+    `/* GENERATED FROM tokens.json -- DO NOT EDIT. */\n:root {\n${[
+      dimensionCssEntries("spacing", tokens),
+      dimensionCssEntries("radius", tokens),
+      dimensionCssEntries("motion", tokens),
+    ].join("\n")}\n}\n`,
+  );
   mkdirSync(dirname(faviconOut), { recursive: true });
   writeFileSync(faviconOut, buildFavicon(tokens));
 }
@@ -451,6 +462,6 @@ export function buildTokens() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   buildTokens();
   process.stdout.write(
-    "Generated src/index.css, Guide illustration CSS mappings, src/generated/tokens.tsx, and public/favicon.svg\n",
+    "Generated CSS, portable tokens, layout/motion mappings, guide mappings, and favicon\n",
   );
 }

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { ErrorBoundary } from '@/components/error-boundary';
 
+import '@workspace/os-portfolio-ds/layout-motion-tokens.css';
 import './index.css';
 
 createRoot(document.getElementById('root')!, {

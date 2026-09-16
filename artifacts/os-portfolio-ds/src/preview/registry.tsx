@@ -6,6 +6,10 @@ import {
   OverviewPage,
 } from './foundations';
 import { ColorTokensPage } from './color-tokens-page';
+import {
+  MotionTokensPage,
+  SpacingRadiusTokensPage,
+} from './component-layout-motion-tokens-page';
 
 function lazyPage(load: () => Promise<ComponentType>) {
   return lazy(async () => ({ default: await load() }));
@@ -354,6 +358,7 @@ export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
   'color-tokens': true,
   'type-scale': true,
   'spacing-radius': true,
+  'motion-tokens': true,
   'os-portfolio-guidelines': true,
   'accessibility': true,
   // ── Actions ─────────────────────────────────────────────────────────────────
@@ -629,8 +634,14 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         id: 'spacing-radius',
         name: 'Spacing & radius',
-        description: 'The spacing rhythm and corner treatments used by the system.',
-        Page: LayoutPage,
+        description: 'Component-level spacing and radius contracts with resolved values and alias sources.',
+        Page: SpacingRadiusTokensPage,
+      },
+      {
+        id: 'motion-tokens',
+        name: 'Motion tokens',
+        description: 'Component-level durations and easing contracts used by the design system and OS Portfolio.',
+        Page: MotionTokensPage,
       },
       {
         id: 'os-portfolio-guidelines',
@@ -1192,6 +1203,7 @@ export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
   'color-tokens': 'canonical-only',
   'type-scale': 'interactive+canonical',
   'spacing-radius': 'interactive+canonical',
+  'motion-tokens': 'interactive+inline',
   'os-portfolio-guidelines': 'interactive+canonical',
   'accessibility': 'interactive+canonical',
   // ── Actions ─────────────────────────────────────────────────────────────────

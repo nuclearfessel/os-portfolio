@@ -339,6 +339,8 @@
   --osp-spacing-component-accordion-gap: var(--osp-spacing-semantic-item-gap);
   --osp-spacing-component-dialog-padding: var(--osp-spacing-semantic-shell-padding);
   --osp-spacing-component-dialog-gap: var(--osp-spacing-semantic-stack-gap);
+  --osp-spacing-component-sheet-padding: var(--osp-spacing-semantic-shell-padding);
+  --osp-spacing-component-sheet-gap: var(--osp-spacing-semantic-stack-gap);
   --osp-spacing-component-toast-padding: var(--osp-spacing-semantic-surface-inset);
   --osp-spacing-component-toast-gap: var(--osp-spacing-semantic-icon-gap);
   --osp-spacing-component-tooltip-padding-inline: var(--osp-spacing-semantic-item-gap);
@@ -346,8 +348,9 @@
   --osp-spacing-component-tooltip-gap: var(--osp-spacing-semantic-icon-gap);
   --osp-spacing-component-context-menu-padding: var(--osp-spacing-semantic-micro);
   --osp-spacing-component-context-menu-gap: var(--osp-spacing-semantic-item-gap);
-  --osp-spacing-component-desktop-launcher-padding: var(--osp-spacing-semantic-control-padding-inline);
-  --osp-spacing-component-desktop-launcher-gap: var(--osp-spacing-semantic-section-gap);
+  --osp-spacing-component-desktop-launcher-padding-inline: var(--osp-spacing-semantic-micro);
+  --osp-spacing-component-desktop-launcher-padding-block: var(--osp-spacing-semantic-micro);
+  --osp-spacing-component-desktop-launcher-gap: var(--osp-spacing-semantic-item-gap);
   --osp-spacing-component-dock-padding: var(--osp-spacing-semantic-surface-inset);
   --osp-spacing-component-dock-gap: var(--osp-spacing-semantic-item-gap);
   --osp-spacing-component-dock-label-gap: var(--osp-spacing-semantic-icon-gap);
@@ -378,12 +381,14 @@
   --osp-spacing-component-contact-cta-gap: var(--osp-spacing-semantic-icon-gap);
   --osp-radius-base: 0.75rem;
   --osp-radius-primitive-none: 0px;
+  --osp-radius-primitive-hairline: 1px;
   --osp-radius-primitive-sm: 8px;
   --osp-radius-primitive-md: 10px;
   --osp-radius-primitive-lg: 12px;
   --osp-radius-primitive-xl: 16px;
   --osp-radius-primitive-full: 9999px;
   --osp-radius-semantic-none: var(--osp-radius-primitive-none);
+  --osp-radius-semantic-hairline: var(--osp-radius-primitive-hairline);
   --osp-radius-semantic-sm: var(--osp-radius-primitive-sm);
   --osp-radius-semantic-md: var(--osp-radius-primitive-md);
   --osp-radius-semantic-lg: var(--osp-radius-primitive-lg);
@@ -397,6 +402,7 @@
   --osp-radius-component-action-button-radius: var(--osp-radius-semantic-control);
   --osp-radius-component-accordion-radius: var(--osp-radius-semantic-elevated);
   --osp-radius-component-dialog-radius: var(--osp-radius-semantic-surface);
+  --osp-radius-component-sheet-radius: var(--osp-radius-semantic-none);
   --osp-radius-component-separator-radius: var(--osp-radius-semantic-none);
   --osp-radius-component-toast-radius: var(--osp-radius-semantic-control);
   --osp-radius-component-tooltip-radius: var(--osp-radius-semantic-compact);
@@ -416,7 +422,57 @@
   --osp-radius-component-settings-controls-segmented: var(--osp-radius-semantic-pill);
   --osp-radius-component-color-picker-radius: var(--osp-radius-semantic-control);
   --osp-radius-component-terminal-radius: var(--osp-radius-semantic-surface);
+  --osp-radius-component-terminal-cursor-radius: var(--osp-radius-semantic-hairline);
   --osp-radius-component-contact-cta-radius: var(--osp-radius-semantic-control);
+  --osp-motion-base: 180ms;
+  --osp-motion-primitive-none: 0ms;
+  --osp-motion-primitive-instant: 100ms;
+  --osp-motion-primitive-enter: 160ms;
+  --osp-motion-primitive-standard: 180ms;
+  --osp-motion-primitive-overlay: 200ms;
+  --osp-motion-primitive-slow: 300ms;
+  --osp-motion-primitive-deliberate: 500ms;
+  --osp-motion-primitive-cursor: 1000ms;
+  --osp-motion-primitive-linear: linear;
+  --osp-motion-primitive-step: step-end;
+  --osp-motion-primitive-ease: ease;
+  --osp-motion-primitive-ease-in: ease-in;
+  --osp-motion-primitive-ease-out: ease-out;
+  --osp-motion-primitive-ease-in-out: ease-in-out;
+  --osp-motion-semantic-feedback-duration: var(--osp-motion-primitive-instant);
+  --osp-motion-semantic-enter-duration: var(--osp-motion-primitive-enter);
+  --osp-motion-semantic-standard-duration: var(--osp-motion-primitive-standard);
+  --osp-motion-semantic-overlay-duration: var(--osp-motion-primitive-overlay);
+  --osp-motion-semantic-slow-duration: var(--osp-motion-primitive-slow);
+  --osp-motion-semantic-deliberate-duration: var(--osp-motion-primitive-deliberate);
+  --osp-motion-semantic-caret-duration: var(--osp-motion-primitive-cursor);
+  --osp-motion-semantic-standard-easing: var(--osp-motion-primitive-ease);
+  --osp-motion-semantic-enter-easing: var(--osp-motion-primitive-ease-out);
+  --osp-motion-semantic-exit-easing: var(--osp-motion-primitive-ease-in);
+  --osp-motion-semantic-emphasized-easing: var(--osp-motion-primitive-ease-in-out);
+  --osp-motion-semantic-caret-easing: var(--osp-motion-primitive-step);
+  --osp-motion-component-action-button-duration: var(--osp-motion-semantic-feedback-duration);
+  --osp-motion-component-action-button-easing: var(--osp-motion-semantic-standard-easing);
+  --osp-motion-component-accordion-duration: var(--osp-motion-semantic-overlay-duration);
+  --osp-motion-component-accordion-easing: var(--osp-motion-semantic-enter-easing);
+  --osp-motion-component-dialog-duration: var(--osp-motion-semantic-overlay-duration);
+  --osp-motion-component-dialog-easing: var(--osp-motion-semantic-enter-easing);
+  --osp-motion-component-sheet-open-duration: var(--osp-motion-semantic-deliberate-duration);
+  --osp-motion-component-sheet-close-duration: var(--osp-motion-semantic-slow-duration);
+  --osp-motion-component-sheet-easing: var(--osp-motion-semantic-emphasized-easing);
+  --osp-motion-component-desktop-intro-duration: var(--osp-motion-semantic-enter-duration);
+  --osp-motion-component-desktop-intro-easing: var(--osp-motion-semantic-enter-easing);
+  --osp-motion-component-desktop-launcher-duration: var(--osp-motion-semantic-feedback-duration);
+  --osp-motion-component-desktop-launcher-press-duration: var(--osp-motion-semantic-feedback-duration);
+  --osp-motion-component-desktop-launcher-easing: var(--osp-motion-semantic-standard-easing);
+  --osp-motion-component-dock-duration: var(--osp-motion-semantic-feedback-duration);
+  --osp-motion-component-dock-easing: var(--osp-motion-semantic-standard-easing);
+  --osp-motion-component-settings-controls-duration: var(--osp-motion-semantic-feedback-duration);
+  --osp-motion-component-settings-controls-easing: var(--osp-motion-semantic-standard-easing);
+  --osp-motion-component-scrollbar-duration: var(--osp-motion-semantic-standard-duration);
+  --osp-motion-component-scrollbar-easing: var(--osp-motion-semantic-standard-easing);
+  --osp-motion-component-terminal-cursor-duration: var(--osp-motion-semantic-caret-duration);
+  --osp-motion-component-terminal-cursor-easing: var(--osp-motion-semantic-caret-easing);
 
   /* Computed contrast borders (fallback then modern color-mix syntax). */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -798,14 +854,14 @@
 }
 .portfolio-scrollbar-window *::-webkit-scrollbar-track {
   background: transparent;
-  border-radius: 9999px;
+  border-radius: var(--osp-radius-semantic-pill);
 }
 .portfolio-scrollbar-window *::-webkit-scrollbar-thumb {
   background-color: var(--portfolio-scrollbar-thumb);
   border-right: 2px solid transparent;
-  border-radius: 9999px;
+  border-radius: var(--osp-radius-semantic-pill);
   background-clip: padding-box;
-  transition: background-color 180ms ease;
+  transition: background-color var(--osp-motion-component-scrollbar-duration) var(--osp-motion-component-scrollbar-easing);
 }
 .portfolio-scrollbar-window *::-webkit-scrollbar-thumb:hover {
   background-color: var(--portfolio-scrollbar-thumb-hover);

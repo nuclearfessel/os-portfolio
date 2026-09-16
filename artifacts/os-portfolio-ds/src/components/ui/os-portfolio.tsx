@@ -22,7 +22,7 @@ export const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
       ref={ref}
       type={type}
       className={classes(
-        'inline-flex min-h-9 items-center justify-center gap-2 rounded-md border px-3 text-xs font-medium transition-colors duration-100 focus-visible:outline-2 focus-visible:outline-offset-2',
+        'osp-action-button inline-flex min-h-9 items-center justify-center border text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2',
         `osp-action-button--${variant}`,
         className,
       )}
@@ -82,7 +82,7 @@ export function Surface({ className, elevation = 'raised', ...props }: SurfacePr
   return (
     <div
       className={classes(
-        'rounded-lg border border-border bg-card text-card-foreground',
+        'rounded-[var(--osp-radius-component-generic-surface-radius)] border border-border bg-card text-card-foreground',
         elevation === 'raised' && 'shadow-sm',
         elevation === 'floating' && 'shadow-xl',
         className,
@@ -114,7 +114,7 @@ export function ProjectCard({
   return (
     <article
       className={classes(
-        'grid items-center gap-3 rounded-md border border-border bg-card p-4 text-card-foreground',
+        'grid items-center gap-[var(--osp-spacing-component-project-card-gap)] rounded-[var(--osp-radius-component-project-card-radius)] border border-border bg-card p-[var(--osp-spacing-component-project-card-padding)] text-card-foreground',
         className,
       )}
       {...props}
@@ -129,7 +129,7 @@ export function ProjectCard({
 
 export const WindowSurface = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
   ({ className, ...props }, ref) => (
-    <section ref={ref} className={classes('rounded-lg border border-border bg-card text-card-foreground shadow-xl', className)} {...props} />
+    <section ref={ref} className={classes('rounded-[var(--osp-radius-component-window-surface-radius)] border border-border bg-card text-card-foreground shadow-xl', className)} {...props} />
   ),
 );
 WindowSurface.displayName = 'WindowSurface';
@@ -147,7 +147,7 @@ export const DockItem = forwardRef<HTMLButtonElement, DockItemProps>(
       ref={ref}
       type={type}
       className={classes(
-        'relative grid place-items-center rounded-lg border transition-colors duration-100',
+        'relative grid place-items-center rounded-[var(--osp-radius-component-dock-radius)] border transition-colors duration-[var(--osp-motion-component-dock-duration)] [transition-timing-function:var(--osp-motion-component-dock-easing)]',
         active && 'active',
         focused && 'focused',
         className,

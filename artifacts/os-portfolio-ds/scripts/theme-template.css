@@ -407,14 +407,14 @@ __DS_COMPONENT_DARK_CSS__
 }
 .portfolio-scrollbar-window *::-webkit-scrollbar-track {
   background: transparent;
-  border-radius: 9999px;
+  border-radius: var(--osp-radius-semantic-pill);
 }
 .portfolio-scrollbar-window *::-webkit-scrollbar-thumb {
   background-color: var(--portfolio-scrollbar-thumb);
   border-right: 2px solid transparent;
-  border-radius: 9999px;
+  border-radius: var(--osp-radius-semantic-pill);
   background-clip: padding-box;
-  transition: background-color 180ms ease;
+  transition: background-color var(--osp-motion-component-scrollbar-duration) var(--osp-motion-component-scrollbar-easing);
 }
 .portfolio-scrollbar-window *::-webkit-scrollbar-thumb:hover {
   background-color: var(--portfolio-scrollbar-thumb-hover);

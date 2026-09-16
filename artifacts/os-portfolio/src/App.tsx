@@ -2165,7 +2165,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                   markers={[
                     { label: 'A', description: 'Tape strip — drag to move the note' },
                     { label: 'B', description: 'Plus / trash icons — add or delete a note' },
-                    { label: 'C', description: 'Rotation handles — drag to spin the note (desktop only)' },
+                    { label: 'C', description: 'Rotation handles - drag handles at the corners to rotate the note (desktop only)' },
                     { label: 'D', description: 'Resize corner — drag to change the note size' },
                   ]}
                 >
@@ -2189,11 +2189,15 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                         </div>
                         {/* Rotation handles shown at corners */}
                         <div className="gvc-sticky-rot-handles" aria-hidden="true">
-                          <span className="gvc-rot-handle gvc-rot-tl" />
-                          <span className="gvc-rot-handle gvc-rot-tr">
-                            <span className="gvc-dot-badge gvc-dot-inline">C</span>
+                          <span className="gvc-rot-handle gvc-rot-tl">
+                            <span className="gvc-dot-badge">C</span>
                           </span>
-                          <span className="gvc-rot-handle gvc-rot-bl" />
+                          <span className="gvc-rot-handle gvc-rot-tr">
+                            <span className="gvc-dot-badge">C</span>
+                          </span>
+                          <span className="gvc-rot-handle gvc-rot-bl">
+                            <span className="gvc-dot-badge">C</span>
+                          </span>
                         </div>
                         <div className="gvc-sticky-footer">
                           <span className="gvc-sticky-footertext">10:42</span>

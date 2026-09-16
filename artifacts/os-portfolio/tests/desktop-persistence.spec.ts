@@ -1191,10 +1191,25 @@ test('Guide Sticky anatomy uses clear add and trash controls with an adjacent ma
     };
   });
   expect(Math.abs(geometry.markerCenter - geometry.controlsCenter)).toBeLessThanOrEqual(2);
-  expect(Math.abs(geometry.markerVerticalCenter - geometry.controlsVerticalCenter)).toBeLessThanOrEqual(4);
+  expect(geometry.markerVerticalCenter - geometry.controlsVerticalCenter).toBeGreaterThanOrEqual(4);
+  expect(geometry.markerVerticalCenter - geometry.controlsVerticalCenter).toBeLessThanOrEqual(8);
   expect(Math.abs(geometry.bodyWidth - geometry.bodyHeight)).toBeLessThanOrEqual(0.5);
   expect(geometry.tapeOverlap).toBeGreaterThanOrEqual(7);
   expect(geometry.tapeOverlap).toBeLessThanOrEqual(11);
+  await expect(diagram.locator('.gvc-rot-handle')).toHaveCount(3);
+  await expect(diagram.locator('.gvc-rot-handle .gvc-dot-badge')).toHaveCount(3);
+  await expect(diagram.locator('.gvc-rot-handle .gvc-dot-badge')).toHaveText(['C', 'C', 'C']);
+  const rotationHandleStyles = await diagram.locator('.gvc-rot-handle').evaluateAll((handles) =>
+    handles.map((handle) => {
+      const styles = getComputedStyle(handle);
+      return { border: styles.border, background: styles.backgroundColor };
+    }),
+  );
+  expect(rotationHandleStyles).toEqual([
+    { border: '0px none rgb(0, 0, 0)', background: 'rgba(0, 0, 0, 0)' },
+    { border: '0px none rgb(0, 0, 0)', background: 'rgba(0, 0, 0, 0)' },
+    { border: '0px none rgb(0, 0, 0)', background: 'rgba(0, 0, 0, 0)' },
+  ]);
 });
 
 test('Sticky illustration fills keep their round markers visible in both themes', async ({ page }) => {

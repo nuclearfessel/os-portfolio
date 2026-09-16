@@ -1742,6 +1742,40 @@ test('guide diagram labels use normal weight and the system bar stays on one lin
   }
 });
 
+test('guide system bar keeps one fixed width across the navigation collapse', async ({ page }) => {
+  await page.getByTestId('button-dock-guide').click();
+  const guideWindow = page.getByTestId('window-guide');
+  await page.getByTestId('guide-nav-systembar').click();
+
+  for (const width of [800, 563, 562, 400]) {
+    await guideWindow.evaluate((element, nextWidth) => {
+      element.style.width = `${nextWidth}px`;
+    }, width);
+
+    const layout = await guideWindow.evaluate((root) => {
+      const settingsLayout = root.querySelector<HTMLElement>('.settings-layout')!;
+      const systemBar = root.querySelector<HTMLElement>('.gvc-sysbar')!;
+      const systemBarBox = systemBar.getBoundingClientRect();
+      const childrenFit = [...systemBar.children].every((child) => {
+        const childBox = child.getBoundingClientRect();
+        return childBox.left >= systemBarBox.left - 0.5 && childBox.right <= systemBarBox.right + 0.5;
+      });
+      return {
+        columns: getComputedStyle(settingsLayout).gridTemplateColumns.split(' ').length,
+        systemBarWidth: systemBarBox.width,
+        clientWidth: systemBar.clientWidth,
+        scrollWidth: systemBar.scrollWidth,
+        childrenFit,
+      };
+    });
+
+    expect(layout.systemBarWidth).toBeCloseTo(280, 0);
+    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth);
+    expect(layout.childrenFit).toBe(true);
+    expect(layout.columns).toBe(width >= 563 ? 2 : 1);
+  }
+});
+
 test('guide Dock diagram keeps state markers clear of app tiles', async ({ page }) => {
   await page.getByTestId('button-dock-guide').click();
   const guideWindow = page.getByTestId('window-guide');

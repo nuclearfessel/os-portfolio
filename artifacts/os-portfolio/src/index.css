@@ -138,7 +138,7 @@ button { cursor: pointer; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   max-width: 100%;
   writing-mode: horizontal-tb;
   white-space: nowrap;
@@ -2129,15 +2129,18 @@ button { cursor: pointer; }
   align-items: center;
   justify-content: space-between;
   flex-wrap: nowrap;
-  gap: 8px;
+  gap: 3px;
+  width: 280px;
+  max-width: 100%;
   height: 32px;
   min-width: 0;
-  padding: 0 12px;
+  margin-inline: auto;
+  padding: 0 4px;
   overflow: hidden;
   border-radius: 5px;
   background: var(--gv-surface-base);
   border: 1px solid var(--gv-primary-ring);
-  font: 10px var(--app-font-mono);
+  font: 7px var(--app-font-mono);
   color: var(--gv-fg-muted);
   white-space: nowrap;
 }
@@ -2146,82 +2149,55 @@ button { cursor: pointer; }
 .gvc-sysbar-right {
   display: flex;
   align-items: center;
+  flex: 0 0 auto;
   flex-wrap: nowrap;
   min-width: 0;
-  gap: 8px;
+  gap: 1px;
   white-space: nowrap;
 }
 
 .gvc-sysbar-logo {
   display: block;
-  width: 10px; height: 10px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--gv-primary);
-  flex: 0 0 10px;
+  flex: 0 0 8px;
 }
 
 .gvc-sysbar-mark    { color: var(--gv-primary); font-weight: 500; }
 .gvc-sysbar-sep     { color: var(--gv-fg-dim); }
 .gvc-sysbar-location { color: var(--gv-fg-muted); }
 
-.gvc-sysbar-status { display: flex; align-items: center; gap: 4px; }
+.gvc-sysbar-status { display: flex; align-items: center; gap: 2px; }
 
 .gvc-sysbar-dot {
   display: block;
-  width: 5px; height: 5px;
+  width: 4px; height: 4px;
   border-radius: 50%;
   background: var(--gv-primary);
-  flex: 0 0 5px;
+  flex: 0 0 4px;
 }
 
 .gvc-sysbar-statustext {
   color: var(--gv-fg-muted);
-  font: 9px var(--app-font-mono);
+  font: 7px var(--app-font-mono);
   text-transform: uppercase;
   letter-spacing: .06em;
 }
 
-.gvc-sysbar-icons { display: flex; align-items: center; gap: 4px; }
+.gvc-sysbar-icons { display: flex; align-items: center; gap: 2px; }
 
 .gvc-sysbar-icon {
   display: block;
-  width: 12px; height: 12px;
+  width: 8px; height: 8px;
   border-radius: 2px;
   background: var(--gv-icon-bg);
-  flex: 0 0 12px;
+  flex: 0 0 8px;
 }
 
 .gvc-sysbar-clock {
   color: var(--gv-fg-muted);
-  font: 10px var(--app-font-mono);
-}
-
-@container settings-window (max-width: 640px) {
-  .gvc-sysbar {
-    gap: 4px;
-    padding-inline: 8px;
-    font-size: 9px;
-  }
-
-  .gvc-sysbar-left,
-  .gvc-sysbar-right {
-    flex: 0 0 auto;
-    gap: 4px;
-  }
-
-  .gvc-sysbar-statustext {
-    font-size: 8px;
-  }
-
-  .gvc-sysbar-icon {
-    width: 10px;
-    height: 10px;
-    flex-basis: 10px;
-  }
-
-  .gvc-sysbar-clock {
-    font-size: 9px;
-  }
+  font: 7px var(--app-font-mono);
 }
 
 /* ---- System bar side-rail (vertical) illustration ---- */

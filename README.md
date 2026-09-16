@@ -86,9 +86,9 @@ pnpm run build
 pnpm --filter @workspace/os-portfolio run test:e2e
 ```
 
-### Automatic GitHub completion checklist
+### Approved GitHub completion checklist
 
-Completed, validated work is automatically approved for GitHub; no separate approval response is required. Before the branch is committed and merged, review whether its changes require corresponding updates to this README, Claude instructions or skills, package metadata or exports, and package documentation. Update only the applicable surfaces, validate, refresh this README’s portfolio and design-system screenshots from the running previews, then commit, push the branch, merge it into `main`, push `main`, and confirm the main-only release.
+Do not start GitHub completion until the user explicitly says “Approved.” Before the branch is committed and merged, review whether its changes require corresponding updates to this README, Claude instructions or skills, package metadata or exports, and package documentation. Update only the applicable surfaces, validate, refresh this README’s portfolio and design-system screenshots from the running previews, then commit, push the branch, merge it into `main`, push `main`, confirm the main-only release, and delete every local and GitHub branch except `main`.
 
 ## Automated website releases
 

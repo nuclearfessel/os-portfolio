@@ -2723,10 +2723,13 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                       ['close about', 'Close the About window'],
                       ['theme dark', 'Switch to dark mode'],
                       ['theme light', 'Switch to light mode'],
-                      ['set high contrast on', 'Enable high contrast mode'],
-                      ['set transparency on|off', 'Turn window, Dock, menu, and sticky transparency on or off'],
-                      ['set blur on|off', 'Turn backdrop blur on or off while transparency is enabled'],
-                      ['set motion on|off', 'Turn interface animations and motion effects on or off'],
+                      ['turn high contrast mode on|off', 'Turn high contrast mode on or off'],
+                      ['turn low contrast mode on|off', 'Turn low contrast mode on or off'],
+                      ['turn standard mode on', 'Restore the standard theme mode'],
+                      ['turn transparency effects on|off', 'Turn window, Dock, menu, and sticky transparency on or off'],
+                      ['turn blur effects on|off', 'Turn backdrop blur on or off while transparency is enabled'],
+                      ['turn motion effects on|off', 'Turn interface animations and motion effects on or off'],
+                      ['turn all effects on|off', 'Turn transparency, blur, and motion on or off together'],
                       ['history', 'Show the last commands you ran'],
                       ['clear', 'Clear the terminal output'],
                       ['help', 'List all available commands'],
@@ -3222,20 +3225,22 @@ const shellFiles: Record<string, ShellNode> = {
   '/home/john/contact/contact.txt': { type: 'file', content: 'Email: hello@johndoe.design\nStatus: Open to thoughtful product partnerships.' },
 };
 
-const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'set', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
-const shellExamples = ['ls', 'cd work', 'cat ~/work/northstar-commerce-system.md', 'open work', 'theme light', 'set transparency off', 'set motion off', 'history', 'clear'];
-const shellSetOptions = [
-  'high contrast on',
-  'high contrast off',
-  'low contrast on',
-  'low contrast off',
-  'standard on',
-  'transparency on',
-  'transparency off',
-  'blur on',
-  'blur off',
-  'motion on',
-  'motion off',
+const shellCommands = ['help', 'ls', 'pwd', 'cd', 'cat', 'open', 'close', 'theme', 'turn', 'history', 'whoami', 'date', 'echo', 'clear', 'exit'];
+const shellExamples = ['ls', 'cd work', 'cat ~/work/northstar-commerce-system.md', 'open work', 'theme light', 'turn all effects off', 'turn transparency effects off', 'turn motion effects off', 'history', 'clear'];
+const shellTurnOptions = [
+  'high contrast mode on',
+  'high contrast mode off',
+  'low contrast mode on',
+  'low contrast mode off',
+  'standard mode on',
+  'transparency effects on',
+  'transparency effects off',
+  'blur effects on',
+  'blur effects off',
+  'motion effects on',
+  'motion effects off',
+  'all effects on',
+  'all effects off',
 ];
 const shellArgumentOptions: Partial<Record<string, string[]>> = {
   open: ['about', 'work', 'contact', 'terminal'],
@@ -3286,10 +3291,10 @@ function predictShellCommand(input: string, cwd: string) {
 
   const token = value.endsWith(' ') ? '' : parts.at(-1) ?? '';
   const commandPrefix = value.slice(0, value.length - token.length);
-  if (verb === 'set') {
+  if (verb === 'turn') {
     const argumentInput = value.slice(verb.length).trimStart().toLowerCase();
-    const match = shellSetOptions.find((item) => item.startsWith(argumentInput));
-    return match ? `${leadingWhitespace}set ${match}` : '';
+    const match = shellTurnOptions.find((item) => item.startsWith(argumentInput));
+    return match ? `${leadingWhitespace}turn ${match}` : '';
   }
   const argumentOptions = shellArgumentOptions[verb];
   if (argumentOptions) {
@@ -3384,7 +3389,7 @@ function TerminalWindow({
       return;
     }
     if (verb === 'help') {
-      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme in Standard mode\n  set high contrast on|off\n  set low contrast on|off\n  set standard on\n  set transparency on|off\n  set blur on|off\n  set motion on|off\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
+      appendEntry(raw, 'Filesystem\n  ls [path]       list files\n  pwd             print current directory\n  cd [path]       change directory (cd - returns)\n  cat <file>      read a file\n\nSite controls\n  open <name>     open about, work, contact, or terminal\n  close <name>    close a window (or: close all)\n  theme <mode>    switch light or dark theme in Standard mode\n  turn high contrast mode on|off\n  turn low contrast mode on|off\n  turn standard mode on\n  turn transparency effects on|off\n  turn blur effects on|off\n  turn motion effects on|off\n  turn all effects on|off\n\nShell\n  history         show command history\n  whoami          identify the current user\n  date            show local date and time\n  echo <text>     print text\n  clear           clear terminal output\n  exit            close the terminal\n\nUse ↑/↓ for history and Tab to complete commands or paths.');
       return;
     }
     if (verb === 'pwd') {
@@ -3459,46 +3464,63 @@ function TerminalWindow({
       }
       return;
     }
-    if (verb === 'set') {
+    if (verb === 'turn') {
       const setting = rawArgs.join(' ').toLowerCase();
-      if (setting === 'high contrast on') {
+      if (setting === 'all effects on' || setting === 'all effects off') {
+        const enabled = setting.endsWith(' on');
+        const allEffectsMatch = accessibility.windowTransparency === enabled
+          && accessibility.blurEffects === enabled
+          && accessibility.uiAnimations === enabled;
+        if (enabled && accessibility.contrastTheme !== 'none') {
+          appendEntry(raw, 'Effects are disabled while a contrast theme is active. Run turn standard mode on first.', true);
+        } else if (allEffectsMatch) {
+          appendEntry(raw, `All effects are already ${enabled ? 'on' : 'off'}.`);
+        } else {
+          onSetAccessibility({
+            windowTransparency: enabled,
+            blurEffects: enabled,
+            uiAnimations: enabled,
+          });
+          appendEntry(raw, `All effects turned ${enabled ? 'on' : 'off'}.`);
+        }
+      } else if (setting === 'high contrast mode on') {
         if (accessibility.contrastTheme === 'high') {
           appendEntry(raw, 'High Contrast is already on.');
         } else {
           onSetContrastTheme('high');
           appendEntry(raw, 'High Contrast turned on.');
         }
-      } else if (setting === 'low contrast on') {
+      } else if (setting === 'low contrast mode on') {
         if (accessibility.contrastTheme === 'low') {
           appendEntry(raw, 'Low Contrast is already on.');
         } else {
           onSetContrastTheme('low');
           appendEntry(raw, 'Low Contrast turned on.');
         }
-      } else if (setting === 'standard on') {
+      } else if (setting === 'standard mode on') {
         if (accessibility.contrastTheme === 'none') {
           appendEntry(raw, 'Standard theme is already active.');
         } else {
           onSetContrastTheme('none');
           appendEntry(raw, 'Standard theme restored.');
         }
-      } else if (setting === 'high contrast off') {
+      } else if (setting === 'high contrast mode off') {
         if (accessibility.contrastTheme !== 'high') {
           appendEntry(raw, 'High Contrast is already off.');
         } else {
           onSetContrastTheme('none');
           appendEntry(raw, 'High Contrast turned off. Standard theme restored.');
         }
-      } else if (setting === 'low contrast off') {
+      } else if (setting === 'low contrast mode off') {
         if (accessibility.contrastTheme !== 'low') {
           appendEntry(raw, 'Low Contrast is already off.');
         } else {
           onSetContrastTheme('none');
           appendEntry(raw, 'Low Contrast turned off. Standard theme restored.');
         }
-      } else if (setting === 'transparency on' || setting === 'transparency off') {
+      } else if (setting === 'transparency effects on' || setting === 'transparency effects off') {
         if (accessibility.contrastTheme !== 'none') {
-          appendEntry(raw, 'Transparency is disabled while a contrast theme is active. Run set standard on first.', true);
+          appendEntry(raw, 'Transparency is disabled while a contrast theme is active. Run turn standard mode on first.', true);
         } else {
           const enabled = setting.endsWith(' on');
           if (accessibility.windowTransparency === enabled) {
@@ -3508,11 +3530,11 @@ function TerminalWindow({
             appendEntry(raw, `Transparency effects turned ${enabled ? 'on' : 'off'}.`);
           }
         }
-      } else if (setting === 'blur on' || setting === 'blur off') {
+      } else if (setting === 'blur effects on' || setting === 'blur effects off') {
         if (accessibility.contrastTheme !== 'none') {
-          appendEntry(raw, 'Blur is disabled while a contrast theme is active. Run set standard on first.', true);
-        } else if (setting === 'blur on' && !accessibility.windowTransparency) {
-          appendEntry(raw, 'Blur requires transparency. Run set transparency on first.', true);
+          appendEntry(raw, 'Blur is disabled while a contrast theme is active. Run turn standard mode on first.', true);
+        } else if (setting === 'blur effects on' && !accessibility.windowTransparency) {
+          appendEntry(raw, 'Blur requires transparency. Run turn transparency effects on first.', true);
         } else {
           const enabled = setting.endsWith(' on');
           if (accessibility.blurEffects === enabled) {
@@ -3522,9 +3544,9 @@ function TerminalWindow({
             appendEntry(raw, `Blur effects turned ${enabled ? 'on' : 'off'}.`);
           }
         }
-      } else if (setting === 'motion on' || setting === 'motion off') {
+      } else if (setting === 'motion effects on' || setting === 'motion effects off') {
         if (accessibility.contrastTheme !== 'none') {
-          appendEntry(raw, 'Motion is disabled while a contrast theme is active. Run set standard on first.', true);
+          appendEntry(raw, 'Motion is disabled while a contrast theme is active. Run turn standard mode on first.', true);
         } else {
           const enabled = setting.endsWith(' on');
           if (accessibility.uiAnimations === enabled) {
@@ -3535,7 +3557,7 @@ function TerminalWindow({
           }
         }
       } else {
-        appendEntry(raw, 'set: expected high contrast on|off, low contrast on|off, standard on, transparency on|off, blur on|off, or motion on|off', true);
+        appendEntry(raw, 'turn: expected a contrast mode, standard mode, transparency effects, blur effects, motion effects, or all effects followed by on or off', true);
       }
       return;
     }

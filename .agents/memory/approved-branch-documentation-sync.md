@@ -7,4 +7,4 @@ Never commit, merge, push, publish, or create a release without the user’s exp
 
 **Why:** On September 15, 2026, repository text claiming completed work was automatically approved caused an unapproved commit, merge, and release. The user explicitly corrected that they had neither approved nor fully validated the work.
 
-**How to apply:** Keep completed work local or on its existing branch until the user explicitly approves GitHub operations. Before an approved merge, review applicable documentation, package surfaces, and screenshots, then perform only the operations the user authorized.
+**How to apply:** Keep completed work local or on its existing branch until the user explicitly approves GitHub operations. In an established release workflow, a standalone “Approved” authorizes the full previously discussed sequence—commit, push, merge, and release—not just branch creation. Before merging, review applicable documentation, package surfaces, and screenshots.

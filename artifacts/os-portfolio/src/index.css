@@ -594,13 +594,13 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav-item-active {
-  color: #f7fbf8 !important;
-  background: #2c8f81 !important;
+  color: #0b665d !important;
+  background: transparent !important;
   font-weight: 600;
 }
 
 .theme-light .settings-nav-item-active .settings-nav-icon {
-  color: #f7fbf8;
+  color: #0b665d;
 }
 
 /* Settings content area */
@@ -4607,8 +4607,8 @@ button { cursor: pointer; }
 }
 
 .theme-light .settings-nav .settings-nav-item-active {
-  color: #f7fbf8 !important;
-  background: #2c8f81 !important;
+  color: #0b665d !important;
+  background: transparent !important;
 }
 
 .theme-light .settings-nav .settings-nav-item:hover:not(.settings-nav-item-active) {

@@ -1559,6 +1559,7 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   const settingsHover = page.getByTestId('settings-nav-accessibility');
   await expect(settingsActive).toBeVisible();
   await settingsHover.hover();
+  await expect(settingsHover).toHaveCSS('background-color', 'rgb(208, 230, 225)');
   const settingsColors = await page.evaluate(() => {
     const active = document.querySelector('[data-testid="settings-nav-personalization"]');
     const hover = document.querySelector('[data-testid="settings-nav-accessibility"]');
@@ -1577,6 +1578,7 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   const guideHover = page.getByTestId('guide-nav-windows');
   await expect(guideActive).toBeVisible();
   await guideHover.hover();
+  await expect(guideHover).toHaveCSS('background-color', 'rgb(208, 230, 225)');
   const guideColors = await page.evaluate(() => {
     const active = document.querySelector('[data-testid="guide-nav-overview"]');
     const hover = document.querySelector('[data-testid="guide-nav-windows"]');
@@ -1593,7 +1595,9 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   expect(guideColors.activeBackground).toBe(settingsColors.activeBackground);
   expect(guideColors.hoverColor).toBe(settingsColors.hoverColor);
   expect(guideColors.hoverBackground).toBe(settingsColors.hoverBackground);
-  expect(guideColors.activeBackground).toBe('rgb(44, 143, 129)');
+  expect(guideColors.activeColor).toBe('rgb(11, 102, 93)');
+  expect(guideColors.activeBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(guideColors.hoverBackground).toBe('rgb(208, 230, 225)');
   expect(guideColors.activeShadow).toBe('none');
 });
 

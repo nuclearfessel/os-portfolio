@@ -42,6 +42,13 @@ import {
   Surface,
   WindowSurface,
 } from '@workspace/os-portfolio-ds/components/ui/os-portfolio';
+import {
+  AnnotatedFrame,
+  AbstractWindow,
+  PositionGrid,
+  PositionCell,
+} from '@workspace/os-portfolio-ds/components/ui/gvc-illustration';
+import '@workspace/os-portfolio-ds/components/ui/gvc-illustration.css';
 
 const queryClient = new QueryClient();
 
@@ -1860,8 +1867,16 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 </div>
 
                 {/* Visual: desktop overview diagram */}
-                <div className="gvc-annotated guide-visual-desktop-overview" aria-hidden="true">
-                  <div className="gvc-annotated-crop gvc-overview-crop">
+                <AnnotatedFrame
+                  className="guide-visual-desktop-overview"
+                  cropClassName="gvc-overview-crop"
+                  markers={[
+                    { label: 'A', description: 'System bar — time, status, and location' },
+                    { label: 'B', description: 'Windows — each app opens here' },
+                    { label: 'C', description: 'Stickies — quick notes on the desktop' },
+                    { label: 'D', description: 'Dock — open and switch apps' },
+                  ]}
+                >
                     {/* System bar */}
                     <div className="gvc-overview-sysbar">
                       <span className="gvc-sysbar-logo" />
@@ -1873,35 +1888,19 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <div className="gvc-overview-desktop">
                       {/* Window 1 */}
                       <div className="gvc-overview-window" style={{ left: '6%', top: '8%', width: '42%', height: '52%' }}>
-                        <div className="gvc-win-titlebar">
-                          <span className="gvc-win-title-text">~/about</span>
-                          <div className="gvc-win-controls">
-                            <span className="gvc-win-btn gvc-win-min" />
-                            <span className="gvc-win-btn gvc-win-max" />
-                            <span className="gvc-win-btn gvc-win-close" />
-                          </div>
-                        </div>
-                        <div className="gvc-window-body" style={{ gap: 4, padding: 8 }}>
+                        <AbstractWindow title="~/about">
                           <div className="gvc-content-line" style={{ width: '60%', height: 4 }} />
                           <div className="gvc-content-line" style={{ width: '90%', height: 4 }} />
                           <div className="gvc-content-line" style={{ width: '75%', height: 4 }} />
-                        </div>
+                        </AbstractWindow>
                         <span className="gvc-dot-badge">B</span>
                       </div>
                       {/* Window 2 */}
                       <div className="gvc-overview-window" style={{ left: '44%', top: '18%', width: '50%', height: '46%' }}>
-                        <div className="gvc-win-titlebar">
-                          <span className="gvc-win-title-text">~/work</span>
-                          <div className="gvc-win-controls">
-                            <span className="gvc-win-btn gvc-win-min" />
-                            <span className="gvc-win-btn gvc-win-max" />
-                            <span className="gvc-win-btn gvc-win-close" />
-                          </div>
-                        </div>
-                        <div className="gvc-window-body" style={{ gap: 4, padding: 8 }}>
+                        <AbstractWindow title="~/work">
                           <div className="gvc-content-line" style={{ width: '50%', height: 4 }} />
                           <div className="gvc-content-line" style={{ width: '80%', height: 4 }} />
-                        </div>
+                        </AbstractWindow>
                       </div>
                       {/* Sticky note */}
                       <div className="gvc-overview-sticky" style={{ left: '6%', top: '66%' }}>
@@ -1922,14 +1921,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                       ))}
                       <span className="gvc-dot-badge">D</span>
                     </div>
-                  </div>
-                  <div className="gvc-legend">
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>System bar — time, status, and location</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Windows — each app opens here</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">C</span>Stickies — quick notes on the desktop</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">D</span>Dock — open and switch apps</div>
-                  </div>
-                </div>
+                </AnnotatedFrame>
 
                 <div className="guide-section-label">Get started</div>
                 <div className="guide-step-list">
@@ -1983,37 +1975,25 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 </div>
 
                 {/* Visual: window anatomy — legend below crop */}
-                <div className="gvc-annotated guide-visual-window-demo" aria-hidden="true">
-                  <div className="gvc-annotated-crop">
-                    <div className="gvc-window">
-                      <div className="gvc-win-titlebar">
-                        <span className="gvc-win-title-text">~/about</span>
-                        <div className="gvc-win-controls">
-                          <span className="gvc-win-btn gvc-win-min" />
-                          <span className="gvc-win-btn gvc-win-max" />
-                          <span className="gvc-win-btn gvc-win-close" />
-                        </div>
-                        <span className="gvc-dot-badge" style={{ position: 'absolute', left: '46%', top: '50%', transform: 'translateY(-50%)' }}>A</span>
-                        <span className="gvc-dot-badge" style={{ position: 'absolute', right: 2, top: '50%', transform: 'translateY(-50%)' }}>B</span>
-                      </div>
-                      <div className="gvc-window-body">
-                        <div className="gvc-content-line" style={{ width: '55%', height: 3, marginBottom: 6 }} />
-                        <div className="gvc-content-line" style={{ width: '85%' }} />
-                        <div className="gvc-content-line" style={{ width: '70%' }} />
-                        <div className="gvc-content-line" style={{ width: '80%' }} />
-                        <div className="gvc-content-line" style={{ width: '40%' }} />
-                      </div>
-                      <div className="gvc-resize-handle gvc-resize-se">
-                        <span className="gvc-dot-badge" style={{ position: 'absolute', bottom: 2, right: 2 }}>C</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="gvc-legend">
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Title bar — drag here to move the window</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Minimize / Maximize / Close — left to right</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">C</span>Corner handle — drag to resize</div>
-                  </div>
-                </div>
+                <AnnotatedFrame
+                  className="guide-visual-window-demo"
+                  markers={[
+                    { label: 'A', description: 'Title bar — drag here to move the window' },
+                    { label: 'B', description: 'Minimize / Maximize / Close — left to right' },
+                    { label: 'C', description: 'Corner handle — drag to resize' },
+                  ]}
+                >
+                    <AbstractWindow title="~/about" showResizeHandle style={{ minWidth: 240, width: '70%', maxWidth: 360 }}>
+                      <span className="gvc-dot-badge" style={{ position: 'absolute', left: '46%', top: 8, transform: 'translateX(-50%)' }}>A</span>
+                      <span className="gvc-dot-badge" style={{ position: 'absolute', right: 2, top: 8 }}>B</span>
+                      <div className="gvc-content-line" style={{ width: '55%', height: 3, marginBottom: 6 }} />
+                      <div className="gvc-content-line" style={{ width: '85%' }} />
+                      <div className="gvc-content-line" style={{ width: '70%' }} />
+                      <div className="gvc-content-line" style={{ width: '80%' }} />
+                      <div className="gvc-content-line" style={{ width: '40%' }} />
+                      <span className="gvc-dot-badge" style={{ position: 'absolute', bottom: 2, right: 2 }}>C</span>
+                    </AbstractWindow>
+                </AnnotatedFrame>
 
                 <div className="guide-section-label">Window controls</div>
                 <div className="guide-step-list">
@@ -2067,8 +2047,16 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 </div>
 
                 {/* Visual: sticky note anatomy */}
-                <div className="gvc-annotated guide-visual-sticky-demo" aria-hidden="true">
-                  <div className="gvc-annotated-crop gvc-sticky-crop">
+                <AnnotatedFrame
+                  className="guide-visual-sticky-demo"
+                  cropClassName="gvc-sticky-crop"
+                  markers={[
+                    { label: 'A', description: 'Tape strip — drag to move the note' },
+                    { label: 'B', description: 'Plus / trash icons — add or delete a note' },
+                    { label: 'C', description: 'Rotation handles — drag to spin the note (desktop only)' },
+                    { label: 'D', description: 'Resize corner — drag to change the note size' },
+                  ]}
+                >
                     <div className="gvc-sticky-wrap">
                       <div className="gvc-sticky-tape">
                         <span className="gvc-dot-badge gvc-dot-inline">A</span>
@@ -2104,14 +2092,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="gvc-legend">
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Tape strip — drag to move the note</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Plus / trash icons — add or delete a note</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">C</span>Rotation handles — drag to spin the note (desktop only)</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">D</span>Resize corner — drag to change the note size</div>
-                  </div>
-                </div>
+                </AnnotatedFrame>
 
                 <div className="guide-section-label">Using stickies</div>
                 <div className="guide-step-list">
@@ -2232,8 +2213,14 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 </div>
 
                 {/* Visual: dock anatomy */}
-                <div className="gvc-annotated guide-visual-dock-demo" aria-hidden="true">
-                  <div className="gvc-annotated-crop gvc-dock-crop">
+                <AnnotatedFrame
+                  className="guide-visual-dock-demo"
+                  cropClassName="gvc-dock-crop"
+                  markers={[
+                    { label: 'A', description: 'Active app — highlighted with a ring; its window is in front' },
+                    { label: 'B', description: 'Open mark — app is running but not in front' },
+                  ]}
+                >
                     <div className="gvc-dock-bar">
                       {[
                         { cls: 'gvc-dock-about',    active: false },
@@ -2251,26 +2238,18 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                         </div>
                       ))}
                     </div>
-                  </div>
-                  <div className="gvc-legend">
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Active app — highlighted with a ring; its window is in front</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Open mark — app is running but not in front</div>
-                  </div>
-                </div>
+                </AnnotatedFrame>
 
                 <div className="guide-section-label">Moving the Dock</div>
 
                 {/* Visual: dock positions — self-contained grid, no overlapping labels */}
-                <div className="gvc-positions-grid guide-visual-dock-positions" aria-hidden="true">
+                <PositionGrid className="guide-visual-dock-positions">
                   {(['bottom', 'top', 'left', 'right'] as const).map((pos) => (
-                    <div key={pos} className="gvc-pos-cell">
-                      <div className="gvc-screen-mini">
-                        <div className={`gvc-mini-dock gvc-mini-dock-${pos}`} />
-                      </div>
-                      <span className="gvc-pos-label">{pos}</span>
-                    </div>
+                    <PositionCell key={pos} position={pos}>
+                      <div className={`gvc-mini-dock gvc-mini-dock-${pos}`} />
+                    </PositionCell>
                   ))}
-                </div>
+                </PositionGrid>
 
                 <div className="guide-step-list">
                   <div className="guide-step">
@@ -2362,8 +2341,14 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 </div>
 
                 {/* Visual: system bar anatomy */}
-                <div className="gvc-annotated guide-visual-sysbar-demo" aria-hidden="true">
-                  <div className="gvc-annotated-crop gvc-sysbar-crop">
+                <AnnotatedFrame
+                  className="guide-visual-sysbar-demo"
+                  cropClassName="gvc-sysbar-crop"
+                  markers={[
+                    { label: 'A', description: 'Left side — logo, site name, and current location' },
+                    { label: 'B', description: 'Right side — online status, quick icons, and clock' },
+                  ]}
+                >
                     <div className="gvc-sysbar">
                       <div className="gvc-sysbar-left">
                         <span className="gvc-sysbar-logo" />
@@ -2387,26 +2372,18 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                         <span className="gvc-dot-badge gvc-dot-inline" style={{ marginLeft: 6 }}>B</span>
                       </div>
                     </div>
-                  </div>
-                  <div className="gvc-legend">
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Left side — logo, site name, and current location</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Right side — online status, quick icons, and clock</div>
-                  </div>
-                </div>
+                </AnnotatedFrame>
 
                 <div className="guide-section-label">Moving the system bar</div>
 
                 {/* Visual: system bar positions — same contained grid pattern as Dock */}
-                <div className="gvc-positions-grid guide-visual-sysbar-positions" aria-hidden="true">
+                <PositionGrid className="guide-visual-sysbar-positions">
                   {(['top', 'bottom', 'left', 'right'] as const).map((pos) => (
-                    <div key={pos} className="gvc-pos-cell">
-                      <div className="gvc-screen-mini">
-                        <div className={`gvc-mini-sysbar gvc-mini-sysbar-${pos}`} />
-                      </div>
-                      <span className="gvc-pos-label">{pos}</span>
-                    </div>
+                    <PositionCell key={pos} position={pos}>
+                      <div className={`gvc-mini-sysbar gvc-mini-sysbar-${pos}`} />
+                    </PositionCell>
                   ))}
-                </div>
+                </PositionGrid>
 
                 <div className="guide-step-list">
                   <div className="guide-step">
@@ -2496,8 +2473,13 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 </div>
 
                 {/* Visual: terminal anatomy */}
-                <div className="gvc-annotated guide-visual-terminal-demo" aria-hidden="true">
-                  <div className="gvc-annotated-crop">
+                <AnnotatedFrame
+                  className="guide-visual-terminal-demo"
+                  markers={[
+                    { label: 'A', description: 'Prompt line — user, path, and your command' },
+                    { label: 'B', description: 'Output — the result of the last command' },
+                  ]}
+                >
                     <div className="gvc-terminal">
                       <div className="gvc-terminal-header">
                         <span className="gvc-terminal-title">terminal</span>
@@ -2526,12 +2508,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="gvc-legend">
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Prompt line — user, path, and your command</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Output — the result of the last command</div>
-                  </div>
-                </div>
+                </AnnotatedFrame>
 
                 <div className="guide-section-label">Getting started</div>
                 <div className="guide-step-list">
@@ -2632,8 +2609,17 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 </div>
 
                 {/* Visual: settings window crop */}
-                <div className="gvc-annotated guide-visual-customize" data-testid="guide-visual-customize" aria-hidden="true">
-                  <div className="gvc-annotated-crop gvc-settings-crop">
+                <AnnotatedFrame
+                  className="guide-visual-customize"
+                  cropClassName="gvc-settings-crop"
+                  data-testid={"guide-visual-customize"}
+                  markers={[
+                    { label: 'A', description: 'Sidebar — choose Personalization or Accessibility' },
+                    { label: 'B', description: 'Slider — drag to adjust a value' },
+                    { label: 'C', description: 'Toggle — on/off for a single setting' },
+                    { label: 'D', description: 'Save state / Reset desktop actions' },
+                  ]}
+                >
                     <div className="gvc-settings-win">
                       <div className="gvc-win-titlebar">
                         <span className="gvc-win-title-text">Settings</span>
@@ -2702,14 +2688,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="gvc-legend">
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Sidebar — choose Personalization or Accessibility</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Slider — drag to adjust a value</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">C</span>Toggle — on/off for a single setting</div>
-                    <div className="gvc-legend-item"><span className="gvc-dot-badge">D</span>Save state / Reset desktop actions</div>
-                  </div>
-                </div>
+                </AnnotatedFrame>
 
                 <div className="guide-section-label">Start here</div>
                 <div className="guide-step-list">

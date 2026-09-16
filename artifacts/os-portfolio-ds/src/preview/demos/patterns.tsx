@@ -19,6 +19,7 @@ import {
   mdPatternContrastOverride,
   mdPatternTransparencySurfaces,
   mdPatternSavedState,
+  mdPatternAnnotatedInterfaceTeaching,
 } from '../docs-map';
 
 function PatternPage({ md }: { md: string }) {
@@ -75,4 +76,8 @@ export function PatternTransparencySurfaces() {
 
 export function PatternSavedStateOwnership() {
   return <PatternPage md={mdPatternSavedState} />;
+}
+
+export function PatternAnnotatedInterfaceTeaching() {
+  return <PatternPage md={mdPatternAnnotatedInterfaceTeaching} />;
 }

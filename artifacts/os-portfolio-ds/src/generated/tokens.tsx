@@ -167,6 +167,28 @@ export const tokens = {
     },
     "component": {
       "light": {
+        "guideIllustration": {
+          "canvas": "#e2ece8",
+          "border": "#a9c5bd",
+          "surface": "#f7fbf9",
+          "surfaceMid": "#f2f8f5",
+          "surfaceElevated": "#dceae5",
+          "surfaceDeep": "#e2ece8",
+          "surfaceBase": "#eaf3ef",
+          "contentLine": "#a9c5bd",
+          "separator": "#a9c5bd",
+          "foreground": "#17233a",
+          "foregroundMuted": "#536a72",
+          "foregroundDim": "#536a72",
+          "primary": "#0b665d",
+          "primaryTint": "#edf4f1",
+          "primaryRing": "#0b665d",
+          "secondaryAccent": "#287f8f",
+          "iconBackground": "#a9c5bd",
+          "accentColor": "#c54f48",
+          "markerForeground": "#f7fbf9",
+          "shadowBase": "#17233a"
+        },
         "actionButtonPrimary": {
           "background": "#0b665d",
           "foreground": "#f7fbf9",
@@ -337,6 +359,28 @@ export const tokens = {
         }
       },
       "dark": {
+        "guideIllustration": {
+          "canvas": "#2b2f4a",
+          "border": "#444967",
+          "surface": "#20233d",
+          "surfaceMid": "#1d2036",
+          "surfaceElevated": "#2b2f4a",
+          "surfaceDeep": "#181b30",
+          "surfaceBase": "#111326",
+          "contentLine": "#444967",
+          "separator": "#444967",
+          "foreground": "#e8eaf4",
+          "foregroundMuted": "#aeb2cb",
+          "foregroundDim": "#aeb2cb",
+          "primary": "#e4ff5b",
+          "primaryTint": "#2b2f4a",
+          "primaryRing": "#e4ff5b",
+          "secondaryAccent": "#86d9ee",
+          "iconBackground": "#444967",
+          "accentColor": "#ff8d79",
+          "markerForeground": "#111326",
+          "shadowBase": "#e8eaf4"
+        },
         "actionButtonPrimary": {
           "background": "#e4ff5b",
           "foreground": "#111326",

@@ -183,6 +183,9 @@ const OsPortfolioDemo = lazyPage(() =>
 const GuidelinesDemo = lazyPage(() =>
   import('./demos/guidelines').then(({ GuidelinesDemo }) => GuidelinesDemo),
 );
+const GvcIllustrationDemo = lazyPage(() =>
+  import('./demos/gvc-illustration').then(({ GvcIllustrationDemo }) => GvcIllustrationDemo),
+);
 const SettingsDemo = lazyPage(() =>
   import('./demos/settings').then(({ SettingsDemo }) => SettingsDemo),
 );
@@ -287,6 +290,9 @@ const PatternTransparencySurfaces = lazyPage(() =>
 const PatternSavedStateOwnership = lazyPage(() =>
   import('./demos/patterns').then(({ PatternSavedStateOwnership }) => PatternSavedStateOwnership),
 );
+const PatternAnnotatedInterfaceTeaching = lazyPage(() =>
+  import('./demos/patterns').then(({ PatternAnnotatedInterfaceTeaching }) => PatternAnnotatedInterfaceTeaching),
+);
 
 // ── Public visibility classification ──────────────────────────────────────
 // Determines whether an entry appears in navigation and search.
@@ -306,11 +312,13 @@ const PatternSavedStateOwnership = lazyPage(() =>
 //     settings-color-preset, settings-divider, settings-section-header
 //   Public Settings family overview: os-portfolio-settings
 //   Public foundations: all 5 foundation pages
-//   Public patterns:    all 12 pattern pages
+//   Public patterns:    all 13 pattern pages
 //   Everything else:    hidden (false)
 export type PublicVisibility = boolean;
 
 export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
+  // ── Guide illustration components ──────────────────────────────────────────────────
+  'gvc-illustration': true,
   // ── OS Portfolio unified directory — single public nav entry ───────────────────────
   'os-portfolio-primitives': true,
   // ── OS Portfolio family overviews — deep-linkable but not in sidebar/search ────────
@@ -418,6 +426,7 @@ export const PUBLIC_VISIBILITY_MAP: Record<string, PublicVisibility> = {
   'pattern-contrast-override': true,
   'pattern-transparency-surfaces': true,
   'pattern-saved-state': true,
+  'pattern-annotated-interface': true,
 };
 
 export type PreviewEntry = {
@@ -454,6 +463,13 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     name: 'OS Portfolio',
     entries: [
+      // ── Guide illustration reusable components ─────────────────────────────
+      {
+        id: 'gvc-illustration',
+        name: 'Guide Illustration',
+        description: 'AnnotatedFrame, AbstractWindow, and PositionGrid components — theme-safe, responsive annotation layer for teaching diagrams.',
+        Page: GvcIllustrationDemo,
+      },
       // ── Family overviews — hidden from sidebar; deep-linkable by hash ──────
       {
         id: 'os-portfolio-pilot',
@@ -1062,6 +1078,12 @@ export const NAV_GROUPS: NavGroup[] = [
         description: 'What the design system provides vs. what the consuming product must own. Uses: Surface, ActionButton, StatusIndicator.',
         Page: PatternSavedStateOwnership,
       },
+      {
+        id: 'pattern-annotated-interface',
+        name: 'Annotated interface teaching',
+        description: 'Composition, responsive legend flow, label containment, decorative vs. accessible rules, and correct window-control placement for gvc-* teaching diagrams.',
+        Page: PatternAnnotatedInterfaceTeaching,
+      },
     ],
   },
 ];
@@ -1144,6 +1166,7 @@ export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
   'desktop-launcher': 'interactive+canonical',
   'sticky-note-surface': 'interactive+canonical',
   'context-menu-surface': 'interactive+canonical',
+  'gvc-illustration': 'interactive+canonical',
   // ── Settings individual primitives ───────────────────────────────────────────
   'settings-nav': 'interactive+canonical',
   'settings-toggle-row': 'interactive+canonical',
@@ -1234,6 +1257,7 @@ export const DOC_COVERAGE_MAP: Record<string, DocCoverage> = {
   'pattern-contrast-override': 'canonical-only',
   'pattern-transparency-surfaces': 'canonical-only',
   'pattern-saved-state': 'canonical-only',
+  'pattern-annotated-interface': 'canonical-only',
 };
 
 // ── Development-time assertions ───────────────────────────────────────────────

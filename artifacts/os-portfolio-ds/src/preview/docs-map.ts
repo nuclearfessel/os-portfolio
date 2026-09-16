@@ -36,6 +36,9 @@ export { default as mdStructureFamily } from '../../docs/components/structure/st
 // ── Charts ─────────────────────────────────────────────────────────────────────
 export { default as mdChart } from '../../docs/components/charts/chart.md?raw';
 
+// ── Guide illustration components ────────────────────────────────────────────────────
+export { default as mdGvcIllustration } from '../../docs/components/os-portfolio/gvc-illustration.md?raw';
+
 // ── OS Portfolio primitives (individual files) ──────────────────────────────────────
 export { default as mdOsPortfolioActionButton } from '../../docs/components/os-portfolio/action-button.md?raw';
 export { default as mdOsPortfolioSectionLabel } from '../../docs/components/os-portfolio/section-label.md?raw';
@@ -79,3 +82,4 @@ export { default as mdPatternAccessibilityPanel } from '../../docs/patterns/acce
 export { default as mdPatternContrastOverride } from '../../docs/patterns/contrast-override.md?raw';
 export { default as mdPatternTransparencySurfaces } from '../../docs/patterns/transparency-surfaces.md?raw';
 export { default as mdPatternSavedState } from '../../docs/patterns/saved-state-ownership.md?raw';
+export { default as mdPatternAnnotatedInterfaceTeaching } from '../../docs/patterns/annotated-interface-teaching.md?raw';

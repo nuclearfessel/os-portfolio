@@ -1508,124 +1508,18 @@ button { cursor: pointer; }
    Guide visual illustrations
    — semantic custom-property layer —
 
-   All colours reference the product's existing design-system
-   tokens (hsl(var(--*)) HSL channels from :root / .theme-light)
-   or named primitives already used in this file.
+   The --gv-* custom properties are now defined globally
+   by the DS gvc-illustration.css (imported via App.tsx).
+   This section retained for documentation only.
 
-   The only raw hex values kept are "representational" colours
-   that depict real product UI whose exact hex is fixed in code:
+   Representational colours still used in product-specific
+   diagram interiors (kept in this file below):
      • Traffic lights  #ff5f57 / #febc2e / #27c840
      • Sticky yellow   #ffd84d  (--sticky-bg default)
      • Tape strip      rgba(245,232,193,…) (matches .desktop-note::before)
      • Sticky ink      #8f6900  (matches .gvc-sysbar-label in product)
      • Dock app icons  exact gradients matching DockIcon in App.tsx
    ========================================================= */
-
-/* ---- Semantic token layer: dark defaults ---- */
-/*
-  --gv-bg          : illustration outer container background
-  --gv-border      : illustration outer container border
-  --gv-surface     : inner chrome surfaces (window body, popover bg)
-  --gv-surface-hi  : elevated chrome (titlebar, dock bar)
-  --gv-surface-deep: deepest chrome (sidebar/dock bg)
-  --gv-line        : skeleton content lines
-  --gv-sep         : separator rules inside chrome
-  --gv-fg          : primary text on chrome
-  --gv-fg-muted    : secondary / dimmed text on chrome
-  --gv-fg-dim      : tertiary text (period, sep chars)
-  --gv-primary     : product primary accent (lime / teal)
-  --gv-primary-tint: primary at low opacity (badge bg, checked row)
-  --gv-primary-ring: primary border tint (badge border)
-  --gv-secondary   : secondary accent for sysbar element (cyan / teal-chart)
-  --gv-icon-bg     : generic small icon placeholder
-  --gv-shadow-dk   : dark shadow (opaque surfaces)
-  --gv-shadow-lt   : light shadow (on light theme)
-*/
-.guide-visual-row,
-.guide-visual-full,
-.guide-visual-crop,
-.guide-visual-window-demo,
-.guide-visual-sticky-demo,
-.guide-visual-sticky-colors,
-.guide-visual-dock-demo,
-.guide-visual-dock-positions,
-.guide-visual-sysbar-positions,
-.guide-visual-dock-menu,
-.guide-visual-sysbar-demo,
-.guide-visual-sysbar-side,
-.guide-visual-terminal-demo,
-.guide-visual-desktop-overview,
-.gvc-desktop-overview {
-  /* dark (default) values — all map to product :root token channels */
-  --gv-bg:           hsl(var(--muted) / .28);          /* rgba(46,48,74,.28)   */
-  --gv-border:       hsl(var(--border) / .48);          /* rgba(214,221,255,.12) but stronger */
-  --gv-surface:      hsl(var(--card) / .98);            /* rgba(23,25,50,.98)   */
-  --gv-surface-mid:  hsl(var(--card) / .72);            /* rgba(17,19,46,.72)   */
-  --gv-surface-hi:   hsl(var(--secondary) / .94);       /* rgba(39,42,65,.94)   */
-  --gv-surface-deep: hsl(var(--sidebar) / .88);         /* rgba(28,31,54,.88)   */
-  --gv-surface-base: hsl(var(--background) / .82);      /* rgba(17,19,38,.82)   */
-  --gv-line:         hsl(var(--border) / .6);           /* rgba(214,221,255,.15)*/
-  --gv-sep:          hsl(var(--border) / .56);          /* rgba(79,84,108,.56)  */
-  --gv-fg:           hsl(var(--foreground));             /* #e4e5ec / lavenderText */
-  --gv-fg-muted:     hsl(var(--muted-foreground));       /* #aeb2cb / lavenderMuted */
-  --gv-fg-dim:       hsl(var(--border));                 /* #4f546c / indigoBorder  */
-  --gv-primary:      hsl(var(--primary));                /* #e4ff5b / lime          */
-  --gv-primary-tint: hsl(var(--primary) / .1);          /* rgba(228,255,91,.1)     */
-  --gv-primary-ring: hsl(var(--primary) / .28);         /* rgba(228,255,91,.28)    */
-  --gv-secondary:    hsl(var(--chart-3));                /* #86d9ee / cyan          */
-  --gv-icon-bg:      hsl(var(--border) / .8);           /* rgba(214,221,255,.2)    */
-  --gv-shadow-dk:    rgba(0,0,0,.36);
-  --gv-shadow-lt:    rgba(0,0,0,.14);
-}
-
-/* ---- Light-theme overrides — same properties, light tokens ---- */
-.theme-light .guide-visual-row,
-.theme-light .guide-visual-full,
-.theme-light .guide-visual-crop,
-.theme-light .guide-visual-window-demo,
-.theme-light .guide-visual-sticky-demo,
-.theme-light .guide-visual-sticky-colors,
-.theme-light .guide-visual-dock-demo,
-.theme-light .guide-visual-dock-positions,
-.theme-light .guide-visual-sysbar-positions,
-.theme-light .guide-visual-dock-menu,
-.theme-light .guide-visual-sysbar-demo,
-.theme-light .guide-visual-sysbar-side,
-.theme-light .guide-visual-terminal-demo,
-.theme-light .guide-visual-desktop-overview,
-.theme-light .gvc-desktop-overview {
-  /*
-    Light primitives (from tokens.json):
-      teal      #0b665d → hsl(var(--ring)) in light
-      sageBorder #a9c5bd → hsl(var(--border))  in light
-      sageMuted  #e2ece8 → hsl(var(--muted))   in light
-      sageAccent #cfdfda → approx hsl(var(--sidebar-accent)) in light
-      ink        #17213b → hsl(var(--foreground)) in light
-      slateMuted #536a72 → hsl(var(--muted-foreground)) in light
-      lightCanvas #eaf3ef → hsl(var(--background)) in light
-      lightPopover #f2f8f5 → hsl(var(--popover)) in light
-      paper      #f7fbf9 → hsl(var(--card)) in light
-  */
-  --gv-bg:           hsl(var(--sidebar-accent) / .9);   /* rgba(199,224,218,.6)  */
-  --gv-border:       hsl(var(--ring) / .4);              /* rgba(26,83,91,.2)     */
-  --gv-surface:      hsl(var(--card));                   /* #f7fbf9 / paper       */
-  --gv-surface-mid:  hsl(var(--popover) / .88);          /* rgba(229,243,239,.88) */
-  --gv-surface-hi:   hsl(var(--sidebar-accent) / .96);   /* rgba(213,236,230,.96) */
-  --gv-surface-deep: hsl(var(--sidebar-accent) / .94);   /* rgba(213,236,230,.94) */
-  --gv-surface-base: hsl(var(--sidebar-accent) / .88);   /* rgba(213,236,230,.88) */
-  --gv-line:         hsl(var(--ring) / .3);              /* rgba(26,83,91,.15)    */
-  --gv-sep:          hsl(var(--ring) / .48);             /* rgba(26,83,91,.24)    */
-  --gv-fg:           hsl(var(--foreground));             /* #17213b / ink         */
-  --gv-fg-muted:     hsl(var(--muted-foreground));       /* #536a72 / slateMuted  */
-  --gv-fg-dim:       hsl(var(--muted-foreground) / .7);
-  --gv-primary:      hsl(var(--primary));                /* #0b665d / teal        */
-  --gv-primary-tint: hsl(var(--primary) / .1);
-  --gv-primary-ring: hsl(var(--primary) / .3);
-  --gv-secondary:    hsl(var(--chart-3));                /* tealChart #287f8f     */
-  --gv-icon-bg:      hsl(var(--ring) / .36);             /* rgba(26,83,91,.18)    */
-  --gv-shadow-dk:    rgba(0,0,0,.1);
-  --gv-shadow-lt:    rgba(0,0,0,.06);
-}
 
 /* =========================================================
    Layout containers
@@ -1680,97 +1574,16 @@ button { cursor: pointer; }
 }
 
 /* ---- Callout labels ---- */
-.gvc-callout {
-  position: absolute;
-  padding: 3px 7px;
-  border-radius: 4px;
-  color: var(--gv-primary);
-  background: var(--gv-surface-mid);
-  border: 1px solid var(--gv-primary-ring);
-  font: 9px var(--app-font-mono);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.gvc-callout-top    { top: -12px;    left: 50%; transform: translateX(-50%); }
-.gvc-callout-bottom { bottom: -12px; left: 50%; transform: translateX(-50%); }
-.gvc-callout-left   { top: 50%;  left: -10px;  transform: translate(-100%, -50%); }
-.gvc-callout-right  { top: 50%;  right: -10px; transform: translate(100%, -50%); }
-.gvc-callout-tl     { top: -12px; left: 12px; }
+/* NOTE: gvc-callout and gvc-callout-* are now in DS gvc-illustration.css */
 
 /* =========================================================
    Window illustration
+   NOTE: gvc-window, gvc-window-titlebar, gvc-traffic-*,
+   gvc-window-title, gvc-window-spacer, gvc-window-body,
+   gvc-content-line, gvc-resize-handle, gvc-resize-se
+   are now provided by DS gvc-illustration.css.
    ========================================================= */
 .guide-visual-window-demo { padding: 28px 16px 32px; }
-
-.gvc-window {
-  position: relative;
-  border: 1px solid var(--gv-border);
-  border-radius: 9px;
-  background: var(--gv-surface);
-  box-shadow: 0 12px 36px var(--gv-shadow-dk);
-  overflow: hidden;
-}
-
-.gvc-window-titlebar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 10px;
-  background: var(--gv-surface-hi);
-  border-bottom: 1px solid var(--gv-border);
-}
-
-.gvc-traffic-lights { display: flex; gap: 5px; align-items: center; }
-
-.gvc-traffic {
-  display: block;
-  width: 11px; height: 11px;
-  border-radius: 50%;
-}
-
-/* Representational — exact macOS traffic-light colours, unchanged */
-.gvc-traffic-close  { background: #ff5f57; }
-.gvc-traffic-min    { background: #febc2e; }
-.gvc-traffic-max    { background: #27c840; }
-
-.gvc-window-title {
-  text-align: center;
-  color: var(--gv-fg-muted);
-  font: 10px var(--app-font-mono);
-}
-
-.gvc-window-spacer { width: 44px; }
-
-.gvc-window-body {
-  padding: 14px 16px;
-  display: grid;
-  gap: 7px;
-}
-
-.gvc-content-line {
-  height: 7px;
-  border-radius: 4px;
-  background: var(--gv-line);
-  width: 100%;
-}
-
-.gvc-resize-handle { position: absolute; width: 13px; height: 13px; }
-
-.gvc-resize-se {
-  right: 3px; bottom: 3px;
-  background: linear-gradient(
-    135deg,
-    transparent 0 38%,    var(--gv-line) 39% 46%,
-    transparent 47% 57%,  var(--gv-line) 58% 65%,
-    transparent 66% 76%,  var(--gv-line) 77% 84%,
-    transparent 85%
-  );
-}
 
 /* =========================================================
    Sticky note illustration
@@ -1924,16 +1737,8 @@ button { cursor: pointer; }
 .gvc-dock-guide    { background: linear-gradient(145deg, #c9f27b, #51a87a 72%); }
 
 /* ---- Dock / sysbar position grids ---- */
-.guide-visual-dock-positions,
-.guide-visual-sysbar-positions {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  padding: 16px 18px;
-  border: 1px solid var(--gv-border);
-  border-radius: 9px;
-  background: var(--gv-bg);
-}
+/* NOTE: grid structure now provided by .gvc-positions-grid from DS.
+   These selectors are class names on the PositionGrid wrapper. */
 
 .gvc-screen-mini {
   position: relative;
@@ -2382,161 +2187,14 @@ button { cursor: pointer; }
 
 /* =========================================================
    RESPONSIVE ANNOTATION SYSTEM
-   gvc-annotated: grid with crop on top, legend rail below.
-   No labels escape the crop — all annotation is in legend.
+   NOTE: gvc-annotated, gvc-annotated-crop, gvc-legend,
+   gvc-legend-item, gvc-dot-badge, gvc-dot-inline,
+   gvc-win-titlebar, gvc-win-title-text, gvc-win-controls,
+   gvc-win-btn, gvc-overview-crop, gvc-sticky-crop,
+   gvc-dock-crop, gvc-sysbar-crop, gvc-settings-crop
+   are now provided by DS gvc-illustration.css.
+   See: @workspace/os-portfolio-ds/components/ui/gvc-illustration.css
    ========================================================= */
-
-/* Annotated wrapper: crop + legend stacked */
-.gvc-annotated {
-  display: grid;
-  grid-template-rows: auto auto;
-  gap: 0;
-  border: 1px solid var(--gv-border);
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--gv-bg);
-  margin-bottom: 20px;
-}
-
-/* Crop: strictly contained, no overflow */
-.gvc-annotated-crop {
-  position: relative;
-  overflow: hidden;
-  padding: 24px 20px;
-  border-bottom: 1px solid var(--gv-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Legend rail below the crop */
-.gvc-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 20px;
-  padding: 10px 16px 12px;
-  background: var(--gv-surface);
-}
-
-.gvc-legend-item {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  font: 11px var(--app-font-sans);
-  color: var(--gv-fg-muted);
-  line-height: 1.5;
-}
-
-/* Numbered dot badge — sits on elements in crop AND in legend */
-.gvc-dot-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--gv-primary);
-  color: hsl(var(--primary-foreground, 0 0% 100%));
-  font: 700 8px var(--app-font-mono);
-  flex: 0 0 16px;
-  line-height: 1;
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* Inline variant — used when badge is inside a flex/grid element */
-.gvc-dot-inline {
-  margin-left: 4px;
-  align-self: center;
-}
-
-/* =========================================================
-   PRODUCT-CORRECT WINDOW CONTROLS
-   Minimize / Maximize / Close — top RIGHT, left-to-right
-   Monochrome; no macOS traffic-light colours.
-   ========================================================= */
-
-/* New title bar: title left, controls right */
-.gvc-win-titlebar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 32px;
-  padding: 0 10px;
-  background: var(--gv-surface-hi);
-  border-bottom: 1px solid var(--gv-border);
-  position: relative;
-}
-
-.gvc-win-title-text {
-  font: 10px var(--app-font-mono);
-  color: var(--gv-fg-muted);
-}
-
-/* Controls group: min → max → close */
-.gvc-win-controls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 0 0 auto;
-}
-
-.gvc-win-btn {
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--gv-line);
-  border: 1px solid var(--gv-border);
-  flex: 0 0 10px;
-}
-
-/* =========================================================
-   Annotated-crop size variants
-   ========================================================= */
-
-/* Overview: landscape aspect crop */
-.gvc-overview-crop {
-  padding: 0;
-  display: block;
-  aspect-ratio: 16 / 7;
-  background:
-    radial-gradient(circle at 85% 20%, hsl(var(--card) / .6), transparent 38%),
-    radial-gradient(circle at 8% 88%,  hsl(var(--secondary) / .3), transparent 30%),
-    hsl(var(--background));
-}
-
-.theme-light .gvc-overview-crop {
-  background:
-    radial-gradient(circle at 85% 20%, hsl(var(--sidebar-accent) / .7), transparent 38%),
-    radial-gradient(circle at 8% 88%,  hsl(var(--sidebar-accent) / .5), transparent 30%),
-    hsl(var(--background));
-}
-
-/* Sticky crop: auto height, centered */
-.gvc-sticky-crop {
-  min-height: 180px;
-  background: var(--gv-bg);
-}
-
-/* Dock crop: short, dark background */
-.gvc-dock-crop {
-  padding: 20px 12px 24px;
-  background: var(--gv-bg);
-}
-
-/* Sysbar crop: narrow, bar in center */
-.gvc-sysbar-crop {
-  padding: 16px 12px;
-  background: var(--gv-bg);
-}
-
-/* Settings crop: taller */
-.gvc-settings-crop {
-  padding: 20px 16px;
-  background: var(--gv-bg);
-  align-items: flex-start;
-}
 
 /* =========================================================
    Sticky anatomy — redesigned for annotated system
@@ -2586,39 +2244,9 @@ button { cursor: pointer; }
 
 /* =========================================================
    Dock position diagram — contained label below mini-screen
+   NOTE: gvc-positions-grid, gvc-pos-cell, gvc-pos-label
+   are now provided by DS gvc-illustration.css.
    ========================================================= */
-
-/* New grid that owns label outside screen boundary */
-.gvc-positions-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--gv-border);
-  border-radius: 9px;
-  background: var(--gv-bg);
-  margin-bottom: 20px;
-}
-
-.gvc-pos-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Screen-mini no longer needs inner label */
-.gvc-pos-cell .gvc-screen-mini {
-  width: 100%;
-  position: relative;
-}
-
-.gvc-pos-label {
-  font: 700 9px var(--app-font-mono);
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  color: var(--gv-fg-muted);
-}
 
 /* =========================================================
    Settings window illustration — redesigned for annotated
@@ -2874,56 +2502,10 @@ button { cursor: pointer; }
 
 /* =========================================================
    Customize — Settings window illustration
+   NOTE: --gv-* token shorthands are now defined globally
+   in DS gvc-illustration.css (imported via App.tsx). These
+   selectors inherit from :root / .theme-light automatically.
    ========================================================= */
-
-/* Register new containers in the --gv-* token layer */
-.guide-visual-settings-demo,
-.guide-visual-tech-arch,
-.guide-visual-keyboard {
-  --gv-bg:           hsl(var(--muted) / .28);
-  --gv-border:       hsl(var(--border) / .48);
-  --gv-surface:      hsl(var(--card) / .98);
-  --gv-surface-mid:  hsl(var(--card) / .72);
-  --gv-surface-hi:   hsl(var(--secondary) / .94);
-  --gv-surface-deep: hsl(var(--sidebar) / .88);
-  --gv-surface-base: hsl(var(--background) / .82);
-  --gv-line:         hsl(var(--border) / .6);
-  --gv-sep:          hsl(var(--border) / .56);
-  --gv-fg:           hsl(var(--foreground));
-  --gv-fg-muted:     hsl(var(--muted-foreground));
-  --gv-fg-dim:       hsl(var(--border));
-  --gv-primary:      hsl(var(--primary));
-  --gv-primary-tint: hsl(var(--primary) / .1);
-  --gv-primary-ring: hsl(var(--primary) / .28);
-  --gv-secondary:    hsl(var(--chart-3));
-  --gv-icon-bg:      hsl(var(--border) / .8);
-  --gv-shadow-dk:    rgba(0,0,0,.36);
-  --gv-shadow-lt:    rgba(0,0,0,.14);
-}
-
-.theme-light .guide-visual-settings-demo,
-.theme-light .guide-visual-tech-arch,
-.theme-light .guide-visual-keyboard {
-  --gv-bg:           hsl(var(--sidebar-accent) / .9);
-  --gv-border:       hsl(var(--ring) / .4);
-  --gv-surface:      hsl(var(--card));
-  --gv-surface-mid:  hsl(var(--popover) / .88);
-  --gv-surface-hi:   hsl(var(--sidebar-accent) / .96);
-  --gv-surface-deep: hsl(var(--sidebar-accent) / .94);
-  --gv-surface-base: hsl(var(--sidebar-accent) / .88);
-  --gv-line:         hsl(var(--ring) / .3);
-  --gv-sep:          hsl(var(--ring) / .48);
-  --gv-fg:           hsl(var(--foreground));
-  --gv-fg-muted:     hsl(var(--muted-foreground));
-  --gv-fg-dim:       hsl(var(--muted-foreground) / .7);
-  --gv-primary:      hsl(var(--primary));
-  --gv-primary-tint: hsl(var(--primary) / .1);
-  --gv-primary-ring: hsl(var(--primary) / .3);
-  --gv-secondary:    hsl(var(--chart-3));
-  --gv-icon-bg:      hsl(var(--ring) / .36);
-  --gv-shadow-dk:    rgba(0,0,0,.1);
-  --gv-shadow-lt:    rgba(0,0,0,.06);
-}
 
 .guide-visual-settings-demo {
   padding: 20px 16px 28px;

@@ -1,0 +1,378 @@
+/* ==========================================================
+   GVC Illustration Layer — DS Component Stylesheet
+   Guide-visual-component (gvc) annotation, abstract window chrome,
+   and position-grid CSS.
+
+   ALL colours derive from generated --component-guide-illustration-*
+   CSS custom properties (aliases of semantic tokens). No raw hex,
+   no raw rgba(), no white fallbacks. The only representational fixed
+   colours are:
+     • Sticky yellow  #ffd84d (product sticky default, not used here)
+     • Tape / ink     rgba(143,105,0,…) — sticky-note interior only,
+       documented in the portfolio's own CSS.
+   ========================================================== */
+
+/* ---- Shorthand aliases on :root ---- */
+/* --gv-* provides stable shorthand names that product-specific diagram
+   CSS (in the portfolio) can reference. All values derive exclusively
+   from generated --component-guide-illustration-* variables.           */
+:root {
+  /* dark defaults */
+  --gv-bg:            hsl(var(--component-guide-illustration-canvas) / .28);
+  --gv-border:        hsl(var(--component-guide-illustration-border) / .48);
+  --gv-surface:       hsl(var(--component-guide-illustration-surface) / .98);
+  --gv-surface-mid:   hsl(var(--component-guide-illustration-surface-mid) / .72);
+  --gv-surface-hi:    hsl(var(--component-guide-illustration-surface-elevated) / .94);
+  --gv-surface-deep:  hsl(var(--component-guide-illustration-surface-deep) / .88);
+  --gv-surface-base:  hsl(var(--component-guide-illustration-surface-base) / .82);
+  --gv-line:          hsl(var(--component-guide-illustration-content-line) / .6);
+  --gv-sep:           hsl(var(--component-guide-illustration-separator) / .56);
+  --gv-fg:            hsl(var(--component-guide-illustration-foreground));
+  --gv-fg-muted:      hsl(var(--component-guide-illustration-foreground-muted));
+  --gv-fg-dim:        hsl(var(--component-guide-illustration-foreground-dim));
+  --gv-primary:       hsl(var(--component-guide-illustration-primary));
+  --gv-primary-tint:  hsl(var(--component-guide-illustration-primary) / .1);
+  --gv-primary-ring:  hsl(var(--component-guide-illustration-primary-ring) / .28);
+  --gv-secondary:     hsl(var(--component-guide-illustration-secondary-accent));
+  --gv-icon-bg:       hsl(var(--component-guide-illustration-icon-background) / .8);
+  --gv-marker-fg:     hsl(var(--component-guide-illustration-marker-foreground));
+  /* Shadow: use shadow-base hue channel with alpha */
+  --gv-shadow-dk:     hsl(var(--component-guide-illustration-shadow-base) / .36);
+  --gv-shadow-lt:     hsl(var(--component-guide-illustration-shadow-base) / .14);
+}
+
+/* Light-theme overrides — same structure, light component vars */
+.theme-light,
+.light {
+  --gv-bg:            hsl(var(--component-guide-illustration-canvas) / .9);
+  --gv-border:        hsl(var(--component-guide-illustration-border) / .4);
+  --gv-surface:       hsl(var(--component-guide-illustration-surface));
+  --gv-surface-mid:   hsl(var(--component-guide-illustration-surface-mid) / .88);
+  --gv-surface-hi:    hsl(var(--component-guide-illustration-surface-elevated) / .96);
+  --gv-surface-deep:  hsl(var(--component-guide-illustration-surface-deep) / .94);
+  --gv-surface-base:  hsl(var(--component-guide-illustration-surface-base) / .88);
+  --gv-line:          hsl(var(--component-guide-illustration-primary-ring) / .3);
+  --gv-sep:           hsl(var(--component-guide-illustration-primary-ring) / .48);
+  --gv-fg:            hsl(var(--component-guide-illustration-foreground));
+  --gv-fg-muted:      hsl(var(--component-guide-illustration-foreground-muted));
+  --gv-fg-dim:        hsl(var(--component-guide-illustration-foreground-dim) / .7);
+  --gv-primary:       hsl(var(--component-guide-illustration-primary));
+  --gv-primary-tint:  hsl(var(--component-guide-illustration-primary) / .1);
+  --gv-primary-ring:  hsl(var(--component-guide-illustration-primary-ring) / .3);
+  --gv-secondary:     hsl(var(--component-guide-illustration-secondary-accent));
+  --gv-icon-bg:       hsl(var(--component-guide-illustration-primary-ring) / .36);
+  --gv-marker-fg:     hsl(var(--component-guide-illustration-marker-foreground));
+  --gv-shadow-dk:     hsl(var(--component-guide-illustration-shadow-base) / .1);
+  --gv-shadow-lt:     hsl(var(--component-guide-illustration-shadow-base) / .06);
+}
+
+/* ==========================================================
+   RESPONSIVE ANNOTATION SYSTEM
+   gvc-annotated: crop on top, legend rail below.
+   Labels never escape the crop — all annotation lives in the legend.
+   ========================================================== */
+
+/* Annotated outer wrapper */
+.gvc-annotated {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 0;
+  border: 1px solid var(--gv-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--gv-bg);
+  margin-bottom: 20px;
+}
+
+/* Crop — strictly contained, no overflow */
+.gvc-annotated-crop {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--gv-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Legend rail */
+.gvc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  padding: 10px 16px 12px;
+  background: var(--gv-surface);
+}
+
+.gvc-legend-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gv-fg-muted);
+  line-height: 1.5;
+}
+
+/* Numbered dot badge */
+.gvc-dot-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gv-primary);
+  color: var(--gv-marker-fg);
+  font: 700 8px var(--app-font-mono, monospace);
+  flex: 0 0 16px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Inline badge variant */
+.gvc-dot-inline {
+  margin-left: 4px;
+  align-self: center;
+}
+
+/* ==========================================================
+   PRODUCT-CORRECT ABSTRACT WINDOW CHROME
+   Title left — Minimize / Maximize / Close at top-right (in that order).
+   Monochrome buttons only. No macOS traffic-light colours.
+   ========================================================== */
+
+/* Title bar */
+.gvc-win-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding: 0 10px;
+  background: var(--gv-surface-hi);
+  border-bottom: 1px solid var(--gv-border);
+  position: relative;
+}
+
+.gvc-win-title-text {
+  font: 10px var(--app-font-mono, monospace);
+  color: var(--gv-fg-muted);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Controls group: min → max → close */
+.gvc-win-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+/* Monochrome window button */
+.gvc-win-btn {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gv-line);
+  border: 1px solid var(--gv-border);
+  flex: 0 0 10px;
+}
+
+/* Window container */
+.gvc-window {
+  position: relative;
+  border: 1px solid var(--gv-border);
+  border-radius: 9px;
+  background: var(--gv-surface);
+  box-shadow: 0 12px 36px var(--gv-shadow-dk);
+  overflow: hidden;
+}
+
+/* Window body */
+.gvc-window-body {
+  padding: 14px 16px;
+  display: grid;
+  gap: 7px;
+}
+
+/* Skeleton content line */
+.gvc-content-line {
+  height: 7px;
+  border-radius: 4px;
+  background: var(--gv-line);
+  width: 100%;
+}
+
+/* Resize handle (SE corner) */
+.gvc-resize-handle { position: absolute; width: 13px; height: 13px; }
+.gvc-resize-se {
+  right: 3px; bottom: 3px;
+  background: linear-gradient(
+    135deg,
+    transparent 0 38%,    var(--gv-line) 39% 46%,
+    transparent 47% 57%,  var(--gv-line) 58% 65%,
+    transparent 66% 76%,  var(--gv-line) 77% 84%,
+    transparent 85%
+  );
+}
+
+/* ==========================================================
+   POSITION GRID
+   Dock / system-bar position diagram: mini-screens + labels.
+   ========================================================== */
+
+.gvc-positions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--gv-border);
+  border-radius: 9px;
+  background: var(--gv-bg);
+  margin-bottom: 20px;
+}
+
+.gvc-pos-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.gvc-pos-cell .gvc-screen-mini {
+  width: 100%;
+  position: relative;
+}
+
+.gvc-pos-label {
+  font: 700 9px var(--app-font-mono, monospace);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--gv-fg-muted);
+}
+
+/* Mini screen abstraction */
+.gvc-screen-mini {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--gv-border);
+  background: var(--gv-surface-base);
+}
+
+.gvc-screen-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 7px var(--app-font-mono, monospace);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--gv-fg-dim);
+}
+
+/* Mini dock strip */
+.gvc-mini-dock {
+  position: absolute;
+  border-radius: 2px;
+  background: var(--gv-surface-deep);
+}
+.gvc-mini-dock-bottom { left: 15%; right: 15%; bottom: 3px; height: 7px; }
+.gvc-mini-dock-top    { left: 15%; right: 15%; top: 3px;    height: 7px; }
+.gvc-mini-dock-left   { top: 10%; bottom: 10%; left: 3px;   width: 7px; }
+.gvc-mini-dock-right  { top: 10%; bottom: 10%; right: 3px;  width: 7px; }
+
+/* Mini system bar strip */
+.gvc-mini-sysbar {
+  position: absolute;
+  background: var(--gv-surface-hi);
+}
+.gvc-mini-sysbar-top    { left: 0; right: 0;  top: 0;    height: 6px; border-radius: 4px 4px 0 0; }
+.gvc-mini-sysbar-bottom { left: 0; right: 0;  bottom: 0; height: 6px; border-radius: 0 0 4px 4px; }
+.gvc-mini-sysbar-left   { top: 0; bottom: 0;  left: 0;   width: 6px;  border-radius: 4px 0 0 4px; }
+.gvc-mini-sysbar-right  { top: 0; bottom: 0;  right: 0;  width: 6px;  border-radius: 0 4px 4px 0; }
+
+/* ==========================================================
+   CALLOUT LABELS (crop-internal position labels)
+   ========================================================== */
+
+.gvc-callout {
+  position: absolute;
+  padding: 3px 7px;
+  border-radius: 4px;
+  color: var(--gv-primary);
+  background: var(--gv-surface-mid);
+  border: 1px solid var(--gv-primary-ring);
+  font: 9px var(--app-font-mono, monospace);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.gvc-callout-top    { top: -12px;    left: 50%; transform: translateX(-50%); }
+.gvc-callout-bottom { bottom: -12px; left: 50%; transform: translateX(-50%); }
+.gvc-callout-left   { top: 50%;  left: -10px;  transform: translate(-100%, -50%); }
+.gvc-callout-right  { top: 50%;  right: -10px; transform: translate(100%, -50%); }
+.gvc-callout-tl     { top: -12px; left: 12px; }
+
+/* ==========================================================
+   TEXT / CONTENT SKELETON LINES
+   ========================================================== */
+
+/* gvc-text-line: representational sticky-note ink lines.
+   The background is intentionally left to callers (product-specific),
+   so no colour is applied here. */
+.gvc-text-line {
+  height: 6px;
+  border-radius: 3px;
+  width: 100%;
+}
+
+/* ==========================================================
+   OVERVIEW CROP SIZE
+   ========================================================== */
+
+.gvc-overview-crop {
+  padding: 0;
+  display: block;
+  aspect-ratio: 16 / 7;
+  background:
+    radial-gradient(circle at 85% 20%, hsl(var(--component-guide-illustration-surface) / .6), transparent 38%),
+    radial-gradient(circle at 8% 88%,  hsl(var(--component-guide-illustration-surface-elevated) / .3), transparent 30%),
+    hsl(var(--component-guide-illustration-surface-base));
+}
+
+.theme-light .gvc-overview-crop,
+.light .gvc-overview-crop {
+  background:
+    radial-gradient(circle at 85% 20%, hsl(var(--component-guide-illustration-surface-elevated) / .7), transparent 38%),
+    radial-gradient(circle at 8% 88%,  hsl(var(--component-guide-illustration-surface-elevated) / .5), transparent 30%),
+    hsl(var(--component-guide-illustration-surface-base));
+}
+
+/* Crop size variants */
+.gvc-sticky-crop   { min-height: 180px; background: var(--gv-bg); }
+.gvc-dock-crop     { padding: 20px 12px 24px; background: var(--gv-bg); }
+.gvc-sysbar-crop   { padding: 16px 12px; background: var(--gv-bg); }
+.gvc-settings-crop { padding: 20px 16px; background: var(--gv-bg); align-items: flex-start; }
+
+/* ==========================================================
+   RESPONSIVE NARROW WRAPPING
+   At < 500px container width, legend items stack single-column.
+   ========================================================== */
+
+@container (max-width: 499px) {
+  .gvc-legend {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .gvc-positions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

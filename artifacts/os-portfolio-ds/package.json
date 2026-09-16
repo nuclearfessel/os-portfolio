@@ -8,6 +8,7 @@
     "./tokens": "./src/generated/tokens.tsx",
     "./styles.css": "./src/index.css",
     "./components/*": "./src/components/*.tsx",
+    "./components/ui/gvc-illustration.css": "./src/components/ui/gvc-illustration.css",
     "./lib/*": "./src/lib/*.tsx",
     "./hooks/*": "./src/hooks/*.tsx"
   },

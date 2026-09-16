@@ -39,6 +39,7 @@ Source: `src/components/ui/os-portfolio.tsx` · Preview: `os-portfolio-pilot`
 | Component | Spec |
 |---|---|
 | ActionButton | [→](./components/os-portfolio/action-button.md) |
+| **Guide Illustration** (`gvc-illustration.tsx`) | [→](./components/os-portfolio/gvc-illustration.md) |
 | SectionLabel | [→](./components/os-portfolio/section-label.md) |
 | StatusIndicator | [→](./components/os-portfolio/status-indicator.md) |
 | Surface | [→](./components/os-portfolio/surface.md) |
@@ -200,6 +201,7 @@ Source: `src/components/ui/chart.tsx`
 
 | Pattern | Spec |
 |---|---|
+| Annotated interface teaching pattern | [→](./patterns/annotated-interface-teaching.md) |
 | Desktop window workspace | [→](./patterns/desktop-window-workspace.md) |
 | Responsive Dock navigation | [→](./patterns/responsive-dock.md) |
 | Desktop launcher grid | [→](./patterns/desktop-launcher-grid.md) |

@@ -1649,6 +1649,7 @@ button { cursor: pointer; }
 }
 
 .gvc-sticky-actions {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1664,7 +1665,10 @@ button { cursor: pointer; }
 }
 
 .gvc-sticky-actions-marker {
-  margin-right: 2px;
+  position: absolute;
+  top: -11px;
+  right: 12px;
+  margin: 0;
 }
 
 .gvc-sticky-text-lines { display: grid; gap: 6px; align-content: start; }

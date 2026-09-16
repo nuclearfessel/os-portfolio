@@ -1173,11 +1173,19 @@ test('Guide Sticky anatomy uses clear add and trash controls with an adjacent ma
 
   const geometry = await actions.evaluate((element) => {
     const marker = element.querySelector<HTMLElement>('.gvc-sticky-actions-marker')!.getBoundingClientRect();
-    const firstControl = element.querySelector<HTMLElement>('.gvc-sticky-btn')!.getBoundingClientRect();
-    return { markerRight: marker.right, controlLeft: firstControl.left, verticalGap: Math.abs(marker.top - firstControl.top) };
+    const controls = [...element.querySelectorAll<HTMLElement>('.gvc-sticky-btn')].map((control) => control.getBoundingClientRect());
+    const controlLeft = Math.min(...controls.map((control) => control.left));
+    const controlRight = Math.max(...controls.map((control) => control.right));
+    const controlTop = Math.min(...controls.map((control) => control.top));
+    return {
+      markerCenter: (marker.left + marker.right) / 2,
+      controlsCenter: (controlLeft + controlRight) / 2,
+      markerBottom: marker.bottom,
+      controlTop,
+    };
   });
-  expect(geometry.controlLeft - geometry.markerRight).toBeLessThanOrEqual(8);
-  expect(geometry.verticalGap).toBeLessThanOrEqual(2);
+  expect(Math.abs(geometry.markerCenter - geometry.controlsCenter)).toBeLessThanOrEqual(2);
+  expect(geometry.markerBottom).toBeLessThanOrEqual(geometry.controlTop);
 });
 
 test('Sticky illustration fills keep their round markers visible in both themes', async ({ page }) => {

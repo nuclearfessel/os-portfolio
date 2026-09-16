@@ -1067,6 +1067,239 @@ test('keeps Settings and the User Guide light navigation states consistent', asy
   expect(guideColors.activeShadow).toBe('none');
 });
 
+test('guide sections for Stickies, Dock, System bar, and Terminal render expected content', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  // Stickies section
+  await page.getByTestId('guide-nav-stickies').click();
+  await expect(guideWindow.getByRole('heading', { name: 'Sticky notes' })).toBeVisible();
+  await expect(guideWindow).toContainText('Open Stickies');
+  await expect(guideWindow).toContainText('Write a note');
+  await expect(guideWindow).toContainText('Move a note');
+  await expect(guideWindow).toContainText('Choose a color');
+  await expect(guideWindow).toContainText('Notes stay below windows');
+
+  // Dock section
+  await page.getByTestId('guide-nav-dock').click();
+  await expect(guideWindow).toContainText('Drag it to any edge');
+  await expect(guideWindow).toContainText('Or use the right-click menu');
+  await expect(guideWindow).toContainText('The desktop adjusts automatically');
+  await expect(guideWindow).toContainText('Position is remembered');
+
+  // System bar section
+  await page.getByTestId('guide-nav-systembar').click();
+  await expect(guideWindow).toContainText('Drag it to an edge');
+  await expect(guideWindow).toContainText('Side placement compacts the bar');
+  await expect(guideWindow).toContainText('The workspace shifts to clear the bar');
+
+  // Terminal section
+  await page.getByTestId('guide-nav-terminal').click();
+  await expect(guideWindow).toContainText('Open the Terminal');
+  await expect(guideWindow).toContainText('Type a command and press Enter');
+  await expect(guideWindow).toContainText('No access to your computer');
+});
+
+test('Customize, Tech notes, and Shortcuts pages each contain a visual illustration group', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  // Customize — Settings window crop
+  await page.getByTestId('guide-nav-customize').click();
+  await expect(guideWindow.getByRole('heading', { name: 'Make the desktop yours' })).toBeVisible();
+  await expect(guideWindow.getByTestId('guide-visual-customize')).toBeVisible();
+  // Confirm key control labels are rendered inside the visual
+  const customizeVisual = guideWindow.getByTestId('guide-visual-customize');
+  await expect(customizeVisual).toContainText('Personalization');
+  await expect(customizeVisual).toContainText('Save state');
+  await expect(customizeVisual).toContainText('Surface effects');
+
+  // Tech notes — architecture diagram
+  await page.getByTestId('guide-nav-technical').click();
+  await expect(guideWindow.getByRole('heading', { name: 'A desktop built in the browser' })).toBeVisible();
+  await expect(guideWindow.getByTestId('guide-visual-tech')).toBeVisible();
+  const techVisual = guideWindow.getByTestId('guide-visual-tech');
+  await expect(techVisual).toContainText('one browser tab');
+  await expect(techVisual).toContainText('React + TypeScript');
+  await expect(techVisual).toContainText('localStorage');
+  await expect(techVisual).toContainText('what happens per action');
+
+  // Shortcuts — keyboard diagram
+  await page.getByTestId('guide-nav-shortcuts').click();
+  await expect(guideWindow.getByRole('heading', { name: 'Keyboard shortcuts' })).toBeVisible();
+  await expect(guideWindow.getByTestId('guide-visual-keyboard')).toBeVisible();
+  const kbdVisual = guideWindow.getByTestId('guide-visual-keyboard');
+  // Number keys row
+  await expect(kbdVisual).toContainText('Number keys');
+  await expect(kbdVisual).toContainText('Guide');
+  // Modifier chords
+  await expect(kbdVisual).toContainText('Esc');
+  await expect(kbdVisual).toContainText('Close the front window');
+  await expect(kbdVisual).toContainText('Close all windows');
+});
+
+test('guide visuals do not overflow at narrow Guide window width', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  // Locate the east resize handle — the product's actual drag target for narrowing
+  const resizeHandle = guideWindow.locator('.window-resize-e');
+  await expect(resizeHandle).toBeAttached();
+
+  // Get the handle's center so we drag from exactly the right spot
+  const handleBox = await resizeHandle.boundingBox();
+  expect(handleBox, 'east resize handle must have a bounding box').not.toBeNull();
+  const handleCx = handleBox!.x + handleBox!.width / 2;
+  const handleCy = handleBox!.y + handleBox!.height / 2;
+
+  // Drag left far enough to land near 456px — well inside 500px
+  const gwBox0 = await guideWindow.boundingBox();
+  expect(gwBox0, 'guide window must have a bounding box before resize').not.toBeNull();
+  const targetX = gwBox0!.x + 456;
+
+  await page.mouse.move(handleCx, handleCy);
+  await page.mouse.down();
+  // Move in two steps so the pointer-capture path receives intermediate events
+  await page.mouse.move(targetX + 80, handleCy, { steps: 4 });
+  await page.mouse.move(targetX, handleCy, { steps: 4 });
+  await page.mouse.up();
+
+  // Verify the window actually narrowed — must be ≤500px
+  const gwBox1 = await guideWindow.boundingBox();
+  expect(gwBox1, 'guide window must have a bounding box after resize').not.toBeNull();
+  expect(
+    gwBox1!.width,
+    `Guide window should be ≤500px after resize, got ${gwBox1!.width}px`,
+  ).toBeLessThanOrEqual(500);
+
+  const sections: string[] = ['overview', 'windows', 'stickies', 'dock', 'systembar', 'terminal', 'customize', 'technical', 'shortcuts'];
+
+  for (const sec of sections) {
+    const navBtn = page.getByTestId(`guide-nav-${sec}`);
+    if (await navBtn.count() > 0) {
+      await navBtn.click();
+    }
+
+    // ── Overflow check ──────────────────────────────────────────────────────
+    const annotatedCrops = guideWindow.locator(
+      '.gvc-annotated-crop, .guide-visual-full, .guide-visual-keyboard, .guide-visual-tech-arch, .gvc-positions-grid',
+    );
+    const cropCount = await annotatedCrops.count();
+    for (let i = 0; i < cropCount; i++) {
+      const el = annotatedCrops.nth(i);
+      const noOverflow = await el.evaluate((node) => node.scrollWidth <= node.clientWidth + 2);
+      expect(noOverflow, `Overflow on section=${sec} crop index ${i}`).toBe(true);
+    }
+
+    // ── Legend geometry check ───────────────────────────────────────────────
+    // Every legend item must stay within its parent legend bounds,
+    // and no two legend items within the same legend may overlap.
+    const legends = guideWindow.locator('.gvc-legend');
+    const legendCount = await legends.count();
+    for (let li = 0; li < legendCount; li++) {
+      const legend = legends.nth(li);
+      // Only check legends that are actually visible (some sections hide them)
+      if (!await legend.isVisible()) continue;
+
+      const legendBox = await legend.boundingBox();
+      if (!legendBox) continue;
+
+      const items = legend.locator('.gvc-legend-item');
+      const itemCount = await items.count();
+      const itemBoxes: { x: number; y: number; right: number; bottom: number }[] = [];
+
+      for (let ii = 0; ii < itemCount; ii++) {
+        const item = items.nth(ii);
+        const itemBox = await item.boundingBox();
+        if (!itemBox) continue;
+
+        const right  = itemBox.x + itemBox.width;
+        const bottom = itemBox.y + itemBox.height;
+
+        // Each item must be within legend bounds (1px tolerance for subpixel)
+        expect(
+          itemBox.x,
+          `section=${sec} legend[${li}] item[${ii}] left edge outside legend`,
+        ).toBeGreaterThanOrEqual(legendBox.x - 1);
+        expect(
+          right,
+          `section=${sec} legend[${li}] item[${ii}] right edge outside legend`,
+        ).toBeLessThanOrEqual(legendBox.x + legendBox.width + 1);
+        expect(
+          itemBox.y,
+          `section=${sec} legend[${li}] item[${ii}] top edge outside legend`,
+        ).toBeGreaterThanOrEqual(legendBox.y - 1);
+        expect(
+          bottom,
+          `section=${sec} legend[${li}] item[${ii}] bottom edge outside legend`,
+        ).toBeLessThanOrEqual(legendBox.y + legendBox.height + 1);
+
+        itemBoxes.push({ x: itemBox.x, y: itemBox.y, right, bottom });
+      }
+
+      // No two items may overlap (1px tolerance for shared borders)
+      for (let a = 0; a < itemBoxes.length; a++) {
+        for (let b = a + 1; b < itemBoxes.length; b++) {
+          const A = itemBoxes[a];
+          const B = itemBoxes[b];
+          const overlaps =
+            A.x    < B.right  - 1 &&
+            A.right > B.x     + 1 &&
+            A.y    < B.bottom - 1 &&
+            A.bottom > B.y    + 1;
+          expect(
+            overlaps,
+            `section=${sec} legend[${li}] item[${a}] and item[${b}] overlap`,
+          ).toBe(false);
+        }
+      }
+    }
+  }
+});
+
+test('guide window controls show min/max/close at top right', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+
+  // Navigate to windows section and verify the abstract window uses product-correct controls
+  await page.getByTestId('guide-nav-windows').click();
+  const winDemo = guideWindow.locator('.guide-visual-window-demo');
+  await expect(winDemo).toBeVisible();
+  // Product controls are gvc-win-controls inside gvc-win-titlebar (right-side)
+  const controls = winDemo.locator('.gvc-win-controls');
+  await expect(controls).toHaveCount(1);
+  const titlebar = winDemo.locator('.gvc-win-titlebar');
+  await expect(titlebar).toHaveCount(1);
+  // Controls must be inside the titlebar
+  await expect(titlebar.locator('.gvc-win-controls')).toHaveCount(1);
+  // No macOS traffic-light left-group
+  await expect(winDemo.locator('.gvc-traffic-lights')).toHaveCount(0);
+});
+
+test('guide stickies section has annotated anatomy visual with rotation info', async ({ page }) => {
+  await page.keyboard.press('8');
+  const guideWindow = page.getByTestId('window-guide');
+  await expect(guideWindow).toBeVisible();
+  await page.getByTestId('guide-nav-stickies').click();
+  await expect(guideWindow.getByRole('heading', { name: 'Sticky notes' })).toBeVisible();
+
+  // Annotated crop exists and contains legend
+  const annotated = guideWindow.locator('.guide-visual-sticky-demo');
+  await expect(annotated).toBeVisible();
+  await expect(annotated.locator('.gvc-legend')).toHaveCount(1);
+  await expect(annotated.locator('.gvc-legend-item')).toHaveCount(4);
+
+  // Rotation step has desktop-specific text
+  await expect(guideWindow).toContainText('Rotation controls appear only on desktop');
+  await expect(guideWindow).toContainText('Shift');
+  await expect(guideWindow).toContainText('15-degree steps');
+  await expect(guideWindow).toContainText('Reset rotation');
+});
+
 test('closes the shortcuts drawer with Escape or an outside click', async ({ page }) => {
   const drawer = page.getByTestId('menu-mobile');
   await page.getByTestId('button-dock-shortcuts').click();

@@ -887,7 +887,7 @@ function ContactWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'ch
 }
 
 type SettingsSection = 'personalization' | 'accessibility' | 'about';
-type GuideSection = 'overview' | 'windows' | 'customize' | 'technical' | 'shortcuts';
+type GuideSection = 'overview' | 'windows' | 'stickies' | 'dock' | 'systembar' | 'terminal-guide' | 'customize' | 'technical' | 'shortcuts';
 
 // Settings toggle row component
 function SettingsToggle({
@@ -1775,6 +1775,46 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
             </button>
             <button
               type="button"
+              className={`settings-nav-item${activeSection === 'stickies' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'stickies' ? 'page' : undefined}
+              onClick={() => selectGuideSection('stickies')}
+              data-testid="guide-nav-stickies"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><BsStickyFill size={13} /></span>
+              Stickies
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'dock' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'dock' ? 'page' : undefined}
+              onClick={() => selectGuideSection('dock')}
+              data-testid="guide-nav-dock"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><Menu size={14} strokeWidth={1.8} /></span>
+              Dock
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'systembar' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'systembar' ? 'page' : undefined}
+              onClick={() => selectGuideSection('systembar')}
+              data-testid="guide-nav-systembar"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><Minus size={14} strokeWidth={1.8} /></span>
+              System bar
+            </button>
+            <button
+              type="button"
+              className={`settings-nav-item${activeSection === 'terminal-guide' ? ' settings-nav-item-active' : ''}`}
+              aria-current={activeSection === 'terminal-guide' ? 'page' : undefined}
+              onClick={() => selectGuideSection('terminal-guide')}
+              data-testid="guide-nav-terminal"
+            >
+              <span className="settings-nav-icon" aria-hidden="true"><TerminalCursorFill size={14} /></span>
+              Terminal
+            </button>
+            <button
+              type="button"
               className={`settings-nav-item${activeSection === 'customize' ? ' settings-nav-item-active' : ''}`}
               aria-current={activeSection === 'customize' ? 'page' : undefined}
               onClick={() => selectGuideSection('customize')}
@@ -1818,6 +1858,79 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     </p>
                   </div>
                 </div>
+
+                {/* Visual: desktop overview diagram */}
+                <div className="gvc-annotated guide-visual-desktop-overview" aria-hidden="true">
+                  <div className="gvc-annotated-crop gvc-overview-crop">
+                    {/* System bar */}
+                    <div className="gvc-overview-sysbar">
+                      <span className="gvc-sysbar-logo" />
+                      <span style={{ flex: 1 }} />
+                      <span className="gvc-sysbar-clock">10:42 am</span>
+                      <span className="gvc-dot-badge">A</span>
+                    </div>
+                    {/* Desktop area */}
+                    <div className="gvc-overview-desktop">
+                      {/* Window 1 */}
+                      <div className="gvc-overview-window" style={{ left: '6%', top: '8%', width: '42%', height: '52%' }}>
+                        <div className="gvc-win-titlebar">
+                          <span className="gvc-win-title-text">~/about</span>
+                          <div className="gvc-win-controls">
+                            <span className="gvc-win-btn gvc-win-min" />
+                            <span className="gvc-win-btn gvc-win-max" />
+                            <span className="gvc-win-btn gvc-win-close" />
+                          </div>
+                        </div>
+                        <div className="gvc-window-body" style={{ gap: 4, padding: 8 }}>
+                          <div className="gvc-content-line" style={{ width: '60%', height: 4 }} />
+                          <div className="gvc-content-line" style={{ width: '90%', height: 4 }} />
+                          <div className="gvc-content-line" style={{ width: '75%', height: 4 }} />
+                        </div>
+                        <span className="gvc-dot-badge">B</span>
+                      </div>
+                      {/* Window 2 */}
+                      <div className="gvc-overview-window" style={{ left: '44%', top: '18%', width: '50%', height: '46%' }}>
+                        <div className="gvc-win-titlebar">
+                          <span className="gvc-win-title-text">~/work</span>
+                          <div className="gvc-win-controls">
+                            <span className="gvc-win-btn gvc-win-min" />
+                            <span className="gvc-win-btn gvc-win-max" />
+                            <span className="gvc-win-btn gvc-win-close" />
+                          </div>
+                        </div>
+                        <div className="gvc-window-body" style={{ gap: 4, padding: 8 }}>
+                          <div className="gvc-content-line" style={{ width: '50%', height: 4 }} />
+                          <div className="gvc-content-line" style={{ width: '80%', height: 4 }} />
+                        </div>
+                      </div>
+                      {/* Sticky note */}
+                      <div className="gvc-overview-sticky" style={{ left: '6%', top: '66%' }}>
+                        <div className="gvc-overview-sticky-tape" />
+                        <div className="gvc-text-line" style={{ width: '85%', background: 'rgba(143,105,0,.28)' }} />
+                        <div className="gvc-text-line" style={{ width: '65%', background: 'rgba(143,105,0,.28)', marginTop: 4 }} />
+                        <span className="gvc-dot-badge">C</span>
+                      </div>
+                      {/* Desktop icon */}
+                      <div className="gvc-overview-icon" style={{ right: '5%', bottom: '18%' }}>
+                        <div className="gvc-overview-icon-tile" />
+                      </div>
+                    </div>
+                    {/* Dock */}
+                    <div className="gvc-overview-dock">
+                      {[0,1,2,3,4,5,6].map(i => (
+                        <div key={i} className="gvc-overview-dock-item" style={{ background: ['#d64f8c','#7478b8','#e7ded5','#303747','#ebca75','#56cbd3','#c9f27b'][i] }} />
+                      ))}
+                      <span className="gvc-dot-badge">D</span>
+                    </div>
+                  </div>
+                  <div className="gvc-legend">
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>System bar — time, status, and location</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Windows — each app opens here</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">C</span>Stickies — quick notes on the desktop</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">D</span>Dock — open and switch apps</div>
+                  </div>
+                </div>
+
                 <div className="guide-section-label">Get started</div>
                 <div className="guide-step-list">
                   <div className="guide-step">
@@ -1868,6 +1981,40 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <p className="guide-intro">Each app opens in a window. You can move, resize, hide, maximize, and close windows without leaving the page.</p>
                   </div>
                 </div>
+
+                {/* Visual: window anatomy — legend below crop */}
+                <div className="gvc-annotated guide-visual-window-demo" aria-hidden="true">
+                  <div className="gvc-annotated-crop">
+                    <div className="gvc-window">
+                      <div className="gvc-win-titlebar">
+                        <span className="gvc-win-title-text">~/about</span>
+                        <div className="gvc-win-controls">
+                          <span className="gvc-win-btn gvc-win-min" />
+                          <span className="gvc-win-btn gvc-win-max" />
+                          <span className="gvc-win-btn gvc-win-close" />
+                        </div>
+                        <span className="gvc-dot-badge" style={{ position: 'absolute', left: '46%', top: '50%', transform: 'translateY(-50%)' }}>A</span>
+                        <span className="gvc-dot-badge" style={{ position: 'absolute', right: 2, top: '50%', transform: 'translateY(-50%)' }}>B</span>
+                      </div>
+                      <div className="gvc-window-body">
+                        <div className="gvc-content-line" style={{ width: '55%', height: 3, marginBottom: 6 }} />
+                        <div className="gvc-content-line" style={{ width: '85%' }} />
+                        <div className="gvc-content-line" style={{ width: '70%' }} />
+                        <div className="gvc-content-line" style={{ width: '80%' }} />
+                        <div className="gvc-content-line" style={{ width: '40%' }} />
+                      </div>
+                      <div className="gvc-resize-handle gvc-resize-se">
+                        <span className="gvc-dot-badge" style={{ position: 'absolute', bottom: 2, right: 2 }}>C</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="gvc-legend">
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Title bar — drag here to move the window</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Minimize / Maximize / Close — left to right</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">C</span>Corner handle — drag to resize</div>
+                  </div>
+                </div>
+
                 <div className="guide-section-label">Window controls</div>
                 <div className="guide-step-list">
                   <div className="guide-step">
@@ -1909,6 +2056,571 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
               </>
             )}
 
+            {activeSection === 'stickies' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / stickies</SectionLabel>
+                    <h2 className="settings-heading">Sticky notes</h2>
+                    <p className="guide-intro">Stickies are free-floating notes on the desktop. Pin a thought, leave a reminder, or keep a short list. They stay where you put them.</p>
+                  </div>
+                </div>
+
+                {/* Visual: sticky note anatomy */}
+                <div className="gvc-annotated guide-visual-sticky-demo" aria-hidden="true">
+                  <div className="gvc-annotated-crop gvc-sticky-crop">
+                    <div className="gvc-sticky-wrap">
+                      <div className="gvc-sticky-tape">
+                        <span className="gvc-dot-badge gvc-dot-inline">A</span>
+                      </div>
+                      <div className="gvc-sticky-body">
+                        <div className="gvc-sticky-header">
+                          <span className="gvc-sticky-label">note / lemon</span>
+                          <div className="gvc-sticky-actions">
+                            <div className="gvc-sticky-btn" />
+                            <div className="gvc-sticky-btn gvc-sticky-btn-add">
+                              <span className="gvc-dot-badge gvc-dot-inline">B</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="gvc-sticky-text-lines">
+                          <div className="gvc-text-line" style={{ width: '88%' }} />
+                          <div className="gvc-text-line" style={{ width: '72%' }} />
+                          <div className="gvc-text-line" style={{ width: '60%' }} />
+                        </div>
+                        {/* Rotation handles shown at corners */}
+                        <div className="gvc-sticky-rot-handles" aria-hidden="true">
+                          <span className="gvc-rot-handle gvc-rot-tl" />
+                          <span className="gvc-rot-handle gvc-rot-tr">
+                            <span className="gvc-dot-badge gvc-dot-inline">C</span>
+                          </span>
+                          <span className="gvc-rot-handle gvc-rot-bl" />
+                        </div>
+                        <div className="gvc-sticky-footer">
+                          <span className="gvc-sticky-footertext">10:42</span>
+                        </div>
+                        <div className="gvc-sticky-resize">
+                          <span className="gvc-dot-badge gvc-dot-inline">D</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="gvc-legend">
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Tape strip — drag to move the note</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Plus / trash icons — add or delete a note</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">C</span>Rotation handles — drag to spin the note (desktop only)</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">D</span>Resize corner — drag to change the note size</div>
+                  </div>
+                </div>
+
+                <div className="guide-section-label">Using stickies</div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div>
+                      <h3>Open Stickies</h3>
+                      <p>Select the Stickies icon in the Dock, on the desktop, or press <kbd>5</kbd>. The most recent note comes forward. If Stickies are hidden, they reappear.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div>
+                      <h3>Write a note</h3>
+                      <p>Select inside the note and start typing. The text saves automatically as you write. There is no submit button.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div>
+                      <h3>Move a note</h3>
+                      <p>Drag the tape strip at the top of the note. Release it where you want the note to stay.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div>
+                      <h3>Resize a note</h3>
+                      <p>Drag the triangle handle at the bottom-right corner to make the note larger or smaller.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">05</span>
+                    <div>
+                      <h3>Rotate a note</h3>
+                      <p>Select or focus a sticky to reveal rotation handles at the top-left, top-right, and bottom-left corners. Drag any handle to spin the note freely. Hold <kbd>Shift</kbd> while dragging to snap to 15-degree steps.</p>
+                      <p>By keyboard: focus the top-right rotation handle, then press <kbd>Left</kbd> or <kbd>Down</kbd> to rotate minus one degree, <kbd>Right</kbd> or <kbd>Up</kbd> for plus one degree. Hold <kbd>Shift</kbd> for 15-degree steps. Press <kbd>Home</kbd> or <kbd>0</kbd> to reset upright. Right-click the note and choose Reset rotation to snap it back with a pointer.</p>
+                      <p>Rotation controls appear only on desktop and with a fine pointer. On small screens, managed layouts keep notes upright.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual: color palette */}
+                <div className="guide-section-label">Change the color</div>
+                <div className="guide-visual-full guide-visual-sticky-colors" aria-hidden="true">
+                  {[
+                    { bg: '#ffd84d', border: '#c9a32a' },
+                    { bg: '#ffb84d', border: '#c97a1e' },
+                    { bg: '#c9363e', border: '#8f222a' },
+                    { bg: '#fff0d2', border: '#c4a97a' },
+                    { bg: '#006456', border: '#004338' },
+                    { bg: '#0d56b3', border: '#083a7c' },
+                    { bg: '#6648b8', border: '#3e2d84' },
+                    { bg: '#a93570', border: '#76244f' },
+                    { bg: '#1e603d', border: '#123d26' },
+                    { bg: '#343b4f', border: '#1f2333' },
+                  ].map((c, i) => (
+                    <div key={i} className="gvc-color-swatch" style={{ background: c.bg, borderColor: c.border }} />
+                  ))}
+                </div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">right-click</span>
+                    <div>
+                      <h3>Choose a color</h3>
+                      <p>Right-click or long-press the note to open its menu. Select any color from the grid. The note updates instantly.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">10 colors</span>
+                    <div>
+                      <h3>All ten colors adapt to contrast settings</h3>
+                      <p>In Low or High Contrast mode, each color gets a matching muted or dark version. The palette stays recognizable.</p>
+                    </div>
+                  </Surface>
+                </div>
+
+                <div className="guide-section-label">Add and remove notes</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">add</span>
+                    <div>
+                      <h3>Add a new note</h3>
+                      <p>Select the plus icon in the top-right corner of any note. A fresh note appears on the desktop next to the current one.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">delete</span>
+                    <div>
+                      <h3>Remove a note</h3>
+                      <p>Select the trash icon that appears next to the plus, or right-click and choose Delete note. A confirmation appears before the note is removed.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">stacking</span>
+                    <div>
+                      <h3>Notes stay below windows</h3>
+                      <p>Stickies always appear above the desktop background and desktop icons, but below every open app window. Select a note to bring it forward among other notes.</p>
+                    </div>
+                  </Surface>
+                </div>
+
+                <div className="guide-callout">
+                  <span className="guide-callout-label">small screens</span>
+                  <p>On phones and small tablets, stickies are hidden automatically. They reappear when you return to a larger screen, right where you left them.</p>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'dock' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / dock</SectionLabel>
+                    <h2 className="settings-heading">The Dock</h2>
+                    <p className="guide-intro">The Dock is your main app launcher. Select an icon to open or focus an app. A small mark below an icon means that app is already open.</p>
+                  </div>
+                </div>
+
+                {/* Visual: dock anatomy */}
+                <div className="gvc-annotated guide-visual-dock-demo" aria-hidden="true">
+                  <div className="gvc-annotated-crop gvc-dock-crop">
+                    <div className="gvc-dock-bar">
+                      {[
+                        { cls: 'gvc-dock-about',    active: false },
+                        { cls: 'gvc-dock-work',     active: true },
+                        { cls: 'gvc-dock-contact',  active: false },
+                        { cls: 'gvc-dock-terminal', active: false },
+                        { cls: 'gvc-dock-stickies', active: false },
+                        { cls: 'gvc-dock-settings', active: false },
+                        { cls: 'gvc-dock-guide',    active: false },
+                      ].map((item, i) => (
+                        <div key={i} className={`gvc-dock-item ${item.cls}${item.active ? ' gvc-dock-active' : ''}`}>
+                          {item.active && <div className="gvc-dock-pill" />}
+                          {item.active && <span className="gvc-dot-badge gvc-dot-inline">A</span>}
+                          {i === 3 && !item.active && <span className="gvc-dot-badge gvc-dot-inline">B</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="gvc-legend">
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Active app — highlighted with a ring; its window is in front</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Open mark — app is running but not in front</div>
+                  </div>
+                </div>
+
+                <div className="guide-section-label">Moving the Dock</div>
+
+                {/* Visual: dock positions — self-contained grid, no overlapping labels */}
+                <div className="gvc-positions-grid guide-visual-dock-positions" aria-hidden="true">
+                  {(['bottom', 'top', 'left', 'right'] as const).map((pos) => (
+                    <div key={pos} className="gvc-pos-cell">
+                      <div className="gvc-screen-mini">
+                        <div className={`gvc-mini-dock gvc-mini-dock-${pos}`} />
+                      </div>
+                      <span className="gvc-pos-label">{pos}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div>
+                      <h3>Drag it to any edge</h3>
+                      <p>Click and hold the Dock background (not an icon), then drag toward the top, bottom, left, or right edge of the screen. Release when the Dock snaps into place.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div>
+                      <h3>Or use the right-click menu</h3>
+                      <p>Right-click an empty part of the Dock. A small menu appears with the four edge options. Select the position you want.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div>
+                      <h3>The desktop adjusts automatically</h3>
+                      <p>Windows, sticky notes, and desktop icons shift to stay clear of wherever the Dock lands. Nothing gets hidden behind it.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual: context menu */}
+                <div className="guide-visual-row">
+                  <div className="guide-visual-crop guide-visual-dock-menu" aria-hidden="true">
+                    <div className="gvc-menu">
+                      <div className="gvc-menu-title">Dock position</div>
+                      <div className="gvc-menu-sep" />
+                      {['Top', 'Right', 'Bottom', 'Left'].map((label, i) => (
+                        <div key={label} className={`gvc-menu-item${i === 2 ? ' gvc-menu-item-checked' : ''}`}>
+                          {i === 2 && <span className="gvc-menu-check">&#10003;</span>}
+                          {label}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="guide-visual-caption">
+                    <span className="guide-card-index">right-click</span>
+                    <h3>The Dock context menu</h3>
+                    <p>Right-click the Dock bar to see the position options. A checkmark shows the current position. Select any option to move the Dock immediately.</p>
+                  </div>
+                </div>
+
+                <div className="guide-section-label">Useful details</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">labels</span>
+                    <div>
+                      <h3>Hover to see the app name</h3>
+                      <p>On desktop, hold the pointer over a Dock icon to see a label. On touch screens, the label is always visible below each icon.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">open mark</span>
+                    <div>
+                      <h3>The mark follows the Dock edge</h3>
+                      <p>When the Dock is at the bottom, the mark appears below each open icon. When the Dock is on a side, the mark appears on the inner edge facing the desktop.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">mobile</span>
+                    <div>
+                      <h3>Phones always use the bottom</h3>
+                      <p>On small screens, the Dock is always pinned to the bottom edge and shows app names. You cannot reposition it on mobile.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">saved</span>
+                    <div>
+                      <h3>Position is remembered</h3>
+                      <p>The Dock position is saved in this browser. If you drag it to the left, it will still be on the left the next time you open the page.</p>
+                    </div>
+                  </Surface>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'systembar' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / system bar</SectionLabel>
+                    <h2 className="settings-heading">The system bar</h2>
+                    <p className="guide-intro">The system bar shows the time, status, and a few quick controls. It lives at the top by default, but you can move it to any edge just like the Dock.</p>
+                  </div>
+                </div>
+
+                {/* Visual: system bar anatomy */}
+                <div className="gvc-annotated guide-visual-sysbar-demo" aria-hidden="true">
+                  <div className="gvc-annotated-crop gvc-sysbar-crop">
+                    <div className="gvc-sysbar">
+                      <div className="gvc-sysbar-left">
+                        <span className="gvc-sysbar-logo" />
+                        <span className="gvc-sysbar-sep">|</span>
+                        <span className="gvc-sysbar-mark">os-portfolio</span>
+                        <span className="gvc-sysbar-sep">/</span>
+                        <span className="gvc-sysbar-location">~ john</span>
+                        <span className="gvc-dot-badge gvc-dot-inline" style={{ marginLeft: 6 }}>A</span>
+                      </div>
+                      <div className="gvc-sysbar-right">
+                        <div className="gvc-sysbar-status">
+                          <span className="gvc-sysbar-dot" />
+                          <span className="gvc-sysbar-statustext">online</span>
+                        </div>
+                        <span className="gvc-sysbar-sep">|</span>
+                        <div className="gvc-sysbar-icons">
+                          <span className="gvc-sysbar-icon" />
+                          <span className="gvc-sysbar-icon" />
+                        </div>
+                        <span className="gvc-sysbar-clock">10:42 am</span>
+                        <span className="gvc-dot-badge gvc-dot-inline" style={{ marginLeft: 6 }}>B</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="gvc-legend">
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Left side — logo, site name, and current location</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Right side — online status, quick icons, and clock</div>
+                  </div>
+                </div>
+
+                <div className="guide-section-label">Moving the system bar</div>
+
+                {/* Visual: system bar positions — same contained grid pattern as Dock */}
+                <div className="gvc-positions-grid guide-visual-sysbar-positions" aria-hidden="true">
+                  {(['top', 'bottom', 'left', 'right'] as const).map((pos) => (
+                    <div key={pos} className="gvc-pos-cell">
+                      <div className="gvc-screen-mini">
+                        <div className={`gvc-mini-sysbar gvc-mini-sysbar-${pos}`} />
+                      </div>
+                      <span className="gvc-pos-label">{pos}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div>
+                      <h3>Drag it to an edge</h3>
+                      <p>Click and hold anywhere on the system bar background, then drag toward the edge you want. It snaps into place when you get close.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div>
+                      <h3>Or right-click for a menu</h3>
+                      <p>Right-click the system bar to open the position menu. Select Top, Bottom, Left, or Right. The bar moves immediately.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div>
+                      <h3>Side placement compacts the bar</h3>
+                      <p>When the system bar is on the left or right edge, it narrows to a 48px rail. The logo stays visible, the wordmark hides, and the clock and status stack vertically to fit.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual: side bar compact mode */}
+                <div className="guide-visual-row">
+                  <div className="guide-visual-crop guide-visual-sysbar-side" aria-hidden="true">
+                    <div className="gvc-sysbar-rail">
+                      <span className="gvc-sysbar-logo" />
+                      <div className="gvc-sysbar-rail-sep" />
+                      <div className="gvc-sysbar-rail-clock">
+                        <span>10</span>
+                        <span>42</span>
+                        <span className="gvc-sysbar-rail-period">am</span>
+                      </div>
+                      <div className="gvc-sysbar-rail-sep" />
+                      <div className="gvc-sysbar-rail-status">
+                        <span className="gvc-sysbar-dot" />
+                        <span className="gvc-sysbar-icon" />
+                        <span className="gvc-sysbar-icon" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="guide-visual-caption">
+                    <span className="guide-card-index">side mode</span>
+                    <h3>Compact rail on left or right</h3>
+                    <p>When the bar is on a side, it becomes a narrow vertical column. The clock splits into hours and minutes. Status icons stack below. The wordmark disappears to save space.</p>
+                  </div>
+                </div>
+
+                <div className="guide-section-label">Useful details</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">workspace</span>
+                    <div>
+                      <h3>The workspace shifts to clear the bar</h3>
+                      <p>When you move the system bar, windows, stickies, and desktop icons automatically shift so nothing gets hidden behind the bar.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">mobile</span>
+                    <div>
+                      <h3>On small screens it is always at the top</h3>
+                      <p>Phones and small tablets keep the system bar at the top regardless of the saved position. Your preference returns on a larger screen.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">saved</span>
+                    <div>
+                      <h3>Position is remembered per browser</h3>
+                      <p>The position you choose is saved automatically. It will be the same the next time you open this portfolio in the same browser.</p>
+                    </div>
+                  </Surface>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'terminal-guide' && (
+              <>
+                <div className="guide-page-header">
+                  <div>
+                    <SectionLabel className="section-kicker">user guide / terminal</SectionLabel>
+                    <h2 className="settings-heading">Terminal</h2>
+                    <p className="guide-intro">The Terminal is a text-based window where you can explore this portfolio and change some desktop settings using short commands.</p>
+                  </div>
+                </div>
+
+                {/* Visual: terminal anatomy */}
+                <div className="gvc-annotated guide-visual-terminal-demo" aria-hidden="true">
+                  <div className="gvc-annotated-crop">
+                    <div className="gvc-terminal">
+                      <div className="gvc-terminal-header">
+                        <span className="gvc-terminal-title">terminal</span>
+                        <div className="gvc-win-controls" style={{ marginLeft: 'auto' }}>
+                          <span className="gvc-win-btn gvc-win-min" />
+                          <span className="gvc-win-btn gvc-win-max" />
+                          <span className="gvc-win-btn gvc-win-close" />
+                        </div>
+                      </div>
+                      <div className="gvc-terminal-body">
+                        <div className="gvc-terminal-line">
+                          <span className="gvc-terminal-prompt">john@portfolio</span>
+                          <span className="gvc-terminal-path">~/work</span>
+                          <span className="gvc-terminal-cmd"> ls</span>
+                          <span className="gvc-dot-badge gvc-dot-inline" style={{ marginLeft: 6 }}>A</span>
+                        </div>
+                        <div className="gvc-terminal-output">
+                          northstar-commerce-system.md<br />
+                          signal-operations-platform.md
+                          <span className="gvc-dot-badge gvc-dot-inline" style={{ marginLeft: 6 }}>B</span>
+                        </div>
+                        <div className="gvc-terminal-line gvc-terminal-line-active">
+                          <span className="gvc-terminal-prompt">john@portfolio</span>
+                          <span className="gvc-terminal-path">~/work</span>
+                          <span className="gvc-terminal-cursor" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="gvc-legend">
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Prompt line — user, path, and your command</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Output — the result of the last command</div>
+                  </div>
+                </div>
+
+                <div className="guide-section-label">Getting started</div>
+                <div className="guide-step-list">
+                  <div className="guide-step">
+                    <span className="guide-step-number">01</span>
+                    <div>
+                      <h3>Open the Terminal</h3>
+                      <p>Select the Terminal icon in the Dock, on the desktop, or press <kbd>4</kbd>. The window opens with a command prompt ready.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">02</span>
+                    <div>
+                      <h3>Type a command and press Enter</h3>
+                      <p>Click the input line at the bottom of the terminal and type your command. Press Enter to run it. The result appears above.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">03</span>
+                    <div>
+                      <h3>Use Tab to complete</h3>
+                      <p>Press Tab while typing a command or path to auto-complete it. A grey suggestion appears as you type — press Tab or the right arrow to accept it.</p>
+                    </div>
+                  </div>
+                  <div className="guide-step">
+                    <span className="guide-step-number">04</span>
+                    <div>
+                      <h3>Scroll back through history</h3>
+                      <p>Press the up arrow to recall the last command you ran. Press it again to go further back. Use the down arrow to move forward.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="guide-section-label">Common commands</div>
+                <Surface elevation="flat" className="guide-shortcuts-panel guide-terminal-commands">
+                  <div className="guide-shortcut-list" aria-label="Terminal commands">
+                    {([
+                      ['ls', 'List files and folders in the current directory'],
+                      ['cd work', 'Go into the work directory'],
+                      ['cat README.md', 'Print the contents of a file'],
+                      ['open work', 'Open the Work window'],
+                      ['close about', 'Close the About window'],
+                      ['theme dark', 'Switch to dark mode'],
+                      ['theme light', 'Switch to light mode'],
+                      ['set high contrast on', 'Enable high contrast mode'],
+                      ['history', 'Show the last commands you ran'],
+                      ['clear', 'Clear the terminal output'],
+                      ['help', 'List all available commands'],
+                    ] as [string, string][]).map(([cmd, desc]) => (
+                      <div className="guide-shortcut guide-terminal-command-row" key={cmd}>
+                        <code className="guide-terminal-cmd-badge">{cmd}</code>
+                        <span>{desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Surface>
+
+                <div className="guide-section-label">What the Terminal can and cannot do</div>
+                <div className="guide-topic-list" role="list">
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">can do</span>
+                    <div>
+                      <h3>Explore portfolio files</h3>
+                      <p>Navigate directories with <code>cd</code>, list contents with <code>ls</code>, and read files with <code>cat</code>. The file tree reflects this portfolio.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">can do</span>
+                    <div>
+                      <h3>Control windows and settings</h3>
+                      <p>Open and close windows, switch themes, toggle contrast, and adjust settings directly from the command line.</p>
+                    </div>
+                  </Surface>
+                  <Surface elevation="flat" className="guide-topic" role="listitem">
+                    <span className="guide-card-index">cannot</span>
+                    <div>
+                      <h3>No access to your computer</h3>
+                      <p>The Terminal is sandboxed to this page. It cannot see files on your computer, install software, or run any program outside this browser tab.</p>
+                    </div>
+                  </Surface>
+                </div>
+
+                <div className="guide-callout">
+                  <span className="guide-callout-label">tip</span>
+                  <p>Try <kbd>help</kbd> for the full command list, or click any of the example commands that appear below the welcome message when the Terminal first opens.</p>
+                </div>
+              </>
+            )}
+
             {activeSection === 'customize' && (
               <>
                 <div className="guide-page-header">
@@ -1918,6 +2630,87 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <p className="guide-intro">Open Settings from the Dock to change how the desktop looks, feels, and behaves. Your changes are saved in this browser as you make them.</p>
                   </div>
                 </div>
+
+                {/* Visual: settings window crop */}
+                <div className="gvc-annotated guide-visual-customize" data-testid="guide-visual-customize" aria-hidden="true">
+                  <div className="gvc-annotated-crop gvc-settings-crop">
+                    <div className="gvc-settings-win">
+                      <div className="gvc-win-titlebar">
+                        <span className="gvc-win-title-text">Settings</span>
+                        <div className="gvc-win-controls">
+                          <span className="gvc-win-btn gvc-win-min" />
+                          <span className="gvc-win-btn gvc-win-max" />
+                          <span className="gvc-win-btn gvc-win-close" />
+                        </div>
+                      </div>
+                      <div className="gvc-settings-body">
+                        {/* Nav sidebar */}
+                        <div className="gvc-settings-nav">
+                          <div className="gvc-settings-nav-item gvc-settings-nav-active">Personalization</div>
+                          <div className="gvc-settings-nav-item">Accessibility</div>
+                          <div className="gvc-settings-nav-item gvc-settings-nav-dim">About</div>
+                          <span className="gvc-dot-badge" style={{ marginTop: 4 }}>A</span>
+                        </div>
+                        {/* Content */}
+                        <div className="gvc-settings-content">
+                          <div className="gvc-settings-heading-row">Personalization</div>
+                          {/* Theme chips */}
+                          <div className="gvc-settings-row">
+                            <span className="gvc-settings-row-label">Theme</span>
+                            <div className="gvc-settings-chips">
+                              <span className="gvc-settings-chip gvc-chip-active">Light</span>
+                              <span className="gvc-settings-chip">Dark</span>
+                            </div>
+                          </div>
+                          {/* Open accordion: Surface effects */}
+                          <div className="gvc-settings-accordion gvc-accordion-open">
+                            <div className="gvc-accordion-header">
+                              <span>Surface effects</span>
+                              <span className="gvc-accordion-chevron gvc-chevron-open">&#9660;</span>
+                            </div>
+                            <div className="gvc-accordion-body">
+                              <div className="gvc-settings-row">
+                                <span className="gvc-settings-row-label">Transparency</span>
+                                <div className="gvc-slider-track">
+                                  <div className="gvc-slider-fill" style={{ width: '60%' }} />
+                                  <div className="gvc-slider-thumb" style={{ left: '60%' }} />
+                                </div>
+                                <span className="gvc-dot-badge gvc-dot-inline">B</span>
+                              </div>
+                              <div className="gvc-settings-row">
+                                <span className="gvc-settings-row-label">Blur</span>
+                                <div className="gvc-toggle gvc-toggle-on">
+                                  <div className="gvc-toggle-thumb" />
+                                </div>
+                                <span className="gvc-dot-badge gvc-dot-inline">C</span>
+                              </div>
+                            </div>
+                          </div>
+                          {/* Closed accordion */}
+                          <div className="gvc-settings-accordion">
+                            <div className="gvc-accordion-header">
+                              <span>Wallpaper</span>
+                              <span className="gvc-accordion-chevron">&#9654;</span>
+                            </div>
+                          </div>
+                          {/* Save / Reset */}
+                          <div className="gvc-settings-actions">
+                            <button className="gvc-btn gvc-btn-primary">Save state</button>
+                            <button className="gvc-btn gvc-btn-ghost">Reset desktop</button>
+                            <span className="gvc-dot-badge gvc-dot-inline">D</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="gvc-legend">
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">A</span>Sidebar — choose Personalization or Accessibility</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">B</span>Slider — drag to adjust a value</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">C</span>Toggle — on/off for a single setting</div>
+                    <div className="gvc-legend-item"><span className="gvc-dot-badge">D</span>Save state / Reset desktop actions</div>
+                  </div>
+                </div>
+
                 <div className="guide-section-label">Start here</div>
                 <div className="guide-step-list">
                   <div className="guide-step">
@@ -2001,6 +2794,48 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <p className="guide-intro">This desktop is a website that looks and behaves like a small operating system. These notes explain how it works and what it can—and cannot—do.</p>
                   </div>
                 </div>
+
+                {/* Visual: architecture + action flow */}
+                <div className="guide-visual-full guide-visual-tech-arch" data-testid="guide-visual-tech" aria-hidden="true">
+                  <div className="gvc-arch-row">
+                    {/* Left panel: browser chrome + layer stack */}
+                    <div className="gvc-arch-panel">
+                      <div className="gvc-arch-panel-label">one browser tab</div>
+                      <div className="gvc-arch-browser">
+                        <div className="gvc-arch-browser-bar">
+                          <span className="gvc-arch-browser-dot" />
+                          <span className="gvc-arch-browser-dot" />
+                          <span className="gvc-arch-browser-dot" />
+                          <span className="gvc-arch-browser-url">os-portfolio</span>
+                        </div>
+                        <div className="gvc-arch-layers">
+                          <div className="gvc-arch-layer gvc-arch-layer-react">React + TypeScript</div>
+                          <div className="gvc-arch-arrow">&#8595;</div>
+                          <div className="gvc-arch-layer gvc-arch-layer-css">CSS + Tailwind</div>
+                          <div className="gvc-arch-arrow">&#8595;</div>
+                          <div className="gvc-arch-layer gvc-arch-layer-storage">localStorage</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="gvc-arch-divider" />
+
+                    {/* Right panel: action flow */}
+                    <div className="gvc-arch-panel">
+                      <div className="gvc-arch-panel-label">what happens per action</div>
+                      <div className="gvc-arch-flow">
+                        <div className="gvc-arch-flow-step gvc-flow-user">01 — You act</div>
+                        <div className="gvc-arch-flow-arrow">&#8595;</div>
+                        <div className="gvc-arch-flow-step">02 — State updates</div>
+                        <div className="gvc-arch-flow-arrow">&#8595;</div>
+                        <div className="gvc-arch-flow-step">03 — React redraws</div>
+                        <div className="gvc-arch-flow-arrow">&#8595;</div>
+                        <div className="gvc-arch-flow-step gvc-flow-save">04 — Browser saves</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="guide-section-label">What runs the desktop</div>
                 <div className="guide-topic-list" role="list">
                   <Surface elevation="flat" className="guide-topic" role="listitem">
@@ -2086,6 +2921,82 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                     <p className="guide-intro">Use these keys when you want to move around the desktop without reaching for the pointer.</p>
                   </div>
                 </div>
+
+                {/* Visual: keyboard diagram */}
+                <div className="guide-visual-full guide-visual-keyboard" data-testid="guide-visual-keyboard" aria-hidden="true">
+                  <div className="gvc-kbd-section-label">Number keys</div>
+                  <div className="gvc-kbd-number-row">
+                    {[
+                      ['1', 'About'],
+                      ['2', 'Work'],
+                      ['3', 'Contact'],
+                      ['4', 'Terminal'],
+                      ['5', 'Stickies'],
+                      ['6', 'Shortcuts'],
+                      ['7', 'Settings'],
+                      ['8', 'Guide'],
+                    ].map(([num, label]) => (
+                      <div key={num} className="gvc-kbd-key-col">
+                        <div className="gvc-kbd-key gvc-kbd-key-num">{num}</div>
+                        <span className="gvc-kbd-key-label">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="gvc-kbd-section-label" style={{ marginTop: 16 }}>Modifier chords</div>
+                  <div className="gvc-kbd-chord-rows">
+                    <div className="gvc-kbd-chord-row">
+                      <div className="gvc-kbd-chord-keys">
+                        <span className="gvc-kbd-key gvc-kbd-key-wide">Esc</span>
+                      </div>
+                      <span className="gvc-kbd-chord-desc">Close the front menu or dialog</span>
+                    </div>
+                    <div className="gvc-kbd-chord-row">
+                      <div className="gvc-kbd-chord-keys">
+                        <span className="gvc-kbd-key">&#8984;</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key">&#8679;</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key">X</span>
+                      </div>
+                      <span className="gvc-kbd-chord-desc">Close the front window <span className="gvc-kbd-os">Mac</span></span>
+                    </div>
+                    <div className="gvc-kbd-chord-row">
+                      <div className="gvc-kbd-chord-keys">
+                        <span className="gvc-kbd-key gvc-kbd-key-wide">Ctrl</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key gvc-kbd-key-wide">Shift</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key">X</span>
+                      </div>
+                      <span className="gvc-kbd-chord-desc">Close the front window <span className="gvc-kbd-os">Win / Linux</span></span>
+                    </div>
+                    <div className="gvc-kbd-chord-row">
+                      <div className="gvc-kbd-chord-keys">
+                        <span className="gvc-kbd-key">&#8984;</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key">&#8997;</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key">&#8679;</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key">X</span>
+                      </div>
+                      <span className="gvc-kbd-chord-desc">Close all windows <span className="gvc-kbd-os">Mac</span></span>
+                    </div>
+                    <div className="gvc-kbd-chord-row">
+                      <div className="gvc-kbd-chord-keys">
+                        <span className="gvc-kbd-key gvc-kbd-key-wide">Ctrl</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key gvc-kbd-key-wide">Alt</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key gvc-kbd-key-wide">Shift</span>
+                        <span className="gvc-kbd-chord-plus">+</span>
+                        <span className="gvc-kbd-key">X</span>
+                      </div>
+                      <span className="gvc-kbd-chord-desc">Close all windows <span className="gvc-kbd-os">Win / Linux</span></span>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="guide-section-label">Before you start</div>
                 <div className="guide-topic-list" role="list">
                   <Surface elevation="flat" className="guide-topic" role="listitem">
@@ -2124,7 +3035,7 @@ function GuideWindow(props: Omit<React.ComponentProps<typeof WindowFrame>, 'chil
                 </Surface>
                 <div className="guide-callout">
                   <span className="guide-callout-label">close windows</span>
-                  <p>On a Mac, press <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>X</kbd> to close the front window. On Windows or Linux, use <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>X</kbd>. Add <kbd>⌥</kbd> on Mac or <kbd>Alt</kbd> on Windows and Linux to close every open window.</p>
+                  <p>On a Mac, press <kbd>&#8984;</kbd> <kbd>&#8679;</kbd> <kbd>X</kbd> to close the front window. On Windows or Linux, use <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>X</kbd>. Add <kbd>&#8997;</kbd> on Mac or <kbd>Alt</kbd> on Windows and Linux to close every open window.</p>
                 </div>
               </>
             )}

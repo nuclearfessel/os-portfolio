@@ -2312,11 +2312,7 @@ button { cursor: pointer; }
 }
 
 /* ---- Terminal command table ---- */
-.guide-terminal-commands {
-  width: fit-content;
-  max-width: 100%;
-  padding: 0 18px;
-}
+.guide-terminal-commands { padding: 0 18px; }
 
 .guide-terminal-command-row {
   grid-template-columns: 200px minmax(0, 1fr) !important;
@@ -2324,6 +2320,9 @@ button { cursor: pointer; }
 
 .guide-terminal-cmd-badge {
   display: inline-block;
+  justify-self: start;
+  width: max-content;
+  max-width: 100%;
   padding: 2px 6px;
   border-radius: 4px;
   color: var(--gv-primary);

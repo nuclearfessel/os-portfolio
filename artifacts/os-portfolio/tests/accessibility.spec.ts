@@ -107,7 +107,10 @@ test.describe('Settings sidebar navigation', () => {
     await expect(page.getByRole('heading', { name: 'This release' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Your current desktop' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Inside the browser' })).toBeVisible();
-    await expect(page.getByTestId('settings-about-open-design-system')).toHaveAttribute('href', '/os-portfolio-ds/?theme=dark');
+    const activeTheme = await page.locator('.osp-shell').evaluate((element) =>
+      element.classList.contains('theme-dark') ? 'dark' : 'light'
+    );
+    await expect(page.getByTestId('settings-about-open-design-system')).toHaveAttribute('href', `/os-portfolio-ds/?theme=${activeTheme}`);
   });
 
   test('Accessibility nav item loses active class when switching back', async ({ page }) => {

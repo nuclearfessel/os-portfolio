@@ -615,7 +615,7 @@ test('uses intentional cursors while allowing text selection only in stickies', 
 
 test('lists work files with names that match the selected projects', async ({ page }) => {
   const workLabel = page.getByTestId('button-folder-work').locator('.desktop-folder-label');
-  await expect(workLabel).toHaveText('work');
+  await expect(workLabel).toHaveText('Work');
   await expect(workLabel).toHaveCSS('white-space', 'normal');
   expect(await workLabel.evaluate((element) => ({
     horizontallyClipped: element.scrollWidth > element.clientWidth,

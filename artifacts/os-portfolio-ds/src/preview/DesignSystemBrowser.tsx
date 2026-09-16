@@ -1,5 +1,11 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../components/ui/button';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '../components/ui/accordion';
 import { Input } from '../components/ui/input';
 import { ScrollArea } from '../components/ui/scroll-area';
 import { Separator } from '../components/ui/separator';
@@ -82,6 +88,38 @@ function NavigationItems({
   const componentGroups = groups.filter(
     (group) => group.name !== 'Foundations' && group.name !== 'Patterns',
   );
+  const visibleSectionValues = [
+    foundationGroups.length > 0 ? 'foundations' : null,
+    componentGroups.length > 0 ? 'components' : null,
+    patternGroups.length > 0 ? 'patterns' : null,
+  ].filter((value): value is string => value !== null);
+  const activeSection = foundationGroups.some((group) =>
+    group.entries.some((entry) => entry.id === activeId),
+  )
+    ? 'foundations'
+    : componentGroups.some((group) =>
+          group.entries.some((entry) => entry.id === activeId),
+        )
+      ? 'components'
+      : patternGroups.some((group) =>
+            group.entries.some((entry) => entry.id === activeId),
+          )
+        ? 'patterns'
+        : null;
+  const [openSections, setOpenSections] = useState<string[]>(visibleSectionValues);
+
+  useEffect(() => {
+    if (query.trim()) {
+      setOpenSections(visibleSectionValues);
+      return;
+    }
+    if (activeSection) {
+      setOpenSections((current) =>
+        current.includes(activeSection) ? current : [...current, activeSection],
+      );
+    }
+  }, [activeId, query]);
+
   const renderEntries = (group: NavGroup) => (
     group.entries.map((entry) => (
       <button
@@ -113,47 +151,60 @@ function NavigationItems({
         </button>
       ) : null}
 
-      {foundationGroups.map((group) => (
-        <div key={group.name}>
-          <p className="px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {group.name}
-          </p>
-          <div className="mt-2 space-y-1 border-l pl-2">
-            {renderEntries(group)}
-          </div>
-        </div>
-      ))}
-
-      {componentGroups.length > 0 ? (
-        <div>
-          <p className="px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Components
-          </p>
-          <div className="mt-2 space-y-4 border-l pl-2">
-            {componentGroups.map((group) => (
-              <div key={group.name}>
-                <p className="px-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                  {group.name}
-                </p>
-                <div className="mt-1 space-y-1 pl-2">
-                  {renderEntries(group)}
-                </div>
+      <Accordion
+        type="multiple"
+        value={openSections}
+        onValueChange={setOpenSections}
+        className="space-y-2"
+      >
+        {foundationGroups.length > 0 ? (
+          <AccordionItem value="foundations" className="border-b-0">
+            <AccordionTrigger className="px-2 py-2 text-xs uppercase tracking-wide text-muted-foreground hover:no-underline">
+              Foundations
+            </AccordionTrigger>
+            <AccordionContent className="border-l pb-0 pl-2">
+              <div className="space-y-1">
+                {foundationGroups.map((group) => renderEntries(group))}
               </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
+            </AccordionContent>
+          </AccordionItem>
+        ) : null}
 
-      {patternGroups.map((group) => (
-        <div key={group.name}>
-          <p className="px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {group.name}
-          </p>
-          <div className="mt-2 space-y-1 border-l pl-2">
-            {renderEntries(group)}
-          </div>
-        </div>
-      ))}
+        {componentGroups.length > 0 ? (
+          <AccordionItem value="components" className="border-b-0">
+            <AccordionTrigger className="px-2 py-2 text-xs uppercase tracking-wide text-muted-foreground hover:no-underline">
+              Components
+            </AccordionTrigger>
+            <AccordionContent className="border-l pb-0 pl-2">
+              <div className="space-y-4">
+                {componentGroups.map((group) => (
+                  <div key={group.name}>
+                    <p className="px-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                      {group.name}
+                    </p>
+                    <div className="mt-1 space-y-1 pl-2">
+                      {renderEntries(group)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ) : null}
+
+        {patternGroups.length > 0 ? (
+          <AccordionItem value="patterns" className="border-b-0">
+            <AccordionTrigger className="px-2 py-2 text-xs uppercase tracking-wide text-muted-foreground hover:no-underline">
+              Patterns
+            </AccordionTrigger>
+            <AccordionContent className="border-l pb-0 pl-2">
+              <div className="space-y-1">
+                {patternGroups.map((group) => renderEntries(group))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ) : null}
+      </Accordion>
 
       {!showOverview && groups.length === 0 ? (
         <p className="px-2 py-4 text-sm text-muted-foreground">

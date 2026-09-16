@@ -175,7 +175,7 @@ function omitTokenSections(md: string): string {
         omittedHeadingLevel = null;
       }
 
-      if (omittedHeadingLevel === null && /^tokens(?:\s*\/\s*contracts)?$/.test(title)) {
+      if (omittedHeadingLevel === null && /\btokens?\b/.test(title)) {
         omittedHeadingLevel = level;
         continue;
       }

@@ -1118,7 +1118,7 @@ test('Guide diagram markers use regular font weight', async ({ page }) => {
   }
 });
 
-test('Overview Sticky fill keeps its round marker visible in both themes', async ({ page }) => {
+test('Sticky illustration fills keep their round markers visible in both themes', async ({ page }) => {
   for (const theme of ['light', 'dark']) {
     await page.evaluate((nextTheme) => {
       const key = 'os-portfolio.desktop.v4';
@@ -1153,6 +1153,34 @@ test('Overview Sticky fill keeps its round marker visible in both themes', async
     });
 
     expect(contrast, `${theme} Overview Sticky marker contrast`).toBeGreaterThanOrEqual(3);
+
+    await page.getByTestId('guide-nav-stickies').click();
+    const stickyBody = page.getByTestId('window-guide').locator('.guide-visual-sticky-demo .gvc-sticky-body');
+    const bodyMarkerContrasts = await stickyBody.evaluate((element) => {
+      const parse = (value: string) => {
+        const channels = value.match(/\d+(?:\.\d+)?/g)!.slice(0, 3).map(Number);
+        return channels.map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045
+            ? normalized / 12.92
+            : ((normalized + 0.055) / 1.055) ** 2.4;
+        });
+      };
+      const luminance = (value: string) => {
+        const [red, green, blue] = parse(value);
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      };
+      const bodyLuminance = luminance(getComputedStyle(element).backgroundColor);
+      return [...element.querySelectorAll<HTMLElement>('.gvc-dot-badge')].map((marker) => {
+        const markerLuminance = luminance(getComputedStyle(marker).backgroundColor);
+        return (Math.max(bodyLuminance, markerLuminance) + 0.05)
+          / (Math.min(bodyLuminance, markerLuminance) + 0.05);
+      });
+    });
+    expect(bodyMarkerContrasts.length).toBeGreaterThan(0);
+    for (const markerContrast of bodyMarkerContrasts) {
+      expect(markerContrast, `${theme} main Sticky marker contrast`).toBeGreaterThanOrEqual(3);
+    }
   }
 });
 

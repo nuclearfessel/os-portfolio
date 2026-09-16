@@ -1486,9 +1486,14 @@ button { cursor: pointer; }
   }
 
   .guide-topic {
-    grid-template-columns: 36px minmax(0, 1fr);
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
     padding: 18px;
+  }
+
+  .guide-topic .guide-card-index {
+    padding-top: 0;
+    overflow-wrap: normal;
   }
 
   .guide-card-grid,

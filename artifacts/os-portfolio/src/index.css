@@ -2315,11 +2315,11 @@ button { cursor: pointer; }
 .guide-terminal-commands { padding: 0 18px; }
 
 .guide-terminal-command-row {
-  grid-template-columns: 200px minmax(0, 1fr) !important;
+  grid-template-columns: max-content minmax(0, 1fr) !important;
 }
 
 .guide-terminal-cmd-badge {
-  display: inline-block;
+  display: inline-flex;
   justify-self: start;
   width: max-content;
   max-width: 100%;
